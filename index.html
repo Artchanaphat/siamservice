@@ -1189,7 +1189,14 @@ let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;
 
 /* sample records (ตัวอย่าง) */
 let seq=0;
-const mk=(plate,prov,name,tel,type,model,cc,tax,prb,ins,insCo)=>({id:++seq,plate,prov,name,tel,type,model,cc,tax:plus(tax),prb:plus(prb),ins:ins==null?null:plus(ins),insCo,history:[{d:plus(tax-365),what:'ตรวจสภาพ + ต่อภาษี',amt:type==='มอเตอร์ไซค์'?160:2350}]});
+const CTYPES=[['sedan','รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน (รย.1)','cc'],['van','รถยนต์นั่งส่วนบุคคลเกิน 7 คน (รย.2)','kg'],['pickup','รถยนต์บรรทุกส่วนบุคคล (รย.3)','kg'],['moto','รถจักรยานยนต์ (รย.12)','moto'],['moto_pub','รถจักรยานยนต์สาธารณะ (รย.17)','moto'],['tractor','รถแทรกเตอร์ลากจูง (รย.13)','none'],['trailer','รถพ่วง / รถกึ่งพ่วง (รย.16)','none'],['truck6','รถบรรทุก 6 ล้อ (ขบ.)','none'],['truck10','รถบรรทุก 10 ล้อ (ขบ.)','none'],['taxi','รถยนต์รับจ้าง (TAXI)','none'],['ev','EV นั่งส่วนบุคคลไม่เกิน 7 ที่นั่ง','ev'],['ev_van','EV นั่งส่วนบุคคลเกิน 7 ที่นั่ง','ev'],['ev_moto','EV จักรยานยนต์ไฟฟ้า','evmoto'],['other','อื่นๆ','none']];
+// ชุด mapping กลางของประเภทรถ: เก็บเป็นรหัส (sedan, van, truck6 …) แล้วแปลงเป็นชื่อจากที่นี่ที่เดียวทุกหน้า
+const CT_LABEL=Object.fromEntries(CTYPES.map(c=>[c[0],c[1]]));
+const LEGACY_CT={'รถเก๋ง':'sedan','กระบะ':'pickup','มอเตอร์ไซค์':'moto'}; // ข้อมูลตัวอย่างรุ่นเก่าที่เก็บเป็นชื่อย่อ
+// ประเภทที่ไม่รู้จักแสดงตามจริง ไม่แปลงเป็น รย.1
+const ctLabel=k=>!k?'ไม่ระบุประเภทรถ':CT_LABEL[k]||`ไม่ทราบประเภท (${k})`;
+const ctOf=c=>c?(c.ctype||LEGACY_CT[c.type]||''):'';
+const mk=(plate,prov,name,tel,type,model,cc,tax,prb,ins,insCo)=>({id:++seq,plate,prov,name,tel,type:ctLabel(LEGACY_CT[type]),ctype:LEGACY_CT[type]||'',model,cc,tax:plus(tax),prb:plus(prb),ins:ins==null?null:plus(ins),insCo,history:[{d:plus(tax-365),what:'ตรวจสภาพ + ต่อภาษี',amt:type==='มอเตอร์ไซค์'?160:2350}]});
 let cars=[
   mk('กข 1234','กรุงเทพมหานคร','สมชาย ใจดี','081-234-5678','รถเก๋ง','Toyota Yaris',1200,17,17,40,'วิริยะ ชั้น 2+'),
   mk('1กค 5678','นนทบุรี','วรรณา ศรีสุข','089-555-0123','มอเตอร์ไซค์','Honda Wave 110',110,-4,-4,null,''),
@@ -1208,10 +1215,10 @@ let sent=new Set();
 const daily=[[6,8],[7,11],[8,9],[9,14],[10,12],[11,7],[12,13]]; // [dayOffset, count] last 7 days
 /* bills (บิล) — ตัวอย่าง */
 let bseq=184;
-const TYPEF={'รถเก๋ง':'รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน (รย.1)','กระบะ':'รถยนต์บรรทุกส่วนบุคคล (รย.3)','มอเตอร์ไซค์':'รถจักรยานยนต์ส่วนบุคคล (รย.12)'};
 function mkBill(o){const c=o.carId?cars.find(x=>x.id===o.carId):cars.find(x=>x.plate===o.plate);
   const b={id:++bseq,d:o.d||TODAY,t:o.t||'',plate:o.plate||c.plate,prov:o.prov||(c&&c.prov)||'กรุงเทพมหานคร',name:o.name||c.name,tel:o.tel!=null?o.tel:(c?c.tel:''),note:o.note!=null?o.note:(c?c.note:''),
-    type:TYPEF[o.type||(c&&c.type)]||o.type||'',model:o.model||(c&&c.model)||'',cc:o.cc||(c&&c.cc)||'',carId:c?c.id:null,items:o.items,ins:o.ins||0,insCo:o.insCo||(c&&c.insCo)||'',disc:o.disc||0,doc:o.doc||'สำเนา',prefix:o.prefix||'',pays:[],edits:o.edits||[]};
+    ctype:o.ctype||LEGACY_CT[o.type]||ctOf(c),type:'',model:o.model||(c&&c.model)||'',cc:o.cc||(c&&c.cc)||'',carId:c?c.id:null,items:o.items,ins:o.ins||0,insCo:o.insCo||(c&&c.insCo)||'',disc:o.disc||0,doc:o.doc||'สำเนา',prefix:o.prefix||'',pays:[],edits:o.edits||[]};
+  b.type=b.ctype?ctLabel(b.ctype):(o.type||'');
   b.amt=Math.round((b.items.reduce((s,i)=>s+i[1],0)-b.disc)*100)/100;b.what=b.items.map(i=>i[0]).join(' + ');
   (o.pays||[]).forEach(p=>b.pays.push({d:p.d||b.d,t:p.t||b.t,amt:p.amt,how:p.how||'เงินสด',by:p.by||'admin'}));
   b.paid=b.pays.reduce((s,p)=>s+p.amt,0);return b}
@@ -1606,7 +1613,6 @@ R.news=()=>{
 
 let q='',cTab='tax',cMonth=0,cSort='latest';
 const CT=[['tax','ทะเบียนรถ','tab-reg','<path d="M5 11l1.5-4h11L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/>'],['prb','พรบ. ภาคบังคับ','tab-prb','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกัน ภาคสมัครใจ','tab-ins','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','tab-k','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
-const TYPEFULL={'รถเก๋ง':'รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน (รย.1)','กระบะ':'รถยนต์บรรทุกส่วนบุคคล (รย.3)','มอเตอร์ไซค์':'รถจักรยานยนต์ส่วนบุคคล (รย.12)'};
 const expPill=d=>{if(!d)return'<span class="xp none">–</span>';const n=daysTo(d);return `<span class="xp ${n<0?'bad':n<=30?'warn':'ok'}">${fmt(d)}</span>`};
 R.cust=()=>{
   const tl=CT.find(t=>t[0]===cTab)[1];
@@ -1633,7 +1639,7 @@ R.cust=()=>{
     else if(cSort==='expired')list=list.filter(c=>d(c)&&daysTo(d(c))<0).sort((a,b)=>d(a)-d(b));
     else list=list.slice().sort((a,b)=>b.created-a.created);
     $('#ccount').textContent=list.length+' รายการ';
-    $('#rows').innerHTML=list.map((c,i)=>`<tr class="rowbtn" data-open="${c.id}" tabindex="0"><td class="sub">${i+1}</td><td class="num">${fmt(c.created)}</td><td>${esc(c.name)}</td><td>${c.tel?`<b class="tel">${esc(c.tel)}</b>`:'–'}${c.note?`<div class="sub">${esc(c.note)}</div>`:''}</td><td class="hide-sm typ">${TYPEFULL[c.type]||esc(c.type)}</td><td><b class="${d(c)&&daysTo(d(c))<0?'plate-exp':''}">${esc(c.plate)}</b><div class="sub">${esc(c.prov)}</div></td>${cTab==='ins'?`<td class="insco">${c.insCo?`<b>${esc(c.insCo.replace(/\s*ชั้น.*$/,''))}</b><div class="sub">${esc((c.insCo.match(/ชั้น.*$/)||[''])[0].replace('ชั้น','ประเภท'))}</div>${c.insNote?`<div class="sub"><i>หมายเหตุ: ${esc(c.insNote)}</i></div>`:''}`:'–'}</td>`:cTab==='k'?`<td class="knote">${esc(c.kNote||'–')}</td>`:''}<td>${expPill(d(c))}</td></tr>`).join('')||`<tr><td colspan="8"><div class="eempty">ไม่พบรายการ</div></td></tr>`;
+    $('#rows').innerHTML=list.map((c,i)=>`<tr class="rowbtn" data-open="${c.id}" tabindex="0"><td class="sub">${i+1}</td><td class="num">${fmt(c.created)}</td><td>${esc(c.name)}</td><td>${c.tel?`<b class="tel">${esc(c.tel)}</b>`:'–'}${c.note?`<div class="sub">${esc(c.note)}</div>`:''}</td><td class="hide-sm typ">${esc(ctLabel(ctOf(c)))}</td><td><b class="${d(c)&&daysTo(d(c))<0?'plate-exp':''}">${esc(c.plate)}</b><div class="sub">${esc(c.prov)}</div></td>${cTab==='ins'?`<td class="insco">${c.insCo?`<b>${esc(c.insCo.replace(/\s*ชั้น.*$/,''))}</b><div class="sub">${esc((c.insCo.match(/ชั้น.*$/)||[''])[0].replace('ชั้น','ประเภท'))}</div>${c.insNote?`<div class="sub"><i>หมายเหตุ: ${esc(c.insNote)}</i></div>`:''}`:'–'}</td>`:cTab==='k'?`<td class="knote">${esc(c.kNote||'–')}</td>`:''}<td>${expPill(d(c))}</td></tr>`).join('')||`<tr><td colspan="8"><div class="eempty">ไม่พบรายการ</div></td></tr>`;
   };
   document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{cTab=b.dataset.ct;R.cust()});
   document.querySelectorAll('[data-mo]').forEach(b=>b.onclick=()=>{cMonth=cMonth===+b.dataset.mo?0:+b.dataset.mo;R.cust()});
@@ -1649,7 +1655,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#dlg').hidden)c
 
 /* เปิดบิลใหม่ */
 const PROVS='กรุงเทพมหานคร กระบี่ กาญจนบุรี กาฬสินธุ์ กำแพงเพชร ขอนแก่น จันทบุรี ฉะเชิงเทรา ชลบุรี ชัยนาท ชัยภูมิ ชุมพร เชียงราย เชียงใหม่ ตรัง ตราด ตาก นครนายก นครปฐม นครพนม นครราชสีมา นครศรีธรรมราช นครสวรรค์ นนทบุรี นราธิวาส น่าน บึงกาฬ บุรีรัมย์ เบตง ปทุมธานี ประจวบคีรีขันธ์ ปราจีนบุรี ปัตตานี พระนครศรีอยุธยา พังงา พัทลุง พิจิตร พิษณุโลก เพชรบุรี เพชรบูรณ์ แพร่ พะเยา ภูเก็ต มหาสารคาม มุกดาหาร แม่ฮ่องสอน ยะลา ยโสธร ร้อยเอ็ด ระนอง ระยอง ราชบุรี ลพบุรี ลำปาง ลำพูน เลย ศรีสะเกษ สกลนคร สงขลา สตูล สมุทรปราการ สมุทรสงคราม สมุทรสาคร สระแก้ว สระบุรี สิงห์บุรี สุโขทัย สุพรรณบุรี สุราษฎร์ธานี สุรินทร์ หนองคาย หนองบัวลำภู อ่างทอง อุดรธานี อุทัยธานี อุตรดิตถ์ อุบลราชธานี อำนาจเจริญ'.split(' ');
-const CTYPES=[['sedan','รถยนต์นั่งส่วนบุคคลไม่เกิน 7 คน (รย.1)','cc'],['van','รถยนต์นั่งส่วนบุคคลเกิน 7 คน (รย.2)','kg'],['pickup','รถยนต์บรรทุกส่วนบุคคล (รย.3)','kg'],['moto','รถจักรยานยนต์ (รย.12)','moto'],['moto_pub','รถจักรยานยนต์สาธารณะ (รย.17)','moto'],['tractor','รถแทรกเตอร์ลากจูง (รย.13)','none'],['trailer','รถพ่วง / รถกึ่งพ่วง (รย.16)','none'],['truck6','รถบรรทุก 6 ล้อ (ขบ.)','none'],['truck10','รถบรรทุก 10 ล้อ (ขบ.)','none'],['taxi','รถยนต์รับจ้าง (TAXI)','none'],['ev','EV นั่งส่วนบุคคลไม่เกิน 7 ที่นั่ง','ev'],['ev_van','EV นั่งส่วนบุคคลเกิน 7 ที่นั่ง','ev'],['ev_moto','EV จักรยานยนต์ไฟฟ้า','evmoto'],['other','อื่นๆ','none']];
 const BODY=['นั่งส่วนบุคคล','นั่งและบรรทุก','กระบะบรรทุก','บรรทุก','โดยสาร','จักรยานยนต์','จักรยานยนต์ + พวงข้าง','รถพ่วง','รถบดถนน','รถแทรกเตอร์','อื่นๆ'];
 const BRANDS='Audi|Aston Martin|Benz|BMW|Bentley|Benelli|Baco|BYD|Chevrolet|Citroen|Changan|CATERPILLAR|Datsun|Daihutsu|Deepal|Ducati|DFSK|Daewoo|Deva|Ford|Foton|Fiat|Ferrari|GWM|GPX Racing|Honda|Haval|Hino|Hyundai|Harley-Davidson|HAMM|Hale|Holden|Harde|Isuzu|Indian|Jeep|Jaguar|Kawasaki|KIA|KTM|Keeway|Kubota|Kobelco|Lexus|Lotus|Land Rover|Lamborghini|LAMBRETTA|Lifan|Lion|Mitsubishi|Mazda|MG|Mini|Maserati|McLaren|Maxus|Mitsuoka|MV Agusta|Nissan|NETA|Opel|ORA|Peugeot|Proton|Porsche|Piaggio|RIDDARA|Range Rover|Rolls-Royce|Royal Alloy|Royal Enfield|Ryuka|Suzuki|Subaru|Ssangyong|Skoda|SAKAI|SINO TRUCK|SYM|Stallions|Scomadi|Seat|Toyota|Tesla|TATA|Thairung|Tiger|Triumph|Volkswagen|Volvo|Vespa|Victory|Willys|Yamaha|Zongshen|Zero Engineering|ไม่ระบุ'.split('|');
 const INS_CO=["กรุงเทพประกันภัย", "กลางคุ้มครองผู้ประสบภัยจากรถ", "คิวบีอี ประกันภัย", "คุ้มภัยโตเกียวมารีนประกันภัย", "จรัญประกันภัย", "ชับบ์สามัคคีประกันภัย", "ซมโปะ ประกันภัย", "ทิพยประกันภัย", "ทูนประกันภัย", "ธนชาตประกันภัย", "นวกิจประกันภัย", "นำสินประกันภัย", "บางกอกสหประกันภัย", "ประกันคุ้มภัย", "ประกันภัยไทยวิวัฒน์", "พิพัทประกัน", "มิตรแท้ประกันภัย", "วิริยะประกันภัย", "ศรีอยุธยา เจนเนอรัล ประกันภัย", "สยามซิตี้ประกันภัย", "สหมงคลประกันภัย", "สินทรัพย์ประกันภัย", "สินมั่นคงประกันภัย", "อลิอันซ์ ประกันภัย", "อินทรประกันภัย", "เทเวศประกันภัย", "เมืองไทยประกันภัย", "เอ็ม เอส ไอ จี ประกันภัย", "เอราวัณประกันภัย", "เออร์โกประกันภัย", "แอกซ่าประกันภัย", "แอลเอ็มจี ประกันภัย", "ไทยประกันภัย", "ไทยพัฒนาประกันภัย", "ไทยศรีประกันภัย", "ไทยเศรษฐกิจประกันภัย", "ไทยไพบูลย์ประกันภัย", "ไอโออิ กรุงเทพ ประกันภัย"];
@@ -3073,7 +3078,7 @@ R.add=(E)=>{
       const m=hit.plate.match(/^(\S+)\s*(\d+)$/)||[0,hit.plate,''];
       $('#b-cha').value=m[1];$('#b-num').value=m[2];$('#b-city').value=hit.prov;
       if(R.car_type&&hasOpt('b-type',R.car_type))$('#b-type').value=R.car_type;
-      else $('#b-type').value=hit.type==='มอเตอร์ไซค์'?'moto':hit.type==='กระบะ'?'pickup':'sedan';
+      else{const k=ctOf(hit);$('#b-type').value=k&&hasOpt('b-type',k)?k:''}  // ไม่รู้ประเภท = ให้เลือกเอง ไม่ใส่ รย.1 ให้
       $('#b-type').dispatchEvent(new Event('change',{bubbles:true}));
       const bm=hit.model.split(' '),brand=R.brand||bm[0];if(hasOpt('b-brand',brand))$('#b-brand').value=brand;$('#b-model').value=R.brand?(R.model||''):bm.slice(1).join(' ');
       if(R.body){if(hasOpt('b-body',R.body))$('#b-body').value=R.body;else if(hasOpt('b-body','อื่นๆ')){$('#b-body').value='อื่นๆ';$('#b-body-other').hidden=false;$('#b-body-other').value=R.body}}
@@ -3173,12 +3178,11 @@ R.add=(E)=>{
     const sb=$('#bill [type=submit]');if(sb&&sb.disabled)return;
     recalc();const pr=pmW.read();if(pr.err){alert(pr.err);(pr.focus||$('#pm-bill')).scrollIntoView({block:'center'});if(pr.focus)pr.focus.focus();return}
     const tot=recalc();const plate=v('b-cha')+' '+v('b-num');const typ=$('#b-type').value;
-    const ttype=typ.includes('moto')?'มอเตอร์ไซค์':['pickup','van'].includes(typ)?'กระบะ':'รถเก๋ง';
     const name=v('c-name')+' '+v('c-sur');
     const tax=svcOn.has('tax')?(()=>{const d=v('b-taxexp')?new Date(v('b-taxexp')+'T00:00'):TODAY;const b=d<TODAY?TODAY:d;return new Date(b.getFullYear()+1,b.getMonth(),b.getDate())})():plus(365);
     let c=cars.find(x=>x.plate.replace(/\s/g,'')===plate.replace(/\s/g,'')&&x.prov===$('#b-city').value);
     if(!c){c={id:++seq,plate,prov:$('#b-city').value,history:[],note:''};cars.unshift(c)}c.created=new Date();
-    Object.assign(c,{name,tel:v('c-tel'),type:ttype,model:$('#b-brand').value+' '+v('b-model'),cc:n('b-cc'),tax,prb:v('b-prb-e')?new Date(v('b-prb-e')+'T00:00'):c.prb||plus(365),ins:svcOn.has('ins')&&v('b-ins-e')?new Date(v('b-ins-e')+'T00:00'):c.ins||null,insCo:svcOn.has('ins')?v('b-ins-co')+' '+$('#b-ins-type').value:c.insCo||''});
+    Object.assign(c,{name,tel:v('c-tel'),ctype:typ,type:ctLabel(typ),model:$('#b-brand').value+' '+v('b-model'),cc:n('b-cc'),tax,prb:v('b-prb-e')?new Date(v('b-prb-e')+'T00:00'):c.prb||plus(365),ins:svcOn.has('ins')&&v('b-ins-e')?new Date(v('b-ins-e')+'T00:00'):c.ins||null,insCo:svcOn.has('ins')?v('b-ins-co')+' '+$('#b-ins-type').value:c.insCo||''});
     const what=[...svcOn].map(k=>SVC.find(s=>s[0]===k)[1]).join(' + ');
     c.history.unshift({d:TODAY,what,amt:tot});
     const now=new Date();const insL=lines.find(l=>l[0]==='ประกันภาคสมัครใจ');intake.push(mkBill({carId:c.id,plate,name,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),items:lines.filter(l=>l[0]!=='ส่วนลด').map(l=>l===insL?['ประกันภาคสมัครใจ',n('b-ins')||l[1]]:l),doc:(document.querySelector('[name=b-doc]:checked')||{}).value||'สำเนา',prefix:$('#c-pre').value,disc:n('b-dis')&&svcOn.has('tax')?n('b-dis'):0,ins:insL?(n('b-ins')||insL[1]):0,pays:pr.pays.map(x=>({...x,by:user.name}))}));
@@ -3211,8 +3215,8 @@ R.add=(E)=>{
     document.querySelectorAll('#bill .sech').forEach(h=>{if(h.textContent==='- ข้อมูลทะเบียนรถ -')h.textContent='- แก้ไข ข้อมูลทะเบียนรถ -';if(h.textContent==='- ข้อมูลส่วนบุคคล -')h.textContent='- แก้ไข ข้อมูลส่วนบุคคล -'});
     const pm=(E.plate||'').match(/^(\S+)\s*(\d+)$/)||[0,E.plate||'',''];
     $('#b-cha').value=pm[1];$('#b-num').value=pm[2];$('#b-city').value=E.prov;
-    $('#b-type').value=c.type==='มอเตอร์ไซค์'?'moto':c.type==='กระบะ'?'pickup':'sedan';
-    if(c.type==='มอเตอร์ไซค์')$('#b-body').value='จักรยานยนต์';
+    {const k=E.ctype||ctOf(c);$('#b-type').value=k&&[...$('#b-type').options].some(o=>o.value===k)?k:'';
+     if(/moto/.test(k))$('#b-body').value='จักรยานยนต์'}
     const bm=(E.model||'').split(' ');if(SET.brands.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
     $('#b-cc').value=E.cc||'';$('#b-kg').value='';$('#b-color').value='';
     if(c.tax){const d=new Date(c.tax);d.setFullYear(d.getFullYear()-1);setDate('b-taxexp',iso(d))}
@@ -3418,7 +3422,6 @@ const DB=(()=>{
   const fn=id=>parseFloat(fv(id).replace(/,/g,''))||null;
   const fd=id=>/^\d{4}-\d{2}-\d{2}$/.test(fv(id))?fv(id):null;
   const isoN=d=>d?iso(d):null;
-  const TT=k=>String(k||'').startsWith('moto')?'มอเตอร์ไซค์':['pickup','van'].includes(k)?'กระบะ':'รถเก๋ง';
   const fail=(what,err)=>{console.error(what,err);alert(what+'ไม่สำเร็จ: '+(err&&err.message||err)+'\nข้อมูลยังอยู่ในหน้านี้ แต่ยังไม่ถูกบันทึกลงฐานข้อมูล')};
   async function login(un,pw){
     if(!un||!pw)throw new Error('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
@@ -3449,10 +3452,10 @@ const DB=(()=>{
         dltReady=false;return chk(await q('*,payments(*),bill_edits(*)'))})()]);
     cars.length=0;intake.length=0;oldBills.length=0;NEWS.length=0;seq=1e9;bseq=1e9;
     vs.forEach(v=>{const cu=v.customers||{};cars.push({id:v.id,custId:v.customer_id,ctype:v.car_type,plate:v.plate,prov:v.province,
-      name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:TT(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
+      name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:ctLabel(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
       tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),line:!!cu.line_user_id,history:[],created:new Date(v.created_at),raw:v})});
     bs.forEach(r=>{const at=new Date(r.bill_at),s=r.snapshot||{};
-      const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',type:s.type||'',model:s.model||'',cc:s.cc||'',
+      const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',ctype:s.ctype||'',type:s.ctype?ctLabel(s.ctype):(s.type||''),model:s.model||'',cc:s.cc||'',
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
         pays:(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at);return{id:p.id,d:dOnly(pt),t:hm(pt),amt:+p.amount,how:p.method,by:p.by_name}}),
         edits:(r.bill_edits||[]).sort((a,z)=>new Date(a.edited_at)-new Date(z.edited_at)).map(x=>{const et=new Date(x.edited_at);return{d:dOnly(et),t:hm(et),what:x.what,by:x.by_name}})};
@@ -3467,7 +3470,7 @@ const DB=(()=>{
     const veh={plate:c.plate,province:c.prov,car_type:fv('b-type'),body,brand:fv('b-brand'),model:fv('b-model'),color:fv('b-color'),chassis_no:fv('b-chassis'),engine_no:fv('b-engine'),
       cc:fn('b-cc'),weight_kg:fn('b-kg'),reg_date:fd('b-reg'),tax_exp:isoN(c.tax),prb_exp:isoN(c.prb),ins_exp:isoN(c.ins),ins_company:c.insCo||'',prb_company:fv('b-prb-co'),k_exp:fd('b-k-e')};
     const pick=fd('b-pick'),billNote=fv('c-note'),tmpId=b.id;
-    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prefix:cust.prefix,doc:b.doc};
+    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,ctype:b.ctype||'',type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prefix:cust.prefix,doc:b.doc};
     try{const s=await client();
       if(c.custId)chk(await s.from('customers').update(cust).eq('id',c.custId));
       else c.custId=chk(await s.from('customers').insert(cust).select('id').single()).id;
@@ -3488,7 +3491,7 @@ const DB=(()=>{
     catch(err){fail('บันทึกการรับเงิน',err)}}
   async function edit(E,c,ent){if(!LIVE)return;
     try{const s=await client();
-      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prefix:E.prefix||'',doc:E.doc||'สำเนา'};
+      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prefix:E.prefix||'',doc:E.doc||'สำเนา'};
       const up=chk(await s.from('bills').update({snapshot:snap}).eq('id',E.id).select('id'));
       if(!up.length)throw new Error('บัญชีนี้ไม่มีสิทธิ์แก้ไขบิล (เฉพาะเจ้าของร้าน/หัวหน้าสาขา)');
       chk(await s.from('bill_edits').insert({bill_id:E.id,what:ent.what,after:snap,by_name:ent.by||me.name}));
