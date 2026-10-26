@@ -780,6 +780,39 @@ body.mgmt .tbranch{display:none}
 .st-line{padding:0 16px;display:flex;flex-direction:column;gap:10px}.st-line p{margin:0}
 .st-lbtn{display:flex;flex-wrap:wrap;gap:10px}.st-lbtn .btn{height:38px;padding:0 16px}
 .st-pre{white-space:pre-wrap;background:#f4fbf6;border:1px solid #cfead8;border-radius:10px;padding:12px 14px;font:14px/1.6 var(--font-body);margin:0;max-width:520px}
+.ex-pl{display:flex;flex-direction:column;gap:2px;max-width:560px}
+.ex-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;font-size:15px}.ex-row b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.ex-row.sub2{color:#6b7280;font-size:14px}.ex-row.mid{border-top:1px solid #e3e8ee;font-weight:600}
+.ex-row.tot{border-top:2px solid #1c1c1e;font-size:18px;font-weight:700;color:#15803d}.ex-row.tot.neg{color:#c81e1e}
+.ex-add{display:grid;grid-template-columns:auto 150px 1.3fr 1fr 1.4fr auto;gap:8px;align-items:center}
+.ex-add input,.ex-add select,.ex-add .btn,.ex-add .ss-btn{height:38px;box-sizing:border-box;min-width:0;width:100%}.ex-add>b{white-space:nowrap;font-size:14px}
+.ex-cats{display:flex;flex-wrap:wrap;gap:8px}.ex-cats span{background:#fff;border:1px solid #e3e8ee;border-radius:999px;padding:5px 12px;font-size:13.5px}
+.ex-del{height:30px;padding:0 12px;font-size:13px}
+.db-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.db-tile{background:#fff;border:1px solid #e3e8ee;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.db-tile span{font-size:13px;color:#6b7280}.db-tile b{font-size:21px;font-family:var(--font-display);font-variant-numeric:tabular-nums}
+.db-tile small{font-size:12px;color:#6b7280}.db-tile em{font-style:normal;font-weight:700}.db-tile em.up{color:#15803d}.db-tile em.down{color:#c81e1e}
+.db-card{position:relative;display:flex;flex-direction:column;gap:10px}
+.db-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center}
+.db-tabs{display:flex;flex-wrap:wrap;gap:6px}.db-tabs button{border:1px solid #d1d5db;background:#fff;border-radius:999px;padding:6px 14px;font:inherit;font-size:13.5px;cursor:pointer;color:#374151}
+.db-tabs button.on{background:#1c1c1e;border-color:#1c1c1e;color:#fff}
+.db-leg{display:flex;gap:14px;font-size:13px;color:#374151}.db-leg i,.db-tip i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.db-chart svg text{font-size:11px;fill:#6b7280;font-family:var(--font-body)}.db-chart .grid{stroke:#eef0f3}.db-chart .zero{stroke:#9ca3af}
+.db-chart .hit{fill:transparent;cursor:pointer}.db-chart .hit.on{fill:rgba(0,0,0,.04)}
+.db-tip{position:absolute;pointer-events:none;background:#fff;border:1px solid #e3e8ee;box-shadow:0 6px 18px rgba(0,0,0,.12);border-radius:8px;padding:8px 10px;font-size:13px;min-width:170px;z-index:5}
+.db-tip div{display:flex;align-items:center;gap:0;margin-top:3px}.db-tip span{margin-left:auto;padding-left:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.db-tbl summary{cursor:pointer;color:#0f75bd;font-size:14px}.db-tbl table{margin-top:8px}
+.rc-line{display:flex;gap:12px;align-items:center;border-top:1px dashed #ccc;padding-top:10px}.rc-lqr{width:96px;height:96px;flex:none}.rc-lqr svg{width:100%;height:100%}
+.rc-code{font-size:20px;font-weight:700;letter-spacing:3px;font-family:var(--font-display)}
+.line-auto{color:#06a147;font-weight:600;font-size:12.5px;white-space:nowrap}
+@media (max-width:900px){.ex-add{grid-template-columns:1fr 1fr}.ex-add>b,.ex-add .btn{grid-column:1/-1}.db-tiles{grid-template-columns:1fr 1fr}}
+@media print{.receipt.slip .rc-line{flex-direction:column;text-align:center}}
+.au-bar select{height:38px;box-sizing:border-box;padding:0 8px}.au-bar .cl-date{margin-right:0}
+.au-tbl td{vertical-align:top}.au-tbl td:last-child{line-height:1.5}
+.au-pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:#eef2f7;color:#334155}
+.au-pill.au-insert{background:#dcfce7;color:#15803d}.au-pill.au-update{background:#dbeafe;color:#1d4ed8}.au-pill.au-delete{background:#fee2e2;color:#c81e1e}
+.au-js{display:grid;grid-template-columns:1fr 1fr;gap:10px}.au-js pre{background:#f7f8fa;border-radius:8px;padding:8px;font-size:12px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;margin:4px 0 0}
+@media (max-width:640px){.au-js{grid-template-columns:1fr}.au-tbl tr.au-x td{display:block}}
 /* ---- หน้าใหม่: ปิดยอด / สำรอง / คิว / ตั้งค่า / พร้อมเพย์ ---- */
 .cl,.bk,.qq,.st{display:flex;flex-direction:column;gap:14px}
 .cl .ltop,.bk .ltop,.qq .ltop,.st .ltop{padding:4px 0 12px;flex-wrap:wrap}
@@ -899,6 +932,7 @@ body.mgmt .tbranch{display:none}
         <button role="menuitem" data-chpw hidden>🔑 เปลี่ยนรหัสผ่าน</button>
         <button role="menuitem" data-go="staff" data-owner hidden>👥 จัดการพนักงาน / สาขา</button>
         <button role="menuitem" data-go="settings" data-owner-any hidden>⚙️ ตั้งค่าระบบ</button>
+        <button role="menuitem" data-go="audit" data-owner-any hidden>📜 ประวัติการใช้งาน</button>
         <button role="menuitem" class="pfout" data-logout>🚪 ออกจากระบบ</button>
       </div>
     </div>
@@ -1019,7 +1053,7 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 function renderNav(){$('.menu').innerHTML=navHTML(false)}
-function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings');renderNav();R[k]();
+function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit');renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -1056,6 +1090,8 @@ const MENU=[
   ['queue','คิวตรวจสภาพ','รถรอตรวจ / กำลังตรวจ / ผ่าน','#fff1e6','#c2410c','<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/><circle cx="17.5" cy="17.5" r="3.3" fill="#ea580c" stroke="#ea580c"/><path d="M16.2 17.6l1 1 1.7-1.9" stroke="#fff"/>'],
   ['income','รายได้ประจำวัน + ยอดค้าง','สรุปเงินรับจริงและรายการค้างชำระ','#fdf3dc','#c27c0e','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="17" cy="18" r="3.2" fill="#ef9a1a" stroke="#ef9a1a"/><path d="M17 16.4v3.2" stroke="#fff"/>'],
   ['close','ปิดยอดเงินประจำวัน','เงินสด / โอน แยกตามพนักงาน','#ecfdf3','#15803d','<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'],
+  ['expense','รายจ่ายร้าน + กำไร','ค่าแรง ค่าไฟ ค่าเช่า / กำไรรายเดือน','#fdecec','#b42318','<path d="M12 3v18M16 7H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H8"/>'],
+  ['dash','สรุปรายเดือน (กราฟ)','รถเข้า รายได้ กำไร เทียบสาขา','#eef0ff','#4338ca','<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'],
   ['inst','ผ่อนชำระประกัน','ติดตามงวดผ่อนรายลูกค้า','#e6f1fb','#2f7fd6','<rect x="3" y="6" width="16" height="11" rx="2"/><path d="M3 10h16"/><circle cx="18" cy="17" r="3.4" fill="#2f7fd6" stroke="#2f7fd6"/><path d="M18 15.6V17l1 .8" stroke="#fff"/>'],
   ['bell','ส่ง SMS แจ้งเตือน','เลือกประเภทที่ต้องการส่ง','#fde8e8','#e0474c','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
   ['news','ข่าวสาร','อัปเดต/ประกาศจากทีมงาน','#e2f6f4','#1aa598','<path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'],
@@ -1199,11 +1235,13 @@ function receiptDlg(b,kind){const sh=shop(),debt=Math.max(0,Math.round((b.amt-b.
     <div class="list">${b.items.map(([l,x])=>`<div class="li"><span>${esc(l)}</span><span class="num">${money(x)}</span></div>`).join('')}${b.disc?`<div class="li"><span>ส่วนลด</span><span class="num">-${money(b.disc)}</span></div>`:''}</div>
     <div class="row between"><b>รวมสุทธิ</b><b class="num">${money(b.amt)}</b></div><div class="row between sub"><span>รับเงินแล้ว</span><span class="num">${money(b.paid)}</span></div>${debt>0?`<div class="row between" style="color:#A32D2D"><span>ค้างชำระ</span><b class="num">${money(debt)}</b></div>`:''}
     ${debt>0&&sh.pp?`<div class="rc-qr"><div id="rc-qr"></div><div class="sub">สแกนจ่ายยอดค้าง ${money(debt)} บาท ด้วยพร้อมเพย์</div></div>`:''}
+    ${SET.line_oa?'<div class="rc-line" id="rc-line"></div>':''}
     <div class="rc-foot">ผู้รับเงิน ${esc((b.pays[b.pays.length-1]||{}).by||(user?user.name:''))} · ขอบคุณที่ใช้บริการ</div></div>
     <div class="row non-printable" style="gap:8px">${debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์</button></div>`;
   $('#dlg').hidden=false;$('#x').onclick=()=>{$('#dlg').hidden=true};
   if($('#rc-qr'))qrSVG(ppPayload(sh.pp,debt)).then(svg=>{if($('#rc-qr'))$('#rc-qr').innerHTML=svg}).catch(()=>{});
   if($('#rc-pp'))$('#rc-pp').onclick=()=>qrDlg(debt,b.plate);
+  receiptLine(b);
   $('#rc-print').onclick=()=>printEl($('.rc-doc'))}
 
 /* หน้ารายละเอียดบิล (show) */
@@ -1371,7 +1409,7 @@ const INS_CO=["กรุงเทพประกันภัย", "กลาง�
 const PREFIX=["คุณ", "นาย", "นาง", "นางสาว", "พลตำรวจเอก", "พลตำรวจเอก หญิง", "พลตำรวจโท", "พลตำรวจโท หญิง", "พลตำรวจตรี", "พลตำรวจตรี หญิง", "พันตำรวจเอก", "พันตำรวจเอก หญิง", "พันตำรวจเอกพิเศษ", "พันตำรวจเอกพิเศษ หญิง", "พันตำรวจโท", "พันตำรวจโท หญิง", "พันตำรวจตรี", "พันตำรวจตรี หญิง", "ร้อยตำรวจเอก", "ร้อยตำรวจเอก หญิง", "ร้อยตำรวจโท", "ร้อยตำรวจโท หญิง", "ร้อยตำรวจตรี", "ร้อยตำรวจตรี หญิง", "นายดาบตำรวจ", "ดาบตำรวจหญิง", "สิบตำรวจเอก", "สิบตำรวจเอก หญิง", "สิบตำรวจโท", "สิบตำรวจโท หญิง", "สิบตำรวจตรี", "สิบตำรวจตรี หญิง", "จ่าสิบตำรวจ", "จ่าสิบตำรวจ หญิง", "พลตำรวจ", "พลตำรวจ หญิง", "พลเอก", "พลเอก หญิง", "พลโท", "พลโท หญิง", "พลตรี", "พลตรี หญิง", "พันเอก", "พันเอก หญิง", "พันเอกพิเศษ", "พันเอกพิเศษ หญิง", "พันโท", "พันโท หญิง", "พันตรี", "พันตรี หญิง", "ร้อยเอก", "ร้อยเอก หญิง", "ร้อยโท", "ร้อยโท หญิง", "ร้อยตรี", "ร้อยตรี หญิง", "สิบเอก", "สิบเอก หญิง", "สิบโท", "สิบโท หญิง", "สิบตรี", "สิบตรี หญิง", "จ่าสิบเอก", "จ่าสิบเอก หญิง", "จ่าสิบโท", "จ่าสิบโท หญิง", "จ่าสิบตรี", "จ่าสิบตรี หญิง", "พลทหารบก", "ว่าที่ พ.ต.", "ว่าที่ พ.ต. หญิง", "ว่าที่ ร.อ.", "ว่าที่ ร.อ. หญิง", "ว่าที่ ร.ท.", "ว่าที่ ร.ท. หญิง", "ว่าที่ ร.ต.", "ว่าที่ ร.ต. หญิง", "พลเรือเอก", "พลเรือเอก หญิง", "พลเรือโท", "พลเรือโท หญิง", "พลเรือตรี", "พลเรือตรี หญิง", "นาวาเอก", "นาวาเอก หญิง", "นาวาเอกพิเศษ", "นาวาเอกพิเศษ หญิง", "นาวาโท", "นาวาโท หญิง", "นาวาตรี", "นาวาตรี หญิง", "เรือเอก", "เรือเอก หญิง", "เรือโท", "เรือโท หญิง", "เรือตรี", "เรือตรี หญิง", "พันจ่าเอก", "พันจ่าเอก หญิง", "พันจ่าโท", "พันจ่าโท หญิง", "พันจ่าตรี", "พันจ่าตรี หญิง", "จ่าเอก", "จ่าเอก หญิง", "จ่าโท", "จ่าโท หญิง", "จ่าตรี", "จ่าตรี หญิง", "พลทหารเรือ", "พลอากาศเอก", "พลอากาศเอก หญิง", "พลอากาศโท", "พลอากาศโท หญิง", "พลอากาศตรี", "พลอากาศตรี หญิง", "นาวาอากาศเอก", "นาวาอากาศเอก หญิง", "นาวาอากาศเอกพิเศษ", "นาวาอากาศเอกพิเศษ หญิง", "นาวาอากาศโท", "นาวาอากาศโท หญิง", "นาวาอากาศตรี", "นาวาอากาศตรี หญิง", "เรืออากาศเอก", "เรืออากาศเอก หญิง", "เรืออากาศโท", "เรืออากาศโท หญิง", "เรืออากาศตรี", "เรืออากาศตรี หญิง", "พันจ่าอากาศเอก", "พันจ่าอากาศเอก หญิง", "พันจ่าอากาศโท", "พันจ่าอากาศโท หญิง", "พันจ่าอากาศตรี", "พันจ่าอากาศตรี หญิง", "จ่าอากาศเอก", "จ่าอากาศเอก หญิง", "จ่าอากาศโท", "จ่าอากาศโท หญิง", "จ่าอากาศตรี", "จ่าอากาศตรี หญิง", "พลทหารอากาศ", "หม่อม", "หม่อมเจ้า", "หม่อมราชวงศ์", "หม่อมหลวง", "ดร.", "ศ.ดร.", "ศ.", "ผศ.ดร.", "ผศ.", "รศ.ดร.", "รศ.", "นพ.", "แพทย์หญิง", "สัตวแพทย์", "สพญ.", "ทพ.", "ทพญ.", "เภสัชกร", "ภกญ.", "วัด", "พระ", "พระครู", "พระมหา", "พระสมุห์", "พระอธิการ", "สามเณร", "แม่ชี", "บาทหลวง", "MR", "MRS", "MS", "MISS", "Dr.", "บริษัท", "หจก.", "โรงเรียน", "สหกรณ์", "อื่นๆ"];
 /* ตั้งค่าระบบ (เจ้าของร้านแก้ได้ที่ ตั้งค่าระบบ) ค่าเริ่มต้นด้านล่าง ระบบจริงเก็บในตาราง app_settings */
 const INS_DEF=[["กรุงเทพประกันภัย", "BKI", 0], ["กลางคุ้มครองผู้ประสบภัยจากรถ", "RVP", 1], ["คิวบีอี ประกันภัย", "QBE", 0], ["คุ้มภัยโตเกียวมารีนประกันภัย", "TMSTH", 0], ["จรัญประกันภัย", "CHARAN", 0], ["ชับบ์สามัคคีประกันภัย", "CHUBB", 0], ["ซมโปะ ประกันภัย", "SOMPO", 0], ["ทิพยประกันภัย", "TIP", 0], ["ทูนประกันภัย", "TUNE", 0], ["ธนชาตประกันภัย", "TNI", 0], ["นวกิจประกันภัย", "NAVAKIJ", 0], ["นำสินประกันภัย", "NAMSENG", 0], ["บางกอกสหประกันภัย", "BUS", 0], ["ประกันคุ้มภัย", "SAFETY", 0], ["ประกันภัยไทยวิวัฒน์", "TVI", 0], ["พิพัทประกัน", "PPI", 0], ["มิตรแท้ประกันภัย", "MITTARE", 0], ["วิริยะประกันภัย", "VIRIYAH", 0], ["ศรีอยุธยา เจนเนอรัล ประกันภัย", "SRIAYUD", 0], ["สยามซิตี้ประกันภัย", "SIAMCITY", 0], ["สหมงคลประกันภัย", "SAHAMONG", 0], ["สินทรัพย์ประกันภัย", "SINSAP", 0], ["สินมั่นคงประกันภัย", "SMK", 0], ["อลิอันซ์ ประกันภัย", "ALLIANZ", 0], ["อินทรประกันภัย", "INDARA", 0], ["เทเวศประกันภัย", "DEVES", 0], ["เมืองไทยประกันภัย", "MTI", 0], ["เอ็ม เอส ไอ จี ประกันภัย", "MSIG", 0], ["เอราวัณประกันภัย", "ERAWAN", 0], ["เออร์โกประกันภัย", "ERGO", 0], ["แอกซ่าประกันภัย", "AXA", 0], ["แอลเอ็มจี ประกันภัย", "LMG", 0], ["ไทยประกันภัย", "THAINS", 0], ["ไทยพัฒนาประกันภัย", "THAIPAT", 0], ["ไทยศรีประกันภัย", "THAISRI", 0], ["ไทยเศรษฐกิจประกันภัย", "TSI", 0], ["ไทยไพบูลย์ประกันภัย", "TPI", 0], ["ไอโออิ กรุงเทพ ประกันภัย", "AIOI", 0]];
-const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
+const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,passthru:['ค่าภาษีรถ','ค่าปรับล่าช้า','พ.ร.บ.','ประกันภาคสมัครใจ'],exp_cats:['ค่าแรงพนักงาน','ค่าเช่า','ค่าไฟ','ค่าน้ำ','ค่าอินเทอร์เน็ต/โทรศัพท์','ค่าเครื่องมือ/ซ่อมบำรุง','ค่าเอกสาร/เครื่องเขียน','ค่าน้ำมัน/เดินทาง','อื่นๆ'],line_oa:'',line_days:[30,7],brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
 let SET=JSON.parse(JSON.stringify(SET_DEF));
 const insNames=()=>SET.insurers.map(x=>x[0]);
 const SVC=[['tax','ต่อภาษี / พรบ.ภาคบังคับ'],['tr','โอนย้าย / อื่นๆ'],['ins','ประกัน ภาคสมัครใจ'],['k','พรบ. ขนส่ง']];
@@ -3016,7 +3054,7 @@ R.sms=()=>{const K=SMSK[smsKind],list=smsPending(smsKind);
     <label class="smsp-search">ค้นหา: <input id="sms-q" value="${esc(smsQ)}"></label></div>
     <div class="section-body" style="padding:15px;overflow-x:auto"><table class="smsp-tbl"><thead><tr><th>ผู้บันทึก</th><th>ประเภท</th><th>ยี่ห้อ</th><th>ทะเบียน</th><th>จังหวัด</th><th>หมดอายุ</th><th>เบอร์โทร</th><th>LINE</th></tr></thead><tbody id="sms-rows"></tbody></table></div></div></div>`;
   const draw=()=>{const q=smsQ.replace(/\s/g,'').toLowerCase();const rows=list.filter(c=>!q||(c.plate+c.prov+c.tel+c.model).replace(/\s/g,'').toLowerCase().includes(q));
-    $('#sms-rows').innerHTML=rows.length?rows.map(c=>`<tr data-open="${c.id}"><td>admin</td><td>${esc(c.type)}</td><td>${esc(c.model.split(' ')[0])}</td><td><b>${esc(c.plate)}</b></td><td>${esc(c.prov)}</td><td>${badge(c)}</td><td>${esc(c.tel)}</td><td><button class="line-btn" data-line="${c.id}" title="ส่งข้อความเตือนทาง LINE">LINE</button></td></tr>`).join(''):'<tr><td colspan="8" class="smsp-empty">ไม่พบข้อมูล</td></tr>'};
+    $('#sms-rows').innerHTML=rows.length?rows.map(c=>`<tr data-open="${c.id}"><td>admin</td><td>${esc(c.type)}</td><td>${esc(c.model.split(' ')[0])}</td><td><b>${esc(c.plate)}</b></td><td>${esc(c.prov)}</td><td>${badge(c)}</td><td>${esc(c.tel)}</td><td>${c.line?'<span class="line-auto" title="ลูกค้าผูก LINE แล้ว ระบบส่งเตือนเอง">LINE อัตโนมัติ ✓</span>':`<button class="line-btn" data-line="${c.id}" title="ส่งข้อความเตือนทาง LINE">LINE</button>`}</td></tr>`).join(''):'<tr><td colspan="8" class="smsp-empty">ไม่พบข้อมูล</td></tr>'};
   draw();$('#sms-q').oninput=e=>{smsQ=e.target.value;draw()};
   $('#sms-rows').addEventListener('click',e=>{const b=e.target.closest('[data-line]');if(!b)return;e.stopPropagation();const c=cars.find(x=>x.id==b.dataset.line);if(c){sendLine(smsKind==='ins'?'ins':'reg',c);b.textContent='ส่งแล้ว ✓';b.classList.add('done')}},true);
   $('#sms-back').onclick=()=>go('bell');
@@ -3071,6 +3109,8 @@ const DB=(()=>{
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวเชื่อมฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ต'));document.head.append(s)});
   const client=async()=>{if(!sb){await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:rem?window.localStorage:window.sessionStorage}})}return sb};
   const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
+  // Supabase ส่งได้ครั้งละไม่เกิน 1,000 แถว จึงดึงทีละหน้าจนครบ
+  async function pages(q){let out=[];for(let i=0;;i+=1000){const r=await q().range(i,i+999);if(r.error)return r;out=out.concat(r.data);if(r.data.length<1000)return{data:out,error:null}}}
   const day=s=>{if(!s)return null;const d=new Date(String(s).slice(0,10)+'T00:00');return isNaN(d)?null:d};
   const hm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
   const dOnly=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
@@ -3101,15 +3141,15 @@ const DB=(()=>{
     // ค่าตั้งค่าระบบ (ถ้ายังไม่ได้รัน 05-features.sql จะใช้ค่าเริ่มต้น)
     try{await loadSettings(c)}catch(_){}
     const [vs,bs]=await Promise.all([
-      c.from('vehicles').select('*,customers(*)').order('updated_at',{ascending:false}).limit(5000).then(chk),
-      (async()=>{const q=x=>c.from('bills').select(x).eq('branch_id',branch.id).gte('bill_at',since).order('bill_at').limit(5000);
+      pages(()=>c.from('vehicles').select('*,customers(*)').order('id')).then(chk),
+      (async()=>{const q=x=>pages(()=>c.from('bills').select(x).eq('branch_id',branch.id).gte('bill_at',since).order('bill_at').order('id'));
         // ถ้ายังไม่ได้รัน 04-dlt.sql ตาราง dlt_jobs จะยังไม่มี ให้โหลดบิลได้ตามปกติ
         const r=await q('*,payments(*),bill_edits(*),dlt_jobs(*)');if(!r.error){dltReady=true;return r.data}
         dltReady=false;return chk(await q('*,payments(*),bill_edits(*)'))})()]);
     cars.length=0;intake.length=0;oldBills.length=0;NEWS.length=0;seq=1e9;bseq=1e9;
     vs.forEach(v=>{const cu=v.customers||{};cars.push({id:v.id,custId:v.customer_id,ctype:v.car_type,plate:v.plate,prov:v.province,
       name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:TT(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
-      tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),history:[],created:new Date(v.created_at)})});
+      tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),line:!!cu.line_user_id,history:[],created:new Date(v.created_at)})});
     bs.forEach(r=>{const at=new Date(r.bill_at),s=r.snapshot||{};
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',type:s.type||'',model:s.model||'',cc:s.cc||'',
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
@@ -3195,13 +3235,25 @@ const DB=(()=>{
   async function addQueue(q){const c=await client();try{return chk(await c.from('insp_queue').insert({branch_id:branch.id,plate:q.plate,province:q.prov,car_type:q.ctype,cust_name:q.name,tel:q.tel,status:'wait',updated_by_name:me.name}).select('id,created_at').single()).id}catch(e){need05(e)}}
   async function updQueue(id,q){const c=await client();try{chk(await c.from('insp_queue').update(qDb(q)).eq('id',id))}catch(e){need05(e)}}
   async function delQueue(id){const c=await client();try{chk(await c.from('insp_queue').delete().eq('id',id))}catch(e){need05(e)}}
+  // รายจ่าย / สรุปรายเดือน / รหัสผูก LINE (ต้องรัน 07-expense-line.sql)
+  const need07=e=>{if(/expenses|monthly_stats|line_code|audit_log|does not exist|schema cache/i.test(e.message))throw new Error('ยังไม่ได้รัน 07-expense-line.sql ใน Supabase');throw e};
+  const exRow=r=>({id:r.id,d:r.exp_date,cat:r.category,amt:+r.amount,note:r.note||'',by:r.by_name||''});
+  async function listExpenses(ym){const c=await client();const [y,m]=ym.split('-').map(Number),end=new Date(y,m,1);
+    try{return chk(await c.from('expenses').select('*').eq('branch_id',branch.id).gte('exp_date',ym+'-01').lt('exp_date',iso(end)).order('exp_date')).map(exRow)}catch(e){need07(e)}}
+  async function addExpense(x){const c=await client();try{return chk(await c.from('expenses').insert({branch_id:branch.id,exp_date:x.d,category:x.cat,amount:x.amt,note:x.note,by_name:me.name}).select('id').single()).id}catch(e){need07(e)}}
+  async function delExpense(id){const c=await client();try{chk(await c.from('expenses').delete().eq('id',id))}catch(e){need07(e)}}
+  async function monthlyStats(from){const c=await client();const r=await c.rpc('monthly_stats',{p_from:from,p_pass:SET.passthru});
+    if(r.error)need07(new Error(r.error.message));return(r.data||[]).map(x=>({branch_id:+x.branch_id,ym:x.ym,bills:+x.bills,cars:+x.cars,total:+x.total,passthru:+x.passthru,expense:+x.expense}))}
+  async function listAudit(day){const c=await client();const t0=new Date(day+'T00:00'),t1=new Date(t0.getTime()+DAY);
+    try{return chk(await pages(()=>c.from('audit_log').select('*').gte('at',t0.toISOString()).lt('at',t1.toISOString()).order('at',{ascending:false}).order('id',{ascending:false})))}catch(e){need07(e)}}
+  async function lineCode(cust){const c=await client();const r=await c.rpc('line_code_for',{p_customer:cust});if(r.error)need07(new Error(r.error.message));return r.data}
   // สรุปประจำวันทาง LINE (ต้องรัน 06-line-daily.sql)
   const need06=e=>{if(/line_preview|line_test|could not find the function|does not exist/i.test(e.message))throw new Error('ยังไม่ได้รัน 06-line-daily.sql ใน Supabase');throw e};
   async function lineRpc(fn){const c=await client();const r=await c.rpc(fn);if(r.error)need06(new Error(r.error.message));return r.data}
   async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
+  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3401,6 +3453,11 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
     ${T('brands','ยี่ห้อรถ','บรรทัดละ 1 ยี่ห้อ',10)}${T('bodies','ลักษณะรถ','บรรทัดละ 1 รายการ',10)}
     ${T('prefixes','คำนำหน้าชื่อ','บรรทัดละ 1 รายการ',8)}${T('insurers','บริษัทประกัน','บรรทัดละ 1 บริษัท แบบ ชื่อบริษัท | รหัสย่อ (ใส่ * ท้ายบรรทัด = กองทุนกลาง)',8,a=>a.map(x=>x[0]+(x[1]?' | '+x[1]:'')+(x[2]?' *':'')).join('\n'))}</div></div>
+  <div class="card stf-card"><div class="sech teal">📒 รายจ่ายและกำไร</div><div class="st-grid two">
+    ${T('passthru','รายการที่เป็นเงินนำส่ง (ไม่นับเป็นรายได้ร้าน)','ชื่อต้องตรงกับรายการในบิล บรรทัดละ 1 รายการ',6)}${T('exp_cats','หมวดรายจ่าย','บรรทัดละ 1 หมวด',6)}</div></div>
+  <div class="card stf-card"><div class="sech teal">🔔 เตือนลูกค้าทาง LINE อัตโนมัติ</div><div class="st-grid">
+    <label class="field"><span>LINE ID ของร้าน (Basic ID)</span><input id="st-oa" placeholder="เช่น @123abcde" value="${esc(SET.line_oa)}"><small class="sub">ใส่แล้วใบเสร็จจะมี QR ให้ลูกค้าสแกนผูก LINE</small></label>
+    <label class="field"><span>เตือนก่อนหมดอายุ (วัน)</span><input id="st-days" placeholder="30,7" value="${SET.line_days.join(',')}"><small class="sub">คั่นด้วย , ส่งเวลา 09:00 น. ทุกวัน (ภาษี พ.ร.บ. ประกัน)</small></label></div></div>
   <div class="card stf-card"><div class="sech teal">💬 สรุปประจำวันทาง LINE เจ้าของร้าน</div><div class="st-line">
     <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน เวลา 20:00 น. (ต้องตั้งค่า LINE Official Account และรัน 06-line-daily.sql ก่อน)</p>
     <div class="st-lbtn"><button class="btn line" id="ln-prev">👁️ ดูตัวอย่างข้อความวันนี้</button><button class="btn" id="ln-test">📤 ส่งทดสอบเข้า LINE ตอนนี้</button></div>
@@ -3412,6 +3469,8 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     document.querySelectorAll('[data-l]').forEach(t=>{const L=[...new Set(t.value.split('\n').map(x=>x.trim()).filter(Boolean))];
       o[t.dataset.l]=t.dataset.l==='insurers'?L.map(x=>{const c=/\*\s*$/.test(x),[n,code]=x.replace(/\*\s*$/,'').split('|').map(z=>z.trim());return[n,(code||'').toUpperCase(),c?1:0]}):L;
       if(!L.length)bad=bad||'รายการว่าง'});
+    o.line_oa=$('#st-oa').value.trim();const dd=[...new Set($('#st-days').value.split(/[,\s]+/).filter(Boolean).map(Number))];
+    if(!dd.length||dd.some(x=>!(x>=1&&x<=365&&Number.isInteger(x))))bad=bad||'วันที่เตือนก่อนหมดอายุ';else o.line_days=dd.sort((a,z)=>z-a);
     return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
   $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
     try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกการตั้งค่าแล้ว');R.settings()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
@@ -3420,6 +3479,180 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   $('#ln-prev').onclick=e=>lnRun(e.target,async()=>{const o=$('#ln-out');o.textContent=await DB.linePreview();o.hidden=false});
   $('#ln-test').onclick=e=>lnRun(e.target,async()=>{const n=await DB.lineTest();toast('ส่งแล้ว '+n+' คน ถ้าไม่ได้รับภายใน 1 นาที ให้ตรวจ token / User ID และเพิ่มเพื่อน LINE OA ของร้านแล้วหรือยัง')});
   $('#st-reset').onclick=()=>{if(!confirm('คืนค่าเริ่มต้นทั้งหมด? (ยังไม่บันทึกจนกว่าจะกดบันทึก)'))return;const keep=SET;SET=JSON.parse(JSON.stringify(SET_DEF));R.settings();SET=keep;toast('แสดงค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน')};
+};
+
+/* ---------- รายจ่ายร้าน + กำไรรายเดือน ---------- */
+const ymOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const ymTH=ym=>{const [y,m]=ym.split('-').map(Number);return TH_M[m-1]+' '+String(y+543).slice(2)};
+const ymFull=ym=>{const [y,m]=ym.split('-').map(Number);return TH_M[m-1]+' '+(y+543)};
+const isPass=n=>SET.passthru.includes(n);
+// รายรับตามบิลของเดือน แยกเป็นเงินนำส่ง (ภาษี พ.ร.บ. ประกัน) กับรายได้ของร้าน
+function billSplit(bills){let total=0,pass=0;const by={};
+  bills.forEach(b=>{total+=b.amt;b.items.forEach(([n,a])=>{if(isPass(n))pass+=a;else by[n]=(by[n]||0)+a})});
+  return{total,pass,shop:total-pass,by}}
+const EXPENSES=[];let expSeq=0,exMonth=null;
+(()=>{const t=new Date(TODAY),d=(m,day)=>{const x=new Date(t.getFullYear(),t.getMonth()-m,day);return iso(x)};
+  [[0,5,'ค่าไฟ',1250],[0,5,'ค่าน้ำ',180],[0,12,'ค่าเอกสาร/เครื่องเขียน',350],[1,5,'ค่าไฟ',1190],[1,5,'ค่าน้ำ',165]]
+   .forEach(([m,day,c,a])=>{const x=d(m,day);if(x<=iso(TODAY))EXPENSES.push({id:++expSeq,d:x,cat:c,amt:a,note:'',by:'คุณอาร์ท'})})})();
+R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
+  $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  let list;try{list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
+  catch(err){$('#view').innerHTML=`<div class="empty">โหลดรายจ่ายไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+  if(cur!=='expense'||exMonth!==ym)return;
+  list.sort((a,z)=>z.d.localeCompare(a.d)||z.id-a.id);
+  const bills=[...intake,...oldBills].filter(b=>ymOf(b.d)===ym),sp=billSplit(bills),exp=list.reduce((t,e)=>t+e.amt,0),profit=sp.shop-exp;
+  const byCat={};list.forEach(e=>byCat[e.cat]=(byCat[e.cat]||0)+e.amt);
+  const canDel=user&&(user.role==='owner'||user.role==='head');
+  const cats=[...new Set([...SET.exp_cats,...Object.keys(byCat)])];
+  $('#view').innerHTML=`<div class="cl">
+  <div class="ltop"><h1>รายจ่ายร้าน และกำไร</h1><span class="sub">${esc(shop().title)} · เดือน ${ymFull(ym)}</span></div>
+  <div class="cl-bar"><label class="cl-date">เดือน <input type="month" id="ex-m" value="${ym}" max="${ymOf(TODAY)}"></label></div>
+  <div class="ex-pl card">
+    <div class="ex-row"><span>รายรับตามบิล (${bills.length} บิล)</span><b>${money(sp.total)}</b></div>
+    <div class="ex-row sub2"><span>หัก เงินที่ต้องนำส่ง (ภาษี ค่าปรับ พ.ร.บ. ประกัน)</span><b>− ${money(sp.pass)}</b></div>
+    <div class="ex-row mid"><span>รายได้ของร้าน</span><b>${money(sp.shop)}</b></div>
+    <div class="ex-row sub2"><span>หัก รายจ่ายร้าน (${list.length} รายการ)</span><b>− ${money(exp)}</b></div>
+    <div class="ex-row tot ${profit<0?'neg':''}"><span>${profit<0?'ขาดทุน':'กำไร'}</span><b>${money(Math.abs(profit))}</b></div>
+    <p class="note">ยังไม่รวมค่าคอมมิชชันประกันที่ได้ภายหลัง · รายการที่นับเป็นเงินนำส่ง แก้ได้ที่ ตั้งค่าระบบ</p></div>
+  <form class="card ex-add" id="ex-f" autocomplete="off"><b>➕ บันทึกรายจ่าย</b>
+    <input type="date" id="ex-d" value="${ym===ymOf(TODAY)?iso(TODAY):ym+'-01'}" max="${iso(TODAY)}" required>
+    <select id="ex-c">${cats.map(c=>`<option>${esc(c)}</option>`).join('')}</select>
+    <input id="ex-a" inputmode="decimal" placeholder="จำนวนเงิน (บาท)" required>
+    <input id="ex-n" placeholder="หมายเหตุ (ถ้ามี)">
+    <button class="btn" type="submit">บันทึก</button></form>
+  ${list.length?`<div class="ex-cats">${Object.entries(byCat).sort((a,z)=>z[1]-a[1]).map(([c,a])=>`<span>${esc(c)} <b>${money(a)}</b></span>`).join('')}</div>
+  <div class="card cl-card"><div class="tablewrap"><table class="cl-tbl"><thead><tr><th>วันที่</th><th>หมวด</th><th>หมายเหตุ</th><th>ผู้บันทึก</th><th class="r">จำนวนเงิน</th>${canDel?'<th></th>':''}</tr></thead><tbody>
+    ${list.map(e=>`<tr><td data-l="วันที่">${beFull(new Date(e.d+'T00:00'))}</td><td data-l="หมวด">${esc(e.cat)}</td><td data-l="หมายเหตุ">${esc(e.note||'–')}</td><td data-l="ผู้บันทึก">${esc(e.by||'')}</td><td class="r" data-l="จำนวนเงิน"><b>${money(e.amt)}</b></td>${canDel?`<td class="r"><button class="btn line ex-del" data-exdel="${e.id}">ลบ</button></td>`:''}</tr>`).join('')}
+    </tbody><tfoot><tr><td>รวมรายจ่าย</td><td></td><td></td><td></td><td class="r" data-l="รวม">${money(exp)}</td>${canDel?'<td></td>':''}</tr></tfoot></table></div></div>`
+    :'<div class="eempty"><div>ยังไม่มีรายจ่ายในเดือนนี้</div></div>'}</div>`;
+  ssel($('#ex-c'));
+  $('#ex-m').onchange=e=>{if(e.target.value){exMonth=e.target.value;R.expense()}};
+  $('#ex-a').onchange=e=>{const v=parseFloat(e.target.value.replace(/,/g,''));if(v>0)e.target.value=v};
+  $('#ex-f').onsubmit=async e=>{e.preventDefault();const amt=Math.round(parseFloat($('#ex-a').value.replace(/,/g,''))*100)/100;
+    if(!(amt>0)){alert('กรุณาใส่จำนวนเงิน');return}
+    const x={d:$('#ex-d').value,cat:$('#ex-c').value,amt,note:$('#ex-n').value.trim(),by:user?user.name:''};
+    const btn=e.target.querySelector('[type=submit]');btn.disabled=true;
+    try{if(LIVE)x.id=await DB.addExpense(x);else{x.id=++expSeq;EXPENSES.push(x)}toast(`บันทึก ${x.cat} ${money(amt)} บาท แล้ว`);exMonth=x.d.slice(0,7);R.expense()}
+    catch(err){btn.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  document.querySelectorAll('[data-exdel]').forEach(b=>b.onclick=async()=>{const id=+b.dataset.exdel,x=list.find(e=>e.id===id);
+    if(!confirm(`ลบรายจ่าย ${x.cat} ${money(x.amt)} บาท?`))return;
+    try{if(LIVE)await DB.delExpense(id);else EXPENSES.splice(EXPENSES.findIndex(e=>e.id===id),1);R.expense()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
+};
+
+/* ---------- สรุปรายเดือนแบบกราฟ ---------- */
+let dashMetric='shop';
+const DASH_M=[['cars','รถเข้า','คัน'],['total','รายรับตามบิล','บาท'],['shop','รายได้ของร้าน','บาท'],['expense','รายจ่าย','บาท'],['profit','กำไร','บาท']];
+const SERIES=['#2a78d6','#eb6834','#1baf7a'];
+// โหมดทดลอง: ตัวเลขตัวอย่าง 12 เดือน 2 สาขา
+function demoStats(months){const out=[];months.forEach((ym,i)=>[1,2].forEach(br=>{const f=br===1?1:.62,w=1+.18*Math.sin(i*.9+br),cars=Math.round(560*f*w),
+  total=Math.round(cars*1450),pass=Math.round(total*.71),exp=Math.round((br===1?52000:34000)*(1+.05*Math.cos(i)));
+  out.push({branch_id:br,ym,bills:cars,cars,total,passthru:pass,expense:exp})}));return out}
+R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date(TODAY.getFullYear(),TODAY.getMonth()-i,1)));
+  $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  let rows,brs;try{if(LIVE){rows=await DB.monthlyStats(months[0]+'-01');brs=DB.branches}else{rows=demoStats(months);brs=[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]}}
+  catch(err){$('#view').innerHTML=`<div class="empty">โหลดสรุปไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+  if(cur!=='dash')return;
+  const seen=new Set(rows.map(r=>r.branch_id));brs=brs.filter(b=>seen.has(b.id)||(LIVE&&DB.branch&&b.id===DB.branch.id)).slice(0,3);
+  const val=(r,k)=>!r?0:k==='shop'?r.total-r.passthru:k==='profit'?r.total-r.passthru-r.expense:+r[k]||0;
+  const get=(br,ym)=>rows.find(r=>r.branch_id===br&&r.ym===ym);
+  const sumM=(ym,k)=>brs.reduce((t,b)=>t+val(get(b.id,ym),k),0);
+  const ym0=months[11],ym1=months[10];
+  const tile=(k,l,u)=>{const a=sumM(ym0,k),p=sumM(ym1,k),d=p?Math.round((a-p)/Math.abs(p)*100):null;
+    return `<div class="db-tile"><span>${l} เดือนนี้</span><b>${u==='คัน'?a.toLocaleString():money(a)}</b><small>${d==null?'ไม่มีข้อมูลเดือนก่อน':`<em class="${d>=0?'up':'down'}">${d>=0?'▲':'▼'} ${Math.abs(d)}%</em> จากเดือนก่อน (${u==='คัน'?p.toLocaleString():money(p)})`}</small></div>`};
+  const [mk,ml,mu]=DASH_M.find(m=>m[0]===dashMetric);
+  $('#view').innerHTML=`<div class="cl db">
+  <div class="ltop"><h1>สรุปรายเดือน</h1><span class="sub">12 เดือนล่าสุด${LIVE?'':' · โหมดทดลองแสดงตัวเลขตัวอย่าง'}</span></div>
+  <div class="db-tiles">${tile('cars','รถเข้า','คัน')}${tile('shop','รายได้ของร้าน','บาท')}${tile('expense','รายจ่าย','บาท')}${tile('profit','กำไร','บาท')}</div>
+  <div class="card db-card"><div class="db-head"><div class="db-tabs" role="tablist">${DASH_M.map(([k,l])=>`<button role="tab" class="${k===dashMetric?'on':''}" data-dm="${k}">${l}</button>`).join('')}</div>
+    <div class="db-leg">${brs.map((b,i)=>`<span><i style="background:${SERIES[i]}"></i>${esc(b.name)}</span>`).join('')}</div></div>
+    <div class="db-chart" id="db-chart"></div><div class="db-tip" id="db-tip" hidden></div>
+    <details class="db-tbl"><summary>ดูเป็นตาราง</summary><div class="tablewrap"><table class="cl-tbl"><thead><tr><th>เดือน</th>${brs.map(b=>`<th class="r">${esc(b.name)}</th>`).join('')}${brs.length>1?'<th class="r">รวม</th>':''}</tr></thead><tbody>
+      ${months.slice().reverse().map(ym=>`<tr><td>${ymFull(ym)}</td>${brs.map(b=>`<td class="r" data-l="${esc(b.name)}">${mu==='คัน'?val(get(b.id,ym),mk).toLocaleString():money(val(get(b.id,ym),mk))}</td>`).join('')}${brs.length>1?`<td class="r" data-l="รวม"><b>${mu==='คัน'?sumM(ym,mk).toLocaleString():money(sumM(ym,mk))}</b></td>`:''}</tr>`).join('')}
+    </tbody></table></div></details></div>
+  <p class="note">รายได้ของร้าน = รายรับตามบิล หัก ภาษี ค่าปรับ พ.ร.บ. และเบี้ยประกันที่ต้องนำส่ง · กำไร = รายได้ของร้าน หัก รายจ่ายที่บันทึกไว้</p></div>`;
+  // กราฟแท่ง: แต่ละเดือนมีแท่งของแต่ละสาขาเรียงกัน
+  const W=Math.max(320,$('#db-chart').clientWidth),H=260,L=58,Rr=8,T=12,B=28,pw=W-L-Rr,ph=H-T-B;
+  const vals=months.flatMap(ym=>brs.map(b=>val(get(b.id,ym),mk))),mx=Math.max(1,...vals),mn=Math.min(0,...vals);
+  const step=(()=>{const raw=(mx-mn)/4,p=Math.pow(10,Math.floor(Math.log10(raw||1))),n=raw/p;return(n<=1?1:n<=2?2:n<=5?5:10)*p})();
+  const top=Math.ceil(mx/step)*step,bot=Math.floor(mn/step)*step,y=v=>T+ph*(top-v)/(top-bot||1);
+  const gw=pw/months.length,bw=Math.max(3,Math.min(22,(gw-8)/brs.length-2));
+  const fmt=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?Math.round(v/1e3)+'k':String(v);
+  let g='';for(let v=bot;v<=top+1e-9;v+=step)g+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" class="${v===0?'zero':'grid'}"/><text x="${L-6}" y="${y(v)+4}" text-anchor="end">${fmt(v)}</text>`;
+  let bars='',hits='';months.forEach((ym,i)=>{const x0=L+gw*i+(gw-(bw+2)*brs.length+2)/2;
+    brs.forEach((b,j)=>{const v=val(get(b.id,ym),mk),x=x0+j*(bw+2),y1=y(Math.max(v,0)),y2=y(Math.min(v,0)),h=Math.max(v===0?0:1,y2-y1),r=Math.min(4,bw/2,h);
+      bars+=v>=0?`<path d="M${x},${y2}V${y1+r}Q${x},${y1} ${x+r},${y1}H${x+bw-r}Q${x+bw},${y1} ${x+bw},${y1+r}V${y2}Z" fill="${SERIES[j]}"/>`
+        :`<path d="M${x},${y1}V${y2-r}Q${x},${y2} ${x+r},${y2}H${x+bw-r}Q${x+bw},${y2} ${x+bw},${y2-r}V${y1}Z" fill="${SERIES[j]}"/>`});
+    if((months.length-1-i)%Math.ceil(44/gw)===0)g+=`<text x="${L+gw*i+gw/2}" y="${H-8}" text-anchor="middle">${ymTH(ym)}</text>`;
+    hits+=`<rect class="hit" data-i="${i}" x="${L+gw*i}" y="${T}" width="${gw}" height="${ph}"/>`});
+  $('#db-chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" role="img" aria-label="กราฟ${ml}รายเดือน">${g}${bars}${hits}</svg>`;
+  const tip=$('#db-tip'),box=$('#db-chart');
+  box.querySelectorAll('.hit').forEach(h=>{const show=()=>{const ym=months[+h.dataset.i];box.querySelectorAll('.hit').forEach(x=>x.classList.toggle('on',x===h));
+      tip.innerHTML=`<b>${ymFull(ym)}</b>${brs.map((b,j)=>`<div><i style="background:${SERIES[j]}"></i>${esc(b.name)}<span>${mu==='คัน'?val(get(b.id,ym),mk).toLocaleString()+' คัน':money(val(get(b.id,ym),mk))}</span></div>`).join('')}`;
+      tip.hidden=false;const bx=box.getBoundingClientRect(),hx=h.getBoundingClientRect(),cx=hx.left-bx.left+hx.width/2;
+      tip.style.left=Math.min(Math.max(cx-tip.offsetWidth/2,0),bx.width-tip.offsetWidth)+'px';tip.style.top=(box.offsetTop+4)+'px'};
+    h.addEventListener('mouseenter',show);h.addEventListener('click',show)});
+  box.addEventListener('mouseleave',()=>{tip.hidden=true;box.querySelectorAll('.hit').forEach(x=>x.classList.remove('on'))});
+  document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dashMetric=b.dataset.dm;R.dash()});
+};
+
+/* ---------- QR ผูก LINE บนใบเสร็จ ---------- */
+const lineOaUrl=code=>{const oa=SET.line_oa.trim();return oa?`https://line.me/R/oaMessage/${encodeURIComponent(oa.startsWith('@')?oa:'@'+oa)}/?${encodeURIComponent('รหัส '+code)}`:''};
+async function receiptLine(b){const box=$('#rc-line');if(!box)return;const car=cars.find(c=>c.id===b.carId);
+  if(car&&car.line){box.innerHTML='<div class="sub">✓ ลูกค้าผูก LINE ร้านแล้ว จะได้รับแจ้งเตือนก่อนภาษี / พ.ร.บ. หมดอายุ</div>';return}
+  try{const code=LIVE?(car&&car.custId?await DB.lineCode(car.custId):null):'123456';if(!code){box.remove();return}
+    const svg=await qrSVG(lineOaUrl(code));if(!$('#rc-line'))return;
+    box.innerHTML=`<div class="rc-lqr">${svg}</div><div><b>รับแจ้งเตือนก่อนภาษีหมดทาง LINE</b><div class="sub">สแกน QR แล้วกดส่งข้อความ หรือแอดไลน์ ${esc(SET.line_oa)} แล้วพิมพ์รหัส</div><div class="rc-code">${code}</div></div>`}
+  catch(_){box.remove()}}
+
+/* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
+let auDay=null,auWho='',auBr='';
+const AU_T={bills:'บิล',payments:'รับเงิน',customers:'ลูกค้า',vehicles:'รถ',expenses:'รายจ่าย',cash_closes:'ปิดยอด',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจ',staff:'พนักงาน',branches:'สาขา',app_settings:'ตั้งค่าระบบ'};
+const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการ',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
+  first_name:'ชื่อ',last_name:'นามสกุล',tel:'เบอร์โทร',address:'ที่อยู่',plate:'ทะเบียน',province:'จังหวัด',tax_exp:'ภาษีหมดอายุ',prb_exp:'พ.ร.บ.หมดอายุ',ins_exp:'ประกันหมดอายุ',ins_company:'บริษัทประกัน',
+  brand:'ยี่ห้อ',model:'รุ่น',color:'สี',cc:'ซีซี',category:'หมวด',exp_date:'วันที่',counted_cash:'เงินสดที่นับได้',cash:'เงินสด',cert_no:'เลขใบรับรอง',receipt_no:'เลขใบเสร็จขนส่ง',
+  role:'ตำแหน่ง',active:'เปิดใช้งาน',full_name:'ชื่อพนักงาน',branch_id:'สาขา',name:'ชื่อ',phone:'เบอร์โทร',promptpay:'พร้อมเพย์',value:'ค่าที่ตั้ง',line_user_id:'LINE',billed:'เปิดบิลแล้ว'};
+const AU_ST={open:'ค้างชำระ',paid:'จ่ายครบ',void:'ยกเลิก',received:'รอยื่น',submitted:'ยื่นแล้ว',plate:'ได้ป้ายแล้ว',done:'ลูกค้ารับแล้ว',wait:'รอตรวจ',check:'กำลังตรวจ',pass:'ผ่าน',fail:'ไม่ผ่าน'};
+const auV=(k,v)=>v==null||v===''?'–':typeof v==='object'?(k==='items'&&Array.isArray(v)?v.map(i=>i[0]+' '+money(i[1])).join(', '):k==='value'?'(ค่าบริการ/รายการ)':JSON.stringify(v).slice(0,80))
+  :k==='status'?AU_ST[v]||v:/amount|total|discount|cash|premium/.test(k)?money(v):typeof v==='boolean'?(v?'ใช่':'ไม่'):String(v);
+function auText(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='delete'?o:n,T=AU_T[r.tbl]||r.tbl;
+  const chg=()=>Object.keys(n).filter(k=>!/_at$|_by|_name$|^id$/.test(k)||k==='full_name').map(k=>`${AU_F[k]||k}: ${auV(k,o[k])} → ${auV(k,n[k])}`).join(' · ');
+  if(r.tbl==='bills'){if(a==='insert')return `เปิดบิล ${d.bill_no||''} ${(d.snapshot||{}).plate||''} ยอด ${money(d.total)}`;if(a==='update')return `แก้ไขบิล #${r.row_id}: ${chg()}`;return `ลบบิล ${d.bill_no||''}`}
+  if(r.tbl==='payments')return a==='insert'?`รับเงิน ${money(d.amount)} บาท (${d.method}) บิล #${d.bill_id}`:a==='delete'?`ลบการรับเงิน ${money(d.amount)} บาท บิล #${d.bill_id}`:`แก้การรับเงิน: ${chg()}`;
+  if(r.tbl==='expenses')return a==='insert'?`บันทึกรายจ่าย ${d.category} ${money(d.amount)} บาท${d.note?' ('+d.note+')':''}`:a==='delete'?`ลบรายจ่าย ${d.category} ${money(d.amount)} บาท`:`แก้รายจ่าย: ${chg()}`;
+  if(r.tbl==='cash_closes')return a==='update'?`แก้ปิดยอด: ${chg()}`:`ปิดยอดของ ${d.staff_name} เงินสดตามระบบ ${money(d.cash)} นับได้ ${d.counted_cash==null?'–':money(d.counted_cash)}`;
+  if(r.tbl==='insp_queue')return a==='insert'?`รถเข้าคิว ${d.plate}`:a==='delete'?`ลบ ${d.plate} ออกจากคิว`:`คิว #${r.row_id}: ${chg()}`;
+  if(r.tbl==='app_settings'){const ov=o.value||{},nv=n.value||{},SL={fee_tax:'ค่าฝากต่อภาษี',fee_prb_moto:'ค่าต่อ พ.ร.บ. มอเตอร์ไซค์',fee_prb_car:'ค่าต่อ พ.ร.บ. รถยนต์',insp_car:'ค่าตรวจรถยนต์',insp_heavy:'ค่าตรวจรถหนัก',insp_moto:'ค่าตรวจมอเตอร์ไซค์',reg_min_year:'ปีจดทะเบียนเก่าสุด',brands:'ยี่ห้อรถ',bodies:'ลักษณะรถ',prefixes:'คำนำหน้า',insurers:'บริษัทประกัน',passthru:'รายการเงินนำส่ง',exp_cats:'หมวดรายจ่าย',line_oa:'LINE ร้าน',line_days:'วันเตือน LINE'};
+    const ks=[...new Set([...Object.keys(ov),...Object.keys(nv)])].filter(k=>JSON.stringify(ov[k])!==JSON.stringify(nv[k]));
+    return 'แก้ตั้งค่าระบบ: '+(ks.map(k=>(SL[k]||k)+(typeof nv[k]==='number'||typeof nv[k]==='string'?` ${ov[k]??'–'} → ${nv[k]}`:Array.isArray(nv[k])?` (${(ov[k]||[]).length} → ${nv[k].length} รายการ)`:'')).join(' · ')||'ไม่มีการเปลี่ยนแปลง')}
+  if(r.tbl==='dlt_jobs')return `งานขนส่ง บิล #${r.row_id}: ${a==='insert'?'สถานะ '+auV('status',d.status):chg()}`;
+  if(a==='insert')return `เพิ่ม${T} ${d.plate||d.full_name||d.username||[d.first_name,d.last_name].filter(Boolean).join(' ')||d.name||''}`;
+  if(a==='delete')return `ลบ${T} #${r.row_id}`;
+  return `แก้ไข${T} #${r.row_id}: ${chg()}`}
+const AU_DEMO=()=>{const out=[];let id=0;[...intake].forEach(b=>{out.push({id:++id,at:new Date(b.d.getFullYear(),b.d.getMonth(),b.d.getDate(),...(b.t||'09:00').split(':').map(Number)).toISOString(),user_name:'พนักงาน 1',branch_id:1,tbl:'bills',action:'insert',row_id:String(b.id),new_data:{bill_no:'A-69'+String(b.id).padStart(4,'0'),snapshot:{plate:b.plate},total:b.amt}});
+  (b.pays||[]).forEach(p=>out.push({id:++id,at:new Date(p.d.getFullYear(),p.d.getMonth(),p.d.getDate(),...(p.t||'10:00').split(':').map(Number)).toISOString(),user_name:p.by||'คุณอาร์ท',branch_id:1,tbl:'payments',action:'insert',row_id:String(id),new_data:{amount:p.amt,method:p.how||'เงินสด',bill_id:b.id}}))});
+  out.push({id:++id,at:new Date().toISOString(),user_name:'คุณอาร์ท',branch_id:null,tbl:'app_settings',action:'update',row_id:'main',old_data:{value:{fee_tax:40,line_days:[30]}},new_data:{value:{fee_tax:50,line_days:[30,7]}}});return out};
+R.audit=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
+  auDay=auDay||iso(TODAY);const day=auDay;$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  let rows;try{rows=LIVE?await DB.listAudit(day):AU_DEMO().filter(r=>iso(new Date(r.at))===day)}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+  if(cur!=='audit'||auDay!==day)return;rows.sort((a,z)=>new Date(z.at)-new Date(a.at));
+  const brName=id=>{const b=(LIVE?DB.branches:[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]).find(x=>x.id===id);return b?b.name:'ทุกสาขา'};
+  const who=[...new Set(rows.map(r=>r.user_name||'–'))].sort(),brs=[...new Set(rows.map(r=>r.branch_id))];
+  const L=rows.filter(r=>(!auWho||(r.user_name||'–')===auWho)&&(auBr===''||String(r.branch_id)===auBr));
+  $('#view').innerHTML=`<div class="cl">
+  <div class="ltop"><h1>ประวัติการใช้งาน</h1><span class="sub">ใครทำอะไร ที่สาขาไหน เมื่อไร · ระบบบันทึกเอง แก้หรือลบไม่ได้</span></div>
+  <div class="cl-bar au-bar"><label class="cl-date">วันที่ <input type="date" id="au-d" value="${day}" max="${iso(TODAY)}"></label>
+    <label class="cl-date">พนักงาน <select id="au-w"><option value="">ทุกคน</option>${who.map(w=>`<option ${w===auWho?'selected':''}>${esc(w)}</option>`).join('')}</select></label>
+    <label class="cl-date">สาขา <select id="au-b"><option value="">ทุกสาขา</option>${brs.map(b=>`<option value="${b}" ${String(b)===auBr?'selected':''}>${esc(brName(b))}</option>`).join('')}</select></label>
+    <span class="sub">${L.length} รายการ</span></div>
+  ${L.length?`<div class="card cl-card"><div class="tablewrap"><table class="cl-tbl au-tbl"><thead><tr><th>เวลา</th><th>ใคร</th><th>สาขา</th><th>ประเภท</th><th>ทำอะไร</th></tr></thead><tbody>
+    ${L.map(r=>`<tr class="rowbtn" data-au="${r.id}"><td data-l="เวลา">${hmOf(r.at)}</td><td data-l="ใคร"><b>${esc(r.user_name||'–')}</b></td><td data-l="สาขา">${esc(brName(r.branch_id))}</td>
+      <td data-l="ประเภท"><span class="au-pill au-${r.action}">${esc(AU_T[r.tbl]||r.tbl)}</span></td><td data-l="ทำอะไร">${esc(auText(r))}</td></tr>
+      <tr class="au-x" hidden><td colspan="5"><div class="au-js"><div><b>ก่อน</b><pre>${esc(r.old_data?JSON.stringify(r.old_data,null,1):'–')}</pre></div><div><b>หลัง</b><pre>${esc(r.new_data?JSON.stringify(r.new_data,null,1):'–')}</pre></div></div></td></tr>`).join('')}
+  </tbody></table></div></div>`:'<div class="eempty"><div>ไม่มีรายการในวันนี้</div></div>'}
+  ${LIVE?'':'<p class="note">โหมดทดลอง: แสดงตัวอย่างจากบิลทดลอง ระบบจริงบันทึกทุกการเปิดบิล แก้บิล รับเงิน รายจ่าย ปิดยอด งานขนส่ง คิว พนักงาน สาขา และตั้งค่า</p>'}</div>`;
+  $('#au-d').onchange=e=>{if(e.target.value){auDay=e.target.value;R.audit()}};
+  $('#au-w').onchange=e=>{auWho=e.target.value;R.audit()};$('#au-b').onchange=e=>{auBr=e.target.value;R.audit()};
+  document.querySelectorAll('[data-au]').forEach(tr=>tr.onclick=()=>{const x=tr.nextElementSibling;x.hidden=!x.hidden});
 };
 
 let dltF='received',dltQ='';const dltSel=new Set();
