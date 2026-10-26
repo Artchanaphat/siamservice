@@ -3780,7 +3780,7 @@ R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div c
   const L=auRows.filter(r=>(!auType||r.tbl===auType)&&(!q||[r._e.v,r._e.ref,r._e.item,r._e.detail,r.user_name,r._b].join(' ').toLowerCase().includes(q)))
     .sort((x,y)=>{const a=val(x),b=val(y);return (sk==='at'?(a<b?-1:a>b?1:0):String(a).localeCompare(String(b),'th'))*sd||(new Date(y.at)-new Date(x.at))});
   const pages=auSize?Math.max(1,Math.ceil(L.length/auSize)):1;auPage=Math.min(auPage,pages-1);const P=auSize?L.slice(auPage*auSize,(auPage+1)*auSize):L;
-  const types=[...new Set(auRows.map(r=>r.tbl))].sort((a,b)=>(AU_T[a]||a).localeCompare(AU_T[b]||b,'th'));
+  const types=[...new Set([...Object.keys(AU_T),...auRows.map(r=>r.tbl)])].sort((a,b)=>(AU_T[a]||a).localeCompare(AU_T[b]||b,'th'));
   const TH=(k,l)=>`<th data-sk="${k}" class="${sk===k?'on':''}">${l}<i>${sk===k?(sd<0?'▼':'▲'):'↕'}</i></th>`;
   $('#view').innerHTML=`<div class="aux">
   <div class="aux-top"><h1>📋 ประวัติการเปลี่ยนแปลง</h1><span class="aux-n">${L.length.toLocaleString()} รายการ</span><button class="btn line aux-xl" id="ax-xl">📊 ส่งออก Excel</button></div>
