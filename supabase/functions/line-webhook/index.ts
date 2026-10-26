@@ -1,12 +1,24 @@
 // ตรอ.สยามเซอร์วิส : รับข้อความจาก LINE OA แล้วส่งต่อให้ฐานข้อมูล (ผูกลูกค้ากับ LINE)
 // วางโค้ดนี้ใน Supabase > Edge Functions > Deploy a new function > Via Editor ตั้งชื่อ line-webhook
-// ปิดตัวเลือก "Verify JWT" และใส่ Secret ชื่อ LINE_CHANNEL_SECRET (Channel secret จาก LINE Developers)
+// ปิดตัวเลือก "Verify JWT" ส่วน Channel secret ใส่ในแอป (ตั้งค่าระบบ) ได้เลย
 
-const secret = Deno.env.get("LINE_CHANNEL_SECRET") ?? "";
 const url = Deno.env.get("SUPABASE_URL") ?? "";
 const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
+// อ่าน Channel secret จากฐานข้อมูล (ที่เจ้าของร้านใส่ในหน้าตั้งค่า) หรือจาก Secret ของ Edge Function ถ้ามี
+const envSecret = Deno.env.get("LINE_CHANNEL_SECRET") ?? "";
+async function channelSecret(): Promise<string> {
+  if (envSecret) return envSecret;
+  const r = await fetch(`${url}/rest/v1/rpc/line_channel_secret`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", apikey: key, Authorization: `Bearer ${key}` },
+    body: "{}",
+  });
+  return r.ok ? ((await r.json()) ?? "") : "";
+}
+
 async function validSignature(body: string, sig: string | null): Promise<boolean> {
+  const secret = await channelSecret();
   if (!secret || !sig) return false;
   const k = await crypto.subtle.importKey("raw", new TextEncoder().encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
   const mac = new Uint8Array(await crypto.subtle.sign("HMAC", k, new TextEncoder().encode(body)));

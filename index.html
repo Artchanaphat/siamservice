@@ -813,6 +813,9 @@ body.mgmt .tbranch{display:none}
 .au-pill.au-insert{background:#dcfce7;color:#15803d}.au-pill.au-update{background:#dbeafe;color:#1d4ed8}.au-pill.au-delete{background:#fee2e2;color:#c81e1e}
 .au-js{display:grid;grid-template-columns:1fr 1fr;gap:10px}.au-js pre{background:#f7f8fa;border-radius:8px;padding:8px;font-size:12px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;margin:4px 0 0}
 @media (max-width:640px){.au-js{grid-template-columns:1fr}.au-tbl tr.au-x td{display:block}}
+.st-grid.st-keys{padding:0;grid-template-columns:1fr 1fr}.st-keys .field>span em{font-style:normal;font-weight:400;font-size:12.5px}
+.st-keys .st-num .btn{height:38px;padding:0 14px;flex:none}#lk-hook{background:#f7f8fa;color:#374151}
+@media (max-width:640px){.st-grid.st-keys{grid-template-columns:1fr}}
 /* ---- หน้าใหม่: ปิดยอด / สำรอง / คิว / ตั้งค่า / พร้อมเพย์ ---- */
 .cl,.bk,.qq,.st{display:flex;flex-direction:column;gap:14px}
 .cl .ltop,.bk .ltop,.qq .ltop,.st .ltop{padding:4px 0 12px;flex-wrap:wrap}
@@ -3249,11 +3252,14 @@ const DB=(()=>{
   async function lineCode(cust){const c=await client();const r=await c.rpc('line_code_for',{p_customer:cust});if(r.error)need07(new Error(r.error.message));return r.data}
   // สรุปประจำวันทาง LINE (ต้องรัน 06-line-daily.sql)
   const need06=e=>{if(/line_preview|line_test|could not find the function|does not exist/i.test(e.message))throw new Error('ยังไม่ได้รัน 06-line-daily.sql ใน Supabase');throw e};
+  const need08=e=>{if(/set_line_secrets|line_secret_status|could not find the function/i.test(e.message))throw new Error('ยังไม่ได้รัน 08-line-settings.sql ใน Supabase');throw e};
+  async function lineStatus(){const c=await client();const r=await c.rpc('line_secret_status');if(r.error)need08(new Error(r.error.message));return r.data||{}}
+  async function setLineSecrets(t,to,sec){const c=await client();const r=await c.rpc('set_line_secrets',{p_token:t,p_to:to,p_secret:sec});if(r.error)need08(new Error(r.error.message.replace(/^.*?ERROR:\s*/,'')))}
   async function lineRpc(fn){const c=await client();const r=await c.rpc(fn);if(r.error)need06(new Error(r.error.message));return r.data}
   async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3455,11 +3461,19 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     ${T('prefixes','คำนำหน้าชื่อ','บรรทัดละ 1 รายการ',8)}${T('insurers','บริษัทประกัน','บรรทัดละ 1 บริษัท แบบ ชื่อบริษัท | รหัสย่อ (ใส่ * ท้ายบรรทัด = กองทุนกลาง)',8,a=>a.map(x=>x[0]+(x[1]?' | '+x[1]:'')+(x[2]?' *':'')).join('\n'))}</div></div>
   <div class="card stf-card"><div class="sech teal">📒 รายจ่ายและกำไร</div><div class="st-grid two">
     ${T('passthru','รายการที่เป็นเงินนำส่ง (ไม่นับเป็นรายได้ร้าน)','ชื่อต้องตรงกับรายการในบิล บรรทัดละ 1 รายการ',6)}${T('exp_cats','หมวดรายจ่าย','บรรทัดละ 1 หมวด',6)}</div></div>
+  <div class="card stf-card"><div class="sech teal">🔑 เชื่อมต่อ LINE Official Account</div><div class="st-line">
+    <p class="sub">คัดลอกจาก developers.line.biz › ช่องของร้าน · รหัสเก็บแบบเข้ารหัส หน้านี้แสดงแค่ 4 ตัวท้าย · ช่องที่เว้นว่างจะไม่ถูกเปลี่ยน</p>
+    <div class="st-grid st-keys">
+      <label class="field"><span>Channel access token <em class="sub">(แท็บ Messaging API › ล่างสุด › Issue)</em></span><input id="lk-token" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-token-st"></small></label>
+      <label class="field"><span>User ID ของคนที่รับสรุปประจำวัน <em class="sub">(แท็บ Basic settings › Your user ID)</em></span><input id="lk-to" autocomplete="off" spellcheck="false" placeholder="U… (หลายคนคั่นด้วย ,)"><small class="sub">ต้องแอดไลน์ร้านเป็นเพื่อนก่อน ถึงจะได้รับข้อความ</small></label>
+      <label class="field"><span>Channel secret <em class="sub">(แท็บ Basic settings)</em></span><input id="lk-secret" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-secret-st"></small></label>
+      <label class="field"><span>Webhook URL <em class="sub">(วางใน LINE แท็บ Messaging API › Webhook URL)</em></span><div class="st-num"><input id="lk-hook" readonly value="${SB_URL}/functions/v1/line-webhook"><button type="button" class="btn line" id="lk-copy">คัดลอก</button></div></label></div>
+    <div class="st-lbtn"><button type="button" class="btn" id="lk-save">🔑 บันทึกรหัส LINE</button></div></div></div>
   <div class="card stf-card"><div class="sech teal">🔔 เตือนลูกค้าทาง LINE อัตโนมัติ</div><div class="st-grid">
     <label class="field"><span>LINE ID ของร้าน (Basic ID)</span><input id="st-oa" placeholder="เช่น @123abcde" value="${esc(SET.line_oa)}"><small class="sub">ใส่แล้วใบเสร็จจะมี QR ให้ลูกค้าสแกนผูก LINE</small></label>
     <label class="field"><span>เตือนก่อนหมดอายุ (วัน)</span><input id="st-days" placeholder="30,7" value="${SET.line_days.join(',')}"><small class="sub">คั่นด้วย , ส่งเวลา 09:00 น. ทุกวัน (ภาษี พ.ร.บ. ประกัน)</small></label></div></div>
   <div class="card stf-card"><div class="sech teal">💬 สรุปประจำวันทาง LINE เจ้าของร้าน</div><div class="st-line">
-    <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน เวลา 20:00 น. (ต้องตั้งค่า LINE Official Account และรัน 06-line-daily.sql ก่อน)</p>
+    <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน เวลา 20:00 น. ให้คนที่ใส่ User ID ไว้ด้านบน</p>
     <div class="st-lbtn"><button class="btn line" id="ln-prev">👁️ ดูตัวอย่างข้อความวันนี้</button><button class="btn" id="ln-test">📤 ส่งทดสอบเข้า LINE ตอนนี้</button></div>
     <pre id="ln-out" class="st-pre" hidden></pre></div></div>
   <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
@@ -3474,6 +3488,13 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
   $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
     try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกการตั้งค่าแล้ว');R.settings()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  const lkLoad=async()=>{if(!LIVE)return;try{const st=await DB.lineStatus();if(!$('#lk-save'))return;
+      $('#lk-token-st').textContent=st.token?'✓ ใส่แล้ว ('+st.token+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-secret-st').textContent=st.secret?'✓ ใส่แล้ว ('+st.secret+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-token').placeholder=st.token?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel access token';$('#lk-secret').placeholder=st.secret?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel secret';$('#lk-to').value=st.to||''}
+    catch(err){$('#lk-token-st').textContent=err.message}};lkLoad();
+  $('#lk-copy').onclick=()=>{const i=$('#lk-hook');i.select();try{navigator.clipboard.writeText(i.value).catch(()=>{})}catch(_){}toast('คัดลอก Webhook URL แล้ว')};
+  $('#lk-save').onclick=async e=>{if(!LIVE){alert('ใช้ได้เฉพาะตอนเข้าระบบจริง');return}const b=e.target;b.disabled=true;
+    try{await DB.setLineSecrets($('#lk-token').value.trim(),$('#lk-to').value.trim(),$('#lk-secret').value.trim());$('#lk-token').value='';$('#lk-secret').value='';toast('บันทึกรหัส LINE แล้ว');await lkLoad()}
+    catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}finally{b.disabled=false}};
   const lnRun=async(btn,fn)=>{if(!LIVE){alert('ใช้ได้เฉพาะตอนเข้าระบบจริง (โหมดทดลองส่ง LINE ไม่ได้)');return}const t=btn.textContent;btn.disabled=true;btn.textContent='กำลังทำงาน...';
     try{await fn()}catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent=t}};
   $('#ln-prev').onclick=e=>lnRun(e.target,async()=>{const o=$('#ln-out');o.textContent=await DB.linePreview();o.hidden=false});
