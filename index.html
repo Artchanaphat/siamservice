@@ -2629,7 +2629,7 @@ R.add=(E)=>{
     else if(ty==='ev'){tax=kg>0?vanTax(kg):0;insp=car7;prb=645.21;note='EV ไม่เกิน 7 ที่นั่ง คิดตามน้ำหนัก'}
     else if(ty==='ev_van'){tax=kg>0?Math.round(vanTax(kg)/2):0;insp=car7;prb=1182.35;note='EV เกิน 7 ที่นั่ง ครึ่งหนึ่งของอัตรา'}
     else if(ty==='ev_moto'){tax=50;insp=moto5;prb=motoPrb(cc);note='EV จักรยานยนต์ เหมาคัน'}
-    else{$('#b-auto-note').textContent='ประเภทนี้คิดอัตโนมัติไม่ได้ กรอกยอดเอง';$('#b-tro').hidden=true;recalc();return}
+    else{$('#b-auto-note').textContent=ty?'ประเภทรถนี้ระบบคิดให้ไม่ได้ กรุณากรอกยอดเอง':'เลือกประเภทรถ วันจดทะเบียน และขนาดรถ แล้วระบบจะคิดภาษีให้';$('#b-tro').hidden=true;recalc();return}
     if($('#b-tax').dataset.user!=='1')setM('b-tax',tax);else note+=' · ใช้ค่าภาษีที่พิมพ์เอง';
     setM('b-insp',insp);if($('#b-prb').dataset.user!=='1')setM('b-prb',prb);if(!n('b-fee'))setM('b-fee',200);
     $('#b-tro').hidden=!insp;$('#b-auto-note').textContent=note;calcLate();
