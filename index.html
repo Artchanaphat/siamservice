@@ -694,7 +694,30 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
   .pt-tbl td .pt-signbox{width:140px;margin-left:auto}
 }
 @media print{.topwrap,.tabs,.toast,.non-printable{display:none!important}main{padding:0!important}.pt-tbl tbody tr:hover td{background:none}}
-.tright{display:flex;align-items:center;gap:2px}@media (max-width:420px){[data-chpw] span{display:none}}
+.tright.pf{position:relative}
+.stf{display:flex;flex-direction:column;gap:14px}.stf .ltop{padding:4px 0 12px}
+.stf-card{display:flex;flex-direction:column;gap:12px;padding:0 0 14px;overflow:hidden}.stf-card>.sech{border-radius:0;margin:0}
+.stf-card>*:not(.sech){margin-left:16px;margin-right:16px}
+.stf-form{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 16px;align-items:end}
+.stf-form .row{display:flex;gap:6px}.stf-form .row input{flex:1;min-width:0}.stf-form .row .btn{width:auto;flex:0 0 auto}.stf-form .btn{width:100%}
+.stf-tbl td{white-space:normal;vertical-align:middle}.stf-tbl select,.stf-tbl input:not([type=checkbox]){min-width:120px}
+.stf-tbl tr.off td{opacity:.55}
+.sw{display:inline-flex;align-items:center;gap:6px;cursor:pointer;white-space:nowrap}.sw input{width:auto}
+.stf-done{background:#eaf7ef;border:1px solid #bfe3cc;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;color:#14532d}
+.stf-done .num{background:#fff;border-radius:8px;padding:8px 10px;line-height:1.7;color:#1c1c1e}
+.stf .err{color:#cc0000;font-size:13.5px}
+@media (max-width:760px){.stf-form{grid-template-columns:1fr}}
+.pfbtn{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:999px;padding:3px 10px 3px 3px;cursor:pointer;font:inherit;font-size:14px;font-weight:600}
+.pfbtn:hover,.pfbtn[aria-expanded="true"]{background:rgba(255,255,255,.28)}
+.pfbtn .avatar{width:30px;height:30px}.pfcar{width:14px;height:14px;transition:transform .2s}.pfbtn[aria-expanded="true"] .pfcar{transform:rotate(180deg)}
+.pfname{max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pfmenu{position:absolute;right:0;top:calc(100% + 8px);width:260px;background:#fff;color:#1c1c1e;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.22);border:1px solid #e5e7eb;z-index:40;overflow:hidden;font-family:var(--font-body)}
+.pfhead{display:flex;gap:10px;align-items:center;padding:14px;border-bottom:1px solid #eef0f3}
+.pfhead .pfbig{width:44px;height:44px;border:1px solid #e5e7eb}
+.pfhead small{display:block;color:#7a6a3a;font-size:12px}.pfhead b{display:block;font-size:14px;line-height:1.35}.pfhead em{display:block;font-style:normal;font-size:12px;color:#0e95ba}
+.pfmenu>button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid #f2f2f5;padding:12px 16px;text-align:left;font:inherit;font-size:14.5px;cursor:pointer;color:#1c1c1e}
+.pfmenu>button:hover{background:#fdf6ec}.pfmenu>button:last-child{border-bottom:0}.pfmenu .pfout{color:#c0392b}
+@media (max-width:640px){.pfname{max-width:90px}.pfmenu{width:min(260px,calc(100vw - 32px))}}
 .tbranch{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:6px;font-size:12px;color:inherit;opacity:.9}.tbranch select{font:inherit;padding:1px 4px;border-radius:4px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:inherit}.tbranch option{color:#000}
 </style>
 
@@ -726,7 +749,15 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
   <header class="topbar">
     <div class="tleft"><button class="toplink" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>หน้าแรก</span></button></div>
     <div class="tcenter"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div class="tuser"><span class="uname"></span><span class="urole"></span><p>โปรแกรมบริหาร ตรอ.สยามเซอร์วิส</p></div></div>
-    <div class="tright"><button class="toplink" data-chpw hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>เปลี่ยนรหัส</span></button><button class="toplink" data-logout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H4"/></svg><span>ออกจากระบบ</span></button></div>
+    <div class="tright pf">
+      <button class="pfbtn" id="pfbtn" aria-haspopup="true" aria-expanded="false"><span class="avatar lg pfav"></span><span class="pfname uname"></span><svg class="pfcar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="pfmenu" id="pfmenu" hidden role="menu">
+        <div class="pfhead"><span class="avatar lg pfbig"></span><div><small>เข้าสู่ระบบในฐานะ</small><b><span class="uname"></span> · <span class="pfrole"></span></b><em class="pfbr"></em></div></div>
+        <button role="menuitem" data-chpw hidden>🔑 เปลี่ยนรหัสผ่าน</button>
+        <button role="menuitem" data-go="staff" data-owner hidden>⚙️ จัดการพนักงาน / สาขา</button>
+        <button role="menuitem" class="pfout" data-logout>🚪 ออกจากระบบ</button>
+      </div>
+    </div>
   </header>
   <nav class="menu rail" aria-label="เมนู"></nav>
 </div>
@@ -834,7 +865,8 @@ const USERS={admin:{pw:'admin',name:'คุณอาร์ท',role:'owner'},dem
 let user=null;
 const ROLE_TH={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
 function enterApp(u){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
-  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);
+  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));
+  document.querySelectorAll('.pfrole').forEach(n=>n.textContent=ROLE_TH[u.role]||'พนักงาน');document.querySelectorAll('.pfbr').forEach(n=>n.textContent=LIVE?(DB.branch?(u.role==='owner'?'ดูข้อมูล: ':'')+DB.branch.name:''):'โหมดทดลอง (ไม่บันทึกจริง)');
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;go('home');toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // ปุ่มบัญชีตัวอย่าง = เข้าโหมดทดลอง (ข้อมูลตัวอย่าง ไม่บันทึกลงฐานข้อมูล)
@@ -1756,7 +1788,7 @@ const DB=(()=>{
     const w=document.createElement('span');w.className='tbranch';
     if(me.role==='owner'&&branches.length>1){w.innerHTML='สาขา <select>'+branches.map(b=>`<option value="${b.id}" ${b.id===branch.id?'selected':''}>${esc(b.name)}</option>`).join('')+'</select>';
       w.querySelector('select').onchange=async e=>{branch=branches.find(b=>b.id===+e.target.value);try{localStorage.setItem('siam-branch',branch.id)}catch(_){}
-        toast('กำลังโหลดข้อมูล '+branch.name+'...');try{await load();go('home');toast('เปลี่ยนเป็น '+branch.name+' แล้ว')}catch(err){fail('โหลดข้อมูล',err)}}}
+        toast('กำลังโหลดข้อมูล '+branch.name+'...');try{await load();document.querySelectorAll('.pfbr').forEach(n=>n.textContent='ดูข้อมูล: '+branch.name);go('home');toast('เปลี่ยนเป็น '+branch.name+' แล้ว')}catch(err){fail('โหลดข้อมูล',err)}}}
     else w.textContent=branch.name;
     host.querySelector('.urole').after(w)}
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
@@ -1764,9 +1796,25 @@ const DB=(()=>{
     try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
       const u=await profile(data.session.user.id);await load();enterApp(u)}catch(err){console.warn(err)}}
   async function logout(){try{if(sb)await sb.auth.signOut()}catch(e){}}
+  // ----- จัดการพนักงาน / สาขา (เจ้าของร้าน) -----
+  const rpcErr=r=>{if(r.error)throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''));return r.data};
+  async function listStaff(){const c=await client();
+    const [st,br]=await Promise.all([c.from('staff').select('*').order('created_at').then(chk),c.from('branches').select('*').order('id').then(chk)]);
+    return{staff:st,branches:br}}
+  async function createStaff(o){const c=await client();return rpcErr(await c.rpc('create_staff',{p_username:o.username,p_password:o.password,p_full_name:o.name,p_role:o.role,p_branch:o.branch}))}
+  async function resetPw(uid,pw){const c=await client();rpcErr(await c.rpc('reset_staff_password',{p_user:uid,p_password:pw}))}
+  async function updStaff(uid,patch){const c=await client();const r=chk(await c.from('staff').update(patch).eq('user_id',uid).select('user_id'));if(!r.length)throw new Error('ไม่มีสิทธิ์แก้ไข')}
+  async function saveBranch(id,o){const c=await client();
+    if(id)chk(await c.from('branches').update(o).eq('id',id));else chk(await c.from('branches').insert(o));
+    branches=chk(await c.from('branches').select('*').eq('active',true).order('id'));if(!branches.find(b=>b.id===branch.id))branch=branches[0];branchUI()}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,branchUI,resume,logout,changePw,get branch(){return branch}}})();
+  return{login,load,newBill,pay,edit,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch}}})();
 DB.resume();
+/* เมนูโปรไฟล์มุมขวาบน */
+document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
+  if(e.target.closest('#pfbtn')){const o=m.hidden;m.hidden=!o;b.setAttribute('aria-expanded',o);return}
+  if(!m.hidden&&(!e.target.closest('#pfmenu')||e.target.closest('button'))){m.hidden=true;b.setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#pfmenu')&&!$('#pfmenu').hidden){$('#pfmenu').hidden=true;$('#pfbtn').setAttribute('aria-expanded','false')}});
 /* เปลี่ยนรหัสผ่านของตัวเอง */
 document.addEventListener('click',e=>{if(!e.target.closest('[data-chpw]'))return;
   $('#panel').innerHTML=`<div class="row between"><h2 class="h3" style="font-size:18px">เปลี่ยนรหัสผ่าน</h2><button class="btn line" id="x">ปิด</button></div>
@@ -1784,4 +1832,62 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-chpw]'))return
     if(a.length<6)return bad('รหัสผ่านต้องมีอย่างน้อย 6 ตัว');if(a!==b)return bad('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
     const k=$('#pwok');k.disabled=true;k.textContent='กำลังบันทึก...';
     try{await DB.changePw(a);$('#dlg').hidden=true;toast('เปลี่ยนรหัสผ่านเรียบร้อย ครั้งหน้าใช้รหัสใหม่')}catch(err){bad(err.message)}finally{k.disabled=false;k.textContent='บันทึกรหัสใหม่'}}});
+/* จัดการพนักงาน / สาขา (เจ้าของร้าน) */
+const ROLE_OPT=[['staff','พนักงาน'],['head','หัวหน้าสาขา'],['owner','เจ้าของร้าน']];
+const genPw=()=>{const c='abcdefghjkmnpqrstuvwxyz23456789';let p='';for(let i=0;i<8;i++)p+=c[Math.floor(Math.random()*c.length)];return p};
+R.staff=async()=>{
+  if(!LIVE||!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้าน (บัญชีจริง) เท่านั้น</div>';return}
+  $('#view').innerHTML='<div class="empty">กำลังโหลดข้อมูลพนักงาน...</div>';
+  let d;try{d=await DB.listStaff()}catch(err){$('#view').innerHTML=`<div class="empty">โหลดไม่สำเร็จ: ${esc(err.message)}<br>ถ้ายังไม่ได้รัน 03-staff.sql ใน Supabase ให้รันก่อน</div>`;return}
+  const {staff,branches:brs}=d,act=brs.filter(b=>b.active),me=DB.me.uid;
+  const bOpt=(sel,all)=>(all?brs:act).map(b=>`<option value="${b.id}" ${b.id===sel?'selected':''}>${esc(b.name)}${b.active?'':' (ปิด)'}</option>`).join('');
+  $('#view').innerHTML=`<div class="stf">
+  <div class="ltop"><h1>จัดการพนักงาน / สาขา</h1><span class="sub">${staff.filter(x=>x.active).length} บัญชีที่ใช้งาน · ${act.length} สาขา</span></div>
+  <div class="card stf-card"><div class="sech teal">➕ เพิ่มพนักงานใหม่</div>
+    <form class="stf-form" id="sf" novalidate autocomplete="off">
+      <label class="field"><span>ชื่อ-นามสกุล</span><input id="sf-name" placeholder="เช่น สมชาย ใจดี"></label>
+      <label class="field"><span>ชื่อผู้ใช้ (ใช้ล็อกอิน)</span><input id="sf-user" placeholder="ภาษาอังกฤษ/ตัวเลข เช่น somchai" autocapitalize="none" spellcheck="false"></label>
+      <label class="field"><span>รหัสผ่านเริ่มต้น</span><div class="row"><input id="sf-pw" value="${genPw()}" spellcheck="false"><button type="button" class="btn line" id="sf-gen" title="สุ่มรหัสใหม่">🎲</button></div></label>
+      <label class="field"><span>ตำแหน่ง</span><select id="sf-role">${ROLE_OPT.map(([k,l])=>`<option value="${k}">${l}</option>`).join('')}</select></label>
+      <label class="field" id="sf-brw"><span>สาขา</span><select id="sf-br">${bOpt(DB.branch&&DB.branch.id)}</select></label>
+      <div class="field"><span>&nbsp;</span><button class="btn" id="sf-ok">สร้างบัญชี</button></div>
+    </form>
+    <div class="err" id="sf-err" hidden></div><div id="sf-done"></div>
+    <p class="note">ลูกน้องเข้าระบบด้วยชื่อผู้ใช้และรหัสนี้ แล้วเปลี่ยนรหัสเองได้ที่เมนูมุมขวาบน · หัวหน้าสาขาแก้ไขบิลได้ พนักงานเปิดบิล/รับเงินได้แต่แก้บิลไม่ได้</p></div>
+  <div class="card stf-card"><div class="sech teal">👥 รายชื่อพนักงาน</div><div class="tablewrap"><table class="stf-tbl"><thead><tr><th>ชื่อ</th><th>ชื่อผู้ใช้</th><th>ตำแหน่ง</th><th>สาขา</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    ${staff.map(x=>{const self=x.user_id===me;return `<tr data-u="${x.user_id}" class="${x.active?'':'off'}"><td><b>${esc(x.full_name||x.username)}</b>${self?' <span class="pill brand">คุณ</span>':''}</td><td class="num">${esc(x.username)}</td>
+      <td><select data-f="role" ${self?'disabled':''}>${ROLE_OPT.map(([k,l])=>`<option value="${k}" ${k===x.role?'selected':''}>${l}</option>`).join('')}</select></td>
+      <td>${x.role==='owner'?'<span class="sub">ทุกสาขา</span>':`<select data-f="branch_id">${bOpt(x.branch_id,true)}</select>`}</td>
+      <td><label class="sw"><input type="checkbox" data-f="active" ${x.active?'checked':''} ${self?'disabled':''}><span>${x.active?'ใช้งาน':'ปิดบัญชี'}</span></label></td>
+      <td><button class="btn line" data-rp>ตั้งรหัสใหม่</button></td></tr>`}).join('')}</tbody></table></div></div>
+  <div class="card stf-card"><div class="sech teal">🏢 สาขา</div><div class="tablewrap"><table class="stf-tbl"><thead><tr><th>รหัส</th><th>ชื่อสาขา</th><th>ที่อยู่ / โทร</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    ${brs.map(b=>`<tr data-b="${b.id}"><td class="num"><b>${esc(b.code)}</b></td><td><input data-bf="name" value="${esc(b.name)}"></td><td><input data-bf="address" value="${esc(b.address||'')}" placeholder="ที่อยู่"><input data-bf="phone" value="${esc(b.phone||'')}" placeholder="เบอร์โทร" style="margin-top:4px"></td>
+      <td><label class="sw"><input type="checkbox" data-bf="active" ${b.active?'checked':''}><span>${b.active?'เปิด':'ปิด'}</span></label></td><td><button class="btn line" data-bsave>บันทึก</button></td></tr>`).join('')}
+    <tr class="stf-new"><td><input id="nb-code" placeholder="เช่น C" maxlength="3" style="width:60px;text-transform:uppercase"></td><td><input id="nb-name" placeholder="ชื่อสาขาใหม่"></td><td class="sub">เลขบิลสาขานี้จะขึ้นต้นด้วยรหัสนี้</td><td></td><td><button class="btn" id="nb-add">เพิ่มสาขา</button></td></tr>
+    </tbody></table></div></div></div>`;
+  const syncRole=()=>{$('#sf-brw').hidden=$('#sf-role').value==='owner'};$('#sf-role').onchange=syncRole;syncRole();
+  $('#sf-gen').onclick=()=>{$('#sf-pw').value=genPw()};
+  $('#sf').onsubmit=async e=>{e.preventDefault();const er=$('#sf-err');er.hidden=true;
+    const o={name:$('#sf-name').value.trim(),username:$('#sf-user').value.trim().toLowerCase(),password:$('#sf-pw').value.trim(),role:$('#sf-role').value,branch:$('#sf-role').value==='owner'?null:+$('#sf-br').value||null};
+    const bad=m=>{er.textContent=m;er.hidden=false};
+    if(!o.name)return bad('กรุณาใส่ชื่อ-นามสกุล');if(!/^[a-z0-9._-]{3,30}$/.test(o.username))return bad('ชื่อผู้ใช้ต้องเป็นภาษาอังกฤษตัวเล็กหรือตัวเลข 3-30 ตัว (ห้ามเว้นวรรค)');
+    if(o.password.length<6)return bad('รหัสผ่านต้องมีอย่างน้อย 6 ตัว');if(o.role!=='owner'&&!o.branch)return bad('กรุณาเลือกสาขา');
+    const k=$('#sf-ok');k.disabled=true;k.textContent='กำลังสร้าง...';
+    try{await DB.createStaff(o);toast('สร้างบัญชี '+o.username+' แล้ว');await R.staff();
+      $('#sf-done').innerHTML=`<div class="stf-done">✅ สร้างบัญชีให้ <b>${esc(o.name)}</b> แล้ว ส่งให้ลูกน้องได้เลย<div class="num">เว็บ: ${esc(location.href.split('#')[0].split('?')[0])}<br>ชื่อผู้ใช้: <b>${esc(o.username)}</b><br>รหัสผ่าน: <b>${esc(o.password)}</b></div><button class="btn line" id="sf-copy">📋 คัดลอกข้อความ</button></div>`;
+      $('#sf-copy').onclick=()=>{const t=$('.stf-done .num').innerText;try{navigator.clipboard.writeText(t);toast('คัดลอกแล้ว')}catch(_){toast('คัดลอกไม่ได้ ให้จดเอง')}}}
+    catch(err){bad(err.message)}finally{if($('#sf-ok')){$('#sf-ok').disabled=false;$('#sf-ok').textContent='สร้างบัญชี'}}};
+  document.querySelectorAll('[data-u] [data-f]').forEach(el=>el.onchange=async()=>{const tr=el.closest('tr'),f=el.dataset.f;
+    const v=f==='active'?el.checked:f==='branch_id'?+el.value:el.value;
+    try{await DB.updStaff(tr.dataset.u,{[f]:v});toast('บันทึกแล้ว');R.staff()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message);R.staff()}});
+  document.querySelectorAll('[data-rp]').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');const nm=tr.querySelector('b').textContent;
+    const pw=prompt('ตั้งรหัสผ่านใหม่ให้ '+nm+' (อย่างน้อย 6 ตัว)',genPw());if(pw==null)return;
+    if(pw.trim().length<6){alert('รหัสผ่านต้องมีอย่างน้อย 6 ตัว');return}
+    try{await DB.resetPw(tr.dataset.u,pw.trim());alert('ตั้งรหัสใหม่ให้ '+nm+' แล้ว\nรหัสใหม่: '+pw.trim())}catch(err){alert('ไม่สำเร็จ: '+err.message)}});
+  document.querySelectorAll('[data-bsave]').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');const o={};tr.querySelectorAll('[data-bf]').forEach(i=>o[i.dataset.bf]=i.type==='checkbox'?i.checked:i.value.trim());
+    if(!o.name){alert('กรุณาใส่ชื่อสาขา');return}try{await DB.saveBranch(+tr.dataset.b,o);toast('บันทึกสาขาแล้ว');R.staff()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}});
+  $('#nb-add').onclick=async()=>{const code=$('#nb-code').value.trim().toUpperCase(),name=$('#nb-name').value.trim();
+    if(!/^[A-Z0-9]{1,3}$/.test(code)){alert('รหัสสาขาเป็นตัวอังกฤษ/ตัวเลข 1-3 ตัว เช่น C');return}if(!name){alert('กรุณาใส่ชื่อสาขา');return}
+    try{await DB.saveBranch(null,{code,name,active:true});toast('เพิ่มสาขา '+name+' แล้ว');R.staff()}catch(err){alert('เพิ่มไม่สำเร็จ: '+(/duplicate|unique/i.test(err.message)?'รหัสสาขานี้มีอยู่แล้ว':err.message))}};
+};
 </script>
