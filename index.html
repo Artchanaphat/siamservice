@@ -1033,6 +1033,17 @@ button.ui-kpi{font:inherit;text-align:left;cursor:pointer;width:100%}button.ui-k
 .tr-wait-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#fff;border:1px solid #f5d48b;border-radius:10px;padding:8px 12px}
 .tr-wait-r span{flex:1;min-width:160px;font-size:13.5px;color:#475569}.tr-wait-r b{font-variant-numeric:tabular-nums}.tr-wait-r .btn{background:#16a34a}
 @media (max-width:640px){.tr-wait-r .btn{width:100%;justify-content:center}.pmx-note{white-space:normal}}
+/* ตั้งค่าระบบ: เมนูหมวดด้านซ้าย */
+.st-lay{display:grid;grid-template-columns:240px minmax(0,1fr);gap:16px;align-items:start}
+.st-nav{position:sticky;top:12px;background:#fff;border:1px solid #e3e8ee;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:2px;box-shadow:0 2px 6px rgba(15,23,42,.04)}
+.st-ng{font-size:12px;color:#94a3b8;font-weight:600;padding:10px 10px 4px}.st-ng:first-child{padding-top:4px}
+.st-ni{display:flex;align-items:center;gap:10px;border:1px solid transparent;background:none;border-radius:10px;padding:9px 10px;font:inherit;font-size:14px;color:#334155;text-align:left;cursor:pointer;width:100%}
+.st-ni i{font-style:normal;width:22px;text-align:center;flex:none}.st-ni:hover{background:#f1f5f9}
+.st-ni.on{background:#fff4e5;border-color:#f59e0b;color:#b45309;font-weight:600}.st-ni .st-s{display:none}
+.st-main{display:flex;flex-direction:column;gap:14px;min-width:0}.st-main>.stf-card{margin:0}
+.st-main>.st-bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:14px 0 6px;z-index:3}
+@media (max-width:860px){.st-lay{grid-template-columns:1fr}.st-nav{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px}.st-ng{grid-column:1/-1;padding:6px 4px 0}.st-ng:first-child{padding-top:0}
+  .st-ni{flex-direction:column;gap:2px;padding:8px 2px;font-size:12.5px;text-align:center;justify-content:center;border-color:#e3e8ee;line-height:1.25}.st-ni i{font-size:18px;width:auto}.st-ni .st-l{display:none}.st-ni .st-s{display:block}}
 .cl-ok,.cl-over,.cl-short{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12.5px;font-weight:600}
 .cl-ok{background:#dcfce7;color:#15803d}.cl-over{background:#dbeafe;color:#1d4ed8}.cl-short{background:#fee2e2;color:#c81e1e}
 .cl-h{margin:4px 0 0;font-size:15px}
@@ -3393,7 +3404,7 @@ R.sms=()=>{const k=smsKind,K=SMSK[k],own=user&&user.role==='owner',tpl=SET[K.tpl
   $('#sms-go').onclick=()=>send(list.filter(c=>sel.has(c.id)).map(c=>c.id));
   $('#sms-rcr').onclick=e=>{e.preventDefault();loadCredit()};
   $('#sms-back').onclick=()=>go('bell');
-  if($('#sms-set'))$('#sms-set').onclick=()=>{go('settings');setTimeout(()=>{const s=$('#st-sms');if(s)s.scrollIntoView({behavior:'smooth',block:'start'})},60)};
+  if($('#sms-set'))$('#sms-set').onclick=()=>{stSec='sms';go('settings')};
   if($('#sms-edit'))$('#sms-edit').onclick=()=>$('#sms-set').click();
 };
 
@@ -3893,6 +3904,11 @@ function sendLine(k,c){const t=lineText(k,c);try{navigator.clipboard.writeText(t
   window.open('https://line.me/R/share?text='+encodeURIComponent(t),'_blank','noopener');toast('เปิด LINE แล้ว เลือกแชตลูกค้าแล้วกดส่ง (คัดลอกข้อความไว้ให้ด้วย)')}
 
 /* ---------- ตั้งค่าระบบ (เฉพาะเจ้าของร้าน) ---------- */
+// หน้าตั้งค่าระบบ: เมนูหมวดด้านซ้าย แสดงทีละหมวด
+let stSec='fee',stShow=null;
+const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
+  ['เอกสาร',[['rc','🧾','รูปแบบใบเสร็จ',['🧾'],'ใบเสร็จ']]],
+  ['การแจ้งเตือน',[['lineoa','🔑','เชื่อมต่อ LINE OA',['🔑'],'LINE OA'],['remind','🔔','เตือนลูกค้าทาง LINE',['🔔'],'เตือนลูกค้า'],['daily','💬','สรุปประจำวันทาง LINE',['💬'],'สรุปรายวัน'],['sms','📱','ส่ง SMS (ThaiBulkSMS)',['📱'],'SMS']]]];
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
   const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k])));
@@ -3953,16 +3969,16 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
       <div class="st-vars">${SMS_VARS.map(v=>`<button type="button" data-var="${v}">＋ ${v.slice(1,-1)}</button>`).join('')}</div><div class="st-tplpv"></div></div>`).join('')}
     <div class="st-grid st-keys"><label class="field"><span>ส่งทดสอบไปที่เบอร์</span><div class="st-num"><input id="sk-to" inputmode="tel" maxlength="12" autocomplete="off" placeholder="เบอร์มือถือ 10 หลัก"><button type="button" class="btn line" id="sk-test">📤 ส่งทดสอบ</button></div><small class="sub">ใช้ 1–2 เครดิต · ใช้ชื่อผู้ส่งและข้อความที่บันทึกไว้แล้ว</small></label></div></div></div>
   <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
-  const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='';
-    document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))bad=bad||i.closest('label').querySelector('span').textContent;else o[i.dataset.k]=v});
-    const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))bad=bad||'ปีจดทะเบียนเก่าสุด';else o.reg_min_year=y;
-    Object.keys(LS).forEach(k=>{if(!LS[k].length)bad=bad||'รายการว่าง';o[k]=JSON.parse(JSON.stringify(LS[k]))});
+  const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='',badEl=null;const B=(m,el)=>{if(!bad){bad=m;badEl=el}};
+    document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))B(i.closest('label').querySelector('span').textContent,i);else o[i.dataset.k]=v});
+    const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))B('ปีจดทะเบียนเก่าสุด',$('#st-year'));else o.reg_min_year=y;
+    Object.keys(LS).forEach(k=>{if(!LS[k].length)B('รายการว่าง',$('[data-stsec="lists"]'));o[k]=JSON.parse(JSON.stringify(LS[k]))});
     o.rc=rcRead();o.line_oa=$('#st-oa').value.trim();const dd=[...document.querySelectorAll('#st-days .on')].map(b=>+b.dataset.d);
-    if(!dd.length)bad=bad||'เตือนก่อนหมดอายุ (เลือกอย่างน้อย 1 ข้อ)';else o.line_days=dd.sort((a,z)=>z-a);
-    o.sms_sender=$('#st-sender').value.trim();if(o.sms_sender&&!/^[A-Za-z0-9 .\-]{1,11}$/.test(o.sms_sender))bad=bad||'ชื่อผู้ส่ง SMS (ภาษาอังกฤษหรือตัวเลข ไม่เกิน 11 ตัว)';
+    if(!dd.length)B('เตือนก่อนหมดอายุ (เลือกอย่างน้อย 1 ข้อ)',$('#st-days'));else o.line_days=dd.sort((a,z)=>z-a);
+    o.sms_sender=$('#st-sender').value.trim();if(o.sms_sender&&!/^[A-Za-z0-9 .\-]{1,11}$/.test(o.sms_sender))B('ชื่อผู้ส่ง SMS (ภาษาอังกฤษหรือตัวเลข ไม่เกิน 11 ตัว)',$('#st-sender'));
     o.sms_force=($('#st-force .on')||{dataset:{v:'standard'}}).dataset.v;o.sms_days=+(($('#st-sdays .on')||{dataset:{d:30}}).dataset.d);
-    document.querySelectorAll('[data-tpl]').forEach(f=>{const v=f.querySelector('textarea').value.trim();if(!v)bad=bad||'ข้อความ SMS ว่าง';o[f.dataset.tpl]=v});
-    return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
+    document.querySelectorAll('[data-tpl]').forEach(f=>{const v=f.querySelector('textarea').value.trim();if(!v)B('ข้อความ SMS ว่าง',f);o[f.dataset.tpl]=v});
+    if(bad){const c=badEl&&badEl.closest('[data-stsec]');if(c&&stShow)stShow(c.dataset.stsec);alert('ตรวจข้อมูลอีกครั้ง: '+bad);return null}return o};
   $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
     try{if(LIVE)await DB.saveSettings(o);SET=o}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message);return}
     const d=$('#st-dtime').value,rm=$('#st-rtime').value;
@@ -3974,6 +3990,14 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   if(LIVE)DB.lineSchedule().then(r=>{if(!$('#st-dtime'))return;sch={daily:r.daily||'20:00',remind:r.remind||'09:00'};tSel('#st-dtime',sch.daily);tSel('#st-rtime',sch.remind);dNote()})
     .catch(err=>{if(!$('#st-dtime'))return;['#st-dtime','#st-rtime'].forEach(i=>$(i).disabled=true);document.querySelectorAll('.st-tnote').forEach(n=>n.textContent=err.message)});
   document.querySelectorAll('#st-days .tog').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+  {const root=$('#view .st'),cards=[...root.querySelectorAll(':scope>.stf-card')],bar=root.querySelector(':scope>.st-bar'),items=ST_NAV.flatMap(g=>g[1]);
+    cards.forEach(c=>{const t=c.querySelector('.sech').textContent.trim(),it=items.find(x=>x[3].some(e=>t.startsWith(e)));c.dataset.stsec=it?it[0]:'fee'});
+    const lay=document.createElement('div');lay.className='st-lay';
+    lay.innerHTML=`<nav class="st-nav" aria-label="หมวดการตั้งค่า">${ST_NAV.map(([g,list])=>`<div class="st-ng">${g}</div>${list.map(([k,ic,l,,sl])=>`<button type="button" class="st-ni" data-stn="${k}"><i>${ic}</i><span class="st-l">${l}</span><span class="st-s">${sl}</span></button>`).join('')}`).join('')}
+      <div class="st-ng">ระบบ</div><button type="button" class="st-ni" data-go="staff"><i>👤</i><span class="st-l">พนักงานและสาขา</span><span class="st-s">พนักงาน</span></button><button type="button" class="st-ni" data-go="backup"><i>💾</i><span class="st-l">สำรองข้อมูล (Excel)</span><span class="st-s">สำรองข้อมูล</span></button><button type="button" class="st-ni" data-go="audit"><i>📜</i><span class="st-l">ประวัติการใช้งาน</span><span class="st-s">ประวัติ</span></button></nav><div class="st-main"></div>`;
+    root.insertBefore(lay,cards[0]);const main=lay.querySelector('.st-main');cards.forEach(c=>main.appendChild(c));main.appendChild(bar);
+    const show=k=>{if(!items.some(x=>x[0]===k))k='fee';stSec=k;cards.forEach(c=>c.hidden=c.dataset.stsec!==k);lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k))};
+    lay.querySelectorAll('[data-stn]').forEach(b=>b.onclick=()=>{show(b.dataset.stn);if(innerWidth<860)main.scrollIntoView({behavior:'smooth',block:'start'})});stShow=show;show(stSec)}
   // รูปแบบใบเสร็จ + ตัวอย่างสด
   const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';
   const rcRead=()=>{const o={};document.querySelectorAll('[data-rc]').forEach(g=>{const on=g.querySelector('.on');o[g.dataset.rc]=on?on.dataset.v:RC_DEF[g.dataset.rc]});
