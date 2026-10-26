@@ -1147,6 +1147,164 @@ html.booting .boot{display:flex;position:fixed;inset:0;align-items:center;justif
 @media print{body.print-one *{visibility:hidden!important}body.print-one .print-me,body.print-one .print-me *{visibility:visible!important}
   body.print-one .print-me{position:absolute;left:0;top:0;width:100%;box-shadow:none;border:0}body.print-one .print-me.slip{width:72mm;max-width:none}
   .cl-cnt{border:0;width:auto}.cl-kpis>div{border-color:#999}}
+/* ===== หน้าตาใหม่ (v52): แถบเมนูซ้ายสีน้ำเงินเข้ม + แถบบนสีขาว ===== */
+:root{--bg:#f3f6fb;--navy:#0b2766;--navy2:#123a8f;--blue:#1d63ed;--blue-dk:#1650c4;--font-body:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif;--font-display:"Kanit","IBM Plex Sans Thai",sans-serif}
+body{background:var(--bg);font-family:var(--font-body);font-size:14.5px;color:#0f172a}
+main{background:transparent}
+.shell{display:grid;grid-template-columns:264px minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;background:linear-gradient(180deg,#0b2766 0%,#0a2260 55%,#0b1d4f 100%);color:#dbe6ff;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent}
+.sbrand{flex:none;height:84px;display:flex;align-items:center;gap:12px;padding:0 18px;background:linear-gradient(115deg,#0a2668 0%,#103687 62%,#1b4fb6 62.2%,#1647a8 74%,#123c94 74.2%,#0e3384 100%);border-bottom:1px solid rgba(255,255,255,.08)}
+.sbrand .avatar{width:54px;height:54px;border:3px solid #ffd400;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.sbrand b{display:block;font-family:var(--font-display);font-size:22px;font-weight:600;color:#fff;line-height:1.15;letter-spacing:.2px}
+.sbrand small{display:block;font-size:12px;color:#c7d5f5;line-height:1.3}
+.snav{flex:1;padding:14px 12px 8px;display:flex;flex-direction:column;gap:3px}
+.sn-i{display:flex;align-items:center;gap:12px;width:100%;min-height:44px;padding:9px 14px;border:0;background:none;color:#e3ebff;border-radius:11px;font:inherit;font-size:15px;cursor:pointer;text-align:left;line-height:1.3;transition:background .15s}
+.sn-i svg{width:21px;height:21px;flex:none}.sn-i span{flex:1;min-width:0}
+.sn-i:hover{background:rgba(255,255,255,.08)}
+.sn-i.on{background:linear-gradient(90deg,#1d63ed,#2f7bff);color:#fff;font-weight:600;box-shadow:0 6px 16px rgba(29,99,237,.4)}
+.sn-i:focus-visible{outline:2px solid #ffd400;outline-offset:1px}
+.sn-n{flex:none;background:#ef4444;color:#fff;font-size:11.5px;font-weight:600;border-radius:99px;padding:0 7px;min-width:20px;text-align:center;line-height:20px}
+.sn-car{width:16px!important;height:16px!important;opacity:.75;transition:transform .2s}.sn-g.open .sn-car{transform:rotate(90deg)}
+.sn-sub{display:none;flex-direction:column;gap:2px;margin:2px 0 4px 22px;padding-left:10px;border-left:1px solid rgba(255,255,255,.14)}
+.sn-g.open>.sn-sub{display:flex}
+.sn-sub .sn-i{font-size:14px;min-height:38px;padding:7px 12px}.sn-sub .sn-i svg{width:18px;height:18px}
+.ssum{flex:none;margin:6px 14px 18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 12px 8px}
+.ss-h{color:#fff;font-weight:600;font-size:14.5px;font-family:var(--font-display)}
+.ss-r{display:flex;align-items:baseline;gap:6px;width:100%;background:rgba(255,255,255,.05);border:0;border-radius:9px;padding:8px 10px;margin-top:6px;color:#d3defa;font:inherit;font-size:13.5px;cursor:pointer;text-align:left}
+.ss-r:hover{background:rgba(255,255,255,.1)}.ss-r span{flex:1}.ss-r b{color:#fff;font-size:16px;font-variant-numeric:tabular-nums}.ss-r small{font-size:12px;color:#a9badf}.ss-r.bad b{color:#fca5a5}
+.sbody{min-width:0;display:flex;flex-direction:column}
+.topwrap{position:sticky;top:0;z-index:30;padding:0!important;background:#fff;border-bottom:1px solid #e6ebf3;box-shadow:0 2px 10px rgba(15,35,90,.04)}
+.topbar,.topbar.topbar{max-width:none!important;margin:0;background:#fff!important;border-radius:0;height:84px;padding:0 28px;box-shadow:none;flex-wrap:nowrap;color:#0f172a;gap:18px}
+.tleft{flex:1 1 auto;min-width:0}.sburger,.tmlogo{display:none!important}
+.tmid{display:flex;align-items:center;gap:22px;color:#1e3a8a;font-size:14.5px;font-weight:500}
+.tdate,.ttime{display:flex;align-items:center;gap:8px;white-space:nowrap}.tdate svg,.ttime svg{width:19px;height:19px;color:#1d4ed8;flex:none}
+.tbell{position:relative;padding-left:18px;border-left:1px solid #e2e8f0}
+.tbell-btn{position:relative;border:0;background:none;color:#1d4ed8;cursor:pointer;width:42px;height:42px;border-radius:12px;display:grid;place-items:center}.tbell-btn:hover{background:#eff4ff}.tbell-btn svg{width:25px;height:25px}
+.tbell-n{position:absolute;top:1px;right:0;background:#ef4444;color:#fff;font-size:11px;font-weight:600;border-radius:99px;min-width:20px;height:20px;display:grid;place-items:center;padding:0 5px;border:2px solid #fff}
+.tbell-menu{position:absolute;right:0;top:calc(100% + 10px);width:320px;max-width:calc(100vw - 24px);background:#fff;border:1px solid #e5e7eb;border-radius:14px;box-shadow:0 16px 36px rgba(15,23,42,.18);z-index:45;padding:6px;color:#0f172a}
+.tbell-menu .tb-h{padding:8px 10px 6px;font-weight:600;font-size:14px;color:#0f2a6b}
+.tbell-menu button{display:flex;align-items:center;gap:10px;width:100%;border:0;background:none;padding:9px 10px;border-radius:10px;font:inherit;font-size:14px;cursor:pointer;text-align:left;color:#1e293b}
+.tbell-menu button:hover{background:#f1f5ff}.tbell-menu i{font-style:normal;width:22px;text-align:center}.tbell-menu span{flex:1}
+.tbell-menu b{color:#fff;font-size:12px;border-radius:99px;min-width:24px;height:22px;display:grid;place-items:center;padding:0 7px}
+.tbell-empty{padding:10px;color:#64748b;font-size:13.5px}
+.tright.pf{padding-left:18px;border-left:1px solid #e2e8f0}
+.pfbtn{background:#fff!important;border:1px solid transparent!important;color:#0f172a!important;padding:4px 10px 4px 4px!important}.pfbtn:hover{background:#f1f5ff!important}
+.pfbtn .avatar{width:40px;height:40px;border:2px solid #dbe4f5}.pfname{font-weight:600;color:#0f2a6b}
+.tb-btn{background:#fff!important;color:#0f2a6b!important;border:1px solid #c9d6ee!important;height:40px}.tb-btn:hover{background:#f1f5ff!important}
+.tb-btn svg{color:#1d4ed8}
+.menu{display:none!important}
+main{padding:24px 28px 48px!important}
+.wrap,.wrap.wrap{max-width:1480px!important;margin:0 auto}
+.sveil{position:fixed;inset:0;background:rgba(2,6,23,.45);z-index:58}
+.dlg{z-index:80}.toast{z-index:90}
+@media (max-width:1100px){.tdate{display:none}}
+@media (max-width:1024px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:fixed;left:0;top:0;bottom:0;width:280px;max-width:86vw;z-index:60;transform:translateX(-102%);transition:transform .22s ease;box-shadow:8px 0 30px rgba(0,0,0,.25)}
+  body.side-open .side{transform:none}
+  .sburger{display:grid!important;place-items:center;width:42px;height:42px;border:1px solid #d6e0f2;background:#fff;border-radius:12px;color:#0f2a6b;cursor:pointer;flex:none}.sburger svg{width:22px;height:22px}
+  .tmlogo{display:grid!important;width:40px!important;height:40px!important;border:2px solid #ffd400!important}
+  .topbar,.topbar.topbar{height:64px;padding:0 14px;gap:10px}
+  .tleft{display:flex;align-items:center;gap:10px}
+  main{padding:16px 14px 40px!important}}
+@media (max-width:640px){.ttime{display:none}.tbell,.tright.pf{padding-left:8px;border-left:0}.pfname{display:none}.tleft .tb-btn b{max-width:110px;overflow:hidden;text-overflow:ellipsis}}
+@media print{.side,.sveil{display:none!important}.shell{display:block}}
+/* ส่วนประกอบหลักของทุกหน้า ให้เข้าชุดกับหน้าตาใหม่ */
+.card{border-radius:16px;border:1px solid #e6ebf3;box-shadow:0 4px 14px rgba(15,35,90,.05)}
+.ui-card,.ui-kpi{border-color:#e6ebf3;box-shadow:0 4px 14px rgba(15,35,90,.05);border-radius:16px}
+.ui-card-h{background:#fff}
+.sech{border-radius:10px;font-family:var(--font-display);font-weight:500;letter-spacing:.1px;background:linear-gradient(90deg,#3730a3,#6d6af0)}
+.sech.teal,.billside .sech{background:linear-gradient(90deg,#1650c4,#3b82f6)}
+.sech.orange{background:linear-gradient(90deg,#e8590c,#f59f4a)}
+.btn{background:var(--blue);border-radius:10px;box-shadow:0 4px 12px rgba(29,99,237,.22)}.btn:hover{background:var(--blue-dk)}
+.ltop h1,.ui-head h1{font-family:var(--font-display);font-weight:600;color:#0f2a6b;font-size:21px}
+.ltop .ui-ic,.ui-head .ui-ic{background:#e8efff;border-radius:14px}
+.ltop{border-bottom-color:#e2e8f0}
+/* หน้าหลัก (แดชบอร์ด) */
+body{margin:0}
+.sn-i .sn-n{flex:none}
+.hd{display:flex;flex-direction:column;gap:18px}
+.hk-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.hk{position:relative;overflow:hidden;display:flex;align-items:center;gap:14px;background:#fff;border:1px solid #e6ebf3;border-radius:18px;padding:18px;box-shadow:0 4px 14px rgba(15,35,90,.05);text-align:left;cursor:pointer;font:inherit;color:inherit;min-height:116px;transition:transform .15s,box-shadow .2s}
+.hk:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,35,90,.09)}
+.hk-ic{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;flex:none;background:var(--hs);color:var(--hc)}.hk-ic svg{width:28px;height:28px}
+.hk-t{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1;position:relative;z-index:1}
+.hk-l{font-size:14px;font-weight:600;color:#1e293b}
+.hk-v{display:flex;align-items:baseline;gap:6px}.hk-v b{font-family:var(--font-display);font-size:34px;font-weight:600;line-height:1.1;color:#0f172a}.hk-v small{font-size:14px;color:#475569}
+.hk-d{font-size:12.5px;color:#64748b}.hk-d.up{color:#16a34a;font-weight:600}.hk-d.dn{color:#dc2626;font-weight:600}
+.hk-bar{display:block;height:6px;border-radius:9px;background:#eef2f7;margin-top:4px;overflow:hidden}.hk-bar i{display:block;height:100%;background:#f59e0b;border-radius:9px}
+.hk-bg{position:absolute;right:-6px;bottom:-10px;color:var(--hc);opacity:.09}.hk-bg svg{width:92px;height:92px}
+.hk.blue{--hs:#e6efff;--hc:#1d63ed}.hk.amber{--hs:#fff4dc;--hc:#d97706}.hk.green{--hs:#e3f8ea;--hc:#16a34a}.hk.red{--hs:#ffe8e8;--hc:#dc2626}
+.hq{position:relative;overflow:hidden;border-radius:20px;padding:20px 22px 22px;background:linear-gradient(110deg,#eef3ff 0%,#e3ebfb 45%,#c9d8f6 100%);border:1px solid #d7e2f7}
+.hq-h h2{margin:0;font-family:var(--font-display);font-size:20px;font-weight:600;color:#0f2a6b}.hq-h p{margin:2px 0 14px;color:#475569;font-size:14px}
+.hq-art{position:absolute;right:28px;top:6px;width:220px;height:90px;color:#93acdf;opacity:.6}
+.hq-g{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.hq-b{display:flex;align-items:center;gap:14px;min-height:88px;padding:16px 18px;border:0;border-radius:16px;color:#fff;cursor:pointer;font:inherit;text-align:left;box-shadow:0 8px 18px rgba(15,35,90,.16);transition:transform .15s,filter .2s}
+.hq-b:hover{transform:translateY(-2px);filter:brightness(1.05)}
+.hq-b>svg{width:40px;height:40px;flex:none}.hq-b span{flex:1;min-width:0;display:flex;flex-direction:column}.hq-b b{font-family:var(--font-display);font-size:18px;font-weight:600;line-height:1.25}.hq-b small{font-size:13px;opacity:.92}
+.hq-b i{font-style:normal;font-size:28px;line-height:1;opacity:.85}
+.hq-b.blue{background:linear-gradient(135deg,#1d63ed,#3b82f6)}.hq-b.green{background:linear-gradient(135deg,#0f8a4b,#22a35f)}.hq-b.yellow{background:linear-gradient(135deg,#f5c400,#ffd83d);color:#1f2937}.hq-b.purple{background:linear-gradient(135deg,#5b3cc4,#7c5cf0)}
+.hm{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.hm-main{padding-bottom:6px}
+.hm-h{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;padding:14px 16px 10px}
+.hm-tabs{display:flex;gap:4px;background:#f1f5fb;border-radius:12px;padding:4px;flex:none}
+.hm-tabs button{display:flex;align-items:center;gap:7px;border:0;background:none;border-radius:9px;padding:7px 12px;font:inherit;font-size:14.5px;font-weight:600;color:#475569;cursor:pointer;white-space:nowrap}
+.hm-tabs button svg{width:18px;height:18px}.hm-tabs button[aria-selected="true"]{background:#fff;color:#0f2a6b;box-shadow:0 2px 6px rgba(15,35,90,.1)}
+.hm-c{background:#e6efff;color:#1d63ed;border-radius:99px;font-size:12px;padding:0 7px}
+.hm-s{flex:1 1 180px;min-width:160px;display:flex;align-items:center;gap:8px;border:1px solid #d6e0f2;border-radius:11px;padding:0 12px;height:40px;background:#fff;color:#64748b}.hm-s svg{width:17px;height:17px;flex:none}.hm-s input{border:0;outline:0;flex:1;min-width:0;background:none;font-size:14px}
+.hm-h .btn{height:40px;display:inline-flex;align-items:center}
+.hm-f{display:flex;flex-wrap:wrap;gap:8px;padding:0 16px 10px}
+.hm-fc{display:flex;align-items:center;gap:8px;border:1px solid #dbe3f0;background:#fff;border-radius:10px;padding:6px 12px;font:inherit;font-size:13.5px;color:#334155;cursor:pointer}
+.hm-fc b{background:#eef2f7;border-radius:99px;font-size:12px;padding:0 8px;color:#334155}
+.hm-fc.on{background:#1d63ed;border-color:#1d63ed;color:#fff}.hm-fc.on b{background:#fff;color:#1d63ed}
+.hm-t{width:100%;border-collapse:collapse;font-size:14px}
+.hm-t th{background:#f5f8fd;color:#334155;font-weight:600;text-align:left;padding:10px 12px;border-top:1px solid #edf1f7;border-bottom:1px solid #edf1f7;white-space:nowrap}
+.hm-t td{padding:10px 12px;border-bottom:1px solid #f0f3f8;vertical-align:middle}.hm-t tr:last-child td{border-bottom:0}.hm-t .r{text-align:right}.hm-t .act{text-align:right;white-space:nowrap}
+.hm-t tbody tr:hover td{background:#fafcff}
+.hm-t td{white-space:normal}.hm-t td.r,.hm-t td.act,.hm-t td:first-child{white-space:nowrap}.hm-t td .hp{white-space:nowrap}
+.hp{display:inline-flex;align-items:center;gap:5px;border-radius:99px;padding:2px 10px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.hp::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.hp.ok{background:#e3f8ea;color:#15803d}.hp.info{background:#e6efff;color:#1d4ed8}.hp.warn{background:#fff4dc;color:#b45309}.hp.bad{background:#ffe8e8;color:#c81e1e}
+.hm-empty{display:flex;flex-direction:column;align-items:center;gap:4px;padding:34px 16px;color:#64748b;text-align:center}.hm-empty svg{width:34px;height:34px;color:#9fb3d9}.hm-empty b{color:#334155}
+.hm-side{display:flex;flex-direction:column;gap:18px}
+.hc-h{display:flex;align-items:center;padding:14px 16px 4px}.hc-h h2{display:flex;align-items:center;gap:8px;margin:0;font-size:15.5px;font-weight:600;color:#0f2a6b}.hc-h h2 svg{width:20px;height:20px;color:#1d63ed}
+.cal-h{display:flex;align-items:center;justify-content:space-between;padding:4px 14px}.cal-h b{font-size:15px;color:#0f2a6b}
+.cal-h button{border:0;background:#f1f5fb;width:32px;height:32px;border-radius:9px;font-size:20px;line-height:1;cursor:pointer;color:#1e3a8a}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:6px 12px 8px;text-align:center}
+.cal-w{font-size:12px;color:#94a3b8;padding:4px 0}
+.cal-d{position:relative;border:0;background:none;height:34px;border-radius:50%;font:inherit;font-size:13.5px;color:#1e293b;cursor:pointer;width:34px;margin:0 auto}
+.cal-d:hover{background:#f1f5fb}.cal-d.has::after{content:"";position:absolute;left:50%;bottom:3px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:#f97316}
+.cal-d.today{background:#1d63ed;color:#fff;font-weight:600}.cal-d.today.has::after{background:#ffd400}.cal-d.sel{outline:2px solid #1d63ed;outline-offset:-2px}
+.cal-hint{font-size:12.5px;color:#64748b;padding:2px 16px 14px}
+.cal-l{padding:4px 12px 12px;display:flex;flex-direction:column;gap:4px}.cal-lh{font-size:13px;font-weight:600;color:#334155;padding:0 4px 2px}
+.cal-l button{display:flex;align-items:center;gap:8px;border:1px solid #eef2f7;background:#fafcff;border-radius:9px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer;text-align:left}
+.cal-l button span{flex:1;min-width:0;color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cal-l button em{font-style:normal;font-size:12px;color:#c2410c;background:#fff1e6;border-radius:99px;padding:0 8px}
+.ha-l{display:flex;flex-direction:column;padding:4px 8px 10px}
+.ha-i{display:flex;align-items:center;gap:10px;border:0;background:none;border-radius:10px;padding:9px 8px;font:inherit;font-size:14px;color:#1e293b;cursor:pointer;text-align:left}
+.ha-i:hover:not(:disabled){background:#f5f8fd}.ha-i:disabled{cursor:default;color:#94a3b8}.ha-i i{font-style:normal;width:22px;text-align:center}.ha-i span{flex:1}
+.ha-i b{min-width:26px;height:24px;border-radius:99px;display:grid;place-items:center;padding:0 7px;font-size:12.5px;color:#fff;background:#cbd5e1}
+.hb-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.hb{display:flex;align-items:center;gap:14px;border:1px solid transparent;border-radius:18px;padding:16px 18px;cursor:pointer;font:inherit;text-align:left;color:#0f172a;transition:transform .15s}
+.hb:hover{transform:translateY(-2px)}
+.hb-ic{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;flex:none;color:#fff}.hb-ic svg{width:26px;height:26px}
+.hb>span:nth-child(2){flex:1;min-width:0;display:flex;flex-direction:column}.hb small{font-size:13.5px;color:#475569;font-weight:600}
+.hb b{font-family:var(--font-display);font-size:24px;font-weight:600;line-height:1.2}.hb em{font-style:normal;font-family:var(--font-body);font-size:13px;font-weight:400;color:#475569;margin-left:6px}
+.hb i{font-style:normal;font-size:24px;color:#64748b}
+.hb.pink{background:#fff0f1;border-color:#fde0e3}.hb.pink .hb-ic{background:linear-gradient(135deg,#f43f5e,#fb7185)}
+.hb.sky{background:#eef4ff;border-color:#dce7fd}.hb.sky .hb-ic{background:linear-gradient(135deg,#1d63ed,#60a5fa)}
+.hb.sand{background:#fff7e8;border-color:#fdebc8}.hb.sand .hb-ic{background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.hb.lilac{background:#f4f0ff;border-color:#e7defd}.hb.lilac .hb-ic{background:linear-gradient(135deg,#7c3aed,#a78bfa)}
+.hd .exp{margin-top:0}
+@media (max-width:1440px){.hq-b>svg{width:32px;height:32px}.hq-b b{font-size:16.5px}.hq-b{padding:14px;gap:10px}.hq-b small{font-size:12.5px}}
+@media (max-width:1440px){.hm-no{display:none}.hm-t th,.hm-t td{padding:10px 8px}}
+@media (max-width:1280px){.hm{grid-template-columns:minmax(0,1fr) 300px}.hq-art{display:none}}
+@media (max-width:1024px){.tleft{order:1;flex:1 1 auto}.tmid{order:2;gap:10px}.tright.pf{order:3}}
+@media (max-width:1100px){.hk-row,.hb-row,.hq-g{grid-template-columns:repeat(2,minmax(0,1fr))}.hm{grid-template-columns:1fr}.hm-side{display:grid;grid-template-columns:1fr 1fr}}
+@media (max-width:700px){.hm-side{grid-template-columns:1fr}.hk{min-height:0;padding:14px}.hk-ic{width:44px;height:44px}.hk-v b{font-size:28px}.hq-b{min-height:74px;padding:12px 14px}.hq-b>svg{width:30px;height:30px}.hq-b b{font-size:16px}
+  .hm-t thead{display:none}.hm-t,.hm-t tbody,.hm-t tr,.hm-t td{display:block}.hm-t tr{border-bottom:1px solid #eef2f7;padding:8px 14px}.hm-t td{border:0;padding:3px 0;display:flex;justify-content:space-between;gap:10px;text-align:right}
+  .hm-t td::before{content:attr(data-l);color:#64748b;font-size:12.5px;text-align:left}.hm-t td.act::before{content:none}.hm-t td.act{justify-content:flex-end;padding-top:6px}.hm-t td .sub{display:inline;margin-left:6px}}
+@media (max-width:480px){.hb-row{grid-template-columns:1fr}.hk-row,.hq-g{gap:10px}.hk{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}.hk-bg{display:none}.hk-ic{width:38px;height:38px;border-radius:12px}.hk-ic svg{width:22px;height:22px}.hk-l{font-size:13px}.hk-v b{font-size:26px}
+  .hq{padding:16px 14px}.hq-b{flex-direction:column;align-items:flex-start;gap:6px;min-height:0;padding:12px}.hq-b i{display:none}.hq-b small{font-size:12px}.hm-tabs{width:100%}.hm-tabs button{flex:1;justify-content:center;font-size:13.5px;padding:7px 6px}}
 </style>
 
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
@@ -1177,10 +1335,18 @@ html.booting .boot{display:flex;position:fixed;inset:0;align-items:center;justif
 </section>
 
 <div class="shell" id="shell" hidden>
+<aside class="side" id="side" aria-label="เมนูหลัก">
+  <div class="sbrand"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div><b>สยามเซอร์วิส</b><small>ศูนย์ตรวจสภาพรถเอกชน (ตรอ.)</small></div></div>
+  <nav class="snav" id="snav"></nav>
+  <div class="ssum" id="ssum"></div>
+</aside>
+<div class="sveil" id="sveil" hidden></div>
+<div class="sbody">
 <div class="topwrap">
   <header class="topbar">
-    <div class="tleft"><button class="toplink" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>หน้าแรก</span></button></div>
-    <div class="tcenter"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div class="tuser"><p>โปรแกรมบริหาร ตรอ.สยามเซอร์วิส</p></div></div>
+    <div class="tleft"><button type="button" class="sburger" id="sburger" aria-label="เปิดเมนู" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="avatar lg tmlogo" role="img" aria-label="โลโก้ ตรอ."></span></div>
+    <div class="tmid"><span class="tdate" id="tdate"></span><span class="ttime" id="ttime"></span>
+      <div class="tbell"><button type="button" class="tbell-btn" id="tbell" aria-haspopup="true" aria-expanded="false" aria-label="รายการแจ้งเตือน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="tbell-n" id="tbell-n" hidden></span></button><div class="tbell-menu" id="tbell-menu" hidden></div></div></div>
     <div class="tright pf">
       <button class="pfbtn" id="pfbtn" aria-haspopup="true" aria-expanded="false"><span class="avatar lg pfav"></span><span class="pfname uname"></span><svg class="pfcar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="pfmenu" id="pfmenu" hidden role="menu">
@@ -1194,8 +1360,8 @@ html.booting .boot{display:flex;position:fixed;inset:0;align-items:center;justif
   </header>
   <nav class="menu rail" aria-label="เมนู"></nav>
 </div>
-
 <main><div class="wrap" id="view"></div></main>
+</div>
 </div>
 <nav class="tabs" aria-label="เมนูหลัก" hidden></nav>
 <div class="toast" id="toast" hidden></div>
@@ -1314,8 +1480,50 @@ const VIEWS=[['home','ภาพรวมวันนี้'],['cust','ลูก�
 const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิดบิล',bell:'แจ้งเตือน',calc:'คำนวณ'};
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
-function renderNav(){$('.menu').innerHTML=navHTML(false)}
-function go(k){if(k!=='docs')psDay=null;cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
+// ===== แถบเมนูด้านซ้าย + แถบบน =====
+const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',close:'ปิดยอดเงินประจำวัน',inst:'ผ่อนชำระประกัน',expense:'รายจ่าย + กำไร',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
+const SIC={settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
+  money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
+  tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
+const SNAV=[['home'],['add'],['queue'],['cust'],['dlt'],['docs'],['g','money','การเงิน',['income','close','inst','expense','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
+const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
+const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
+let sOpen=new Set();
+function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='owner'?'settings':cur),own=user&&user.role==='owner';
+  const badge=k=>{const n=k==='dlt'?dltJobs().filter(b=>dltOf(b).st==='received').length:k==='bell'?dueList(7).length:k==='queue'?QUEUE.filter(q=>q.st==='wait'&&iso(new Date(q.at.created))===iso(TODAY)).length:0;return n?`<span class="sn-n">${n}</span>`:''};
+  const item=k=>k==='settings'&&!own||k==='backup'&&own?'':`<button type="button" class="sn-i${k===on?' on':''}" data-go="${k}" ${k===on?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${sIcon(k)}</svg><span>${SLBL[k]}</span>${badge(k)}</button>`;
+  $('#snav').innerHTML=SNAV.map(x=>{if(x[0]!=='g')return item(x[0]);const [,g,l,ks]=x,open=sOpen.has(g)||ks.includes(on);
+    return `<div class="sn-g${open?' open':''}"><button type="button" class="sn-i sn-gh" data-sg="${g}" aria-expanded="${open}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${SIC[g]}</svg><span>${l}</span><svg class="sn-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button><div class="sn-sub">${ks.map(item).join('')}</div></div>`}).join('');
+  $('#snav').querySelectorAll('[data-sg]').forEach(b=>b.onclick=()=>{const g=b.dataset.sg,el=b.parentNode,o=!el.classList.contains('open');el.classList.toggle('open',o);b.setAttribute('aria-expanded',o);o?sOpen.add(g):sOpen.delete(g)});
+  const td=intake.filter(b=>iso(b.d)===iso(TODAY)),debt=td.filter(b=>b.amt-b.paid>0.004).length,wait=dltJobs().filter(b=>dltOf(b).st==='received').length;
+  $('#ssum').innerHTML=`<div class="ss-h">สรุปงานวันนี้</div>
+    <button type="button" class="ss-r" data-go="income"><span>รถเข้า (เปิดบิล)</span><b>${td.length}</b><small>คัน</small></button>
+    <button type="button" class="ss-r" data-go="income"><span>รับชำระแล้ว</span><b>${money(td.reduce((a,b)=>a+Math.min(b.paid,b.amt),0)).replace(/\.00$/,'')}</b><small>บาท</small></button>
+    <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>ค้างชำระ</span><b>${debt}</b><small>บิล</small></button>
+    <button type="button" class="ss-r" data-go="dlt"><span>รอยื่นขนส่ง</span><b>${wait}</b><small>คัน</small></button>`;
+  tAlerts()}
+const TH_DAY=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
+const tClock=()=>{const d=new Date();if(!$('#tdate'))return;$('#tdate').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>วัน${TH_DAY[d.getDay()]}ที่ ${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
+  $('#ttime').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>${hmOf(d)} น.`};
+setInterval(tClock,20000);
+// รายการแจ้งเตือน (ใช้ทั้งกระดิ่งด้านบนและหน้าหลัก)
+function alertList(){const trw=intake.flatMap(b=>trWait(b)),late=dltJobs().filter(dltLate).length,debt=intake.filter(b=>b.amt-b.paid>0.004).length;
+  return [['tax','🚗','ภาษีรถใกล้หมดอายุ (30 วัน)',expList('tax').length,'#2563eb'],['prb','🛡️','พ.ร.บ. ใกล้หมดอายุ (30 วัน)',expList('prb').length,'#ea580c'],
+    ['ins','📋','ประกันภาคสมัครใจใกล้หมดอายุ',expList('ins').length,'#7c3aed'],['trw','⏳','เงินโอนรอตรวจสอบ',trw.length,'#d97706'],
+    ['late','🚚','งานขนส่งค้างเกินกำหนด',late,'#dc2626'],['debt','💰','บิลค้างชำระ',debt,'#be123c']]}
+function alertGo(k){if(['tax','prb','ins'].includes(k)){expKind=k;go('home');setTimeout(()=>{const e=$('#view .exp');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},60)}
+  else if(k==='trw'){go('home');setTimeout(()=>{const b=$('#home-trw');if(b)b.click()},30)}else if(k==='late'){dltF='late';go('dlt')}else if(k==='debt')go('income')}
+function tAlerts(){const L=alertList().filter(a=>a[3]),n=L.length,b=$('#tbell-n');if(!b)return;b.hidden=!n;b.textContent=n;
+  $('#tbell-menu').innerHTML=`<div class="tb-h">รายการแจ้งเตือน</div>${L.length?L.map(([k,ic,l,c,col])=>`<button type="button" data-al="${k}"><i>${ic}</i><span>${l}</span><b style="background:${col}">${c}</b></button>`).join(''):'<div class="tbell-empty">ไม่มีรายการที่ต้องติดตาม</div>'}`;
+  $('#tbell-menu').querySelectorAll('[data-al]').forEach(x=>x.onclick=()=>{bellTog(false);alertGo(x.dataset.al)})}
+const bellTog=o=>{$('#tbell-menu').hidden=!o;$('#tbell').setAttribute('aria-expanded',o)};
+$('#tbell').onclick=e=>{e.stopPropagation();bellTog($('#tbell-menu').hidden)};
+document.addEventListener('click',e=>{if(!e.target.closest('.tbell'))bellTog(false)});
+// มือถือ: เมนูซ้ายเลื่อนเข้าออก
+const sideTog=o=>{document.body.classList.toggle('side-open',o);$('#sveil').hidden=!o;$('#sburger').setAttribute('aria-expanded',o)};
+$('#sburger').onclick=()=>sideTog(!document.body.classList.contains('side-open'));$('#sveil').onclick=()=>sideTog(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){sideTog(false);bellTog(false)}});
+function go(k){if(k!=='docs')psDay=null;cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}sideTog(false);document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -1327,7 +1535,7 @@ const PAGE_KEEP=['home','add','cust','docs','dlt','queue','income','close','expe
 function enterApp(u,resumed){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
   document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));document.querySelectorAll('[data-owner-any]').forEach(b=>b.hidden=u.role!=='owner');
   document.querySelectorAll('.pfrole').forEach(n=>n.textContent=ROLE_TH[u.role]||'พนักงาน');document.querySelectorAll('.pfbr').forEach(n=>n.textContent=LIVE?(DB.branch?(u.role==='owner'?'ดูข้อมูล: ':'')+DB.branch.name:''):'โหมดทดลอง (ไม่บันทึกจริง)');
-  $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;
+  $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;tClock();
   let pg='home';if(resumed)try{const k=sessionStorage.getItem('siam-page'),ss=sessionStorage.getItem('siam-stsec');if(PAGE_KEEP.includes(k))pg=k;if(ss)stSec=ss}catch(e){}
   go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
@@ -1382,21 +1590,92 @@ const MGROUPS=[['งานหน้าร้าน','รถเข้า › ต�
 let expKind='tax',expQ='',hidden=new Set();
 const EXPK=[['tax','ทะเบียนรถ','<rect x="3" y="7" width="18" height="10" rx="3"/><path d="M7 17v2M17 17v2M3 12h18"/>'],['prb','พรบ. ภาคบังคับ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกันภาคสมัครใจ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
 const expList=k=>cars.filter(c=>c[k]&&daysTo(c[k])<=30&&!hidden.has(k+c.id)).sort((a,b)=>a[k]-b[k]);
+const ctShort=t=>{const m=/\(([^()]+)\)\s*$/.exec(t||'');return m?m[1]:(t||'–')};// แสดงรหัสสั้น เช่น รย.1 (ชื่อเต็มอยู่ใน title)
+let hdTab=null,hdQF='all',hdQ='',hdCal=null,hdDay=null;
 R.home=()=>{
-  const total=cars.length+(LIVE?0:120);
-  $('#view').innerHTML=`
-  <div class="mhead"><span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> เมนูหลัก</span>
-    <span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg> ข้อมูลทั้งหมดในระบบ <b class="num" style="color:#000">${total}</b> รายการ</span></div>
+  const isoT=iso(TODAY),yest=iso(plus(-1)),td=intake.filter(b=>iso(b.d)===isoT),yd=intake.filter(b=>iso(b.d)===yest).length;
+  const qT=QUEUE.filter(q=>iso(new Date(q.at.created))===isoT),qc=k=>qT.filter(q=>q.st===k).length;
+  if(!hdTab)hdTab=qT.length?'queue':'bills';
+  const diff=td.length-yd,ar=(n,unit)=>n?`<span class="hk-d ${n>0?'up':'dn'}">${n>0?'▲':'▼'} ${Math.abs(n)} ${unit}จากเมื่อวาน</span>`:`<span class="hk-d">เท่ากับเมื่อวาน</span>`;
+  const paidT=td.reduce((a,b)=>a+Math.min(b.paid,b.amt),0),debtB=intake.filter(b=>b.amt-b.paid>0.004),dltOpen=dltJobs().filter(b=>dltOf(b).st!=='done').length;
+  const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+  const IC={car:'<path d="M5 16V11l2-5h10l2 5v5"/><path d="M3 16h18v3H3z"/><circle cx="7.5" cy="13" r="1"/><circle cx="16.5" cy="13" r="1"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',bad:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    bill:'<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 16h3"/>',search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',queue:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',cash:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',coin:'<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',truck:'<rect x="2" y="7" width="12" height="9" rx="1.5"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="6" cy="18" r="1.8"/><circle cx="17" cy="18" r="1.8"/>',warn:'<path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17v.5"/>'};
+  const kpi=(cls,ic,l,v,unit,sub,go)=>`<button type="button" class="hk ${cls}" ${go?`data-go="${go}"`:''}><span class="hk-ic">${I(IC[ic])}</span><span class="hk-t"><span class="hk-l">${l}</span><span class="hk-v"><b>${v}</b><small>${unit}</small></span>${sub}</span><span class="hk-bg">${I(IC[ic])}</span></button>`;
+  const qtot=qT.length,qprog=qtot?Math.round((qc('pass')+qc('fail'))/qtot*100):0;
+  $('#view').innerHTML=`<div class="hd">
   ${(()=>{const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p})));if(!w.length)return'';const days=[...new Set(w.map(x=>iso(x.p.d)))].sort();
     return `<div class="ui-note warn home-trw">⏳ <span><b>เงินโอนรอตรวจสอบ ${w.length} รายการ · ${money(w.reduce((t,x)=>t+x.p.amt,0))} บาท</b> ตรวจกับแอปธนาคารแล้วกดยืนยัน</span><span class="sp"></span><button class="btn sm" id="home-trw" data-day="${days[0]}">ตรวจสอบ</button></div>`})()}
-  ${MGROUPS.map(([gt,gs,ks])=>`<section class="mgrp"><h3 class="mgh">${gt}<small>${gs}</small></h3><div class="mgrid">${ks.map(k=>MENU.find(m=>m[0]===k)).filter(Boolean).map(([k,t,d,bg,fg,ic])=>`<button class="mcard" data-go="${k}"><span class="mic" style="background:${bg};color:${fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ic}</svg></span><b>${t}</b><small>${d}</small>${k==='bell'&&dueList(7).length?`<span class="cnt mcnt">${dueList(7).length}</span>`:''}${k==='dlt'&&dltJobs().filter(b=>dltOf(b).st!=='done').length?`<span class="cnt mcnt">${dltJobs().filter(b=>dltOf(b).st!=='done').length}</span>`:''}</button>`).join('')}</div></section>`).join('')}
+  <div class="hk-row">
+    ${kpi('blue','car','รถเข้าวันนี้ (เปิดบิล)',td.length,'คัน',ar(diff,'คัน '),'income')}
+    ${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
+    ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากคิว ${qtot} คัน</span>`,'queue')}
+    ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'ไม่มีรถตรวจไม่ผ่าน'}</span>`,'queue')}
+  </div>
+  <section class="hq">
+    <div class="hq-h"><h2>เมนูด่วนสำหรับพนักงาน</h2><p>เริ่มงานได้อย่างรวดเร็ว</p></div>
+    <div class="hq-g">
+      <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ลงทะเบียนรถเข้าตรวจ</small></span><i>›</i></button>
+      <button type="button" class="hq-b green" data-go="queue">${I(IC.queue)}<span><b>คิวตรวจสภาพ</b><small>รับรถเข้าคิว / บันทึกผลตรวจ</small></span><i>›</i></button>
+      <button type="button" class="hq-b yellow" data-go="cust">${I(IC.search)}<span><b>ค้นหาข้อมูลลูกค้า</b><small>ทะเบียน / ชื่อ / เบอร์โทร</small></span><i>›</i></button>
+      <button type="button" class="hq-b purple" data-go="income">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รายได้ประจำวัน / ยอดค้าง</small></span><i>›</i></button>
+    </div>
+    <svg class="hq-art" viewBox="0 0 220 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 66h180M38 66V52l16-18h70l26 18h22c8 0 12 4 12 10v4"/><circle cx="62" cy="68" r="11"/><circle cx="160" cy="68" r="11"/><path d="M60 36h30v16H46M98 36h22l20 16H98z"/></svg>
+  </section>
+  <div class="hm">
+    <div class="ui-card hm-main">
+      <div class="hm-h"><div class="hm-tabs" role="tablist"><button role="tab" data-ht="queue" aria-selected="${hdTab==='queue'}">${I(IC.queue)}คิวตรวจสภาพวันนี้</button><button role="tab" data-ht="bills" aria-selected="${hdTab==='bills'}">${I(IC.bill)}บิลวันนี้ <span class="hm-c">${td.length}</span></button></div>
+        <label class="hm-s">${I(IC.search)}<input id="hd-q" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า / เบอร์โทร" value="${esc(hdQ)}"></label>
+        <button type="button" class="btn" data-go="${hdTab==='queue'?'queue':'add'}">＋ ${hdTab==='queue'?'รับรถเข้าคิว':'เปิดบิลใหม่'}</button></div>
+      ${hdTab==='queue'?`<div class="hm-f">${[['all','ทั้งหมด',qtot],['wait','รอตรวจ',qc('wait')],['check','กำลังตรวจ',qc('check')],['pass','ตรวจผ่าน',qc('pass')],['fail','ไม่ผ่าน',qc('fail')]].map(([k,l,n])=>`<button type="button" class="hm-fc${hdQF===k?' on':''}" data-qf="${k}">${l}<b>${n}</b></button>`).join('')}</div>`:''}
+      <div id="hd-rows"></div>
+    </div>
+    <div class="hm-side">
+      <div class="ui-card hc"><div class="hc-h"><h2>${I('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>')}ปฏิทินครบกำหนดลูกค้า</h2></div><div id="hd-cal"></div></div>
+      <div class="ui-card ha"><div class="hc-h"><h2>${I('<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>')}รายการแจ้งเตือน</h2></div>
+        <div class="ha-l">${alertList().map(([k,ic,l,c,col])=>`<button type="button" class="ha-i" data-al="${k}" ${c?'':'disabled'}><i>${ic}</i><span>${l}</span><b style="${c?`background:${col}`:''}">${c}</b></button>`).join('')}</div></div>
+    </div>
+  </div>
+  <div class="hb-row">
+    <button type="button" class="hb pink" data-go="income"><span class="hb-ic">${I(IC.coin)}</span><span><small>รับชำระวันนี้</small><b>${money(paidT)}<em>บาท</em></b></span></button>
+    <button type="button" class="hb sky" data-go="income"><span class="hb-ic">${I(IC.bill)}</span><span><small>บิลวันนี้</small><b>${td.length}<em>ใบ · ${money(td.reduce((a,b)=>a+b.amt,0))} บาท</em></b></span></button>
+    <button type="button" class="hb sand" data-go="income"><span class="hb-ic">${I(IC.warn)}</span><span><small>ค้างชำระทั้งหมด</small><b>${debtB.length}<em>บิล · ${money(debtB.reduce((a,b)=>a+b.amt-b.paid,0))} บาท</em></b></span></button>
+    <button type="button" class="hb lilac" data-go="dlt"><span class="hb-ic">${I(IC.truck)}</span><span><small>งานขนส่งที่ยังไม่เสร็จ</small><b>${dltOpen}<em>คัน</em></b></span><i>›</i></button>
+  </div>
   <div class="exp">
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
       <div class="expt" role="tablist">${EXPK.map(([k,l,ic])=>`<button role="tab" data-ek="${k}" aria-selected="${k===expKind}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ic}</svg>${l}<span class="ecount">${expList(k).length}</span></button>`).join('')}</div></div>
     <div class="row between" style="flex-wrap:wrap"><span class="sub">หากต้องการปิดการแสดงผลรายการใด กดปุ่ม × ท้ายแถวรายการนั้นได้เลย</span>
       <label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="eq" placeholder="ค้นหา ทะเบียนรถ / ชื่อลูกค้า" value="${esc(expQ)}"></label></div>
     <div id="erows"></div>
-  </div>`;
+  </div></div>`;
+  // ตารางกลาง: คิววันนี้ / บิลวันนี้
+  const QP={wait:'warn',check:'info',pass:'ok',fail:'bad'};
+  const rows=()=>{const s=hdQ.replace(/\s/g,'').toLowerCase(),hit=x=>!s||[x.plate,x.name,x.tel,x.no].join('').replace(/\s/g,'').toLowerCase().includes(s);
+    if(hdTab==='queue'){const L=qT.filter(q=>(hdQF==='all'||q.st===hdQF)&&hit(q));
+      return L.length?`<div class="tablewrap"><table class="hm-t"><thead><tr><th>ลำดับ</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ประเภทรถ</th><th>ชื่อลูกค้า</th><th>สถานะ</th><th></th></tr></thead><tbody>${L.map(q=>`<tr><td data-l="ลำดับ">${qT.indexOf(q)+1}</td><td data-l="เวลา">${hmOf(q.at.created)}</td><td data-l="ทะเบียน"><b>${esc(q.plate)}</b><div class="sub">${esc(q.prov||'')}</div></td><td data-l="ประเภทรถ" title="${esc(q.ctype||'')}">${esc(ctShort(q.ctype))}</td><td data-l="ลูกค้า">${esc(q.name||'–')}</td><td data-l="สถานะ"><span class="hp ${QP[q.st]}">${Q_ST[q.st][0]}</span></td><td class="act"><button type="button" class="btn line sm" data-go="queue">จัดการ</button></td></tr>`).join('')}</tbody></table></div>`
+        :`<div class="hm-empty">${I(IC.queue)}<b>${qtot?'ไม่มีรายการตามที่เลือก':'ยังไม่มีรถเข้าคิววันนี้'}</b><span>รับรถเข้าคิวได้ที่ปุ่ม "รับรถเข้าคิว" ด้านบน</span></div>`}
+    const L=td.filter(hit).sort((a,z)=>z.d-a.d||(z.t>a.t?1:-1));
+    return L.length?`<div class="tablewrap"><table class="hm-t"><thead><tr><th>เวลา</th><th class="hm-no">เลขที่บิล</th><th>ทะเบียนรถ</th><th>ประเภทรถ</th><th>ชื่อลูกค้า</th><th class="r">ยอดเงิน</th><th>สถานะ</th><th></th></tr></thead><tbody>${L.map(b=>{const d=b.amt-b.paid>0.004,w=trWait(b).length;return `<tr><td data-l="เวลา">${esc(b.t||'')}</td><td data-l="เลขที่บิล" class="hm-no">${esc(b.no||'–')}</td><td data-l="ทะเบียน"><b>${esc(b.plate)}</b><div class="sub">${esc(b.prov||'')}</div></td><td data-l="ประเภทรถ" title="${esc(b.type||'')}">${esc(ctShort(b.type))}</td><td data-l="ลูกค้า">${esc(b.name)}</td><td data-l="ยอดเงิน" class="r num">${money(b.amt)}</td><td data-l="สถานะ"><span class="hp ${d?'bad':w?'warn':'ok'}">${d?'ค้าง '+money(b.amt-b.paid):w?'โอนรอตรวจสอบ':'ชำระครบ'}</span></td><td class="act"><button type="button" class="btn line sm" data-showbill="${b.id}">ดูบิล</button></td></tr>`}).join('')}</tbody></table></div>`
+      :`<div class="hm-empty">${I(IC.bill)}<b>${td.length?'ไม่พบบิลตามคำค้น':'ยังไม่มีบิลวันนี้'}</b><span>เปิดบิลใหม่ได้ที่ปุ่ม "เปิดบิลใหม่"</span></div>`};
+  const drawRows=()=>{$('#hd-rows').innerHTML=rows()};drawRows();
+  document.querySelectorAll('[data-ht]').forEach(b=>b.onclick=()=>{hdTab=b.dataset.ht;R.home()});
+  document.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{hdQF=b.dataset.qf;document.querySelectorAll('[data-qf]').forEach(x=>x.classList.toggle('on',x===b));drawRows()});
+  $('#hd-q').oninput=e=>{hdQ=e.target.value;drawRows()};
+  document.querySelectorAll('.ha-i').forEach(x=>x.onclick=()=>alertGo(x.dataset.al));
+  // ปฏิทิน: วันที่รถลูกค้าครบกำหนดภาษี / พ.ร.บ. / ประกัน
+  const KL={tax:'ภาษี',prb:'พ.ร.บ.',ins:'ประกัน',k:'พ.ร.บ. ขนส่ง'};
+  const dueOn=d=>{const k=iso(d),o=[];cars.forEach(c=>['tax','prb','ins','k'].forEach(f=>{if(c[f]&&iso(c[f])===k)o.push({c,f})}));return o};
+  const cal=()=>{const m=hdCal||new Date(TODAY.getFullYear(),TODAY.getMonth(),1),y=m.getFullYear(),mo=m.getMonth(),first=new Date(y,mo,1).getDay(),n=new Date(y,mo+1,0).getDate();
+    const cnt={};cars.forEach(c=>['tax','prb','ins','k'].forEach(f=>{const d=c[f];if(d&&d.getFullYear()===y&&d.getMonth()===mo)cnt[d.getDate()]=(cnt[d.getDate()]||0)+1}));
+    const sel=hdDay&&hdDay.getFullYear()===y&&hdDay.getMonth()===mo?hdDay.getDate():0,list=hdDay?dueOn(hdDay):[];
+    $('#hd-cal').innerHTML=`<div class="cal-h"><button type="button" data-cm="-1" aria-label="เดือนก่อน">‹</button><b>${TH_MF[mo]} ${y+543}</b><button type="button" data-cm="1" aria-label="เดือนถัดไป">›</button></div>
+      <div class="cal-g">${['อา','จ','อ','พ','พฤ','ศ','ส'].map(d=>`<span class="cal-w">${d}</span>`).join('')}${'<span></span>'.repeat(first)}${[...Array(n)].map((_,i)=>{const d=i+1,t=y===TODAY.getFullYear()&&mo===TODAY.getMonth()&&d===TODAY.getDate();
+        return `<button type="button" class="cal-d${t?' today':''}${d===sel?' sel':''}${cnt[d]?' has':''}" data-cd="${d}" title="${cnt[d]?`ครบกำหนด ${cnt[d]} รายการ`:''}">${d}</button>`}).join('')}</div>
+      ${hdDay?`<div class="cal-l"><div class="cal-lh">${beFull(hdDay)} · ${list.length?`ครบกำหนด ${list.length} รายการ`:'ไม่มีรายการครบกำหนด'}</div>${list.slice(0,6).map(({c,f})=>`<button type="button" data-open="${c.id}"><b>${esc(c.plate)}</b><span>${esc(c.name)}</span><em>${KL[f]}</em></button>`).join('')}${list.length>6?`<div class="sub">และอีก ${list.length-6} รายการ</div>`:''}</div>`:'<div class="cal-hint">จุดสีส้ม = มีรถลูกค้าครบกำหนด กดวันที่เพื่อดูรายการ</div>'}`;
+    $('#hd-cal').querySelectorAll('[data-cm]').forEach(b=>b.onclick=()=>{hdCal=new Date(y,mo+ +b.dataset.cm,1);cal()});
+    $('#hd-cal').querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>{const d=new Date(y,mo,+b.dataset.cd);hdDay=hdDay&&iso(hdDay)===iso(d)?null:d;cal()})};
+  cal();
   const draw=()=>{const s=expQ.replace(/\s/g,'').toLowerCase();
     const list=expList(expKind).filter(c=>!s||(c.plate+c.name).replace(/\s/g,'').toLowerCase().includes(s));
     $('#erows').innerHTML=list.length?`<div class="tablewrap"><table><tbody>${list.map(c=>`<tr class="rowbtn" data-open="${c.id}"><td>${plateHTML(c)}</td><td>${esc(c.name)}<div class="sub">${esc(c.tel)}</div></td><td class="hide-sm">${esc(c.model)}</td><td class="num">${fmt(c[expKind])}</td><td>${status(c[expKind])}</td><td style="text-align:right"><button class="xclose" data-hide="${expKind+c.id}" aria-label="ซ่อนรายการ">×</button></td></tr>`).join('')}</tbody></table></div>`
@@ -1407,6 +1686,8 @@ R.home=()=>{
   if($('#home-trw'))$('#home-trw').onclick=e=>{closeDate=e.target.dataset.day;closeEdit=false;go('close')};
   $('#eq').oninput=e=>{expQ=e.target.value;draw()};
   draw();
+  // คิวตรวจในฐานข้อมูลจริง: โหลดครั้งแรกแล้ววาดใหม่ (ไม่วนโหลด)
+  if(LIVE&&!R.home.qd){R.home.qd=1;qReload().then(()=>{if(cur==='home'){if(!QUEUE.some(q=>iso(new Date(q.at.created))===isoT)||hdTab!=='queue')hdTab=null;R.home();renderNav()}}).catch(()=>{})}
 };
 
 /* หน้ารายได้ + ยอดค้าง และ หน้าผ่อนชำระประกัน (โครงเดียวกัน) */
