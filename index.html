@@ -2934,12 +2934,21 @@ R.add=(E)=>{
     if(!hit){r.innerHTML=`<span class="pill bad">ไม่มีประวัติ</span><span class="sub">ลูกค้าใหม่ กรอกข้อมูลด้านล่างได้เลย</span>`;$('#b-cha').value=cha;$('#b-num').value=num;$('#b-city').value=city;ssRefresh();return}
     r.innerHTML=`<span class="pill ok">มีประวัติ</span>${plateHTML(hit)}<span>${esc(hit.name)} · ${esc(hit.model)}</span><button type="button" class="btn ghost" id="x-copy">คัดลอกข้อมูลรถคันนี้ลงบิล</button>`;
     $('#x-copy').onclick=()=>{
+      // ข้อมูลเต็มจากฐานข้อมูล (raw) มีเฉพาะโหมดใช้งานจริง โหมดทดลองใช้ข้อมูลย่อ
+      const R=hit.raw||{},cu=R.customers||{},sv=(id,val)=>{const e=$('#'+id);if(e&&val!=null&&val!=='')e.value=val},
+        hasOpt=(id,val)=>[...$('#'+id).options].some(o=>o.value===val);
       const m=hit.plate.match(/^(\S+)\s*(\d+)$/)||[0,hit.plate,''];
       $('#b-cha').value=m[1];$('#b-num').value=m[2];$('#b-city').value=hit.prov;
-      $('#b-type').value=hit.type==='มอเตอร์ไซค์'?'moto':hit.type==='กระบะ'?'pickup':'sedan';
-      const bm=hit.model.split(' ');if(SET.brands.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
-      $('#b-cc').value=hit.cc;setDate('b-taxexp',iso(hit.tax));
+      if(R.car_type&&hasOpt('b-type',R.car_type))$('#b-type').value=R.car_type;
+      else $('#b-type').value=hit.type==='มอเตอร์ไซค์'?'moto':hit.type==='กระบะ'?'pickup':'sedan';
+      $('#b-type').dispatchEvent(new Event('change',{bubbles:true}));
+      const bm=hit.model.split(' '),brand=R.brand||bm[0];if(hasOpt('b-brand',brand))$('#b-brand').value=brand;$('#b-model').value=R.brand?(R.model||''):bm.slice(1).join(' ');
+      if(R.body){if(hasOpt('b-body',R.body))$('#b-body').value=R.body;else if(hasOpt('b-body','อื่นๆ')){$('#b-body').value='อื่นๆ';$('#b-body-other').hidden=false;$('#b-body-other').value=R.body}}
+      sv('b-color',R.color);sv('b-chassis',R.chassis_no);sv('b-engine',R.engine_no);sv('b-kg',R.weight_kg);
+      $('#b-cc').value=hit.cc;if(R.reg_date)setDate('b-reg',R.reg_date);setDate('b-taxexp',iso(hit.tax));
       const nm=hit.name.split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=hit.tel;$('#c-prov').value=hit.prov;
+      if(cu.prefix&&hasOpt('c-pre',cu.prefix))$('#c-pre').value=cu.prefix;
+      sv('c-id',cu.id_card);sv('c-addr',cu.address);sv('c-sub',cu.tumbol);sv('c-dist',cu.amphoe);sv('c-prov',cu.province);sv('c-zip',cu.zipcode);sv('c-short',cu.short_note);
       ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
     };
   };
@@ -3262,7 +3271,7 @@ const DB=(()=>{
     cars.length=0;intake.length=0;oldBills.length=0;NEWS.length=0;seq=1e9;bseq=1e9;
     vs.forEach(v=>{const cu=v.customers||{};cars.push({id:v.id,custId:v.customer_id,ctype:v.car_type,plate:v.plate,prov:v.province,
       name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:TT(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
-      tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),line:!!cu.line_user_id,history:[],created:new Date(v.created_at)})});
+      tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),line:!!cu.line_user_id,history:[],created:new Date(v.created_at),raw:v})});
     bs.forEach(r=>{const at=new Date(r.bill_at),s=r.snapshot||{};
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',type:s.type||'',model:s.model||'',cc:s.cc||'',
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
@@ -3284,6 +3293,7 @@ const DB=(()=>{
       if(c.custId)chk(await s.from('customers').update(cust).eq('id',c.custId));
       else c.custId=chk(await s.from('customers').insert(cust).select('id').single()).id;
       veh.customer_id=c.custId;
+      c.raw={...(c.raw||{}),...veh,customers:{...((c.raw||{}).customers||{}),...cust}};
       const vid=chk(await s.from('vehicles').upsert(veh,{onConflict:'plate,province'}).select('id').single()).id;
       const row=chk(await s.from('bills').insert({branch_id:branch.id,customer_id:c.custId,vehicle_id:vid,snapshot:snap,items:b.items,ins_premium:b.ins,discount:b.disc,total:b.amt,pick_date:pick,note:billNote}).select('id,bill_no').single());
       if(b.pays.length)chk(await s.from('payments').insert(b.pays.map(p=>({bill_id:row.id,branch_id:branch.id,amount:p.amt,method:p.how,by_name:p.by||me.name}))));
