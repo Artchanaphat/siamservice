@@ -3,7 +3,11 @@
 // ปิดตัวเลือก "Verify JWT" ส่วน Channel secret ใส่ในแอป (ตั้งค่าระบบ) ได้เลย
 
 const url = Deno.env.get("SUPABASE_URL") ?? "";
-const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+// ใช้ service role key แบบเดิม หรือ secret key แบบใหม่ (sb_secret_...) อย่างใดอย่างหนึ่งที่ Supabase ให้มา
+const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ||
+  (() => { try { return Object.values(JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}"))[0] as string; } catch { return ""; } })() || "";
+const hdr: Record<string, string> = { "Content-Type": "application/json", apikey: key };
+if (!key.startsWith("sb_")) hdr.Authorization = `Bearer ${key}`;
 
 // อ่าน Channel secret จากฐานข้อมูล (ที่เจ้าของร้านใส่ในหน้าตั้งค่า) หรือจาก Secret ของ Edge Function ถ้ามี
 const envSecret = Deno.env.get("LINE_CHANNEL_SECRET") ?? "";
@@ -11,7 +15,7 @@ async function channelSecret(): Promise<string> {
   if (envSecret) return envSecret;
   const r = await fetch(`${url}/rest/v1/rpc/line_channel_secret`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", apikey: key, Authorization: `Bearer ${key}` },
+    headers: hdr,
     body: "{}",
   });
   return r.ok ? ((await r.json()) ?? "") : "";
@@ -39,7 +43,7 @@ Deno.serve(async (req) => {
     if (!user || e.source?.type !== "user") continue;
     const r = await fetch(`${url}/rest/v1/rpc/line_event`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", apikey: key, Authorization: `Bearer ${key}` },
+      headers: hdr,
       body: JSON.stringify({
         p_user: user,
         p_type: e.type,
