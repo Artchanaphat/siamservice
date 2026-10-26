@@ -807,12 +807,21 @@ body.mgmt .tbranch{display:none}
 .line-auto{color:#06a147;font-weight:600;font-size:12.5px;white-space:nowrap}
 @media (max-width:900px){.ex-add{grid-template-columns:1fr 1fr}.ex-add>b,.ex-add .btn{grid-column:1/-1}.db-tiles{grid-template-columns:1fr 1fr}}
 @media print{.receipt.slip .rc-line{flex-direction:column;text-align:center}}
-.au-bar select{height:38px;box-sizing:border-box;padding:0 8px}.au-bar .cl-date{margin-right:0}
-.au-tbl td{vertical-align:top}.au-tbl td:last-child{line-height:1.5}
-.au-pill{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:#eef2f7;color:#334155}
+.cl-bar.au-bar{gap:10px 20px}.cl-bar.au-bar .cl-date{margin-right:0}.au-bar select{height:38px;box-sizing:border-box;padding:0 8px;min-width:120px}.au-n{margin-left:auto}
+.au-card{padding:0}
+.au-list{list-style:none;margin:0;padding:0}
+.au-it{display:grid;grid-template-columns:76px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid #eef1f4}.au-it:last-child{border-bottom:0}
+.au-tm{font-variant-numeric:tabular-nums;color:#4b5563;font-weight:600;font-size:14px;padding-top:2px}
+.au-bd{min-width:0}
+.au-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
+.au-cat{margin-left:auto;font-size:12.5px;color:#6b7280}
+.au-meta{font-size:13px;color:#6b7280;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}.au-meta b{color:#111827;font-weight:600}
+.au-pill{display:inline-block;padding:1px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:#eef2f7;color:#334155}
 .au-pill.au-insert{background:#dcfce7;color:#15803d}.au-pill.au-update{background:#dbeafe;color:#1d4ed8}.au-pill.au-delete{background:#fee2e2;color:#c81e1e}
-.au-js{display:grid;grid-template-columns:1fr 1fr;gap:10px}.au-js pre{background:#f7f8fa;border-radius:8px;padding:8px;font-size:12px;max-height:240px;overflow:auto;white-space:pre-wrap;word-break:break-all;margin:4px 0 0}
-@media (max-width:640px){.au-js{grid-template-columns:1fr}.au-tbl tr.au-x td{display:block}}
+.au-d{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:5px 16px;margin:10px 0 0;padding:10px 14px;background:#f8fafc;border:1px solid #edf1f5;border-radius:8px;font-size:13.5px}
+.au-d dt{color:#6b7280}.au-d dd{margin:0;min-width:0;overflow-wrap:anywhere}
+.au-d s{color:#9ca3af}.au-d i{font-style:normal;color:#9ca3af;margin:0 6px}.au-d dd b{font-weight:600}
+@media (max-width:640px){.au-it{grid-template-columns:1fr;gap:4px;padding:12px}.au-cat{display:none}.au-d{grid-template-columns:1fr;gap:0}.au-d dd{margin-bottom:6px}.au-n{margin-left:0}}
 .st-grid.st-keys{padding:0;grid-template-columns:1fr 1fr}.st-keys .field>span em{font-style:normal;font-weight:400;font-size:12.5px}
 .st-keys .st-num .btn{height:38px;padding:0 14px;flex:none}#lk-hook{background:#f7f8fa;color:#374151}
 @media (max-width:640px){.st-grid.st-keys{grid-template-columns:1fr}}
@@ -3679,28 +3688,52 @@ async function receiptLine(b){const box=$('#rc-line');if(!box)return;const car=c
 
 /* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
 let auDay=null,auWho='',auBr='';
-const AU_T={bills:'บิล',payments:'รับเงิน',customers:'ลูกค้า',vehicles:'รถ',expenses:'รายจ่าย',cash_closes:'ปิดยอด',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจ',staff:'พนักงาน',branches:'สาขา',app_settings:'ตั้งค่าระบบ'};
-const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการ',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
-  first_name:'ชื่อ',last_name:'นามสกุล',tel:'เบอร์โทร',address:'ที่อยู่',plate:'ทะเบียน',province:'จังหวัด',tax_exp:'ภาษีหมดอายุ',prb_exp:'พ.ร.บ.หมดอายุ',ins_exp:'ประกันหมดอายุ',ins_company:'บริษัทประกัน',
-  brand:'ยี่ห้อ',model:'รุ่น',color:'สี',cc:'ซีซี',category:'หมวด',exp_date:'วันที่',counted_cash:'เงินสดที่นับได้',cash:'เงินสด',cert_no:'เลขใบรับรอง',receipt_no:'เลขใบเสร็จขนส่ง',
-  role:'ตำแหน่ง',active:'เปิดใช้งาน',full_name:'ชื่อพนักงาน',branch_id:'สาขา',name:'ชื่อ',phone:'เบอร์โทร',promptpay:'พร้อมเพย์',value:'ค่าที่ตั้ง',line_user_id:'LINE',billed:'เปิดบิลแล้ว'};
-const AU_ST={open:'ค้างชำระ',paid:'จ่ายครบ',void:'ยกเลิก',received:'รอยื่น',submitted:'ยื่นแล้ว',plate:'ได้ป้ายแล้ว',done:'ลูกค้ารับแล้ว',wait:'รอตรวจ',check:'กำลังตรวจ',pass:'ผ่าน',fail:'ไม่ผ่าน'};
-const auV=(k,v)=>v==null||v===''?'–':typeof v==='object'?(k==='items'&&Array.isArray(v)?v.map(i=>i[0]+' '+money(i[1])).join(', '):k==='value'?'(ค่าบริการ/รายการ)':JSON.stringify(v).slice(0,80))
-  :k==='status'?AU_ST[v]||v:/amount|total|discount|cash|premium/.test(k)?money(v):typeof v==='boolean'?(v?'ใช่':'ไม่'):String(v);
-function auText(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='delete'?o:n,T=AU_T[r.tbl]||r.tbl;
-  const chg=()=>Object.keys(n).filter(k=>!/_at$|_by|_name$|^id$/.test(k)||k==='full_name').map(k=>`${AU_F[k]||k}: ${auV(k,o[k])} → ${auV(k,n[k])}`).join(' · ');
-  if(r.tbl==='bills'){if(a==='insert')return `เปิดบิล ${d.bill_no||''} ${(d.snapshot||{}).plate||''} ยอด ${money(d.total)}`;if(a==='update')return `แก้ไขบิล #${r.row_id}: ${chg()}`;return `ลบบิล ${d.bill_no||''}`}
-  if(r.tbl==='payments')return a==='insert'?`รับเงิน ${money(d.amount)} บาท (${d.method}) บิล #${d.bill_id}`:a==='delete'?`ลบการรับเงิน ${money(d.amount)} บาท บิล #${d.bill_id}`:`แก้การรับเงิน: ${chg()}`;
-  if(r.tbl==='expenses')return a==='insert'?`บันทึกรายจ่าย ${d.category} ${money(d.amount)} บาท${d.note?' ('+d.note+')':''}`:a==='delete'?`ลบรายจ่าย ${d.category} ${money(d.amount)} บาท`:`แก้รายจ่าย: ${chg()}`;
-  if(r.tbl==='cash_closes')return a==='update'?`แก้ปิดยอด: ${chg()}`:`ปิดยอดของ ${d.staff_name} เงินสดตามระบบ ${money(d.cash)} นับได้ ${d.counted_cash==null?'–':money(d.counted_cash)}`;
-  if(r.tbl==='insp_queue')return a==='insert'?`รถเข้าคิว ${d.plate}`:a==='delete'?`ลบ ${d.plate} ออกจากคิว`:`คิว #${r.row_id}: ${chg()}`;
-  if(r.tbl==='app_settings'){const ov=o.value||{},nv=n.value||{},SL={fee_tax:'ค่าฝากต่อภาษี',fee_prb_moto:'ค่าต่อ พ.ร.บ. มอเตอร์ไซค์',fee_prb_car:'ค่าต่อ พ.ร.บ. รถยนต์',insp_car:'ค่าตรวจรถยนต์',insp_heavy:'ค่าตรวจรถหนัก',insp_moto:'ค่าตรวจมอเตอร์ไซค์',reg_min_year:'ปีจดทะเบียนเก่าสุด',brands:'ยี่ห้อรถ',bodies:'ลักษณะรถ',prefixes:'คำนำหน้า',insurers:'บริษัทประกัน',passthru:'รายการเงินนำส่ง',exp_cats:'หมวดรายจ่าย',line_oa:'LINE ร้าน',line_days:'วันเตือน LINE'};
-    const ks=[...new Set([...Object.keys(ov),...Object.keys(nv)])].filter(k=>JSON.stringify(ov[k])!==JSON.stringify(nv[k]));
-    return 'แก้ตั้งค่าระบบ: '+(ks.map(k=>(SL[k]||k)+(typeof nv[k]==='number'||typeof nv[k]==='string'?` ${ov[k]??'–'} → ${nv[k]}`:Array.isArray(nv[k])?` (${(ov[k]||[]).length} → ${nv[k].length} รายการ)`:'')).join(' · ')||'ไม่มีการเปลี่ยนแปลง')}
-  if(r.tbl==='dlt_jobs')return `งานขนส่ง บิล #${r.row_id}: ${a==='insert'?'สถานะ '+auV('status',d.status):chg()}`;
-  if(a==='insert')return `เพิ่ม${T} ${d.plate||d.full_name||d.username||[d.first_name,d.last_name].filter(Boolean).join(' ')||d.name||''}`;
-  if(a==='delete')return `ลบ${T} #${r.row_id}`;
-  return `แก้ไข${T} #${r.row_id}: ${chg()}`}
+const AU_T={bills:'บิล',payments:'การรับชำระ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',expenses:'รายจ่าย',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
+const AU_A={insert:'เพิ่ม',update:'แก้ไข',delete:'ลบ'};
+const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการในบิล',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าเบี้ยประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
+  first_name:'ชื่อ',last_name:'นามสกุล',prefix:'คำนำหน้า',tel:'เบอร์โทร',address:'ที่อยู่',plate:'ทะเบียน',province:'จังหวัด',tax_exp:'วันภาษีหมดอายุ',prb_exp:'วัน พ.ร.บ. หมดอายุ',ins_exp:'วันประกันหมดอายุ',ins_company:'บริษัทประกัน',
+  brand:'ยี่ห้อ',model:'รุ่น',color:'สี',cc:'ซีซี',body:'ลักษณะรถ',category:'หมวด',exp_date:'วันที่',counted_cash:'เงินสดที่นับได้',cash:'เงินสดตามระบบ',transfer:'เงินโอน',cert_no:'เลขใบรับรองตรวจสภาพ',receipt_no:'เลขใบเสร็จขนส่ง',
+  role:'สิทธิ์ผู้ใช้',active:'สถานะบัญชี',full_name:'ชื่อผู้ใช้งาน',username:'ชื่อเข้าระบบ',branch_id:'สาขา',name:'ชื่อ',phone:'เบอร์โทร',promptpay:'พร้อมเพย์',line_user_id:'การเชื่อมต่อ LINE',billed:'สถานะบิล',
+  staff_name:'พนักงาน',bill_no:'เลขที่บิล',vtype:'ประเภทรถ',kind:'ประเภท',diff:'ส่วนต่าง'};
+const AU_SKIP=/(_at|_by|_by_name|_code)$|^(id|user_id|row_id)$/;
+const AU_ST={open:'ค้างชำระ',paid:'ชำระครบ',void:'ยกเลิก',received:'รับเรื่องแล้ว',submitted:'ยื่นขนส่งแล้ว',plate:'ได้ป้ายแล้ว',done:'ส่งมอบลูกค้าแล้ว',wait:'รอตรวจ',check:'กำลังตรวจ',pass:'ผ่าน',fail:'ไม่ผ่าน'};
+const AU_ROLE={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
+const AU_SL={fee_tax:'ค่าบริการต่อภาษี',fee_prb_moto:'ค่าบริการ พ.ร.บ. รถจักรยานยนต์',fee_prb_car:'ค่าบริการ พ.ร.บ. รถยนต์',insp_car:'ค่าตรวจสภาพรถยนต์',insp_heavy:'ค่าตรวจสภาพรถเกิน 2,000 กก.',insp_moto:'ค่าตรวจสภาพรถจักรยานยนต์',
+  reg_min_year:'ปีจดทะเบียนเก่าสุด',brands:'ยี่ห้อรถ',bodies:'ลักษณะรถ',prefixes:'คำนำหน้าชื่อ',insurers:'บริษัทประกัน',passthru:'รายการเงินนำส่ง',exp_cats:'หมวดรายจ่าย',line_oa:'LINE ID ของร้าน',line_days:'แจ้งเตือนล่วงหน้า'};
+const auBrN=id=>{const b=(LIVE?DB.branches:[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]).find(x=>x.id===id);return b?b.name:'ส่วนกลาง'};
+const auV=(k,v)=>v==null||v===''?'–':k==='items'&&Array.isArray(v)?v.map(i=>i[0]+' '+money(i[1])).join(', '):k==='status'?AU_ST[v]||v:k==='role'?AU_ROLE[v]||v:k==='branch_id'?auBrN(v)
+  :k==='active'?(v?'ใช้งาน':'ระงับ'):k==='line_user_id'?'เชื่อมต่อแล้ว':k==='billed'?(v?'เปิดบิลแล้ว':'ยังไม่เปิดบิล'):/amount|total|discount|cash|premium|transfer|diff/.test(k)&&!isNaN(v)?money(v)+' บาท'
+  :/(_exp|_date)$/.test(k)&&/^\d{4}-\d\d-\d\d/.test(v)?fmt(new Date(String(v).slice(0,10)+'T00:00')):typeof v==='boolean'?(v?'ใช่':'ไม่ใช่'):typeof v==='object'?'(ข้อมูลชุด)':String(v);
+// แถวรายละเอียด: [หัวข้อ, ค่าเดิม, ค่าใหม่]  ค่าเดิม = undefined หมายถึงแสดงค่าเดียว
+const auDiff=(o,n,keys)=>{const out=[];(keys||[...new Set([...Object.keys(o),...Object.keys(n)])]).forEach(k=>{if(AU_SKIP.test(k)&&k!=='full_name')return;
+  if(k==='snapshot'&&o[k]&&n[k]&&typeof n[k]==='object'){out.push(...auDiff(o[k],n[k]));return}
+  if(!AU_F[k]||JSON.stringify(o[k])===JSON.stringify(n[k]))return;out.push([AU_F[k],auV(k,o[k]),auV(k,n[k])])});return out};
+const auInfo=(d,keys)=>keys.filter(k=>d[k]!=null&&d[k]!=='').map(k=>[AU_F[k]||k,undefined,auV(k,d[k])]);
+function auEntry(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='delete'?o:n,T=AU_T[r.tbl]||r.tbl,sn=d.snapshot||{};
+  const chg=()=>auDiff(o,n,Object.keys(n));let t,rows=[];
+  switch(r.tbl){
+  case'bills':t=(a==='insert'?'เปิดบิล':a==='update'?'แก้ไขบิล':'ลบบิล')+(d.bill_no||o.bill_no?' '+(d.bill_no||o.bill_no):' #'+r.row_id);
+    rows=a==='update'?chg():[['ทะเบียน',undefined,[sn.plate,sn.province].filter(Boolean).join(' ')||'–'],['ลูกค้า',undefined,[sn.first_name,sn.last_name].filter(Boolean).join(' ')||'–'],['ยอดรวม',undefined,money(d.total)+' บาท']].filter(x=>x[2]!=='–');break;
+  case'payments':t=(a==='insert'?'รับชำระเงิน':a==='delete'?'ยกเลิกการรับชำระ':'แก้ไขการรับชำระ')+(a!=='update'?' '+money(d.amount)+' บาท':'');rows=a==='update'?chg():[['วิธีชำระ',undefined,d.method||'–'],['บิลอ้างอิง',undefined,'#'+d.bill_id]];break;
+  case'expenses':t=(a==='insert'?'บันทึกรายจ่าย':a==='delete'?'ลบรายจ่าย':'แก้ไขรายจ่าย')+(a!=='update'?' '+money(d.amount)+' บาท':'');rows=a==='update'?chg():auInfo(d,['category','exp_date','note']);break;
+  case'cash_closes':t=a==='update'?'แก้ไขการปิดยอด':'ปิดยอดประจำวัน';rows=a==='update'?chg():auInfo(d,['staff_name','cash','counted_cash','transfer','note']);break;
+  case'insp_queue':t=a==='insert'?'รับรถเข้าคิวตรวจสภาพ':a==='delete'?'นำรถออกจากคิวตรวจสภาพ':'อัปเดตคิวตรวจสภาพ';rows=a==='update'?[['ทะเบียน',undefined,o.plate||n.plate||'#'+r.row_id],...chg()]:auInfo(d,['plate','vtype','note']);break;
+  case'dlt_jobs':t='อัปเดตงานขนส่ง บิล #'+r.row_id;rows=a==='insert'?auInfo(d,['status','cert_no','receipt_no']):chg();break;
+  case'app_settings':{t='แก้ไขการตั้งค่าระบบ';const ov=o.value||{},nv=n.value||{},first=!r.old_data;if(first){t='บันทึกการตั้งค่าระบบครั้งแรก';break}
+    Object.keys(nv).concat(Object.keys(ov)).filter((k,i,A)=>A.indexOf(k)===i&&JSON.stringify(ov[k])!==JSON.stringify(nv[k])).forEach(k=>{const L=AU_SL[k]||k,x=ov[k],y=nv[k];
+      if(k==='line_days')return rows.push([L,x?x.map(v=>v+' วัน').join(', '):undefined,(y||[]).map(v=>v+' วัน').join(', ')||'–']);
+      if(Array.isArray(y)||Array.isArray(x)){const nm=v=>Array.isArray(v)?v[0]:v,xs=(x||[]).map(nm),ys=(y||[]).map(nm);
+        if(first||!x)return rows.push([L,undefined,ys.length+' รายการ']);
+        const ad=ys.filter(v=>!xs.includes(v)),rm=xs.filter(v=>!ys.includes(v));
+        return rows.push([L,undefined,[ad.length?'เพิ่ม '+ad.join(', '):'',rm.length?'นำออก '+rm.join(', '):'',!ad.length&&!rm.length?'ปรับรายละเอียด/ลำดับ':''].filter(Boolean).join(' · ')])}
+      const fm=v=>v==null||v===''?'–':k==='reg_min_year'?'พ.ศ. '+(+v+543):typeof v==='number'?money(v)+' บาท':String(v);
+      rows.push([L,first||x==null?undefined:fm(x),fm(y)])});break}
+  default:
+    if(a==='insert'){t='เพิ่ม'+T;rows=auInfo(d,['full_name','username','role','branch_id','prefix','first_name','last_name','tel','plate','province','brand','name','phone'])}
+    else if(a==='delete'){t='ลบ'+T;rows=auInfo(d,['full_name','first_name','last_name','plate','province','name'])}
+    else{t='แก้ไข'+T;const id=d.full_name||o.full_name||[o.first_name||n.first_name,o.last_name||n.last_name].filter(Boolean).join(' ')||o.plate||n.plate||o.name;rows=chg();if(id)t+=' · '+id}}
+  return{t,rows}}
+const auText=r=>{const e=auEntry(r);return e.t+(e.rows.length?': '+e.rows.map(x=>x[0]+' '+(x[1]===undefined?x[2]:x[1]+' → '+x[2])).join(' · '):'')};
 const AU_DEMO=()=>{const out=[];let id=0;[...intake].forEach(b=>{out.push({id:++id,at:new Date(b.d.getFullYear(),b.d.getMonth(),b.d.getDate(),...(b.t||'09:00').split(':').map(Number)).toISOString(),user_name:'พนักงาน 1',branch_id:1,tbl:'bills',action:'insert',row_id:String(b.id),new_data:{bill_no:'A-69'+String(b.id).padStart(4,'0'),snapshot:{plate:b.plate},total:b.amt}});
   (b.pays||[]).forEach(p=>out.push({id:++id,at:new Date(p.d.getFullYear(),p.d.getMonth(),p.d.getDate(),...(p.t||'10:00').split(':').map(Number)).toISOString(),user_name:p.by||'คุณอาร์ท',branch_id:1,tbl:'payments',action:'insert',row_id:String(id),new_data:{amount:p.amt,method:p.how||'เงินสด',bill_id:b.id}}))});
   out.push({id:++id,at:new Date().toISOString(),user_name:'คุณอาร์ท',branch_id:null,tbl:'app_settings',action:'update',row_id:'main',old_data:{value:{fee_tax:40,line_days:[30]}},new_data:{value:{fee_tax:50,line_days:[30,7]}}});return out};
@@ -3708,24 +3741,24 @@ R.audit=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
   auDay=auDay||iso(TODAY);const day=auDay;$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
   let rows;try{rows=LIVE?await DB.listAudit(day):AU_DEMO().filter(r=>iso(new Date(r.at))===day)}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
   if(cur!=='audit'||auDay!==day)return;rows.sort((a,z)=>new Date(z.at)-new Date(a.at));
-  const brName=id=>{const b=(LIVE?DB.branches:[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]).find(x=>x.id===id);return b?b.name:'ทุกสาขา'};
   const who=[...new Set(rows.map(r=>r.user_name||'–'))].sort(),brs=[...new Set(rows.map(r=>r.branch_id))];
   const L=rows.filter(r=>(!auWho||(r.user_name||'–')===auWho)&&(auBr===''||String(r.branch_id)===auBr));
-  $('#view').innerHTML=`<div class="cl">
-  <div class="ltop"><h1>ประวัติการใช้งาน</h1><span class="sub">ใครทำอะไร ที่สาขาไหน เมื่อไร · ระบบบันทึกเอง แก้หรือลบไม่ได้</span></div>
+  const dt=new Date(day+'T00:00'),dayTH=`${dt.getDate()} ${TH_MF[dt.getMonth()]} ${dt.getFullYear()+543}`;
+  const ent=r=>{const e=auEntry(r);return `<li class="au-it">
+    <div class="au-tm">${hmOf(r.at)} น.</div>
+    <div class="au-bd"><div class="au-h"><span class="au-pill au-${r.action}">${AU_A[r.action]||r.action}</span><b>${esc(e.t)}</b><span class="au-cat">${esc(AU_T[r.tbl]||r.tbl)}</span></div>
+      <div class="au-meta">โดย <b>${esc(r.user_name||'ไม่ระบุ')}</b><span>·</span>${esc(auBrN(r.branch_id))}</div>
+      ${e.rows.length?`<dl class="au-d">${e.rows.map(x=>`<dt>${esc(x[0])}</dt><dd>${x[1]===undefined||x[1]==='–'?esc(x[2]):`<s>${esc(x[1])}</s><i>→</i><b>${esc(x[2])}</b>`}</dd>`).join('')}</dl>`:''}</div></li>`};
+  $('#view').innerHTML=`<div class="cl au">
+  <div class="ltop"><h1>ประวัติการใช้งาน</h1><span class="sub">บันทึกโดยระบบอัตโนมัติ ไม่สามารถแก้ไขหรือลบได้</span></div>
   <div class="cl-bar au-bar"><label class="cl-date">วันที่ <input type="date" id="au-d" value="${day}" max="${iso(TODAY)}"></label>
-    <label class="cl-date">พนักงาน <select id="au-w"><option value="">ทุกคน</option>${who.map(w=>`<option ${w===auWho?'selected':''}>${esc(w)}</option>`).join('')}</select></label>
-    <label class="cl-date">สาขา <select id="au-b"><option value="">ทุกสาขา</option>${brs.map(b=>`<option value="${b}" ${String(b)===auBr?'selected':''}>${esc(brName(b))}</option>`).join('')}</select></label>
-    <span class="sub">${L.length} รายการ</span></div>
-  ${L.length?`<div class="card cl-card"><div class="tablewrap"><table class="cl-tbl au-tbl"><thead><tr><th>เวลา</th><th>ใคร</th><th>สาขา</th><th>ประเภท</th><th>ทำอะไร</th></tr></thead><tbody>
-    ${L.map(r=>`<tr class="rowbtn" data-au="${r.id}"><td data-l="เวลา">${hmOf(r.at)}</td><td data-l="ใคร"><b>${esc(r.user_name||'–')}</b></td><td data-l="สาขา">${esc(brName(r.branch_id))}</td>
-      <td data-l="ประเภท"><span class="au-pill au-${r.action}">${esc(AU_T[r.tbl]||r.tbl)}</span></td><td data-l="ทำอะไร">${esc(auText(r))}</td></tr>
-      <tr class="au-x" hidden><td colspan="5"><div class="au-js"><div><b>ก่อน</b><pre>${esc(r.old_data?JSON.stringify(r.old_data,null,1):'–')}</pre></div><div><b>หลัง</b><pre>${esc(r.new_data?JSON.stringify(r.new_data,null,1):'–')}</pre></div></div></td></tr>`).join('')}
-  </tbody></table></div></div>`:'<div class="eempty"><div>ไม่มีรายการในวันนี้</div></div>'}
-  ${LIVE?'':'<p class="note">โหมดทดลอง: แสดงตัวอย่างจากบิลทดลอง ระบบจริงบันทึกทุกการเปิดบิล แก้บิล รับเงิน รายจ่าย ปิดยอด งานขนส่ง คิว พนักงาน สาขา และตั้งค่า</p>'}</div>`;
+    <label class="cl-date">ผู้ใช้งาน <select id="au-w"><option value="">ทั้งหมด</option>${who.map(w=>`<option ${w===auWho?'selected':''}>${esc(w)}</option>`).join('')}</select></label>
+    <label class="cl-date">สาขา <select id="au-b"><option value="">ทั้งหมด</option>${brs.map(b=>`<option value="${b}" ${String(b)===auBr?'selected':''}>${esc(auBrN(b))}</option>`).join('')}</select></label>
+    <span class="sub au-n">${dayTH} · ${L.length} รายการ</span></div>
+  ${L.length?`<div class="card au-card"><ol class="au-list">${L.map(ent).join('')}</ol></div>`:'<div class="eempty"><div>ไม่มีรายการในวันที่เลือก</div></div>'}
+  ${LIVE?'':'<p class="note">โหมดทดลอง: แสดงตัวอย่างจากบิลทดลอง ระบบจริงบันทึกการเปิดบิล แก้ไขบิล รับชำระ รายจ่าย ปิดยอด งานขนส่ง คิวตรวจสภาพ ผู้ใช้งาน สาขา และการตั้งค่า</p>'}</div>`;
   $('#au-d').onchange=e=>{if(e.target.value){auDay=e.target.value;R.audit()}};
   $('#au-w').onchange=e=>{auWho=e.target.value;R.audit()};$('#au-b').onchange=e=>{auBr=e.target.value;R.audit()};
-  document.querySelectorAll('[data-au]').forEach(tr=>tr.onclick=()=>{const x=tr.nextElementSibling;x.hidden=!x.hidden});
 };
 
 let dltF='received',dltQ='';const dltSel=new Set();
