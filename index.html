@@ -1305,6 +1305,54 @@ body{margin:0}
   .hm-t td::before{content:attr(data-l);color:#64748b;font-size:12.5px;text-align:left}.hm-t td.act::before{content:none}.hm-t td.act{justify-content:flex-end;padding-top:6px}.hm-t td .sub{display:inline;margin-left:6px}}
 @media (max-width:480px){.hb-row{grid-template-columns:1fr}.hk-row,.hq-g{gap:10px}.hk{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}.hk-bg{display:none}.hk-ic{width:38px;height:38px;border-radius:12px}.hk-ic svg{width:22px;height:22px}.hk-l{font-size:13px}.hk-v b{font-size:26px}
   .hq{padding:16px 14px}.hq-b{flex-direction:column;align-items:flex-start;gap:6px;min-height:0;padding:12px}.hq-b i{display:none}.hq-b small{font-size:12px}.hm-tabs{width:100%}.hm-tabs button{flex:1;justify-content:center;font-size:13.5px;padding:7px 6px}}
+/* หน้าเปิดบิลใหม่ (v53) */
+.bf-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;margin:4px 0 4px}
+.bf-head h1{margin:0;font-family:var(--font-display);font-size:24px;font-weight:600;color:#0f2a6b}
+.bf-crumb{font-size:13.5px;color:#64748b;margin-top:2px}.bf-crumb button{border:0;background:none;padding:0;font:inherit;color:#1d63ed;cursor:pointer}.bf-crumb .req{color:#dc2626}
+.bf-head.ed{justify-content:flex-end}
+.bf-steps{display:flex;flex-wrap:wrap;gap:6px}
+.bf-steps button{display:flex;align-items:center;gap:8px;border:0;background:none;border-radius:99px;padding:6px 12px 6px 6px;font:inherit;font-size:13.5px;color:#64748b;cursor:pointer}
+.bf-steps button span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#e8eef9;color:#475569;font-weight:600;font-size:13px}
+.bf-steps button.on{color:#0f2a6b;font-weight:600;background:#eef3ff}.bf-steps button.on span{background:#1d63ed;color:#fff}
+.bf-lay{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:18px;align-items:start}
+@media (min-width:641px){.bf-lay #bill .field>span{flex-basis:118px}.bf-lay #bill .form{gap:6px 18px}}
+.bf-lay .dsel select.dsel-d{min-width:56px}.bf-lay .dsel select.dsel-m{min-width:68px}.bf-lay .dsel select.dsel-y{min-width:72px}.bf-lay #bill .field>.dsel{max-width:none}
+.bf-lay>#bill{min-width:0}
+#bill .card.sec{border-radius:16px;overflow:visible;border:1px solid #e6ebf3;box-shadow:0 4px 14px rgba(15,35,90,.05)}
+#bill .sech.bf-sh{display:flex;align-items:center;gap:10px;border-radius:15px 15px 0 0;margin:0;padding:11px 16px;font-size:16px;box-shadow:none}
+.bf-sh .bf-n,.bf-pmh .bf-n{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;font-family:var(--font-display);font-size:15px;font-weight:600;flex:none}
+#bill .sech.s1{background:linear-gradient(90deg,#1650c4,#3b82f6)}.s1 .bf-n{color:#1650c4}
+#bill .sech.s2{background:linear-gradient(90deg,#0f8a4b,#2fb36b);border-radius:16px 16px 0 0;margin-top:6px}.s2 .bf-n{color:#0f8a4b}
+#bill .sech.s2 small{margin-left:auto;font-family:var(--font-body);font-size:12.5px;font-weight:400;opacity:.9}
+#bill .sech.s3{background:linear-gradient(90deg,#e8590c,#f59f4a)}.s3 .bf-n{color:#e8590c}
+#bill .sech.s2+#svc{background:#f3fbf6;border:1px solid #d8efe1;border-top:0;border-radius:0 0 16px 16px;margin-bottom:6px}
+.bf-pmh{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-display);font-size:17px;color:#5b3cc4}.bf-pmh .bf-n{background:#5b3cc4;color:#fff}
+.bf-side{position:sticky;top:104px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 120px);overflow-y:auto;padding-bottom:4px;scrollbar-width:thin}
+.bf-card{background:#fff;border:1px solid #e6ebf3;border-radius:16px;padding:14px;box-shadow:0 4px 14px rgba(15,35,90,.05)}
+.bf-card h3{margin:0 0 8px;font-family:var(--font-display);font-size:16px;font-weight:600;color:#0f2a6b}
+.bf-find{background:linear-gradient(180deg,#eef4ff,#fff 70%)}
+.bf-find .check-card{border:0!important;box-shadow:none!important;padding:0!important;margin:0;background:none!important}
+.bf-find .check-card .sech{display:none}.bf-find .check-card>.row,.bf-find .check-card>#x-res,.bf-find .check-card>.note{padding:0!important}
+.bf-find .check-card .row{gap:6px}.bf-find #x-cha,.bf-find #x-num{width:calc(50% - 3px)!important}.bf-find #x-city{flex:1 1 100%!important;min-width:0!important}.bf-find #x-go{width:100%}
+.bf-sum{background:linear-gradient(180deg,#fff,#f6f9ff)}
+.bf-sum #sum-list{display:flex;flex-direction:column;gap:2px;max-height:200px;overflow-y:auto;margin-bottom:8px}
+.bf-sum #sum-list .li{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:5px 2px;border-bottom:1px dashed #e2e8f0;color:#334155}
+.bf-sum #sum-list .empty{font-size:13px;color:#94a3b8;padding:4px 2px}
+.bf-sum .paybar{position:static;display:flex;flex-direction:column;align-items:stretch;gap:6px;background:none;border:0;box-shadow:none;padding:6px 0 0;border-top:1px solid #e2e8f0}
+.bf-sum .paybar .pf{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0}
+.bf-sum .paybar .pf>span{font-size:13.5px;color:#475569;font-weight:600}
+.bf-sum .paybar .pf:first-child{flex-wrap:wrap;background:#eef3ff;border-radius:12px;padding:8px 12px;margin-bottom:4px}.bf-sum .paybar .pf:first-child>span{flex-basis:100%}
+.bf-sum .paybar #sum-total{font-family:var(--font-display);font-size:30px;font-weight:600;color:#1d63ed;margin-left:auto;border:0!important;background:none!important;padding:0!important;min-width:0!important;width:auto!important;box-shadow:none!important}
+.bf-sum .paybar #pay{width:110px;text-align:right;border:0;background:none;font-weight:600;padding:0}
+.bf-sum .paybar em{font-style:normal;font-size:13px;color:#475569}
+.bf-doc{background:#fff6f6;border-color:#fde2e2}.bf-doc h3{color:#b42318}
+.bf-doc ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13.5px;color:#334155}
+.bf-doc li{display:flex;gap:8px}.bf-doc li::before{content:"✓";flex:none;width:18px;height:18px;border-radius:50%;background:#1d63ed;color:#fff;font-size:11px;display:grid;place-items:center;margin-top:2px}
+.bf-btns{display:grid;grid-template-columns:1fr 1.3fr;gap:10px}.bf-btns .btn{height:48px;font-size:15.5px;justify-content:center;display:flex;align-items:center}
+.bf-save{background:linear-gradient(135deg,#0f8a4b,#22a35f)!important;box-shadow:0 6px 16px rgba(15,138,75,.3)!important}
+@media (min-width:1361px){#bill .payfoot .actions .xbtn.blue,#bill .payfoot .actions #b-reset{display:none}}
+@media (max-width:1360px){.bf-lay{grid-template-columns:1fr}.bf-side{position:static;max-height:none;overflow:visible}.bf-side .bf-find,.bf-side .bf-sum,.bf-side .bf-btns{display:none}.bf-steps{width:100%}}
+@media (max-width:640px){.bf-steps button{font-size:12.5px;padding:4px 8px 4px 4px}.bf-steps button span{width:22px;height:22px}.bf-head h1{font-size:20px}#bill .sech.s2 small{display:none}}
 </style>
 
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
@@ -3599,6 +3647,47 @@ R.add=(E)=>{
   }
   syncSvc();autoCalc();
 };
+// ===== หน้าเปิดบิล / แก้ไขบิล: หัวข้อแบบขั้นตอน + แผงสรุปด้านขวา (จัดวางหลังสร้างฟอร์มเดิม ไม่แตะการคำนวณ) =====
+{const addCore=R.add;R.add=E=>{addCore(E);billLayout(E)}}
+let bfMQ=null;
+function billLayout(E){const form=$('#bill');if(!form)return;
+  const main=form.querySelector('.billmain'),cards=[...main.querySelectorAll(':scope>.card.sec')],c1=cards[0],cP=cards.find(c=>c.querySelector('.sech.orange'));
+  const ttl=h=>h.textContent.replace(/^\s*-\s*|\s*-\s*$/g,'').trim();
+  const num=(h,n,cls)=>{h.classList.add('bf-sh',cls);h.innerHTML=`<span class="bf-n">${n}</span><span>${esc(ttl(h))}</span>`};
+  num(c1.querySelector('.sech'),1,'s1');if(cP)num(cP.querySelector('.sech'),3,'s3');
+  c1.id='bf-s1';if(cP)cP.id='bf-s3';
+  $('#svc').insertAdjacentHTML('beforebegin','<div class="sech bf-sh s2" id="bf-s2"><span class="bf-n">2</span><span>ค่าบริการ / รายการค่าธรรมเนียม</span><small>เลือกบริการด้านล่าง เลือกได้หลายอย่าง</small></div>');
+  const pf=form.querySelector('.payfoot');pf.id='bf-s4';const ph=pf.querySelector('.pm-h b');if(ph)ph.outerHTML='<b class="bf-pmh"><span class="bf-n">4</span>การรับชำระเงิน</b>';
+  const STEPS=[['bf-s1','ข้อมูลทะเบียนรถ'],['bf-s2','ค่าบริการ / พ.ร.บ.'],['bf-s3','ข้อมูลเจ้าของรถ'],['bf-s4','ชำระเงินและบันทึก']];
+  const stepHTML=`<nav class="bf-steps" aria-label="ขั้นตอน">${STEPS.map(([id,l],i)=>`<button type="button" data-bfs="${id}"${i?'':' class="on"'}><span>${i+1}</span>${l}</button>`).join('')}</nav>`;
+  const head=$('#view .head');
+  if(head)head.outerHTML=`<div class="bf-head"><div><h1>แบบฟอร์มบันทึกข้อมูล เปิดบิลใหม่</h1><div class="bf-crumb"><button type="button" data-go="home">หน้าหลัก</button> › เปิดบิลใหม่ · <span class="req">*</span> จำเป็นต้องกรอก</div></div>${stepHTML}</div>`;
+  else{const eh=$('#view .edhd');if(eh)eh.insertAdjacentHTML('afterend',`<div class="bf-head ed">${stepHTML}</div>`)}
+  // แผงด้านขวา
+  const lay=document.createElement('div');lay.className='bf-lay';form.parentNode.insertBefore(lay,form);lay.appendChild(form);
+  const side=document.createElement('aside');side.className='bf-side';lay.appendChild(side);
+  const reset=$('#b-reset');
+  side.innerHTML=`<div class="bf-card bf-find" id="bf-find"><h3>${E?'บิลที่กำลังแก้ไข':'ค้นหาลูกค้าเดิม'}</h3>${E?`<p class="sub">${esc(E.no||'')} · ${esc(E.plate)} · ${esc(E.name)}</p>`:''}</div>
+    <div class="bf-card bf-sum"><h3>สรุปยอดค่าบริการ</h3><div id="bf-sumslot"></div></div>
+    <div class="bf-btns"><button type="button" class="btn line" id="bf-reset">${esc(reset?reset.textContent.trim()==='รีเซ็ท'?'ล้างข้อมูล':reset.textContent.trim():'ล้างข้อมูล')}</button><button type="submit" form="bill" class="btn bf-save">💾 บันทึก</button></div>
+    <div class="bf-card bf-doc"><h3>เอกสารที่ต้องใช้</h3><ul><li>เล่มทะเบียนรถ (ตัวจริงหรือสำเนา)</li><li>พ.ร.บ. ภาคบังคับ (ถ้ามี)</li><li>หลักฐานการชำระภาษีปีก่อน (ถ้ามี)</li><li>บัตรประชาชนเจ้าของรถ (กรณีโอน/ย้าย)</li></ul></div>`;
+  $('#bf-reset').onclick=()=>reset&&reset.click();
+  // จอกว้าง: ย้ายช่องค้นหา/ยอดรวม/รายการไปแผงขวา · จอแคบ: คืนตำแหน่งเดิม (แถบยอดรวมติดล่างจอ)
+  const chk=$('#view .check-card'),bar=form.querySelector('.paybar'),list=$('#sum-list');
+  const home={chk:chk&&[chk.parentNode,chk.nextSibling],bar:[bar.parentNode,bar.nextSibling],list:[list.parentNode,list.nextSibling]};
+  if(bfMQ)bfMQ.onchange=null;bfMQ=matchMedia('(min-width:1361px)');
+  const place=()=>{if(!document.body.contains(form))return;const wide=bfMQ.matches;
+    if(chk){wide?$('#bf-find').appendChild(chk):home.chk[0].insertBefore(chk,home.chk[1])}
+    if(wide){$('#bf-sumslot').append(list,bar);list.hidden=false}else{home.bar[0].insertBefore(bar,home.bar[1]);home.list[0].insertBefore(list,home.list[1]);list.hidden=true}
+    side.classList.toggle('narrow',!wide)};
+  place();bfMQ.onchange=place;
+  // ขั้นตอน: กดเพื่อเลื่อนไปหัวข้อ และไฮไลต์หัวข้อที่กำลังกรอก
+  const steps=[...document.querySelectorAll('[data-bfs]')];
+  steps.forEach(b=>b.onclick=()=>{const t=document.getElementById(b.dataset.bfs);if(t)window.scrollTo({top:t.getBoundingClientRect().top+scrollY-100,behavior:'smooth'})});
+  const secs=STEPS.map(([id])=>document.getElementById(id)).filter(Boolean);
+  const onScroll=()=>{if(!document.body.contains(form)){removeEventListener('scroll',onScroll);return}let k=0;secs.forEach((s,i)=>{if(s.getBoundingClientRect().top<200)k=i});steps.forEach((b,i)=>b.classList.toggle('on',i===k))};
+  addEventListener('scroll',onScroll,{passive:true});
+}
 
 let kind='all',pick=new Set();
 /* ส่ง SMS แจ้งเตือน (ทะเบียนรถ / ประกันภาคสมัครใจ) ผ่าน ThaiBulkSMS */
