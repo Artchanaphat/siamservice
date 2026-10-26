@@ -3710,7 +3710,8 @@ async function receiptLine(b){const box=$('#rc-line');if(!box)return;const car=c
   catch(_){box.remove()}}
 
 /* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
-const AU_T={bills:'บิล',payments:'การรับชำระ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',expenses:'รายจ่าย',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
+const AU_T={bills:'บิล',payments:'การรับชำระ',expenses:'รายจ่าย',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
+const AU_EM={bills:'🧾',payments:'💵',expenses:'💸',cash_closes:'🔒',dlt_jobs:'🚚',insp_queue:'🔧',customers:'👤',vehicles:'🚗',staff:'👥',branches:'🏢',app_settings:'⚙️'};
 const AU_A={insert:'เพิ่ม',update:'แก้ไข',delete:'ลบ'};
 const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการในบิล',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าเบี้ยประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
   first_name:'ชื่อ',last_name:'นามสกุล',prefix:'คำนำหน้า',tel:'เบอร์โทร',address:'ที่อยู่',plate:'ทะเบียน',province:'จังหวัด',tax_exp:'วันภาษีหมดอายุ',prb_exp:'วัน พ.ร.บ. หมดอายุ',ins_exp:'วันประกันหมดอายุ',ins_company:'บริษัทประกัน',
@@ -3780,13 +3781,13 @@ R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div c
   const L=auRows.filter(r=>(!auType||r.tbl===auType)&&(!q||[r._e.v,r._e.ref,r._e.item,r._e.detail,r.user_name,r._b].join(' ').toLowerCase().includes(q)))
     .sort((x,y)=>{const a=val(x),b=val(y);return (sk==='at'?(a<b?-1:a>b?1:0):String(a).localeCompare(String(b),'th'))*sd||(new Date(y.at)-new Date(x.at))});
   const pages=auSize?Math.max(1,Math.ceil(L.length/auSize)):1;auPage=Math.min(auPage,pages-1);const P=auSize?L.slice(auPage*auSize,(auPage+1)*auSize):L;
-  const types=[...new Set([...Object.keys(AU_T),...auRows.map(r=>r.tbl)])].sort((a,b)=>(AU_T[a]||a).localeCompare(AU_T[b]||b,'th'));
+  const types=[...new Set([...Object.keys(AU_T),...auRows.map(r=>r.tbl)])];
   const TH=(k,l)=>`<th data-sk="${k}" class="${sk===k?'on':''}">${l}<i>${sk===k?(sd<0?'▼':'▲'):'↕'}</i></th>`;
   $('#view').innerHTML=`<div class="aux">
   <div class="aux-top"><h1>📋 ประวัติการเปลี่ยนแปลง</h1><span class="aux-n">${L.length.toLocaleString()} รายการ</span><button class="btn line aux-xl" id="ax-xl">📊 ส่งออก Excel</button></div>
   <div class="aux-bar">
     <input id="ax-q" class="aux-q" placeholder="🔍 ค้นหาเลขบิล ทะเบียน ชื่อลูกค้า ผู้ใช้งาน..." value="${esc(auQ)}">
-    <select id="ax-t"><option value="">ทุกประเภท</option>${types.map(t=>`<option value="${t}"${t===auType?' selected':''}>${esc(AU_T[t]||t)}</option>`).join('')}</select>
+    <select id="ax-t"><option value="">📋  ทุกประเภท</option>${types.map(t=>`<option value="${t}"${t===auType?' selected':''}>${AU_EM[t]||'•'}  ${esc(AU_T[t]||t)}</option>`).join('')}</select>
     <label>ตั้งแต่ <input type="date" id="ax-f" value="${auFrom}" max="${iso(TODAY)}"></label><label>ถึง <input type="date" id="ax-to" value="${auTo}" max="${iso(TODAY)}"></label>
     <button class="btn line aux-clr" id="ax-clr">✕ ล้าง</button>
     <label class="aux-sz">แสดง <select id="ax-sz">${[25,50,100,0].map(z=>`<option value="${z}"${z===auSize?' selected':''}>${z||'ทั้งหมด'}</option>`).join('')}</select></label></div>
