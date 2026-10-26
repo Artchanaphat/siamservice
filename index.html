@@ -1026,6 +1026,13 @@ button.ui-kpi{font:inherit;text-align:left;cursor:pointer;width:100%}button.ui-k
 .dj-ovs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.dj-ovs>div{background:#f8fafc;border:1px solid #eef1f4;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}
 .dj-ovs span{font-size:12.5px;color:#64748b}.dj-ovs b{font-size:22px;font-weight:600;font-family:var(--font-display);color:#14248f;font-variant-numeric:tabular-nums}.dj-ovs small{font-size:12px;color:#94a3b8}
 @media (max-width:860px){.dj-ov{grid-template-columns:1fr}}@media (max-width:640px){.dj-ovs{grid-template-columns:1fr 1fr}.dj-ovs>div:last-child{grid-column:1/-1}.dj-kpis .ui-kpi:last-child{grid-column:1/-1}}
+/* เงินโอนรอตรวจสอบ */
+.pmx-note{font-size:13px;color:#92400e;background:#fff8e6;border:1px solid #f5d48b;border-radius:8px;padding:6px 10px;white-space:nowrap}
+.tr-wait{border:1.5px solid #f5b54a;background:#fff8e6;border-radius:12px;padding:12px 14px;margin:10px 0;display:flex;flex-direction:column;gap:8px}
+.tr-wait-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;color:#7a4a00}.tr-wait-h b{font-size:15.5px}.tr-wait-h span{font-size:13px;color:#92400e}
+.tr-wait-r{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;background:#fff;border:1px solid #f5d48b;border-radius:10px;padding:8px 12px}
+.tr-wait-r span{flex:1;min-width:160px;font-size:13.5px;color:#475569}.tr-wait-r b{font-variant-numeric:tabular-nums}.tr-wait-r .btn{background:#16a34a}
+@media (max-width:640px){.tr-wait-r .btn{width:100%;justify-content:center}.pmx-note{white-space:normal}}
 .cl-ok,.cl-over,.cl-short{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12.5px;font-weight:600}
 .cl-ok{background:#dcfce7;color:#15803d}.cl-over{background:#dbeafe;color:#1d4ed8}.cl-short{background:#fee2e2;color:#c81e1e}
 .cl-h{margin:4px 0 0;font-size:15px}
@@ -1220,7 +1227,7 @@ function mkBill(o){const c=o.carId?cars.find(x=>x.id===o.carId):cars.find(x=>x.p
     ctype:o.ctype||LEGACY_CT[o.type]||ctOf(c),type:'',model:o.model||(c&&c.model)||'',cc:o.cc||(c&&c.cc)||'',carId:c?c.id:null,items:o.items,ins:o.ins||0,insCo:o.insCo||(c&&c.insCo)||'',disc:o.disc||0,doc:o.doc||'สำเนา',prefix:o.prefix||'',pays:[],edits:o.edits||[]};
   b.type=b.ctype?ctLabel(b.ctype):(o.type||'');
   b.amt=Math.round((b.items.reduce((s,i)=>s+i[1],0)-b.disc)*100)/100;b.what=b.items.map(i=>i[0]).join(' + ');
-  (o.pays||[]).forEach(p=>b.pays.push({d:p.d||b.d,t:p.t||b.t,amt:p.amt,how:p.how||'เงินสด',by:p.by||'admin'}));
+  (o.pays||[]).forEach(p=>b.pays.push({d:p.d||b.d,t:p.t||b.t,amt:p.amt,how:p.how||'เงินสด',by:p.by||'admin',wait:!!p.wait}));
   b.paid=b.pays.reduce((s,p)=>s+p.amt,0);return b}
 const P=(amt,how,off,t)=>({amt,how,d:off==null?undefined:plus(off),t});
 const intake=[
@@ -1354,6 +1361,8 @@ R.home=()=>{
   $('#view').innerHTML=`
   <div class="mhead"><span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> เมนูหลัก</span>
     <span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg> ข้อมูลทั้งหมดในระบบ <b class="num" style="color:#000">${total}</b> รายการ</span></div>
+  ${(()=>{const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p})));if(!w.length)return'';const days=[...new Set(w.map(x=>iso(x.p.d)))].sort();
+    return `<div class="ui-note warn home-trw">⏳ <span><b>เงินโอนรอตรวจสอบ ${w.length} รายการ · ${money(w.reduce((t,x)=>t+x.p.amt,0))} บาท</b> ตรวจกับแอปธนาคารแล้วกดยืนยัน</span><span class="sp"></span><button class="btn sm" id="home-trw" data-day="${days[0]}">ตรวจสอบ</button></div>`})()}
   ${MGROUPS.map(([gt,gs,ks])=>`<section class="mgrp"><h3 class="mgh">${gt}<small>${gs}</small></h3><div class="mgrid">${ks.map(k=>MENU.find(m=>m[0]===k)).filter(Boolean).map(([k,t,d,bg,fg,ic])=>`<button class="mcard" data-go="${k}"><span class="mic" style="background:${bg};color:${fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ic}</svg></span><b>${t}</b><small>${d}</small>${k==='bell'&&dueList(7).length?`<span class="cnt mcnt">${dueList(7).length}</span>`:''}${k==='dlt'&&dltJobs().filter(b=>dltOf(b).st!=='done').length?`<span class="cnt mcnt">${dltJobs().filter(b=>dltOf(b).st!=='done').length}</span>`:''}</button>`).join('')}</div></section>`).join('')}
   <div class="exp">
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
@@ -1369,6 +1378,7 @@ R.home=()=>{
     document.querySelectorAll('[data-hide]').forEach(b=>b.onclick=e=>{e.stopPropagation();hidden.add(b.dataset.hide);R.home();toast('ซ่อนรายการแล้ว')});
   };
   document.querySelectorAll('[data-ek]').forEach(b=>b.onclick=()=>{expKind=b.dataset.ek;R.home()});
+  if($('#home-trw'))$('#home-trw').onclick=e=>{closeDate=e.target.dataset.day;closeEdit=false;go('close')};
   $('#eq').oninput=e=>{expQ=e.target.value;draw()};
   draw();
 };
@@ -1454,7 +1464,24 @@ function moneyPage(cfg){
   draw();
 }
 const telCell=b=>`<td data-l="เบอร์โทร">${b.tel?`<a class="sm-tel" href="tel:${esc(b.tel)}">${esc(b.tel)}</a>`:'<span class="sm-dash">–</span>'}${b.note?`<div class="sm-note">(${esc(b.note)})</div>`:''}</td>`;
-const payHist=b=>b.pays.length?`<div class="sm-pays">${b.pays.map((p,i)=>`<div><span>${fmt(p.d)} ${p.t||''} · ${esc(p.how)}</span><b>${money(p.amt)}</b></div>`).join('')}</div>`:'<p class="sm-muted">ไม่มีประวัติ</p>';
+const payHist=b=>b.pays.length?`<div class="sm-pays">${b.pays.map((p,i)=>`<div><span>${fmt(p.d)} ${p.t||''} · ${esc(p.how)}${p.wait?` <span class="ui-pill warn">รอตรวจสอบ</span> <button type="button" class="btn sm" data-vtr="${b.id}|${i}">ยืนยันเงินเข้า</button>`:''}</span><b>${money(p.amt)}</b></div>`).join('')}</div>`:'<p class="sm-muted">ไม่มีประวัติ</p>';
+/* เงินโอนรอตรวจสอบ: บันทึกตอนเปิดบิลได้เลย แล้วพนักงานยืนยันหลังพิมพ์ใบเสร็จ (ลูกค้าไม่เห็นหน้านี้) */
+const trWait=b=>(b.pays||[]).map((p,i)=>({p,i})).filter(x=>x.p.wait);
+const trPendHTML=b=>{const w=trWait(b);if(!w.length)return'';
+  return `<div class="tr-wait non-printable"><div class="tr-wait-h">⏳ <b>เงินโอนรอตรวจสอบ ${money(w.reduce((t,x)=>t+x.p.amt,0))} บาท</b><span>เปิดแอปธนาคารของร้าน ตรวจว่ายอดเข้าจริงแล้วกดยืนยัน</span></div>
+    ${w.map(({p,i})=>`<div class="tr-wait-r"><span>${fmt(p.d)} ${esc(p.t||'')} · รับโดย ${esc(p.by||'-')}</span><b>${money(p.amt)} บาท</b><button type="button" class="btn sm" data-vtr="${b.id}|${i}">✓ เงินเข้าบัญชีแล้ว</button></div>`).join('')}</div>`};
+async function verifyTr(b,i,btn){const p=b.pays[i];if(!p||!p.wait)return;
+  if(!confirm(`ยืนยันว่าเงินโอน ${money(p.amt)} บาท ของ ${b.plate} (${b.name}) เข้าบัญชีร้านแล้ว?`))return;
+  if(btn)btn.disabled=true;
+  try{const r=await DB.verifyPay(p);p.wait=false;p.vby=(r&&r.verified_by)||(user?user.name:'');p.vat=new Date().toISOString();toast('ยืนยันเงินโอนแล้ว');
+    document.querySelectorAll('.tr-wait').forEach(x=>{const h=x.closest('[data-trb]');if(h&&+h.dataset.trb===b.id)h.innerHTML=trPendHTML(b)});
+    if($('#dlg').hidden&&R[cur])R[cur]()}
+  catch(err){if(btn)btn.disabled=false;alert('ยืนยันไม่สำเร็จ: '+err.message)}}
+document.addEventListener('click',e=>{const v=e.target.closest('[data-vtr]');if(!v)return;e.stopPropagation();const [bid,i]=v.dataset.vtr.split('|');const b=getBill(+bid);if(b)verifyTr(b,+i,v)},true);
+// หลังรับชำระเพิ่มด้วยเงินโอน: เตือนให้ตรวจสอบ
+function trCheckDlg(b){if(!trWait(b).length)return;const pn=$('#panel');pn.classList.remove('wide');
+  pn.innerHTML=`<div class="row between"><h2 class="h3" style="font-size:18px">ตรวจสอบเงินโอน</h2><button class="btn line" id="x">ปิด</button></div><div data-trb="${b.id}">${trPendHTML(b)}</div>
+    <p class="sub">ถ้ายังไม่สะดวกตรวจตอนนี้ กดปิดได้ รายการจะรออยู่ในหน้าบิล และหน้าปิดยอดประจำวัน</p>`;$('#dlg').hidden=false;$('#x').onclick=()=>{$('#dlg').hidden=true}}
 const INC={title:'ข้อมูลรายได้ทั้งหมด + ยอดค้างตามบิล',alldebt:'ยอดค้างบิล ทั้งหมด',labels:['รายได้รวม','ค้างชำระ','จ่ายครบแล้ว'],unit:'รายการ',defTab:'all',okLabel:'จ่ายครบ',
   head:['วันที่','ชื่อ นามสกุล','เบอร์โทร','ประเภทรถ','ทะเบียนรถ','ยอดเงินรับ'],
   recs:()=>intake.map(b=>({b,amt:b.amt,paid:b.paid})),
@@ -1485,8 +1512,8 @@ function payDlg(b){const s=split(b);
   $('#pd-no').onclick=()=>{$('#dlg').hidden=true};
   $('#pd-ok').onclick=()=>{const r=w.read();if(r.err){alert(r.err);if(r.focus)r.focus.focus();return}
     const now=new Date(),t=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');let a=0;
-    r.pays.forEach(x=>{const py={d:TODAY,t,amt:x.amt,how:x.how,by:user?user.name:''};b.pays.push(py);a+=x.amt;DB.pay(b,py)});
-    b.paid=Math.round((b.paid+a)*100)/100;$('#dlg').hidden=true;toast(`รับชำระ ${money(a)} บาท จาก ${b.name} แล้ว`+(r.chg?` · เงินทอน ${money(r.chg)} บาท`:''));R[cur]()}}
+    r.pays.forEach(x=>{const py={d:TODAY,t,amt:x.amt,how:x.how,by:user?user.name:'',wait:!!x.wait};b.pays.push(py);a+=x.amt;DB.pay(b,py)});
+    b.paid=Math.round((b.paid+a)*100)/100;$('#dlg').hidden=true;if(b.pays.some(p=>p.wait))setTimeout(()=>trCheckDlg(b),200);toast(`รับชำระ ${money(a)} บาท จาก ${b.name} แล้ว`+(r.chg?` · เงินทอน ${money(r.chg)} บาท`:''));R[cur]()}}
 
 /* ใบเสร็จ */
 /* receiptDlg ย้ายไปอยู่กับโมดูลใบเสร็จด้านล่าง */
@@ -1529,6 +1556,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
       ${debt?`<div class="sum-row due"><div class="slbl" style="color:#A32D2D;font-weight:600">ค้างชำระทั้งหมด</div><div class="sval" style="color:#A32D2D;font-weight:700">${money(s.debt)} บาท</div></div>`:''}</div>
   </div></div>
   <div class="nb-wrap">
+    <div data-trb="${b.id}">${trPendHTML(b)}</div>
     ${debt?`<div class="nb-debt-banner">⚠️ <span>บิลนี้ยังค้างชำระ <b>${money(s.debt)} บาท</b></span></div>
     <button class="nb-main" id="nb-pay">💵 <span>ลูกค้านำเงินมาจ่ายเพิ่ม<small>รับเงินค้างชำระของบิลนี้ ${money(s.debt)} บาท</small></span></button>
     <p class="nb-sub-title">หรือ ลูกค้ามาทำรายการอื่น</p>`:''}
@@ -3457,7 +3485,7 @@ const DB=(()=>{
     bs.forEach(r=>{const at=new Date(r.bill_at),s=r.snapshot||{};
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',ctype:s.ctype||'',type:s.ctype?ctLabel(s.ctype):(s.type||''),model:s.model||'',cc:s.cc||'',
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
-        pays:(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at);return{id:p.id,d:dOnly(pt),t:hm(pt),amt:+p.amount,how:p.method,by:p.by_name}}),
+        pays:(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at);return{id:p.id,d:dOnly(pt),t:hm(pt),amt:+p.amount,how:p.method,by:p.by_name,wait:p.verified===false,vby:p.verified_by||'',vat:p.verified_at||''}}),
         edits:(r.bill_edits||[]).sort((a,z)=>new Date(a.edited_at)-new Date(z.edited_at)).map(x=>{const et=new Date(x.edited_at);return{d:dOnly(et),t:hm(et),what:x.what,by:x.by_name}})};
       b.pick=day(r.pick_date);const dj=Array.isArray(r.dlt_jobs)?r.dlt_jobs[0]:r.dlt_jobs;
       if(dj)b.dlt={st:dj.status,cert:dj.cert_no||'',rcpt:dj.receipt_no||'',note:dj.note||'',by:dj.updated_by_name||'',at:{submitted:dj.submitted_at,plate:dj.plate_at,done:dj.done_at}};
@@ -3478,7 +3506,7 @@ const DB=(()=>{
       c.raw={...(c.raw||{}),...veh,customers:{...((c.raw||{}).customers||{}),...cust}};
       const vid=chk(await s.from('vehicles').upsert(veh,{onConflict:'plate,province'}).select('id').single()).id;
       const row=chk(await s.from('bills').insert({branch_id:branch.id,customer_id:c.custId,vehicle_id:vid,snapshot:snap,items:b.items,ins_premium:b.ins,discount:b.disc,total:b.amt,pick_date:pick,note:billNote}).select('id,bill_no').single());
-      if(b.pays.length)chk(await s.from('payments').insert(b.pays.map(p=>({bill_id:row.id,branch_id:branch.id,amount:p.amt,method:p.how,by_name:p.by||me.name}))));
+      if(b.pays.length)await payIns(s,b.pays,{bill_id:row.id,branch_id:branch.id});
       c.id=vid;b.carId=vid;b.id=row.id;b.no=row.bill_no;b.branch=branch.id;
       if(editBill===tmpId)editBill=row.id;if(curBill===tmpId)curBill=row.id;
       const n=document.getElementById('rc-no');if(n)n.textContent=row.bill_no;toast('บันทึกลงฐานข้อมูลแล้ว เลขที่ '+row.bill_no)}
@@ -3487,8 +3515,16 @@ const DB=(()=>{
     chk(await s.from('dlt_jobs').upsert(list.map(b=>{const j=dltOf(b);return{bill_id:b.id,branch_id:b.branch||branch.id,status:j.st,cert_no:j.cert,receipt_no:j.rcpt,note:j.note,
       submitted_at:j.at.submitted||null,plate_at:j.at.plate||null,done_at:j.at.done||null,updated_by_name:j.by||me.name}}),{onConflict:'bill_id'}))}
   async function pay(b,p){if(!LIVE)return;
-    try{const s=await client();chk(await s.from('payments').insert({bill_id:b.id,branch_id:b.branch||branch.id,amount:p.amt,method:p.how,by_name:p.by||me.name}))}
+    try{const s=await client();await payIns(s,[p],{bill_id:b.id,branch_id:b.branch||branch.id})}
     catch(err){fail('บันทึกการรับเงิน',err)}}
+  // บันทึกรับเงิน: เงินโอนเป็น "รอตรวจสอบ" (verified=false) ถ้ายังไม่ได้รัน 13 จะบันทึกแบบเดิม
+  let has13=true;
+  async function payIns(s,list,base){const rows=list.map(p=>({...base,amount:p.amt,method:p.how,by_name:p.by||me.name,...(has13?{verified:!p.wait}:{})}));
+    let r=await s.from('payments').insert(rows).select('id');
+    if(r.error&&has13&&/verified/i.test(r.error.message)){has13=false;list.forEach(p=>p.wait=false);toast('ยังไม่ได้รัน 13-transfer-verify.sql เงินโอนจะถูกบันทึกเป็นตรวจสอบแล้ว');r=await s.from('payments').insert(rows.map(({verified,...x})=>x)).select('id')}
+    chk(r);(r.data||[]).forEach((x,i)=>{if(list[i])list[i].id=x.id})}
+  async function verifyPay(p){if(!LIVE)return{verified_by:user?user.name:''};if(!p.id)throw new Error('ยังบันทึกรายการนี้ไม่เสร็จ ลองใหม่อีกครั้ง');
+    const c=await client(),r=await c.rpc('verify_payment',{p_id:p.id});if(r.error){if(/verify_payment|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 13-transfer-verify.sql ใน Supabase');throw new Error(r.error.message)}return r.data}
   async function edit(E,c,ent){if(!LIVE)return;
     try{const s=await client();
       const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prefix:E.prefix||'',doc:E.doc||'สำเนา'};
@@ -3576,7 +3612,7 @@ const DB=(()=>{
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
   return{addFile,listFiles,delFile,smsSend:items=>rpc11('sms_send',{p_items:items}),smsCredit:()=>rpc11('sms_credit'),smsStatus:()=>rpc11('sms_secret_status'),setSmsSecrets:(k,x)=>rpc11('set_sms_secrets',{p_key:k,p_secret:x}),smsRecent:()=>rpc11('sms_recent'),
-    login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+    login,load,newBill,pay,verifyPay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3647,6 +3683,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
   // รายการรับเงินที่เข้ามาหลังปิดยอด
   const changed=done&&rows.some(r=>{const x=saved[r.name];return !x||Math.abs((+x.cash||0)-r.cash)>0.004||Math.abs((+x.tr||0)-r.tr)>0.004||Math.abs((+x.card||0)-r.card)>0.004});
   const first=sv[0]||{},dd=new Date(day+'T00:00');
+  const waits=pays.filter(x=>x.p.wait),waitSum=waits.reduce((t,x)=>t+x.p.amt,0);
   $('#view').innerHTML=`<div class="ui cl2">
   <div class="ui-head"><span class="ui-ic">🧮</span><div class="ui-tt"><h1>ปิดยอดเงินประจำวัน</h1><div class="ui-sub">${esc(shop().title)} · วันที่ ${beFull(dd)}</div></div>
     <div class="ui-tools non-printable"><input type="date" id="cl-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่">${day!==iso(TODAY)?'<button class="btn line" id="cl-today">วันนี้</button>':''}<button class="btn line" id="cl-print">🖨️ พิมพ์สรุป</button></div></div>
@@ -3654,9 +3691,11 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
     :rows.length?`<div class="ui-note warn">⏳ <span><b>ยังไม่ได้ปิดยอดวันนี้</b> · นับเงินสดในลิ้นชักของพนักงานแต่ละคน กรอกในช่อง "เงินสดที่นับได้" แล้วกดบันทึกปิดยอด</span></div>`:''}
   ${changed?`<div class="ui-note warn">⚠️ <span><b>มีการรับเงินเพิ่มหลังปิดยอด</b> ยอดในระบบไม่ตรงกับตอนปิดยอด${canEdit?' กด "แก้ไขยอดปิด" เพื่อปิดยอดใหม่':' แจ้งเจ้าของร้านหรือหัวหน้าสาขา'}</span></div>`:''}
   <div class="ui-kpis"><div class="ui-kpi" data-t="green"><span class="k-ic">💵</span><div><div class="k-l">เงินสด</div><div class="k-v">${money(sum('cash'))}</div></div></div>
-    <div class="ui-kpi" data-t="blue"><span class="k-ic">📱</span><div><div class="k-l">เงินโอน</div><div class="k-v">${money(sum('tr'))}</div></div></div>
+    <div class="ui-kpi" data-t="blue"><span class="k-ic">📱</span><div><div class="k-l">เงินโอน</div><div class="k-v">${money(sum('tr'))}</div>${waits.length?`<div class="k-s" style="color:#c2410c">รอตรวจสอบ ${money(waitSum)}</div>`:''}</div></div>
     <div class="ui-kpi" data-t="violet"><span class="k-ic">💳</span><div><div class="k-l">บัตรเครดิต</div><div class="k-v">${money(sum('card'))}</div></div></div>
     <div class="ui-kpi" data-t="navy"><span class="k-ic">Σ</span><div><div class="k-l">รวมรับชำระทั้งวัน</div><div class="k-v">${money(all)}</div><div class="k-s">${pays.length} รายการ</div></div></div></div>
+  ${waits.length?`<div class="tr-wait non-printable"><div class="tr-wait-h">⏳ <b>เงินโอนรอตรวจสอบ ${waits.length} รายการ · ${money(waitSum)} บาท</b><span>ตรวจกับแอปธนาคารของร้านก่อนปิดยอด</span></div>
+    ${waits.map(({b,p})=>`<div class="tr-wait-r"><span>${esc(p.t||'')} · ${esc(b.no||'#'+b.id)} · <b>${esc(b.plate)}</b> ${esc(b.name)} · รับโดย ${esc(p.by||'-')}</span><b>${money(p.amt)} บาท</b><button type="button" class="btn sm" data-vtr="${b.id}|${b.pays.indexOf(p)}">✓ เงินเข้าบัญชีแล้ว</button></div>`).join('')}</div>`:''}
   ${rows.length?`<div class="ui-card"><div class="ui-card-h"><h2>เงินสดในลิ้นชักแยกตามพนักงาน</h2><span class="sub">ผลต่าง = เงินสดที่นับได้ − เงินสดตามระบบ</span></div>
     <div style="overflow-x:auto"><table class="ui-tbl stack cl-tbl"><thead><tr><th>พนักงานที่รับเงิน</th><th class="r">ครั้ง</th><th class="r">เงินสด</th><th class="r">เงินโอน</th><th class="r">บัตร</th><th class="r">รวม</th><th class="r">เงินสดที่นับได้</th><th class="r">ผลต่าง</th></tr></thead><tbody>
     ${rows.map(r=>{const x=saved[r.name]||{};return `<tr data-st="${esc(r.name)}" data-cash="${r.cash}"><td data-l="พนักงาน"><b>${esc(r.name)}</b></td><td class="r" data-l="ครั้ง">${r.n}</td><td class="r" data-l="เงินสด">${money(r.cash)}</td><td class="r" data-l="เงินโอน">${money(r.tr)}</td><td class="r" data-l="บัตร">${money(r.card)}</td><td class="r" data-l="รวม"><b>${money(r.cash+r.tr+r.card+r.other)}</b></td>
@@ -3665,7 +3704,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
     ${locked?'':`<div class="ui-card-b" style="display:flex;justify-content:flex-end;border-top:1px solid #eef1f4"><button class="btn" id="cl-save" style="height:44px;padding:0 24px">💾 ${done?'บันทึกการแก้ไขยอดปิด':'บันทึกปิดยอด'}</button></div>`}</div>
   <div class="ui-card"><div class="ui-card-h"><h2>รายการรับชำระเงิน</h2><span class="sub">${pays.length} รายการ · กดที่แถวเพื่อเปิดบิล</span></div>
     <div style="overflow-x:auto"><table class="ui-tbl stack cl-list"><thead><tr><th>เวลา</th><th>เลขที่บิล</th><th>ทะเบียน</th><th>ลูกค้า</th><th>วิธีชำระ</th><th>ผู้รับเงิน</th><th class="r">จำนวนเงิน</th></tr></thead><tbody>
-    ${pays.map(({b,p})=>`<tr data-showbill="${b.id}" class="rowbtn"><td data-l="เวลา">${esc(p.t||'')}</td><td data-l="เลขที่บิล">${esc(b.no||'#'+b.id)}</td><td data-l="ทะเบียน"><b>${esc(b.plate)}</b></td><td data-l="ลูกค้า">${esc(b.name)}</td><td data-l="วิธีชำระ">${PAYPILL(p.how)}</td><td data-l="ผู้รับเงิน">${esc(p.by||'')}</td><td class="r" data-l="จำนวนเงิน"><b>${money(p.amt)}</b></td></tr>`).join('')}
+    ${pays.map(({b,p})=>`<tr data-showbill="${b.id}" class="rowbtn"><td data-l="เวลา">${esc(p.t||'')}</td><td data-l="เลขที่บิล">${esc(b.no||'#'+b.id)}</td><td data-l="ทะเบียน"><b>${esc(b.plate)}</b></td><td data-l="ลูกค้า">${esc(b.name)}</td><td data-l="วิธีชำระ">${PAYPILL(p.how)}${p.wait?' <span class="ui-pill warn">รอตรวจสอบ</span>':''}</td><td data-l="ผู้รับเงิน">${esc(p.by||'')}</td><td class="r" data-l="จำนวนเงิน"><b>${money(p.amt)}</b></td></tr>`).join('')}
     </tbody></table></div></div>`:`<div class="ui-card"><div class="ui-empty"><span class="e-ic">🗒️</span>ไม่มีการรับชำระเงินในวันที่เลือก</div></div>`}</div>`;
   const counted=()=>{const o={};document.querySelectorAll('.cl-tbl tr[data-st]').forEach(tr=>{const v=tr.querySelector('.cl-cnt').value.replace(/,/g,'').trim();o[tr.dataset.st]=v===''?null:parseFloat(v)||0});return o};
   const calc=()=>{let cs=0,ds=0,any=false;const c=counted();document.querySelectorAll('.cl-tbl tr[data-st]').forEach(tr=>{const x=c[tr.dataset.st],d=tr.querySelector('.cl-diff');
@@ -3685,7 +3724,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
       <h3 class="pr-s">รายการรับชำระเงิน (${pays.length} รายการ)</h3><table class="pr"><thead><tr><th>เวลา</th><th>เลขที่บิล</th><th>ทะเบียน</th><th>ลูกค้า</th><th>วิธีชำระ</th><th>ผู้รับเงิน</th><th class="r">จำนวนเงิน</th></tr></thead><tbody>
       ${pays.map(({b,p})=>`<tr><td>${esc(p.t||'')}</td><td>${esc(b.no||'#'+b.id)}</td><td>${esc(b.plate)}</td><td>${esc(b.name)}</td><td>${esc(p.how||'')}</td><td>${esc(p.by||'')}</td><td class="r">${money(p.amt)}</td></tr>`).join('')||'<tr><td colspan="7" class="c">ไม่มีรายการ</td></tr>'}</tbody></table>`,
       sign:['ผู้ปิดยอด','ผู้ตรวจสอบ']})};
-  if($('#cl-save'))$('#cl-save').onclick=async e=>{const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),c=counted(),list=rows.map(r=>({staff:r.name,cash:r.cash,tr:r.tr,card:r.card,other:r.other,counted:c[r.name],by:user?user.name:'',at}));
+  if($('#cl-save'))$('#cl-save').onclick=async e=>{if(waits.length&&!confirm(`ยังมีเงินโอนรอตรวจสอบ ${waits.length} รายการ (${money(waitSum)} บาท)\nต้องการปิดยอดเลยใช่ไหม?`))return;const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),c=counted(),list=rows.map(r=>({staff:r.name,cash:r.cash,tr:r.tr,card:r.card,other:r.other,counted:c[r.name],by:user?user.name:'',at}));
     if(list.some(x=>x.counted==null)&&!confirm('ยังกรอกเงินสดที่นับได้ไม่ครบทุกคน จะบันทึกปิดยอดเลยใช่ไหม?'))return;
     e.target.disabled=true;e.target.textContent='กำลังบันทึก...';
     try{if(LIVE)await DB.saveCloses(day,list);else CLOSES[day]=Object.fromEntries(list.map(x=>[x.staff,x]));closeEdit=false;toast('บันทึกปิดยอดแล้ว');R.close()}
@@ -4217,7 +4256,7 @@ function rcPrint(html,a4){const f=document.createElement('iframe');f.style.cssTe
 const PM=[['cash','💵','เงินสด'],['tr','📱','โอนเข้าบัญชี'],['card','💳','บัตรเครดิต']];
 function pmHTML(id,o={}){return `<div class="pmx" id="${id}">
   <div class="pmx-chips">${PM.map(([k,ic,l])=>`<button type="button" class="pmx-c" data-pm="${k}"><i>${ic}</i>${l}</button>`).join('')}${o.none===false?'':'<button type="button" class="pmx-c none" data-pm="none"><i>⏳</i>ยังไม่ชำระ</button>'}</div>
-  ${PM.map(([k,ic,l])=>`<div class="pmx-r" data-r="${k}" hidden><span class="pmx-l">${ic} ${l}</span><span class="pmx-in"><input class="num" data-a="${k}" inputmode="decimal" placeholder="0.00"><em>บาท</em></span><button type="button" class="pmx-full" data-full="${k}">รับเต็มยอดที่เหลือ</button>${k==='tr'?'<button type="button" class="pmx-full" data-qr>📱 QR พร้อมเพย์</button><label class="pmx-ok"><input type="checkbox" data-ok> ตรวจสอบแล้ว เงินเข้าบัญชีร้านจริง</label>':''}</div>`).join('')}
+  ${PM.map(([k,ic,l])=>`<div class="pmx-r" data-r="${k}" hidden><span class="pmx-l">${ic} ${l}</span><span class="pmx-in"><input class="num" data-a="${k}" inputmode="decimal" placeholder="0.00"><em>บาท</em></span><button type="button" class="pmx-full" data-full="${k}">รับเต็มยอดที่เหลือ</button>${k==='tr'?'<button type="button" class="pmx-full" data-qr>📱 QR พร้อมเพย์</button><span class="pmx-note">⏳ ยืนยันเงินเข้าบัญชีได้หลังพิมพ์ใบเสร็จ</span>':''}</div>`).join('')}
   <div class="pmx-st" data-st></div></div>`}
 function pmBind(root,cfg){const sel=new Set(),q=x=>root.querySelector(x),r2=x=>Math.round(x*100)/100;
   const amt=k=>{if(!sel.has(k))return 0;const x=parseFloat((q(`[data-a="${k}"]`).value||'').replace(/,/g,''));return x>0?r2(x):0};
@@ -4241,9 +4280,8 @@ function pmBind(root,cfg){const sel=new Set(),q=x=>root.querySelector(x),r2=x=>M
       if(!sel.size)return{err:q('[data-pm="none"]')?'กรุณาเลือกวิธีรับชำระเงิน ถ้าลูกค้ายังไม่จ่าย ให้เลือก "ยังไม่ชำระ"':'กรุณาเลือกวิธีรับชำระเงิน (เงินสด / โอนเข้าบัญชี / บัตรเครดิต)'};
       if(sel.has('none'))return{pays:[],got:0,chg:0};
       for(const k of sel)if(!amt(k))return{err:`กรุณากรอกจำนวนเงินที่รับเป็น${PM.find(p=>p[0]===k)[2]}`,focus:q(`[data-a="${k}"]`)};
-      if(sel.has('tr')&&!q('[data-ok]').checked)return{err:'กรุณาตรวจสอบว่าเงินโอนเข้าบัญชีร้านแล้ว จากนั้นติ๊กช่อง "ตรวจสอบแล้ว เงินเข้าบัญชีร้านจริง"',focus:q('[data-ok]')};
       const non=r2(amt('tr')+amt('card'));if(non-d>0.004)return{err:`ยอดโอนและบัตรรวมกัน ${money(non)} บาท เกินยอดที่ต้องชำระ ${money(d)} บาท`,focus:q(`[data-a="${sel.has('tr')?'tr':'card'}"]`)};
-      const pays=[];if(amt('tr'))pays.push({amt:amt('tr'),how:'โอน'});if(amt('card'))pays.push({amt:amt('card'),how:'บัตรเครดิต'});
+      const pays=[];if(amt('tr'))pays.push({amt:amt('tr'),how:'โอน',wait:true});if(amt('card'))pays.push({amt:amt('card'),how:'บัตรเครดิต'});
       const c=r2(Math.min(amt('cash'),d-non));if(c>0)pays.push({amt:c,how:'เงินสด'});
       return{pays,got:got(),chg:Math.max(0,r2(got()-d))}}}}
 async function receiptDlg(b,kind,after){const o=rcOpt(),a4=kind!=='แบบม้วน',pn=$('#panel');
@@ -4252,6 +4290,7 @@ async function receiptDlg(b,kind,after){const o=rcOpt(),a4=kind!=='แบบม�
   // after = เปิดจากหน้าเปิดบิลหลังบันทึก: แสดงยอดทอน + ปุ่มไปต่อ
   pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">${after?'✅ บันทึกบิลแล้ว · ':''}ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
     ${after?`<div class="rc-done non-printable"><span>เลขที่ <b>${esc(rcNo(b))}</b></span><span>ยอดรวม <b>${money(b.amt)}</b> บาท</span>${after.paid?`<span>รับเงิน <b>${money(after.paid)}</b> บาท</span><span class="chg">เงินทอน <b>${money(after.chg)}</b> บาท</span>`:''}</div>`:''}
+    <div data-trb="${b.id}">${trPendHTML(b)}</div>
     ${a.why.length?`<div class="rc-why non-printable">ℹ️ ${a.why.map(esc).join('<br>ℹ️ ')}</div>`:''}
     ${a4?`<div class="rcx-wrap" id="rc-wrap">${html}</div>`:html}
     <div class="row non-printable" style="gap:8px;flex-wrap:wrap">${a.debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(a.debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์${a4?' (กระดาษ A4)':''}</button></div>
