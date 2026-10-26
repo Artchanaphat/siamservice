@@ -623,6 +623,7 @@ tbody tr:nth-child(even) td{background:#fff}
 .ss-in{padding-right:28px!important;background:#fff url("data:image/svg+xml;utf8,<svg fill='%23666' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 6 5-6z'/></svg>") no-repeat right 8px center/14px;cursor:pointer}
 .ss-in:focus{cursor:text}
 .ss-dd{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:40;background:#fff;border:1px solid #c9d6e3;border-radius:8px;box-shadow:0 8px 22px rgba(15,23,42,.16);max-height:240px;overflow:auto;font-size:13px}
+body:has(#dlg:not([hidden])) .ss-dd:not(#dlg .ss-dd){display:none}
 .ac-dd{min-width:min(340px,86vw)}
 .ac-co{display:flex;align-items:center;justify-content:space-between;gap:12px}.ac-co small{color:#9aa3af;font-size:11.5px;letter-spacing:.3px}
 .ac-badge{font-style:normal;font-size:10.5px;background:#fef3c7;color:#92400e;border-radius:999px;padding:1px 7px;margin-left:4px}
@@ -863,6 +864,7 @@ body.mgmt .tbranch{display:none}
 @media (max-width:640px){.st-grid.st-keys{grid-template-columns:1fr}}
 /* ---- ใบเสร็จ A4 (แบ่งครึ่ง ลูกค้า/ร้าน) ---- */
 .panel:has(.rcx-wrap){width:880px}
+.rc-done{display:flex;flex-wrap:wrap;gap:6px 18px;background:#e8f7ee;border:1px solid #b6e3c6;color:#14532d;border-radius:8px;padding:10px 14px;font-size:14px;margin:6px 0}.rc-done .chg b{font-size:18px;color:#0a7a3b}
 .rc-why{background:#fff8e1;border:1px solid #ffe08a;color:#7a5a00;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.6;margin:6px 0 10px}
 .rcx-wrap{width:100%;overflow:hidden;border-radius:6px;background:#e9edf3;flex:none}
 .rcx-a4{position:relative;width:210mm;height:297mm;box-sizing:border-box;background:#fff;transform-origin:top left;display:flex;flex-direction:column;color:#111;font-family:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.18)}
@@ -3036,9 +3038,10 @@ R.add=(E)=>{
       [()=>!v('b-prb-co')||insNames().includes(v('b-prb-co')),'กรุณาเลือกบริษัทประกัน พรบ. จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-prb-co','tax'],[()=>!v('b-ins-co')||insNames().includes(v('b-ins-co')),'กรุณาเลือกบริษัทประกันภาคสมัครใจ จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-ins-co','ins']];
     for(const [ok,msg,sel,tab] of need){if(!ok()){if(tab&&svcView!==tab){svcView=tab;syncSvc()}alert(msg);const el=document.querySelector(sel);if(el){el.scrollIntoView({block:'center'});el.focus()}return false}}
     return true};
-  $('#bill').onsubmit=e=>{
+  $('#bill').onsubmit=async e=>{
     e.preventDefault();
     if(!billCheck())return;
+    const sb=$('#bill [type=submit]');if(sb&&sb.disabled)return;
     const tot=recalc();const plate=v('b-cha')+' '+v('b-num');const typ=$('#b-type').value;
     const ttype=typ.includes('moto')?'มอเตอร์ไซค์':['pickup','van'].includes(typ)?'กระบะ':'รถเก๋ง';
     const name=v('c-name')+' '+v('c-sur');
@@ -3049,27 +3052,12 @@ R.add=(E)=>{
     const what=[...svcOn].map(k=>SVC.find(s=>s[0]===k)[1]).join(' + ');
     c.history.unshift({d:TODAY,what,amt:tot});
     const now=new Date();const insL=lines.find(l=>l[0]==='ประกันภาคสมัครใจ');intake.push(mkBill({carId:c.id,plate,name,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),items:lines.filter(l=>l[0]!=='ส่วนลด').map(l=>l===insL?['ประกันภาคสมัครใจ',n('b-ins')||l[1]]:l),doc:(document.querySelector('[name=b-doc]:checked')||{}).value||'สำเนา',prefix:$('#c-pre').value,disc:n('b-dis')&&svcOn.has('tax')?n('b-dis'):0,ins:insL?(n('b-ins')||insL[1]):0,pays:$('#pay').value.trim()===''?[{amt:collect,how:payM==='โอนเข้าบัญชี'?'โอน':payM,by:user.name}]:n('pay')>0?[{amt:Math.min(n('pay'),tot),how:payM==='โอนเข้าบัญชี'?'โอน':payM,by:user.name}]:[]}));
-    DB.newBill(c,intake[intake.length-1]);
-    const billNo='SS'+String(2569)+'-'+String(intake.length+120).padStart(5,'0');
-    $('#panel').innerHTML=`
-      <div class="row between"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน (ตัวอย่าง)</h2><button class="btn line" id="x">ปิด</button></div>
-      <div class="card receipt">
-        <div class="row between"><div><b>${esc(shop().title)}</b><div class="sub">${esc(shopLine())}</div></div><div style="text-align:right"><div class="sub">เลขที่</div><b class="num" id="rc-no">${LIVE?'กำลังบันทึก...':billNo}</b></div></div>
-        <div class="sub">วันที่ ${fmt(TODAY)} · ${payM} · ผู้รับเงิน ${esc(user.name)}</div>
-        <div class="row">${plateHTML(c)}<div>${esc($('#c-pre').value+name)}<div class="sub">${esc(c.model)}</div></div></div>
-        <div class="list">${lines.map(([l,x])=>`<div class="li"><span>${esc(l)}</span><span class="num">${baht(x)}</span></div>`).join('')}</div>
-        <div class="row between"><b>รวม</b><b class="num">${baht(tot)}</b></div>
-        ${n('pay')?`<div class="row between sub"><span>รับเงิน</span><span class="num">${baht(n('pay'))}</span></div><div class="row between sub"><span>เงินทอน</span><span class="num">${baht(Math.max(0,n('pay')-tot))}</span></div>`:''}
-        ${v('c-note')?`<div class="sub">หมายเหตุ: ${esc(v('c-note'))}</div>`:''}
-        <div class="sub">นัดรับ ${be(v('b-pick'))} · ภาษีครั้งถัดไป ${fmt(tax)}</div>
-      </div>
-      <button class="btn" id="to-car">เปิดข้อมูลรถคันนี้</button>
-      <button class="btn ghost" id="new-bill">เปิดบิลใหม่อีกใบ</button>`;
-    $('#dlg').hidden=false;
-    $('#x').onclick=()=>{$('#dlg').hidden=true};
-    $('#to-car').onclick=()=>{cur='cust';renderNav();R.cust();openCar(c.id)};
-    $('#new-bill').onclick=()=>{$('#dlg').hidden=true;svcOn=new Set(['tax']);svcView='tax';R.add();window.scrollTo(0,0)};
-    renderNav();toast('บันทึกบิลแล้ว');
+    const bill=intake[intake.length-1],paid=n('pay'),chg=Math.max(0,paid-tot);
+    if(LIVE){if(sb){sb.disabled=true;sb.dataset.t=sb.textContent;sb.textContent='กำลังบันทึก...'}
+      try{await DB.newBill(c,bill)}finally{if(sb){sb.disabled=false;sb.textContent=sb.dataset.t}}
+      if(!bill.no)return}
+    renderNav();if(!LIVE)toast('บันทึกบิลแล้ว');
+    receiptDlg(bill,'แบบ A4',{car:c,paid,chg});
   };
   // ช่องค้นหา + ตำบลอัตโนมัติ
   ['x-city','b-city','b-type','b-body','b-brand','b-ins-type','c-pre'].forEach(id=>ssel($('#'+id)));
@@ -3858,17 +3846,24 @@ function rcPrint(html,a4){const f=document.createElement('iframe');f.style.cssTe
     @page{${a4?'size:A4;':''}margin:0}.rcx-a4{transform:none!important;box-shadow:none!important}.receipt.slip{width:72mm;max-width:none;margin:0 auto;border:0;box-shadow:none;padding:2mm 0}</style></head><body>${html}</body></html>`);d.close();
   const go=()=>{rcShrink(d);try{f.contentWindow.focus();f.contentWindow.print()}finally{setTimeout(()=>f.remove(),1500)}};
   (d.fonts&&d.fonts.ready?Promise.race([d.fonts.ready,new Promise(r=>setTimeout(r,1500))]):Promise.resolve()).then(()=>setTimeout(go,150))}
-async function receiptDlg(b,kind){const o=rcOpt(),a4=kind!=='แบบม้วน',pn=$('#panel');
+async function receiptDlg(b,kind,after){const o=rcOpt(),a4=kind!=='แบบม้วน',pn=$('#panel');
   pn.classList.toggle('wide',a4);pn.innerHTML='<div class="empty">กำลังสร้างใบเสร็จ...</div>';$('#dlg').hidden=false;
   const a=await rcAssets(b,o),html=a4?rcA4(b,o,a):rcSlip(b,o,a);
-  pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
+  // after = เปิดจากหน้าเปิดบิลหลังบันทึก: แสดงยอดทอน + ปุ่มไปต่อ
+  pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">${after?'✅ บันทึกบิลแล้ว · ':''}ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
+    ${after?`<div class="rc-done non-printable"><span>เลขที่ <b>${esc(rcNo(b))}</b></span><span>ยอดรวม <b>${money(b.amt)}</b> บาท</span>${after.paid?`<span>รับเงิน <b>${money(after.paid)}</b> บาท</span><span class="chg">เงินทอน <b>${money(after.chg)}</b> บาท</span>`:''}</div>`:''}
     ${a.why.length?`<div class="rc-why non-printable">ℹ️ ${a.why.map(esc).join('<br>ℹ️ ')}</div>`:''}
     ${a4?`<div class="rcx-wrap" id="rc-wrap">${html}</div>`:html}
-    <div class="row non-printable" style="gap:8px">${a.debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(a.debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์${a4?' (กระดาษ A4)':''}</button></div>`;
+    <div class="row non-printable" style="gap:8px;flex-wrap:wrap">${a.debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(a.debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์${a4?' (กระดาษ A4)':''}</button></div>
+    ${after?`<div class="row non-printable" style="gap:8px;flex-wrap:wrap"><button class="btn line" id="rc-kind" style="flex:1">${a4?'🧾 ดูแบบม้วน':'📄 ดูแบบ A4'}</button><button class="btn line" id="to-car" style="flex:1">เปิดข้อมูลรถคันนี้</button><button class="btn ghost" id="new-bill" style="flex:1">เปิดบิลใหม่อีกใบ</button></div>`:''}`;
   const x=()=>{$('#dlg').hidden=true;pn.classList.remove('wide');window.removeEventListener('resize',fit)},fit=()=>rcFit($('#rc-wrap'));
-  $('#x').onclick=x;if(a4){fit();window.addEventListener('resize',fit)}
+  $('#x').onclick=after?()=>{x();if(cur==='add')newBillForm()}:x;if(a4){fit();window.addEventListener('resize',fit)}
   if($('#rc-pp'))$('#rc-pp').onclick=()=>qrDlg(a.debt,b.plate);
-  $('#rc-print').onclick=()=>rcPrint(html,a4)}
+  $('#rc-print').onclick=()=>rcPrint(html,a4);
+  if(after){$('#rc-kind').onclick=()=>{window.removeEventListener('resize',fit);receiptDlg(b,a4?'แบบม้วน':'แบบ A4',after)};
+    $('#to-car').onclick=()=>{x();cur='cust';renderNav();R.cust();openCar(after.car.id)};
+    $('#new-bill').onclick=()=>{x();newBillForm()}}}
+function newBillForm(){svcOn=new Set(['tax']);svcView='tax';cur='add';renderNav();R.add();window.scrollTo(0,0)}
 
 
 /* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
