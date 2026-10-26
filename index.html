@@ -717,6 +717,32 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
 .stf .err{color:#cc0000;font-size:13.5px}
 @media (max-width:760px){.stf-form{grid-template-columns:1fr}.stf-form .inv{display:none}}
 body.mgmt .tbranch{display:none}
+.dj-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.dj-late{color:#c81e1e;font-size:12.5px;font-weight:600}
+.dj-alert{background:#fff1f1;border:1px solid #f5c2c2;color:#9b1c1c;border-radius:10px;padding:10px 14px;margin-bottom:12px;cursor:pointer;font-size:14px}
+.dj-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.dj-chips button{display:inline-flex;align-items:center;gap:8px;border:1px solid #dfe3e8;background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;color:#333}
+.dj-chips button span{background:#f1f3f5;border-radius:999px;padding:0 8px;font-size:12.5px;font-weight:700;color:var(--c)}
+.dj-chips button[aria-pressed=true]{border-color:var(--c);color:var(--c);font-weight:600;box-shadow:inset 0 0 0 1px var(--c)}
+.dj-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-bottom:12px}.dj-bar .esearch{flex:1;min-width:220px}.dj-bar .btn{height:38px}
+.dj-card{padding:0;overflow:hidden}
+.dj-tbl th,.dj-tbl td{vertical-align:middle;padding:10px 8px}.dj-tbl .ck{width:34px;text-align:center}.dj-tbl .ck input{width:18px;height:18px}
+.dj-tbl tr.late td{background:#fff7f7}
+.dj-tbl .act{white-space:nowrap;text-align:right}.dj-tbl .act .btn{height:34px;padding:0 12px;margin-left:4px;font-size:13.5px}
+.dj-modal{max-width:440px;width:100%;text-align:left;display:flex;flex-direction:column;gap:10px}.dj-modal .field{display:flex;flex-direction:column;gap:4px}
+.dj-modal input,.dj-modal select{height:38px}
+.dj-tl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;background:#f7f8fa;border-radius:10px;padding:10px;font-size:12.5px}.dj-tl div{display:flex;flex-direction:column;gap:2px}.dj-tl span{color:#6b7280}
+.dlt-sheet{display:none}
+@media print{.dlt-sheet{display:block;font-size:13px;color:#000}.dj .non-printable{display:none!important}
+  .ds-head{display:flex;align-items:center;gap:12px;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px}.ds-head h2{margin:0;font-size:18px}.ds-logo{width:54px;height:54px;border-radius:50%;flex:none}
+  .ds-meta{margin-left:auto;text-align:right}
+  .ds-tbl{width:100%;border-collapse:collapse}.ds-tbl th,.ds-tbl td{border:1px solid #000;padding:5px 6px;text-align:left}.ds-tbl .num{text-align:right}.ds-tbl tfoot td{font-weight:700}
+  .ds-sign{display:flex;justify-content:space-between;margin-top:40px;text-align:center;line-height:2}
+  @page{size:A4 landscape;margin:12mm}}
+@media (max-width:760px){.dj-tbl thead{display:none}.dj-tbl,.dj-tbl tbody,.dj-tbl tr,.dj-tbl td{display:block;width:auto}
+  .dj-tbl tr{border-bottom:1px solid #e3e8ee;padding:10px 12px;position:relative}.dj-tbl td{border:0;padding:3px 0;display:flex;gap:10px}
+  .dj-tbl td[data-l]::before{content:attr(data-l);flex:0 0 84px;color:#6b7280;font-size:13px}.dj-tbl td.ck{position:absolute;right:12px;top:12px;width:auto}
+  .dj-tbl .act{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;padding-top:8px}.dj-tbl .act .btn{margin:0;flex:1}}
 @media (max-width:760px){.stf-tbl{min-width:0;table-layout:auto}.stf-tbl colgroup,.stf-tbl thead{display:none}
 .stf-tbl,.stf-tbl tbody,.stf-tbl tr,.stf-tbl td{display:block;width:auto}
 .stf-tbl tr{border:1px solid #e3e8ee;border-radius:12px;padding:10px 12px;margin-bottom:10px}
@@ -736,7 +762,15 @@ body.mgmt .tbranch{display:none}
 .pfmenu>button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid #f2f2f5;padding:12px 16px;text-align:left;font:inherit;font-size:14.5px;cursor:pointer;color:#1c1c1e}
 .pfmenu>button:hover{background:#fdf6ec}.pfmenu>button:last-child{border-bottom:0}.pfmenu .pfout{color:#c0392b}
 @media (max-width:640px){.pfname{max-width:90px}.pfmenu{width:min(260px,calc(100vw - 32px))}}
-.tbranch{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:6px;font-size:12px;color:inherit;opacity:.9}.tbranch select{font:inherit;padding:1px 4px;border-radius:4px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:inherit}.tbranch option{color:#000}
+.tbranch{position:relative;display:inline-flex;margin-left:8px;vertical-align:middle}
+.tb-btn{display:inline-flex;align-items:center;gap:5px;background:#fff;color:#0369a1;border:0;border-radius:999px;padding:3px 10px 3px 8px;font:inherit;font-size:13px;line-height:1.3;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);white-space:nowrap}
+.tb-btn:hover{background:#f0f9ff}.tb-btn.static{cursor:default}.tb-btn b{font-weight:700}
+.tb-menu{position:absolute;left:0;top:calc(100% + 8px);min-width:220px;background:#fff;color:#1c1c1e;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.22);border:1px solid #e5e7eb;z-index:45;overflow:hidden}
+.tb-h{font-size:12px;color:#6b7280;padding:10px 14px 6px}
+.tb-menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid #f2f2f5;padding:11px 14px;font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
+.tb-menu button:hover{background:#f0f9ff}.tb-menu button[aria-selected=true]{color:#0369a1;font-weight:600}
+.tb-menu i{margin-left:auto;font-style:normal;color:#0369a1}
+.tb-code{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#e0f2fe;color:#0369a1;font-weight:700;font-size:13px}
 </style>
 
 <section class="login" id="login">
@@ -842,8 +876,24 @@ const intake=[
   mkBill({d:plus(-70),t:'08:55',plate:'งจ 7123',name:'มานพ รักไทย',tel:'085-123-7123',type:'มอเตอร์ไซค์',model:'Honda Click',cc:125,items:[['ค่าตรวจสภาพ',60],['พ.ร.บ.',323.14],['ค่าภาษีรถ',144.21]],pays:[P(527.35,'เงินสด',-70)]}),
 ];
 const oldBills=[];
+// ตัวอย่างสถานะงานขนส่ง (โหมดทดลองเท่านั้น ข้อมูลจริงมาจากตาราง dlt_jobs)
+setTimeout(()=>{if(LIVE)return;intake.forEach(b=>{if(!dltKind(b))return;const age=Math.round((TODAY-b.d)/DAY),j=dltOf(b);
+  if(age>=30){j.st='done';j.at={submitted:plus(-age+1).toISOString(),plate:plus(-age+6).toISOString(),done:plus(-age+9).toISOString()}}
+  else if(age>=8){j.st='plate';j.at={submitted:plus(-age+1).toISOString(),plate:plus(-age+4).toISOString()}}
+  else if(age>=2){j.st='submitted';j.at={submitted:plus(-age+1).toISOString()};j.cert='ตส.'+(4400+b.id)}})},0);
 const getBill=id=>intake.find(b=>b.id===id)||oldBills.find(b=>b.id===id);
 const money=n=>(+n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+/* งานขนส่ง: บิลที่ต้องไปยื่นกรมการขนส่ง (ต่อภาษี / โอนย้าย) */
+const DLT_TAX=['ค่าภาษีรถ','ค่าฝากต่อภาษี'],DLT_TR=['ค่าโอน','ค่าย้าย','ค่าโอนย้าย','ค่าเปลี่ยนสี','ค่าตรวจสภาพโอน','ค่าเรื่อง'];
+const dltKind=b=>{const n=b.items.map(i=>i[0]),k=[];if(n.some(x=>DLT_TAX.includes(x)))k.push('ต่อภาษี');if(n.some(x=>DLT_TR.includes(x)))k.push('โอน/ย้าย');return k.join(' + ')};
+const DLT_ST={received:['รอยื่นขนส่ง','#b45309','#fef3c7'],submitted:['ยื่นแล้ว รอป้าย','#1d4ed8','#dbeafe'],plate:['ได้ป้ายแล้ว รอลูกค้ารับ','#6d28d9','#ede9fe'],done:['ลูกค้ารับแล้ว','#15803d','#dcfce7']};
+const DLT_NEXT={received:['submitted','ยื่นขนส่งแล้ว'],submitted:['plate','ได้ป้ายแล้ว'],plate:['done','ลูกค้ารับแล้ว']};
+const DLT_LATE={received:2,submitted:7,plate:14}; // อยู่สถานะนี้เกินกี่วันให้เตือน
+const dltOf=b=>b.dlt||(b.dlt={st:'received',cert:'',rcpt:'',note:'',by:'',at:{}});
+const dltAge=b=>{const j=dltOf(b),t=j.at[j.st]?new Date(j.at[j.st]):b.d;const d=new Date(t);d.setHours(0,0,0,0);return Math.max(0,Math.round((TODAY-d)/DAY))};
+const dltLate=b=>{const j=dltOf(b);return DLT_LATE[j.st]!=null&&dltAge(b)>DLT_LATE[j.st]};
+const dltJobs=()=>intake.filter(b=>dltKind(b));
+const dltPill=b=>{const j=dltOf(b),[l,fg,bg]=DLT_ST[j.st];return `<span class="dj-pill" style="color:${fg};background:${bg}">${l}</span>`};
 const split=b=>{const gen=b.amt-b.ins,gp=Math.min(b.paid,gen);return{gen,gp,ip:Math.max(0,b.paid-gp),debt:Math.max(0,Math.round((b.amt-b.paid)*100)/100)}};
 
 /* tax calculator */
@@ -908,6 +958,7 @@ const MENU=[
   ['add','เปิดบิลใหม่','เพิ่มรายการรถ/งานตรวจสภาพ','#e7f8ec','#1e7a34','<path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4M10 12h5M10 15h3"/><circle cx="17" cy="18" r="3.2" fill="#2f9e5f" stroke="#2f9e5f"/><path d="M17 16.6v2.8M15.6 18h2.8" stroke="#fff"/>'],
   ['cust','ค้นหา | ดูข้อมูล','ทะเบียนและประวัติงาน','#edecfb','#5856d6','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="15.5" cy="17" r="2.6"/><path d="M17.5 19l2 2"/>'],
   ['docs','เอกสารรับ-ส่ง','สำหรับลูกค้าเซ็นรับ','#eeeef0','#4b4b52','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h4"/><circle cx="17" cy="18" r="3.2" fill="#3a3a40" stroke="#3a3a40"/><path d="M15.8 19.2l2.4-2.4" stroke="#fff"/>'],
+  ['dlt','งานขนส่ง','ต่อภาษี / โอนย้าย ที่ต้องยื่นขนส่ง','#e8f0fe','#1a56db','<rect x="2" y="8" width="13" height="8" rx="1.5"/><path d="M15 11h4l3 3v2h-7z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="18" cy="17.5" r="1.8"/><path d="M5 5h7"/>'],
   ['income','รายได้ประจำวัน + ยอดค้าง','สรุปเงินรับจริงและรายการค้างชำระ','#fdf3dc','#c27c0e','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="17" cy="18" r="3.2" fill="#ef9a1a" stroke="#ef9a1a"/><path d="M17 16.4v3.2" stroke="#fff"/>'],
   ['inst','ผ่อนชำระประกัน','ติดตามงวดผ่อนรายลูกค้า','#e6f1fb','#2f7fd6','<rect x="3" y="6" width="16" height="11" rx="2"/><path d="M3 10h16"/><circle cx="18" cy="17" r="3.4" fill="#2f7fd6" stroke="#2f7fd6"/><path d="M18 15.6V17l1 .8" stroke="#fff"/>'],
   ['bell','ส่ง SMS แจ้งเตือน','เลือกประเภทที่ต้องการส่ง','#fde8e8','#e0474c','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
@@ -922,7 +973,7 @@ R.home=()=>{
   $('#view').innerHTML=`
   <div class="mhead"><span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg> เมนูหลัก</span>
     <span class="sub"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3.1 3 7 3s7-1.3 7-3"/></svg> ข้อมูลทั้งหมดในระบบ <b class="num" style="color:#000">${total}</b> รายการ</span></div>
-  <div class="mgrid">${MENU.map(([k,t,d,bg,fg,ic])=>`<button class="mcard" data-go="${k}"><span class="mic" style="background:${bg};color:${fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ic}</svg></span><b>${t}</b><small>${d}</small>${k==='bell'&&dueList(7).length?`<span class="cnt mcnt">${dueList(7).length}</span>`:''}</button>`).join('')}</div>
+  <div class="mgrid">${MENU.map(([k,t,d,bg,fg,ic])=>`<button class="mcard" data-go="${k}"><span class="mic" style="background:${bg};color:${fg}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round">${ic}</svg></span><b>${t}</b><small>${d}</small>${k==='bell'&&dueList(7).length?`<span class="cnt mcnt">${dueList(7).length}</span>`:''}${k==='dlt'&&dltJobs().filter(b=>dltOf(b).st!=='done').length?`<span class="cnt mcnt">${dltJobs().filter(b=>dltOf(b).st!=='done').length}</span>`:''}</button>`).join('')}</div>
   <div class="exp">
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
       <div class="expt" role="tablist">${EXPK.map(([k,l,ic])=>`<button role="tab" data-ek="${k}" aria-selected="${k===expKind}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ic}</svg>${l}<span class="ecount">${expList(k).length}</span></button>`).join('')}</div></div>
@@ -1065,7 +1116,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const kind=/บรรทุก/.test(b.type)?'บรรทุกส่วนบุคคล':/จักรยานยนต์/.test(b.type)?'จักรยานยนต์':'นั่งส่วนบุคคล';
   const exp=(l,d,extra)=>`<div class="exp-sub"><div class="row"><div class="lbl">${l}</div><div class="val">${d?`หมดอายุ ${beFull(d)}`:'<span class="exp-empty">ไม่มีข้อมูล</span>'}</div></div>${d&&extra?`<p class="exp-meta">${esc(extra)}</p>`:''}</div>`;
   $('#view').innerHTML=`<div class="sd">
-  <div class="sd-shop"><div class="sd-logo lg" role="img" aria-label="โลโก้ ตรอ."></div><div><h2>ตรอ.สยามเซอร์วิส</h2><div>ที่อยู่ร้าน (รอข้อมูลจริง)<br>โทร : 0X-XXX-XXXX</div></div></div>
+  <div class="sd-shop"><div class="sd-logo lg" role="img" aria-label="โลโก้ ตรอ."></div><div><h2>ตรอ.สยามเซอร์วิส${LIVE&&DB.branch?' · '+esc(DB.branch.name):''}</h2><div>${LIVE&&DB.branch&&DB.branch.address?esc(DB.branch.address):'ที่อยู่ร้าน (รอข้อมูลจริง)'}<br>โทร : ${LIVE&&DB.branch&&DB.branch.phone?esc(DB.branch.phone):'0X-XXX-XXXX'}</div></div></div>
   <div class="hdr"><div class="hdr-left">
     <div class="hdr-badge reg">📅 วันจดทะเบียน:&nbsp;<span style="color:#185FA5">${beFull(c.created?new Date(c.created.getTime()-3650*DAY):new Date(b.d.getTime()-2000*DAY))}</span></div>
     <div class="hdr-badge exp">⏰ หมดอายุ:&nbsp;<span style="color:#E24B4A">${c.tax?beFull(c.tax):beFull(new Date(b.d.getFullYear()+1,b.d.getMonth(),b.d.getDate()))}</span></div></div>
@@ -1077,6 +1128,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
     ${ACC('PDF','#FF0000','<path d="M4 2h7l4 4v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M11 2v4h4"/>','<div class="img-wrap"><span class="exp-empty">ยังไม่มีไฟล์</span></div>',false)}
   </div><div>
     ${ACC('ค่าใช้จ่าย','#CD9B1D','<rect x="2" y="4" width="14" height="10" rx="2"/><path d="M2 8h14"/>',b.items.map(([l,a])=>RW(esc(l),money(a)+' บาท')).join('')+exp('พรบ.ภาคบังคับ',c.prb,'')+exp('ประกันภาคสมัครใจ',b.ins||c.insCo?c.ins:null,b.insCo||c.insCo)+exp('พรบ. ขนส่ง',c.k,c.kNote))}
+    ${dltKind(b)?ACC('งานขนส่ง','#1a56db','<rect x="1" y="6" width="11" height="7" rx="1.5"/><path d="M12 8.5h3l2 2.5v2h-5z"/>',RW('งาน',esc(dltKind(b)))+RW('สถานะ',dltPill(b)+(dltLate(b)?` <span class="dj-late">ค้าง ${dltAge(b)} วัน</span>`:''))+RW('เลขใบรับรองตรวจสภาพ',esc(dltOf(b).cert||'–'))+RW('เลขใบเสร็จขนส่ง',esc(dltOf(b).rcpt||'–'))+(dltOf(b).note?RW('หมายเหตุ',esc(dltOf(b).note)):'')+`<div style="padding:10px 14px"><button class="btn line" id="nb-dlt" style="width:100%">🚚 อัปเดตงานขนส่ง</button></div>`):''}
     <div class="sum-card"><div class="card-head">☰ สรุปยอด</div>
       <div class="sum-row"><div class="slbl">รวม</div><div class="sval">${money(b.amt+b.disc)} บาท</div></div>
       <div class="sum-row disc"><div class="slbl">ส่วนลด</div><div class="sval">${money(b.disc)} บาท</div></div>
@@ -1110,6 +1162,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   if(b.ins)$('#nb-inst').onclick=()=>{go('inst');Object.assign(INST.st,{mode:'all',tab:'all',q:b.plate});R.inst()};
   $('#nb-back').onclick=()=>go(billBack==='bill'?'income':billBack);
   document.querySelectorAll('[data-print]').forEach(x=>x.onclick=()=>receiptDlg(b,x.dataset.print));
+  if($('#nb-dlt'))$('#nb-dlt').onclick=()=>dltDlg([b],R.bill);
 };
 document.addEventListener('click',e=>{const s=e.target.closest('[data-showbill]');if(s){showBill(+s.dataset.showbill);return}const p=e.target.closest('[data-pay]');if(p)payDlg(getBill(+p.dataset.pay))});
 
@@ -2478,7 +2531,7 @@ R.add=(E)=>{
     <div class="card sec" data-sec="tax">
       <p class="note tro-must" id="b-tro" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ต้องนำรถไปตรวจสภาพ ณ สถานตรวจสภาพรถเอกชน (ตรอ.) ก่อนยื่นชำระภาษี</p>
       <div class="form">
-        <div class="field"><span><em class="lc-purple">ค่าภาษีรถ</em></span><div class="fc">${MI('b-tax')}<a class="dltbtn" href="https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/" target="_blank" rel="noopener">🔍 เช็คภาษีกรมขนส่ง</a></div></div>
+        <div class="field"><span><em class="lc-purple">ค่าภาษีรถ</em></span><div class="fc">${MI('b-tax')}<a class="dltbtn" href="https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/" target="_blank" rel="noopener" onclick="const p=((document.getElementById('b-cha')||{}).value||'')+' '+((document.getElementById('b-num')||{}).value||'');if(p.trim())copyPlate(p.trim())">🔍 เช็คภาษีกรมขนส่ง</a></div></div>
         <div class="field"><span><em class="lc-purple">ค่าตรวจสภาพรถ</em></span><div class="fc">${MI('b-insp')}<span class="il">หมายเหตุ:</span><input id="b-insp-note" style="width:110px"></div></div>
         ${M('b-late','<em class="lc-purple">ค่าปรับล่าช้า</em>')}
         ${M('b-fee','<em class="lc-purple">ค่าฝากต่อภาษี</em>')}
@@ -2877,7 +2930,7 @@ R.calc=()=>{
 /* ===== ฐานข้อมูลจริง (Supabase) ===== */
 const SB_URL='https://plilxmgripxmebvjafmj.supabase.co',SB_KEY='sb_publishable_38gR_gKTmCYqC3RYMcFpmQ_arM3dFxw';
 const DB=(()=>{
-  let sb=null,me=null,branches=[],branch=null;
+  let sb=null,me=null,branches=[],branch=null,dltReady=false;
   const lib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวเชื่อมฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ต'));document.head.append(s)});
   const client=async()=>{if(!sb){await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:rem?window.localStorage:window.sessionStorage}})}return sb};
@@ -2911,7 +2964,10 @@ const DB=(()=>{
     const since=new Date(TODAY.getTime()-400*DAY).toISOString();
     const [vs,bs]=await Promise.all([
       c.from('vehicles').select('*,customers(*)').order('updated_at',{ascending:false}).limit(5000).then(chk),
-      c.from('bills').select('*,payments(*),bill_edits(*)').eq('branch_id',branch.id).gte('bill_at',since).order('bill_at').limit(5000).then(chk)]);
+      (async()=>{const q=x=>c.from('bills').select(x).eq('branch_id',branch.id).gte('bill_at',since).order('bill_at').limit(5000);
+        // ถ้ายังไม่ได้รัน 04-dlt.sql ตาราง dlt_jobs จะยังไม่มี ให้โหลดบิลได้ตามปกติ
+        const r=await q('*,payments(*),bill_edits(*),dlt_jobs(*)');if(!r.error){dltReady=true;return r.data}
+        dltReady=false;return chk(await q('*,payments(*),bill_edits(*)'))})()]);
     cars.length=0;intake.length=0;oldBills.length=0;NEWS.length=0;seq=1e9;bseq=1e9;
     vs.forEach(v=>{const cu=v.customers||{};cars.push({id:v.id,custId:v.customer_id,ctype:v.car_type,plate:v.plate,prov:v.province,
       name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:TT(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
@@ -2921,6 +2977,8 @@ const DB=(()=>{
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
         pays:(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at);return{id:p.id,d:dOnly(pt),t:hm(pt),amt:+p.amount,how:p.method,by:p.by_name}}),
         edits:(r.bill_edits||[]).sort((a,z)=>new Date(a.edited_at)-new Date(z.edited_at)).map(x=>{const et=new Date(x.edited_at);return{d:dOnly(et),t:hm(et),what:x.what,by:x.by_name}})};
+      b.pick=day(r.pick_date);const dj=Array.isArray(r.dlt_jobs)?r.dlt_jobs[0]:r.dlt_jobs;
+      if(dj)b.dlt={st:dj.status,cert:dj.cert_no||'',rcpt:dj.receipt_no||'',note:dj.note||'',by:dj.updated_by_name||'',at:{submitted:dj.submitted_at,plate:dj.plate_at,done:dj.done_at}};
       b.paid=Math.round(b.pays.reduce((t,p)=>t+p.amt,0)*100)/100;b.what=b.items.map(i=>i[0]).join(' + ');intake.push(b);
       const car=cars.find(x=>x.id===b.carId);if(car)car.history.unshift({d:b.d,what:b.what,amt:b.amt})})}
   async function newBill(c,b){if(!LIVE)return;
@@ -2942,6 +3000,9 @@ const DB=(()=>{
       if(editBill===tmpId)editBill=row.id;if(curBill===tmpId)curBill=row.id;
       const n=document.getElementById('rc-no');if(n)n.textContent=row.bill_no;toast('บันทึกลงฐานข้อมูลแล้ว เลขที่ '+row.bill_no)}
     catch(err){const n=document.getElementById('rc-no');if(n)n.textContent='ยังไม่ได้บันทึก';fail('บันทึกบิล',err)}}
+  async function saveDlt(list){if(!dltReady)throw new Error('ยังไม่ได้รัน 04-dlt.sql ใน Supabase');const s=await client();
+    chk(await s.from('dlt_jobs').upsert(list.map(b=>{const j=dltOf(b);return{bill_id:b.id,branch_id:b.branch||branch.id,status:j.st,cert_no:j.cert,receipt_no:j.rcpt,note:j.note,
+      submitted_at:j.at.submitted||null,plate_at:j.at.plate||null,done_at:j.at.done||null,updated_by_name:j.by||me.name}}),{onConflict:'bill_id'}))}
   async function pay(b,p){if(!LIVE)return;
     try{const s=await client();chk(await s.from('payments').insert({bill_id:b.id,branch_id:b.branch||branch.id,amount:p.amt,method:p.how,by_name:p.by||me.name}))}
     catch(err){fail('บันทึกการรับเงิน',err)}}
@@ -2956,11 +3017,17 @@ const DB=(()=>{
     catch(err){fail('บันทึกการแก้ไข',err)}}
   function branchUI(){document.querySelectorAll('.tbranch').forEach(x=>x.remove());if(!LIVE||!branch)return;
     const host=document.querySelector('.tuser');if(!host)return;
-    const w=document.createElement('span');w.className='tbranch';
-    if(me.role==='owner'&&branches.length>1){w.innerHTML='สาขา <select>'+branches.map(b=>`<option value="${b.id}" ${b.id===branch.id?'selected':''}>${esc(b.name)}</option>`).join('')+'</select>';
-      w.querySelector('select').onchange=async e=>{branch=branches.find(b=>b.id===+e.target.value);try{localStorage.setItem('siam-branch',branch.id)}catch(_){}
-        toast('กำลังโหลดข้อมูล '+branch.name+'...');try{await load();document.querySelectorAll('.pfbr').forEach(n=>n.textContent='ดูข้อมูล: '+branch.name);go('home');toast('เปลี่ยนเป็น '+branch.name+' แล้ว')}catch(err){fail('โหลดข้อมูล',err)}}}
-    else w.textContent=branch.name;
+    const w=document.createElement('span');w.className='tbranch';const pin='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+    if(me.role==='owner'&&branches.length>1){
+      w.innerHTML=`<button type="button" class="tb-btn" aria-haspopup="listbox" aria-expanded="false">${pin}<b>${esc(branch.name)}</b><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+        <div class="tb-menu" role="listbox" hidden><div class="tb-h">เลือกสาขาที่จะดูข้อมูล</div>${branches.map(b=>`<button type="button" role="option" data-br="${b.id}" aria-selected="${b.id===branch.id}"><span class="tb-code">${esc(b.code)}</span><span>${esc(b.name)}</span>${b.id===branch.id?'<i>✓</i>':''}</button>`).join('')}</div>`;
+      const btn=w.querySelector('.tb-btn'),m=w.querySelector('.tb-menu'),tog=o=>{m.hidden=!o;btn.setAttribute('aria-expanded',o)};
+      btn.onclick=e=>{e.stopPropagation();tog(m.hidden)};document.addEventListener('click',e=>{if(!w.contains(e.target))tog(false)});
+      document.addEventListener('keydown',e=>{if(e.key==='Escape')tog(false)});
+      m.querySelectorAll('[data-br]').forEach(o=>o.onclick=async()=>{tog(false);const nb=branches.find(b=>b.id===+o.dataset.br);if(!nb||nb.id===branch.id)return;
+        branch=nb;try{localStorage.setItem('siam-branch',branch.id)}catch(_){}
+        toast('กำลังโหลดข้อมูล '+branch.name+'...');try{await load();branchUI();document.querySelectorAll('.pfbr').forEach(n=>n.textContent='ดูข้อมูล: '+branch.name);go('home');toast('เปลี่ยนเป็น '+branch.name+' แล้ว')}catch(err){fail('โหลดข้อมูล',err)}})}
+    else w.innerHTML=`<span class="tb-btn static">${pin}<b>${esc(branch.name)}</b></span>`;
     host.querySelector('.urole').after(w)}
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
     try{if(!localStorage.getItem('siam-auth'))return}catch(e){return}
@@ -2979,7 +3046,7 @@ const DB=(()=>{
     if(id)chk(await c.from('branches').update(o).eq('id',id));else chk(await c.from('branches').insert(o));
     branches=chk(await c.from('branches').select('*').eq('active',true).order('id'));if(!branches.find(b=>b.id===branch.id))branch=branches[0];branchUI()}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch}}})();
+  return{login,load,newBill,pay,edit,saveDlt,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3006,6 +3073,75 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-chpw]'))return
 /* จัดการพนักงาน / สาขา (เจ้าของร้าน) */
 const ROLE_OPT=[['staff','พนักงาน'],['head','หัวหน้าสาขา'],['owner','เจ้าของร้าน']];
 const genPw=()=>{const c='abcdefghjkmnpqrstuvwxyz23456789';let p='';for(let i=0;i<8;i++)p+=c[Math.floor(Math.random()*c.length)];return p};
+let dltF='received',dltQ='';const dltSel=new Set();
+const dltPlate=b=>(b.plate+' '+(b.prov||'')).trim();
+function copyPlate(t){try{navigator.clipboard.writeText(t);toast('คัดลอกทะเบียน '+t+' แล้ว วางในหน้าเว็บกรมการขนส่งได้เลย')}catch(_){toast('ทะเบียน '+t)}}
+async function dltSet(list,patch){const by=user?user.name:'';const now=new Date().toISOString();
+  list.forEach(b=>{const j=dltOf(b);if(patch.st&&patch.st!==j.st){j.st=patch.st;j.at[patch.st]=now}['cert','rcpt','note'].forEach(k=>{if(patch[k]!=null)j[k]=patch[k]});j.by=by});
+  if(LIVE)await DB.saveDlt(list)}
+function dltDlg(list,after){const one=list.length===1?list[0]:null,j=one?dltOf(one):{st:dltOf(list[0]).st,cert:'',rcpt:'',note:''};
+  const ov=document.createElement('div');ov.className='nb-overlay show';
+  ov.innerHTML=`<div class="nb-modal dj-modal"><h3>🚚 อัปเดตงานขนส่ง</h3><p class="sub">${one?esc(dltPlate(one))+' · '+esc(one.name)+' · '+esc(dltKind(one)):list.length+' คัน'}</p>
+    <label class="field"><span>สถานะ</span><select id="dj-st">${Object.entries(DLT_ST).map(([k,[l]])=>`<option value="${k}" ${k===j.st?'selected':''}>${l}</option>`).join('')}</select></label>
+    ${one?`<label class="field"><span>เลขใบรับรองการตรวจสภาพ</span><input id="dj-cert" value="${esc(j.cert)}" placeholder="ถ้ามี"></label>
+    <label class="field"><span>เลขใบเสร็จกรมการขนส่ง</span><input id="dj-rcpt" value="${esc(j.rcpt)}" placeholder="ถ้ามี"></label>
+    <label class="field"><span>หมายเหตุ</span><input id="dj-note" value="${esc(j.note)}" placeholder="เช่น ขาดสำเนาบัตร รอลูกค้าส่งเพิ่ม"></label>
+    <div class="dj-tl">${['submitted','plate','done'].map(k=>`<div><span>${DLT_ST[k][0]}</span><b>${j.at&&j.at[k]?beFull(new Date(j.at[k])):'–'}</b></div>`).join('')}</div>`:''}
+    <div class="row" style="gap:8px;margin-top:6px"><button class="btn line" id="dj-x" style="flex:1">ยกเลิก</button><button class="btn" id="dj-ok" style="flex:1">บันทึก</button></div></div>`;
+  document.body.appendChild(ov);const close=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)close()};ov.querySelector('#dj-x').onclick=close;
+  ov.querySelector('#dj-ok').onclick=async e=>{e.target.disabled=true;const patch={st:ov.querySelector('#dj-st').value};
+    if(one)Object.assign(patch,{cert:ov.querySelector('#dj-cert').value.trim(),rcpt:ov.querySelector('#dj-rcpt').value.trim(),note:ov.querySelector('#dj-note').value.trim()});
+    try{await dltSet(list,patch);close();toast('บันทึกงานขนส่งแล้ว');after&&after()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}}}
+function dltSheet(list){const br=LIVE&&DB.branch?DB.branch:null,taxOf=b=>b.items.filter(i=>['ค่าภาษีรถ','ค่าปรับล่าช้า'].includes(i[0])).reduce((t,i)=>t+i[1],0);
+  return `<div class="ds-head"><div class="lg ds-logo"></div><div><h2>ใบนำส่งงานกรมการขนส่งทางบก</h2><div>ตรอ.สยามเซอร์วิส${br?' · '+esc(br.name):''}${br&&br.phone?' · โทร '+esc(br.phone):''}</div></div>
+    <div class="ds-meta">วันที่ ${beFull(TODAY)}<br>จำนวน ${list.length} คัน</div></div>
+  <table class="ds-tbl"><thead><tr><th>ที่</th><th>ทะเบียน</th><th>ประเภทรถ</th><th>ชื่อเจ้าของ</th><th>งาน</th><th>ค่าภาษี+ค่าปรับ</th><th>เล่มทะเบียน</th><th>เลขบิล</th><th>หมายเหตุ</th></tr></thead><tbody>
+  ${list.map((b,i)=>`<tr><td>${i+1}</td><td><b>${esc(dltPlate(b))}</b></td><td>${esc(((b.type||'').match(/\((ร[ยส]\.\s?\d+)\)/)||[])[1]||b.type||'')}</td><td>${esc(b.name)}</td><td>${esc(dltKind(b))}</td><td class="num">${taxOf(b)?money(taxOf(b)):"–"}</td><td>${esc(b.doc||'สำเนา')}</td><td>${esc(b.no||'')}</td><td></td></tr>`).join('')}
+  </tbody><tfoot><tr><td colspan="5">รวม ${list.length} คัน</td><td class="num">${money(list.reduce((t,b)=>t+taxOf(b),0))}</td><td colspan="3"></td></tr></tfoot></table>
+  <div class="ds-sign"><div>ลงชื่อ ..................................... ผู้นำส่ง<br>(${esc(user?user.name:'')})</div><div>ลงชื่อ ..................................... ผู้ตรวจรับ<br>วันที่ ........./........./.........</div></div>`}
+R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'||dltAge(b)<=30)).length,late=all.filter(dltLate);
+  const s=dltQ.replace(/\s/g,'').toLowerCase();
+  const list=all.filter(b=>(dltF==='late'?dltLate(b):dltOf(b).st===dltF&&(dltF!=='done'||dltAge(b)<=30))&&(!s||(b.plate+b.name+(b.tel||'')+(b.no||'')).replace(/\s/g,'').toLowerCase().includes(s)))
+    .sort((a,z)=>a.d-z.d||a.id-z.id);
+  [...dltSel].forEach(id=>{if(!list.find(b=>b.id===id))dltSel.delete(id)});
+  const chips=[...Object.entries(DLT_ST).map(([k,[l,fg]])=>[k,l+(k==='done'?' (30 วัน)':''),cnt(k),fg]),['late','⚠️ ค้างเกินกำหนด',late.length,'#c81e1e']];
+  $('#view').innerHTML=`<div class="dj">
+  <div class="non-printable">
+  <div class="ltop"><h1>งานขนส่ง</h1><span class="sub">งานต่อภาษีและโอนย้ายที่ต้องไปยื่นกรมการขนส่ง${LIVE&&!DB.dltReady?' · <b style="color:#c81e1e">ยังไม่ได้รัน 04-dlt.sql สถานะจะยังไม่ถูกบันทึก</b>':''}</span></div>
+  ${late.length?`<div class="dj-alert" data-f="late">⚠️ มี <b>${late.length} คัน</b> ค้างเกินกำหนด (รอยื่นเกิน ${DLT_LATE.received} วัน · รอป้ายเกิน ${DLT_LATE.submitted} วัน · ลูกค้ายังไม่มารับเกิน ${DLT_LATE.plate} วัน) <u>ดูรายการ</u></div>`:''}
+  <div class="dj-chips">${chips.map(([k,l,n,fg])=>`<button data-f="${k}" aria-pressed="${k===dltF}" style="--c:${fg}">${l}<span>${n}</span></button>`).join('')}</div>
+  <div class="dj-bar"><label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="dj-q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์ / เลขบิล" value="${esc(dltQ)}"></label>
+    <span class="sub" id="dj-n"></span>
+    <button class="btn line" id="dj-print">🖨️ พิมพ์ใบนำส่ง</button>${dltF!=='late'&&DLT_NEXT[dltF]?`<button class="btn" id="dj-bulk">✓ ${DLT_NEXT[dltF][1]}</button>`:''}</div>
+  ${list.length?`<div class="card dj-card"><div class="tablewrap"><table class="dj-tbl"><thead><tr><th class="ck"><input type="checkbox" id="dj-all" aria-label="เลือกทั้งหมด"></th><th>วันที่รับ / บิล</th><th>ทะเบียน</th><th>เจ้าของ</th><th>งาน</th><th>เล่มทะเบียน</th><th>สถานะ</th><th></th></tr></thead><tbody>
+  ${list.map(b=>{const j=dltOf(b),nx=DLT_NEXT[j.st];return `<tr data-j="${b.id}" class="${dltLate(b)?'late':''}"><td class="ck"><input type="checkbox" data-ck ${dltSel.has(b.id)?'checked':''} aria-label="เลือก"></td>
+    <td data-l="วันที่รับ">${fmt(b.d)}<div class="sub">${esc(b.no||'')}</div></td>
+    <td data-l="ทะเบียน"><b>${esc(b.plate)}</b><div class="sub">${esc(b.prov||'')}</div></td>
+    <td data-l="เจ้าของ">${esc(b.name)}<div class="sub">${esc(b.tel||'')}</div></td>
+    <td data-l="งาน">${esc(dltKind(b))}</td><td data-l="เล่มทะเบียน">${esc(b.doc||'สำเนา')}</td>
+    <td data-l="สถานะ">${dltPill(b)}${dltLate(b)?`<div class="dj-late">ค้าง ${dltAge(b)} วัน</div>`:j.st!=='done'?`<div class="sub">${dltAge(b)} วัน</div>`:''}${j.cert?`<div class="sub">ใบรับรอง ${esc(j.cert)}</div>`:''}</td>
+    <td class="act">${nx?`<button class="btn" data-nx="${nx[0]}">${nx[1]}</button>`:''}<button class="btn line" data-ed title="รายละเอียด">แก้ไข</button><button class="btn line" data-cp title="คัดลอกทะเบียนแล้วเปิดเว็บเช็คภาษีกรมขนส่ง">🔍</button><button class="btn line" data-showbill="${b.id}" title="ดูบิล">บิล</button></td></tr>`}).join('')}
+  </tbody></table></div></div>`:`<div class="eempty"><div>ไม่มีรายการในหมวดนี้</div></div>`}
+  </div><div class="dlt-sheet" id="dj-sheet"></div></div>`;
+  const upd=()=>{const n=dltSel.size;$('#dj-n').textContent=n?`เลือก ${n} คัน`:`${list.length} คัน`;if($('#dj-bulk'))$('#dj-bulk').disabled=!n;if($('#dj-all'))$('#dj-all').checked=n&&n===list.length};
+  document.querySelectorAll('.dj [data-f]').forEach(x=>x.onclick=()=>{dltF=x.dataset.f;dltSel.clear();R.dlt()});
+  $('#dj-q').oninput=e=>{dltQ=e.target.value;const pos=e.target.selectionStart;R.dlt();const q=$('#dj-q');q.focus();q.setSelectionRange(pos,pos)};
+  if($('#dj-all'))$('#dj-all').onchange=e=>{list.forEach(b=>e.target.checked?dltSel.add(b.id):dltSel.delete(b.id));document.querySelectorAll('[data-ck]').forEach(c=>c.checked=e.target.checked);upd()};
+  document.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>{const id=+c.closest('tr').dataset.j;c.checked?dltSel.add(id):dltSel.delete(id);upd()});
+  const rowB=x=>getBill(+x.closest('tr').dataset.j);
+  document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
+  document.querySelectorAll('[data-ed]').forEach(x=>x.onclick=()=>dltDlg([rowB(x)],R.dlt));
+  document.querySelectorAll('[data-cp]').forEach(x=>x.onclick=()=>{copyPlate(dltPlate(rowB(x)));window.open('https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/','_blank','noopener')});
+  if($('#dj-bulk'))$('#dj-bulk').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),nx=DLT_NEXT[dltF];if(!sel.length)return;
+    if(!confirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
+    try{await dltSet(sel,{st:nx[0]});dltSel.clear();toast('อัปเดต '+sel.length+' คันแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  $('#dj-print').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),pl=sel.length?sel:list.filter(b=>dltOf(b).st==='received');
+    if(!pl.length){alert('ไม่มีรถที่รอยื่นขนส่ง ติ๊กเลือกรถที่จะพิมพ์ก่อน');return}
+    $('#dj-sheet').innerHTML=dltSheet(pl);window.print();
+    const wait=pl.filter(b=>dltOf(b).st==='received');
+    if(wait.length&&confirm(`พิมพ์ใบนำส่งแล้ว ต้องการเปลี่ยน ${wait.length} คันนี้เป็น "ยื่นแล้ว รอป้าย" เลยไหม?`)){try{await dltSet(wait,{st:'submitted'});dltSel.clear();toast('อัปเดตแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}}};
+  upd()};
 R.staff=async()=>{
   if(!LIVE||!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้าน (บัญชีจริง) เท่านั้น</div>';return}
   $('#view').innerHTML='<div class="empty">กำลังโหลดข้อมูลพนักงาน...</div>';
