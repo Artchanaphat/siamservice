@@ -1149,8 +1149,8 @@ html.booting .boot{display:flex;position:fixed;inset:0;align-items:center;justif
   .cl-cnt{border:0;width:auto}.cl-kpis>div{border-color:#999}}
 </style>
 
-<script id="boot-chk">try{if(localStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
-<div class="boot" id="boot"><span class="boot-sp"></span>กำลังเข้าสู่ระบบ...</div>
+<script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
+<div class="boot" id="boot"><span class="boot-sp"></span>กำลังโหลดข้อมูล...</div>
 <section class="login" id="login">
   <div class="brand"><span class="lg login-logo" role="img" aria-label="โลโก้ ตรอ."></span>
     <h1>ตรอ.สยาม<em>เซอร์วิส</em></h1>
@@ -1315,17 +1315,21 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 function renderNav(){$('.menu').innerHTML=navHTML(false)}
-function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
+function go(k){if(k!=='docs')psDay=null;cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
 const USERS={admin:{pw:'admin',name:'คุณอาร์ท',role:'owner'},demo1:{pw:'demo1',name:'พนักงาน 1',role:'staff'}};
 let user=null;
 const ROLE_TH={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
-function enterApp(u){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
+// รีเฟรชแล้วกลับมาหน้าเดิม (เฉพาะหน้าที่เปิดได้โดยไม่ต้องเลือกบิลก่อน)
+const PAGE_KEEP=['home','add','cust','docs','dlt','queue','income','close','expense','dash','inst','bell','sms','news','backup','calc','settings','staff','audit'];
+function enterApp(u,resumed){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
   document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));document.querySelectorAll('[data-owner-any]').forEach(b=>b.hidden=u.role!=='owner');
   document.querySelectorAll('.pfrole').forEach(n=>n.textContent=ROLE_TH[u.role]||'พนักงาน');document.querySelectorAll('.pfbr').forEach(n=>n.textContent=LIVE?(DB.branch?(u.role==='owner'?'ดูข้อมูล: ':'')+DB.branch.name:''):'โหมดทดลอง (ไม่บันทึกจริง)');
-  $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;go('home');toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
+  $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;
+  let pg='home';if(resumed)try{const k=sessionStorage.getItem('siam-page'),ss=sessionStorage.getItem('siam-stsec');if(PAGE_KEEP.includes(k))pg=k;if(ss)stSec=ss}catch(e){}
+  go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // แปลงข้อความผิดพลาดจากระบบเป็นภาษาไทยที่เข้าใจง่าย
 const loginMsg=err=>{const m=String(err&&err.message||'');console.warn('login:',m);
@@ -3461,7 +3465,10 @@ const DB=(()=>{
   let sb=null,me=null,branches=[],branch=null,dltReady=false;
   const lib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวเชื่อมฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ต'));document.head.append(s)});
-  const client=async()=>{if(!sb){await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:rem?window.localStorage:window.sessionStorage}})}return sb};
+  const authIn=st=>{try{return !!st.getItem('siam-auth')}catch(e){return false}};
+  const client=async()=>{if(!sb){await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;
+    // ไม่ติ๊กจดจำ = เก็บ session ไว้ในแท็บนี้ (รีเฟรชได้ ปิดแท็บแล้วต้องล็อกอินใหม่)
+    const tab=authIn(window.sessionStorage)&&!authIn(window.localStorage);sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:tab||!rem?window.sessionStorage:window.localStorage}})}return sb};
   const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
   // Supabase ส่งได้ครั้งละไม่เกิน 1,000 แถว จึงดึงทีละหน้าจนครบ
   async function pages(q){let out=[];for(let i=0;;i+=1000){const r=await q().range(i,i+999);if(r.error)return r;out=out.concat(r.data);if(r.data.length<1000)return{data:out,error:null}}}
@@ -3571,9 +3578,9 @@ const DB=(()=>{
     else w.innerHTML=`<span class="tb-btn static">${pin}<b>${esc(branch.name)}</b></span>`;
     host.appendChild(w)}
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
-    try{if(!localStorage.getItem('siam-auth'))return}catch(e){return}
+    if(!authIn(window.localStorage)&&!authIn(window.sessionStorage))return;
     try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
-      const u=await profile(data.session.user.id);await load();enterApp(u)}catch(err){console.warn(err)}
+      const u=await profile(data.session.user.id);await load();enterApp(u,true)}catch(err){console.warn(err)}
     finally{document.documentElement.classList.remove('booting')}} // ระหว่างกู้ session ซ่อนหน้าล็อกอิน ไม่ให้โผล่แวบตอนรีเฟรช
   async function logout(){try{if(sb)await sb.auth.signOut()}catch(e){}}
   // ----- จัดการพนักงาน / สาขา (เจ้าของร้าน) -----
@@ -4018,7 +4025,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     const lay=document.createElement('div');lay.className='st-lay';
     lay.innerHTML=stNavHTML()+'<div class="st-main"></div>';
     root.insertBefore(lay,cards[0]);const main=lay.querySelector('.st-main');cards.forEach(c=>main.appendChild(c));main.appendChild(bar);
-    const show=k=>{if(!items.some(x=>x[0]===k))k='fee';stSec=k;cards.forEach(c=>c.hidden=c.dataset.stsec!==k);lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));
+    const show=k=>{if(!items.some(x=>x[0]===k))k='fee';stSec=k;try{sessionStorage.setItem('siam-stsec',k)}catch(e){}cards.forEach(c=>c.hidden=c.dataset.stsec!==k);lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));
       requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')))};// ตัวอย่างใบเสร็จต้องคำนวณขนาดใหม่หลังการ์ดแสดง
     stNavBind(lay,show);stShow=show;show(stSec)}
   // รูปแบบใบเสร็จ + ตัวอย่างสด
