@@ -777,6 +777,9 @@ body.mgmt .tbranch{display:none}
 .tb-menu button:hover{background:#f0f9ff}.tb-menu button[aria-selected=true]{color:#0369a1;font-weight:600}
 .tb-menu i{margin-left:auto;font-style:normal;color:#0369a1}
 .tb-code{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#e0f2fe;color:#0369a1;font-weight:700;font-size:13px}
+.st-line{padding:0 16px;display:flex;flex-direction:column;gap:10px}.st-line p{margin:0}
+.st-lbtn{display:flex;flex-wrap:wrap;gap:10px}.st-lbtn .btn{height:38px;padding:0 16px}
+.st-pre{white-space:pre-wrap;background:#f4fbf6;border:1px solid #cfead8;border-radius:10px;padding:12px 14px;font:14px/1.6 var(--font-body);margin:0;max-width:520px}
 /* ---- หน้าใหม่: ปิดยอด / สำรอง / คิว / ตั้งค่า / พร้อมเพย์ ---- */
 .cl,.bk,.qq,.st{display:flex;flex-direction:column;gap:14px}
 .cl .ltop,.bk .ltop,.qq .ltop,.st .ltop{padding:4px 0 12px;flex-wrap:wrap}
@@ -3192,10 +3195,13 @@ const DB=(()=>{
   async function addQueue(q){const c=await client();try{return chk(await c.from('insp_queue').insert({branch_id:branch.id,plate:q.plate,province:q.prov,car_type:q.ctype,cust_name:q.name,tel:q.tel,status:'wait',updated_by_name:me.name}).select('id,created_at').single()).id}catch(e){need05(e)}}
   async function updQueue(id,q){const c=await client();try{chk(await c.from('insp_queue').update(qDb(q)).eq('id',id))}catch(e){need05(e)}}
   async function delQueue(id){const c=await client();try{chk(await c.from('insp_queue').delete().eq('id',id))}catch(e){need05(e)}}
+  // สรุปประจำวันทาง LINE (ต้องรัน 06-line-daily.sql)
+  const need06=e=>{if(/line_preview|line_test|could not find the function|does not exist/i.test(e.message))throw new Error('ยังไม่ได้รัน 06-line-daily.sql ใน Supabase');throw e};
+  async function lineRpc(fn){const c=await client();const r=await c.rpc(fn);if(r.error)need06(new Error(r.error.message));return r.data}
   async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
+  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3395,6 +3401,10 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
     ${T('brands','ยี่ห้อรถ','บรรทัดละ 1 ยี่ห้อ',10)}${T('bodies','ลักษณะรถ','บรรทัดละ 1 รายการ',10)}
     ${T('prefixes','คำนำหน้าชื่อ','บรรทัดละ 1 รายการ',8)}${T('insurers','บริษัทประกัน','บรรทัดละ 1 บริษัท แบบ ชื่อบริษัท | รหัสย่อ (ใส่ * ท้ายบรรทัด = กองทุนกลาง)',8,a=>a.map(x=>x[0]+(x[1]?' | '+x[1]:'')+(x[2]?' *':'')).join('\n'))}</div></div>
+  <div class="card stf-card"><div class="sech teal">💬 สรุปประจำวันทาง LINE เจ้าของร้าน</div><div class="st-line">
+    <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน เวลา 20:00 น. (ต้องตั้งค่า LINE Official Account และรัน 06-line-daily.sql ก่อน)</p>
+    <div class="st-lbtn"><button class="btn line" id="ln-prev">👁️ ดูตัวอย่างข้อความวันนี้</button><button class="btn" id="ln-test">📤 ส่งทดสอบเข้า LINE ตอนนี้</button></div>
+    <pre id="ln-out" class="st-pre" hidden></pre></div></div>
   <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
   const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='';
     document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))bad=bad||i.closest('label').querySelector('span').textContent;else o[i.dataset.k]=v});
@@ -3405,6 +3415,10 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
   $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
     try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกการตั้งค่าแล้ว');R.settings()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  const lnRun=async(btn,fn)=>{if(!LIVE){alert('ใช้ได้เฉพาะตอนเข้าระบบจริง (โหมดทดลองส่ง LINE ไม่ได้)');return}const t=btn.textContent;btn.disabled=true;btn.textContent='กำลังทำงาน...';
+    try{await fn()}catch(err){alert(err.message)}finally{btn.disabled=false;btn.textContent=t}};
+  $('#ln-prev').onclick=e=>lnRun(e.target,async()=>{const o=$('#ln-out');o.textContent=await DB.linePreview();o.hidden=false});
+  $('#ln-test').onclick=e=>lnRun(e.target,async()=>{const n=await DB.lineTest();toast('ส่งแล้ว '+n+' คน ถ้าไม่ได้รับภายใน 1 นาที ให้ตรวจ token / User ID และเพิ่มเพื่อน LINE OA ของร้านแล้วหรือยัง')});
   $('#st-reset').onclick=()=>{if(!confirm('คืนค่าเริ่มต้นทั้งหมด? (ยังไม่บันทึกจนกว่าจะกดบันทึก)'))return;const keep=SET;SET=JSON.parse(JSON.stringify(SET_DEF));R.settings();SET=keep;toast('แสดงค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน')};
 };
 
