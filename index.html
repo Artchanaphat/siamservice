@@ -694,6 +694,7 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
   .pt-tbl td .pt-signbox{width:140px;margin-left:auto}
 }
 @media print{.topwrap,.tabs,.toast,.non-printable{display:none!important}main{padding:0!important}.pt-tbl tbody tr:hover td{background:none}}
+.tright{display:flex;align-items:center;gap:2px}@media (max-width:420px){[data-chpw] span{display:none}}
 .tbranch{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:6px;font-size:12px;color:inherit;opacity:.9}.tbranch select{font:inherit;padding:1px 4px;border-radius:4px;border:1px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:inherit}.tbranch option{color:#000}
 </style>
 
@@ -725,7 +726,7 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
   <header class="topbar">
     <div class="tleft"><button class="toplink" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>หน้าแรก</span></button></div>
     <div class="tcenter"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div class="tuser"><span class="uname"></span><span class="urole"></span><p>โปรแกรมบริหาร ตรอ.สยามเซอร์วิส</p></div></div>
-    <div class="tright"><button class="toplink" data-logout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H4"/></svg><span>ออกจากระบบ</span></button></div>
+    <div class="tright"><button class="toplink" data-chpw hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg><span>เปลี่ยนรหัส</span></button><button class="toplink" data-logout><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4M10 17l5-5-5-5M15 12H4"/></svg><span>ออกจากระบบ</span></button></div>
   </header>
   <nav class="menu rail" aria-label="เมนู"></nav>
 </div>
@@ -833,7 +834,7 @@ const USERS={admin:{pw:'admin',name:'คุณอาร์ท',role:'owner'},dem
 let user=null;
 const ROLE_TH={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
 function enterApp(u){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
-  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();
+  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;go('home');toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // ปุ่มบัญชีตัวอย่าง = เข้าโหมดทดลอง (ข้อมูลตัวอย่าง ไม่บันทึกลงฐานข้อมูล)
@@ -1763,6 +1764,24 @@ const DB=(()=>{
     try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
       const u=await profile(data.session.user.id);await load();enterApp(u)}catch(err){console.warn(err)}}
   async function logout(){try{if(sb)await sb.auth.signOut()}catch(e){}}
-  return{login,load,newBill,pay,edit,branchUI,resume,logout,get branch(){return branch}}})();
+  async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
+  return{login,load,newBill,pay,edit,branchUI,resume,logout,changePw,get branch(){return branch}}})();
 DB.resume();
+/* เปลี่ยนรหัสผ่านของตัวเอง */
+document.addEventListener('click',e=>{if(!e.target.closest('[data-chpw]'))return;
+  $('#panel').innerHTML=`<div class="row between"><h2 class="h3" style="font-size:18px">เปลี่ยนรหัสผ่าน</h2><button class="btn line" id="x">ปิด</button></div>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="sub">บัญชี <b>${esc(user.name)}</b> · เปลี่ยนแล้วใช้รหัสใหม่ได้ทันทีทุกเครื่อง</div>
+      <label class="field"><span>รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</span><input id="pw1" type="password" autocomplete="new-password"></label>
+      <label class="field"><span>ยืนยันรหัสผ่านใหม่</span><input id="pw2" type="password" autocomplete="new-password"></label>
+      <label class="row" style="gap:6px;font-size:13px"><input type="checkbox" id="pwshow" style="width:auto"> แสดงรหัส</label>
+      <div class="err" id="pwerr" hidden style="color:#cc0000"></div>
+      <button class="btn" id="pwok">บันทึกรหัสใหม่</button></div>`;
+  $('#dlg').hidden=false;$('#pw1').focus();$('#x').onclick=()=>{$('#dlg').hidden=true};
+  $('#pwshow').onchange=e=>{['pw1','pw2'].forEach(i=>$('#'+i).type=e.target.checked?'text':'password')};
+  const bad=m=>{$('#pwerr').textContent=m;$('#pwerr').hidden=false};
+  $('#pwok').onclick=async()=>{const a=$('#pw1').value,b=$('#pw2').value;$('#pwerr').hidden=true;
+    if(a.length<6)return bad('รหัสผ่านต้องมีอย่างน้อย 6 ตัว');if(a!==b)return bad('รหัสผ่านทั้งสองช่องไม่ตรงกัน');
+    const k=$('#pwok');k.disabled=true;k.textContent='กำลังบันทึก...';
+    try{await DB.changePw(a);$('#dlg').hidden=true;toast('เปลี่ยนรหัสผ่านเรียบร้อย ครั้งหน้าใช้รหัสใหม่')}catch(err){bad(err.message)}finally{k.disabled=false;k.textContent='บันทึกรหัสใหม่'}}});
 </script>
