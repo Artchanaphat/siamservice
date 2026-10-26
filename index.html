@@ -807,21 +807,44 @@ body.mgmt .tbranch{display:none}
 .line-auto{color:#06a147;font-weight:600;font-size:12.5px;white-space:nowrap}
 @media (max-width:900px){.ex-add{grid-template-columns:1fr 1fr}.ex-add>b,.ex-add .btn{grid-column:1/-1}.db-tiles{grid-template-columns:1fr 1fr}}
 @media print{.receipt.slip .rc-line{flex-direction:column;text-align:center}}
-.cl-bar.au-bar{gap:10px 20px}.cl-bar.au-bar .cl-date{margin-right:0}.au-bar select{height:38px;box-sizing:border-box;padding:0 8px;min-width:120px}.au-n{margin-left:auto}
-.au-card{padding:0}
-.au-list{list-style:none;margin:0;padding:0}
-.au-it{display:grid;grid-template-columns:76px 1fr;gap:14px;padding:14px 18px;border-bottom:1px solid #eef1f4}.au-it:last-child{border-bottom:0}
-.au-tm{font-variant-numeric:tabular-nums;color:#4b5563;font-weight:600;font-size:14px;padding-top:2px}
-.au-bd{min-width:0}
-.au-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:15px}
-.au-cat{margin-left:auto;font-size:12.5px;color:#6b7280}
-.au-meta{font-size:13px;color:#6b7280;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap}.au-meta b{color:#111827;font-weight:600}
-.au-pill{display:inline-block;padding:1px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;background:#eef2f7;color:#334155}
-.au-pill.au-insert{background:#dcfce7;color:#15803d}.au-pill.au-update{background:#dbeafe;color:#1d4ed8}.au-pill.au-delete{background:#fee2e2;color:#c81e1e}
-.au-d{display:grid;grid-template-columns:minmax(120px,max-content) 1fr;gap:5px 16px;margin:10px 0 0;padding:10px 14px;background:#f8fafc;border:1px solid #edf1f5;border-radius:8px;font-size:13.5px}
-.au-d dt{color:#6b7280}.au-d dd{margin:0;min-width:0;overflow-wrap:anywhere}
-.au-d s{color:#9ca3af}.au-d i{font-style:normal;color:#9ca3af;margin:0 6px}.au-d dd b{font-weight:600}
-@media (max-width:640px){.au-it{grid-template-columns:1fr;gap:4px;padding:12px}.au-cat{display:none}.au-d{grid-template-columns:1fr;gap:0}.au-d dd{margin-bottom:6px}.au-n{margin-left:0}}
+.aux{display:flex;flex-direction:column;gap:12px}
+.aux-top{display:flex;align-items:center;gap:14px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.aux-top h1{margin:0;font-size:20px}.aux-n{margin:0 auto;color:var(--muted);font-size:13px}
+.aux .btn{height:38px;padding:0 14px;display:inline-flex;align-items:center;white-space:nowrap}
+.aux-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.aux-bar input,.aux-bar select{height:38px;box-sizing:border-box;border:1px solid var(--input-line);border-radius:6px;padding:0 10px;font:14px var(--font-body);background:#fff}
+.aux-bar label{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.aux-bar input,.aux-bar select{width:auto;margin:0}.aux-bar .aux-q{flex:1 1 260px;min-width:200px;width:auto}.aux-bar #ax-t{min-width:150px}.aux-sz{margin-left:auto}
+.aux-card{padding:0;overflow:hidden}
+.aux-tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.aux-tbl th{background:#0b5f8a;color:#fff;text-align:left;font-weight:600;padding:11px 12px;white-space:nowrap;cursor:pointer;user-select:none}
+.aux-tbl th i{font-style:normal;opacity:.55;margin-left:5px;font-size:11px}.aux-tbl th.on i{opacity:1;color:var(--sticker)}
+.aux-tbl th:hover{background:#0a6d9e}
+.aux-tbl td{padding:11px 12px;border-bottom:1px solid #edf1f5;vertical-align:middle}
+.aux-tbl tbody tr:nth-child(even) td{background:#f8fbfd}.aux-tbl tbody tr:hover td{background:#eef7fc}
+.aux-dt{white-space:nowrap;font-variant-numeric:tabular-nums;color:#4b5563;font-size:13px}
+.aux-ref{color:#d9611c;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.aux-item{min-width:140px;max-width:240px}
+.aux-tbl td{white-space:normal}.aux-tbl td.aux-dt,.aux-tbl td.aux-ref{white-space:nowrap}.aux-tbl .aux-det{color:#374151;line-height:1.55;min-width:260px;white-space:normal;overflow-wrap:anywhere}
+.aux-xl{background:linear-gradient(135deg,#22c55e,#15803d)!important;color:#fff!important;border:0!important;font-weight:600}
+.axp{display:inline-flex;align-items:center;gap:6px;padding:3px 11px 3px 4px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap;border:1px solid}
+.axp b{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;color:#fff;font-size:11px}
+.axp-add{background:#ecfdf3;color:#15803d;border-color:#bbf0cf}.axp-add b{background:#16a34a}
+.axp-edit{background:#eff6ff;color:#1d4ed8;border-color:#c7dcfd}.axp-edit b{background:#2563eb}
+.axp-del{background:#fef2f2;color:#b91c1c;border-color:#fbcaca}.axp-del b{background:#dc2626}
+.axp-pay{background:#e8f8fe;color:#0b6d96;border-color:#b9e7f8}.axp-pay b{background:#00adef}
+.axp-out{background:#fff7ed;color:#c2410c;border-color:#fed7aa}.axp-out b{background:#ea580c}
+.axp-ok{background:#f0fdf4;color:#166534;border-color:#bbf7d0}.axp-ok b{background:#15803d}
+.axp-set{background:#f5f3ff;color:#6d28d9;border-color:#ddd6fe}.axp-set b{background:#7c3aed}
+.aux-by{display:flex;align-items:center;gap:8px;white-space:nowrap}.aux-by b{display:block;font-weight:600;font-size:13px}.aux-by small{display:block;color:#6b7280;font-size:11.5px;line-height:1.3}
+.aux-av{flex:none;width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#00adef,#1670d6);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px}
+.aux-pg{display:flex;justify-content:center;align-items:center;gap:12px}
+.aux-note{margin:0;text-align:right}
+@media (max-width:760px){.aux-top{flex-wrap:wrap}.aux-bar{display:grid;grid-template-columns:1fr 1fr}.aux-bar .aux-q,.aux-bar #ax-t{grid-column:1/-1;width:100%}.aux-bar label{min-width:0}.aux-bar label input,.aux-bar label select{flex:1;min-width:0;width:100%}.aux-tbl tbody tr:nth-child(even) td,.aux-tbl tbody tr:hover td{background:transparent}.aux-tbl tbody tr:nth-child(even){background:#f8fbfd}.aux-n{margin:0;order:3;flex:1 1 100%}.aux-sz{margin-left:0}
+  .aux-tbl thead{display:none}.aux-tbl,.aux-tbl tbody,.aux-tbl tr,.aux-tbl td{display:block;width:auto}
+  .aux-tbl tr{padding:10px 12px;border-bottom:1px solid #e3e8ee}.aux-tbl td{border:0;padding:3px 0;max-width:none;min-width:0}
+  .aux-tbl td::before{content:attr(data-l);display:inline-block;width:92px;color:#6b7280;font-size:12px;font-weight:400}
+  .aux-tbl td.aux-det{display:flex}.aux-tbl td.aux-det::before{flex:none}.aux-tbl td[data-l="โดย"]{display:flex;align-items:center}.aux-note{text-align:left}}
 .st-grid.st-keys{padding:0;grid-template-columns:1fr 1fr}.st-keys .field>span em{font-style:normal;font-weight:400;font-size:12.5px}
 .st-keys .st-num .btn{height:38px;padding:0 14px;flex:none}#lk-hook{background:#f7f8fa;color:#374151}
 @media (max-width:640px){.st-grid.st-keys{grid-template-columns:1fr}}
@@ -3277,7 +3300,7 @@ const DB=(()=>{
   async function delExpense(id){const c=await client();try{chk(await c.from('expenses').delete().eq('id',id))}catch(e){need07(e)}}
   async function monthlyStats(from){const c=await client();const r=await c.rpc('monthly_stats',{p_from:from,p_pass:SET.passthru});
     if(r.error)need07(new Error(r.error.message));return(r.data||[]).map(x=>({branch_id:+x.branch_id,ym:x.ym,bills:+x.bills,cars:+x.cars,total:+x.total,passthru:+x.passthru,expense:+x.expense}))}
-  async function listAudit(day){const c=await client();const t0=new Date(day+'T00:00'),t1=new Date(t0.getTime()+DAY);
+  async function listAudit(from,to){const c=await client();const t0=new Date(from+'T00:00'),t1=new Date(new Date(to+'T00:00').getTime()+DAY);
     try{return chk(await pages(()=>c.from('audit_log').select('*').gte('at',t0.toISOString()).lt('at',t1.toISOString()).order('at',{ascending:false}).order('id',{ascending:false})))}catch(e){need07(e)}}
   async function lineCode(cust){const c=await client();const r=await c.rpc('line_code_for',{p_customer:cust});if(r.error)need07(new Error(r.error.message));return r.data}
   // สรุปประจำวันทาง LINE (ต้องรัน 06-line-daily.sql)
@@ -3687,7 +3710,6 @@ async function receiptLine(b){const box=$('#rc-line');if(!box)return;const car=c
   catch(_){box.remove()}}
 
 /* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
-let auDay=null,auWho='',auBr='';
 const AU_T={bills:'บิล',payments:'การรับชำระ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',expenses:'รายจ่าย',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
 const AU_A={insert:'เพิ่ม',update:'แก้ไข',delete:'ลบ'};
 const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการในบิล',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าเบี้ยประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
@@ -3709,56 +3731,85 @@ const auDiff=(o,n,keys)=>{const out=[];(keys||[...new Set([...Object.keys(o),...
   if(k==='snapshot'&&o[k]&&n[k]&&typeof n[k]==='object'){out.push(...auDiff(o[k],n[k]));return}
   if(!AU_F[k]||JSON.stringify(o[k])===JSON.stringify(n[k]))return;out.push([AU_F[k],auV(k,o[k]),auV(k,n[k])])});return out};
 const auInfo=(d,keys)=>keys.filter(k=>d[k]!=null&&d[k]!=='').map(k=>[AU_F[k]||k,undefined,auV(k,d[k])]);
-function auEntry(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='delete'?o:n,T=AU_T[r.tbl]||r.tbl,sn=d.snapshot||{};
-  const chg=()=>auDiff(o,n,Object.keys(n));let t,rows=[];
-  switch(r.tbl){
-  case'bills':t=(a==='insert'?'เปิดบิล':a==='update'?'แก้ไขบิล':'ลบบิล')+(d.bill_no||o.bill_no?' '+(d.bill_no||o.bill_no):' #'+r.row_id);
-    rows=a==='update'?chg():[['ทะเบียน',undefined,[sn.plate,sn.province].filter(Boolean).join(' ')||'–'],['ลูกค้า',undefined,[sn.first_name,sn.last_name].filter(Boolean).join(' ')||'–'],['ยอดรวม',undefined,money(d.total)+' บาท']].filter(x=>x[2]!=='–');break;
-  case'payments':t=(a==='insert'?'รับชำระเงิน':a==='delete'?'ยกเลิกการรับชำระ':'แก้ไขการรับชำระ')+(a!=='update'?' '+money(d.amount)+' บาท':'');rows=a==='update'?chg():[['วิธีชำระ',undefined,d.method||'–'],['บิลอ้างอิง',undefined,'#'+d.bill_id]];break;
-  case'expenses':t=(a==='insert'?'บันทึกรายจ่าย':a==='delete'?'ลบรายจ่าย':'แก้ไขรายจ่าย')+(a!=='update'?' '+money(d.amount)+' บาท':'');rows=a==='update'?chg():auInfo(d,['category','exp_date','note']);break;
-  case'cash_closes':t=a==='update'?'แก้ไขการปิดยอด':'ปิดยอดประจำวัน';rows=a==='update'?chg():auInfo(d,['staff_name','cash','counted_cash','transfer','note']);break;
-  case'insp_queue':t=a==='insert'?'รับรถเข้าคิวตรวจสภาพ':a==='delete'?'นำรถออกจากคิวตรวจสภาพ':'อัปเดตคิวตรวจสภาพ';rows=a==='update'?[['ทะเบียน',undefined,o.plate||n.plate||'#'+r.row_id],...chg()]:auInfo(d,['plate','vtype','note']);break;
-  case'dlt_jobs':t='อัปเดตงานขนส่ง บิล #'+r.row_id;rows=a==='insert'?auInfo(d,['status','cert_no','receipt_no']):chg();break;
-  case'app_settings':{t='แก้ไขการตั้งค่าระบบ';const ov=o.value||{},nv=n.value||{},first=!r.old_data;if(first){t='บันทึกการตั้งค่าระบบครั้งแรก';break}
-    Object.keys(nv).concat(Object.keys(ov)).filter((k,i,A)=>A.indexOf(k)===i&&JSON.stringify(ov[k])!==JSON.stringify(nv[k])).forEach(k=>{const L=AU_SL[k]||k,x=ov[k],y=nv[k];
-      if(k==='line_days')return rows.push([L,x?x.map(v=>v+' วัน').join(', '):undefined,(y||[]).map(v=>v+' วัน').join(', ')||'–']);
-      if(Array.isArray(y)||Array.isArray(x)){const nm=v=>Array.isArray(v)?v[0]:v,xs=(x||[]).map(nm),ys=(y||[]).map(nm);
-        if(first||!x)return rows.push([L,undefined,ys.length+' รายการ']);
-        const ad=ys.filter(v=>!xs.includes(v)),rm=xs.filter(v=>!ys.includes(v));
-        return rows.push([L,undefined,[ad.length?'เพิ่ม '+ad.join(', '):'',rm.length?'นำออก '+rm.join(', '):'',!ad.length&&!rm.length?'ปรับรายละเอียด/ลำดับ':''].filter(Boolean).join(' · ')])}
-      const fm=v=>v==null||v===''?'–':k==='reg_min_year'?'พ.ศ. '+(+v+543):typeof v==='number'?money(v)+' บาท':String(v);
-      rows.push([L,first||x==null?undefined:fm(x),fm(y)])});break}
-  default:
-    if(a==='insert'){t='เพิ่ม'+T;rows=auInfo(d,['full_name','username','role','branch_id','prefix','first_name','last_name','tel','plate','province','brand','name','phone'])}
-    else if(a==='delete'){t='ลบ'+T;rows=auInfo(d,['full_name','first_name','last_name','plate','province','name'])}
-    else{t='แก้ไข'+T;const id=d.full_name||o.full_name||[o.first_name||n.first_name,o.last_name||n.last_name].filter(Boolean).join(' ')||o.plate||n.plate||o.name;rows=chg();if(id)t+=' · '+id}}
-  return{t,rows}}
-const auText=r=>{const e=auEntry(r);return e.t+(e.rows.length?': '+e.rows.map(x=>x[0]+' '+(x[1]===undefined?x[2]:x[1]+' → '+x[2])).join(' · '):'')};
 const AU_DEMO=()=>{const out=[];let id=0;[...intake].forEach(b=>{out.push({id:++id,at:new Date(b.d.getFullYear(),b.d.getMonth(),b.d.getDate(),...(b.t||'09:00').split(':').map(Number)).toISOString(),user_name:'พนักงาน 1',branch_id:1,tbl:'bills',action:'insert',row_id:String(b.id),new_data:{bill_no:'A-69'+String(b.id).padStart(4,'0'),snapshot:{plate:b.plate},total:b.amt}});
   (b.pays||[]).forEach(p=>out.push({id:++id,at:new Date(p.d.getFullYear(),p.d.getMonth(),p.d.getDate(),...(p.t||'10:00').split(':').map(Number)).toISOString(),user_name:p.by||'คุณอาร์ท',branch_id:1,tbl:'payments',action:'insert',row_id:String(id),new_data:{amount:p.amt,method:p.how||'เงินสด',bill_id:b.id}}))});
   out.push({id:++id,at:new Date().toISOString(),user_name:'คุณอาร์ท',branch_id:null,tbl:'app_settings',action:'update',row_id:'main',old_data:{value:{fee_tax:40,line_days:[30]}},new_data:{value:{fee_tax:50,line_days:[30,7]}}});return out};
-R.audit=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
-  auDay=auDay||iso(TODAY);const day=auDay;$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
-  let rows;try{rows=LIVE?await DB.listAudit(day):AU_DEMO().filter(r=>iso(new Date(r.at))===day)}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
-  if(cur!=='audit'||auDay!==day)return;rows.sort((a,z)=>new Date(z.at)-new Date(a.at));
-  const who=[...new Set(rows.map(r=>r.user_name||'–'))].sort(),brs=[...new Set(rows.map(r=>r.branch_id))];
-  const L=rows.filter(r=>(!auWho||(r.user_name||'–')===auWho)&&(auBr===''||String(r.branch_id)===auBr));
-  const dt=new Date(day+'T00:00'),dayTH=`${dt.getDate()} ${TH_MF[dt.getMonth()]} ${dt.getFullYear()+543}`;
-  const ent=r=>{const e=auEntry(r);return `<li class="au-it">
-    <div class="au-tm">${hmOf(r.at)} น.</div>
-    <div class="au-bd"><div class="au-h"><span class="au-pill au-${r.action}">${AU_A[r.action]||r.action}</span><b>${esc(e.t)}</b><span class="au-cat">${esc(AU_T[r.tbl]||r.tbl)}</span></div>
-      <div class="au-meta">โดย <b>${esc(r.user_name||'ไม่ระบุ')}</b><span>·</span>${esc(auBrN(r.branch_id))}</div>
-      ${e.rows.length?`<dl class="au-d">${e.rows.map(x=>`<dt>${esc(x[0])}</dt><dd>${x[1]===undefined||x[1]==='–'?esc(x[2]):`<s>${esc(x[1])}</s><i>→</i><b>${esc(x[2])}</b>`}</dd>`).join('')}</dl>`:''}</div></li>`};
-  $('#view').innerHTML=`<div class="cl au">
-  <div class="ltop"><h1>ประวัติการใช้งาน</h1><span class="sub">บันทึกโดยระบบอัตโนมัติ ไม่สามารถแก้ไขหรือลบได้</span></div>
-  <div class="cl-bar au-bar"><label class="cl-date">วันที่ <input type="date" id="au-d" value="${day}" max="${iso(TODAY)}"></label>
-    <label class="cl-date">ผู้ใช้งาน <select id="au-w"><option value="">ทั้งหมด</option>${who.map(w=>`<option ${w===auWho?'selected':''}>${esc(w)}</option>`).join('')}</select></label>
-    <label class="cl-date">สาขา <select id="au-b"><option value="">ทั้งหมด</option>${brs.map(b=>`<option value="${b}" ${String(b)===auBr?'selected':''}>${esc(auBrN(b))}</option>`).join('')}</select></label>
-    <span class="sub au-n">${dayTH} · ${L.length} รายการ</span></div>
-  ${L.length?`<div class="card au-card"><ol class="au-list">${L.map(ent).join('')}</ol></div>`:'<div class="eempty"><div>ไม่มีรายการในวันที่เลือก</div></div>'}
-  ${LIVE?'':'<p class="note">โหมดทดลอง: แสดงตัวอย่างจากบิลทดลอง ระบบจริงบันทึกการเปิดบิล แก้ไขบิล รับชำระ รายจ่าย ปิดยอด งานขนส่ง คิวตรวจสภาพ ผู้ใช้งาน สาขา และการตั้งค่า</p>'}</div>`;
-  $('#au-d').onchange=e=>{if(e.target.value){auDay=e.target.value;R.audit()}};
-  $('#au-w').onchange=e=>{auWho=e.target.value;R.audit()};$('#au-b').onchange=e=>{auBr=e.target.value;R.audit()};
+// แปลงบันทึกเป็นแถวตาราง: v=การกระทำ, c=สี, ref=รหัสอ้างอิง, item=รายการ, rows=[หัวข้อ, ค่าเดิม, ค่าใหม่]
+function auEntry(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='delete'?o:n,sn=d.snapshot||o.snapshot||{},A=(i,u,x)=>a==='insert'?i:a==='delete'?x:u;
+  const chg=()=>auDiff(o,n,Object.keys(n)),car=[sn.plate,sn.province].filter(Boolean).join(' '),cus=[sn.first_name,sn.last_name].filter(Boolean).join(' ');
+  let v,c,ref='',item='',rows=[];
+  switch(r.tbl){
+  case'bills':v=A('เปิดบิล','แก้ไขบิล','ลบบิล');c=A('add','edit','del');ref=d.bill_no||o.bill_no||'#'+r.row_id;item=[car,cus].filter(Boolean).join(' · ')||'บิล';
+    rows=a==='update'?chg():[['ยอดรวม',undefined,money(d.total)+' บาท'],...(d.items||[]).slice(0,4).map(i=>[i[0],undefined,money(i[1])])];break;
+  case'payments':v=A('รับชำระ','แก้ไขการชำระ','ยกเลิกการชำระ');c=A('pay','edit','del');ref='บิล #'+(d.bill_id||o.bill_id||'');item='ชำระเงิน '+money(d.amount??o.amount)+' บาท';
+    rows=a==='update'?chg():auInfo(d,['method','note']);break;
+  case'expenses':v=A('บันทึกรายจ่าย','แก้ไขรายจ่าย','ลบรายจ่าย');c=A('out','edit','del');ref=d.category||o.category||'';item='รายจ่าย '+money(d.amount??o.amount)+' บาท';
+    rows=a==='update'?chg():auInfo(d,['exp_date','note']);break;
+  case'cash_closes':v=A('ปิดยอด','แก้ไขปิดยอด','ลบปิดยอด');c=A('ok','edit','del');ref=d.close_date?fmt(new Date(d.close_date+'T00:00')):'';item='ปิดยอดของ '+(d.staff_name||o.staff_name||'–');
+    rows=a==='update'?chg():auInfo(d,['cash','counted_cash','transfer','note']);break;
+  case'insp_queue':v=A('รับรถเข้าคิว','อัปเดตคิวตรวจ','นำออกจากคิว');c=A('add','edit','del');ref=d.plate||o.plate||'#'+r.row_id;item='คิวตรวจสภาพ'+(d.vtype?' · '+d.vtype:'');
+    rows=a==='update'?chg():auInfo(d,['note']);break;
+  case'dlt_jobs':v='งานขนส่ง';c='edit';ref='บิล #'+r.row_id;item='ติดตามงานขนส่ง';rows=a==='insert'?auInfo(d,['status','cert_no','receipt_no','note']):chg();break;
+  case'app_settings':{v='ตั้งค่าระบบ';c='set';ref='ตั้งค่า';item='การตั้งค่าระบบ';const ov=o.value||{},nv=n.value||{};
+    if(!r.old_data){rows=[['การดำเนินการ',undefined,'บันทึกการตั้งค่าครั้งแรก']];break}
+    Object.keys(nv).concat(Object.keys(ov)).filter((k,i,X)=>X.indexOf(k)===i&&JSON.stringify(ov[k])!==JSON.stringify(nv[k])).forEach(k=>{const L=AU_SL[k]||k,x=ov[k],y=nv[k];
+      if(k==='line_days')return rows.push([L,x?x.map(z=>z+' วัน').join(', '):undefined,(y||[]).map(z=>z+' วัน').join(', ')||'–']);
+      if(Array.isArray(y)||Array.isArray(x)){const nm=z=>Array.isArray(z)?z[0]:z,xs=(x||[]).map(nm),ys=(y||[]).map(nm);if(!x)return rows.push([L,undefined,ys.length+' รายการ']);
+        const ad=ys.filter(z=>!xs.includes(z)),rm=xs.filter(z=>!ys.includes(z));
+        return rows.push([L,undefined,[ad.length?'เพิ่ม '+ad.join(', '):'',rm.length?'นำออก '+rm.join(', '):'',!ad.length&&!rm.length?'ปรับรายละเอียด':''].filter(Boolean).join(' / ')])}
+      const fm=z=>z==null||z===''?'–':k==='reg_min_year'?'พ.ศ. '+(+z+543):typeof z==='number'?money(z)+' บาท':String(z);rows.push([L,x==null?undefined:fm(x),fm(y)])});break}
+  case'staff':v=A('เพิ่มผู้ใช้','แก้ไขผู้ใช้','ลบผู้ใช้');c=A('add','edit','del');ref=d.username||o.username||'';item=d.full_name||o.full_name||'ผู้ใช้งาน';
+    rows=a==='update'?chg():auInfo(d,['role','branch_id']);break;
+  case'customers':v=A('เพิ่มลูกค้า','แก้ไขลูกค้า','ลบลูกค้า');c=A('add','edit','del');ref=d.tel||o.tel||'#'+r.row_id;item=[o.prefix||n.prefix,o.first_name||n.first_name,o.last_name||n.last_name].filter(Boolean).join(' ')||'ลูกค้า';
+    rows=a==='update'?chg():auInfo(d,['address']);break;
+  case'vehicles':v=A('เพิ่มรถ','แก้ไขข้อมูลรถ','ลบรถ');c=A('add','edit','del');ref=[d.plate||o.plate,d.province||o.province].filter(Boolean).join(' ')||'#'+r.row_id;item=[d.brand||o.brand,d.model||o.model].filter(Boolean).join(' ')||'รถ';
+    rows=a==='update'?chg():auInfo(d,['tax_exp','prb_exp','ins_exp']);break;
+  case'branches':v=A('เพิ่มสาขา','แก้ไขสาขา','ลบสาขา');c=A('add','edit','del');ref='สาขา';item=d.name||o.name||'';rows=a==='update'?chg():auInfo(d,['phone','address']);break;
+  default:v=AU_A[a]||a;c=A('add','edit','del');ref='#'+r.row_id;item=AU_T[r.tbl]||r.tbl;rows=a==='update'?chg():[]}
+  return{v,c,ref,item,rows,detail:rows.map(x=>x[0]+': '+(x[1]===undefined||x[1]==='–'?x[2]:x[1]+' → '+x[2])).join(' | ')||'–'}}
+const AU_IC={add:'＋',edit:'✎',del:'✕',pay:'฿',out:'↧',ok:'✓',set:'⚙'};
+let auFrom=null,auTo=null,auQ='',auType='',auSort=['at',-1],auSize=50,auPage=0,auRows=null,auKey='';
+const auDT=t=>{const d=new Date(t);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543} ${hmOf(t)}:${String(d.getSeconds()).padStart(2,'0')}`};
+R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
+  auTo=auTo||iso(TODAY);auFrom=auFrom||iso(new Date(TODAY.getTime()-6*DAY));const key=auFrom+'|'+auTo;
+  if(!keep||auKey!==key||!auRows){$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+    try{auRows=LIVE?await DB.listAudit(auFrom,auTo):AU_DEMO().filter(r=>{const d=iso(new Date(r.at));return d>=auFrom&&d<=auTo})}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+    if(cur!=='audit'||auFrom+'|'+auTo!==key)return;auKey=key;auRows.forEach(r=>{r._e=auEntry(r);r._b=auBrN(r.branch_id)})}
+  const q=auQ.trim().toLowerCase(),[sk,sd]=auSort;
+  const val=r=>sk==='at'?r.at:sk==='v'?r._e.v:sk==='ref'?r._e.ref:sk==='item'?r._e.item:sk==='detail'?r._e.detail:(r.user_name||'');
+  const L=auRows.filter(r=>(!auType||r.tbl===auType)&&(!q||[r._e.v,r._e.ref,r._e.item,r._e.detail,r.user_name,r._b].join(' ').toLowerCase().includes(q)))
+    .sort((x,y)=>{const a=val(x),b=val(y);return (sk==='at'?(a<b?-1:a>b?1:0):String(a).localeCompare(String(b),'th'))*sd||(new Date(y.at)-new Date(x.at))});
+  const pages=auSize?Math.max(1,Math.ceil(L.length/auSize)):1;auPage=Math.min(auPage,pages-1);const P=auSize?L.slice(auPage*auSize,(auPage+1)*auSize):L;
+  const types=[...new Set(auRows.map(r=>r.tbl))].sort((a,b)=>(AU_T[a]||a).localeCompare(AU_T[b]||b,'th'));
+  const TH=(k,l)=>`<th data-sk="${k}" class="${sk===k?'on':''}">${l}<i>${sk===k?(sd<0?'▼':'▲'):'↕'}</i></th>`;
+  $('#view').innerHTML=`<div class="aux">
+  <div class="aux-top"><h1>📋 ประวัติการเปลี่ยนแปลง</h1><span class="aux-n">${L.length.toLocaleString()} รายการ</span><button class="btn line aux-xl" id="ax-xl">📊 ส่งออก Excel</button></div>
+  <div class="aux-bar">
+    <input id="ax-q" class="aux-q" placeholder="🔍 ค้นหาเลขบิล ทะเบียน ชื่อลูกค้า ผู้ใช้งาน..." value="${esc(auQ)}">
+    <select id="ax-t"><option value="">ทุกประเภท</option>${types.map(t=>`<option value="${t}"${t===auType?' selected':''}>${esc(AU_T[t]||t)}</option>`).join('')}</select>
+    <label>ตั้งแต่ <input type="date" id="ax-f" value="${auFrom}" max="${iso(TODAY)}"></label><label>ถึง <input type="date" id="ax-to" value="${auTo}" max="${iso(TODAY)}"></label>
+    <button class="btn line aux-clr" id="ax-clr">✕ ล้าง</button>
+    <label class="aux-sz">แสดง <select id="ax-sz">${[25,50,100,0].map(z=>`<option value="${z}"${z===auSize?' selected':''}>${z||'ทั้งหมด'}</option>`).join('')}</select></label></div>
+  <div class="card aux-card">${P.length?`<table class="aux-tbl"><thead><tr>${TH('at','เวลา')}${TH('v','การกระทำ')}${TH('ref','รหัสอ้างอิง')}${TH('item','รายการ')}${TH('detail','รายละเอียด')}${TH('by','โดย')}</tr></thead><tbody>
+    ${P.map(r=>{const e=r._e,u=r.user_name||'ไม่ระบุ';return `<tr><td data-l="เวลา" class="aux-dt">${auDT(r.at)}</td><td data-l="การกระทำ"><span class="axp axp-${e.c}"><b>${AU_IC[e.c]||'•'}</b>${esc(e.v)}</span></td>
+      <td data-l="รหัสอ้างอิง" class="aux-ref">${esc(e.ref||'–')}</td><td data-l="รายการ" class="aux-item">${esc(e.item||'–')}</td><td data-l="รายละเอียด" class="aux-det">${esc(e.detail)}</td>
+      <td data-l="โดย"><div class="aux-by"><span class="aux-av">${esc(u.replace(/^(คุณ|นาย|นางสาว|นาง)\s*/,'').replace(/^[เแโใไ]/,'').slice(0,1))}</span><div><b>${esc(u)}</b><small>${esc(r._b)}</small></div></div></td></tr>`}).join('')}
+  </tbody></table>`:'<div class="eempty"><div>ไม่พบรายการตามเงื่อนไขที่เลือก</div></div>'}</div>
+  ${pages>1?`<div class="aux-pg"><button class="btn line" id="ax-prev" ${auPage?'':'disabled'}>‹ ก่อนหน้า</button><span>หน้า ${auPage+1} / ${pages}</span><button class="btn line" id="ax-next" ${auPage<pages-1?'':'disabled'}>ถัดไป ›</button></div>`:''}
+  <p class="sub aux-note">บันทึกโดยระบบอัตโนมัติ ไม่สามารถแก้ไขหรือลบได้${LIVE?'':' · โหมดทดลอง: แสดงตัวอย่างจากบิลทดลอง'}</p></div>`;
+  let tq;$('#ax-q').oninput=e=>{clearTimeout(tq);tq=setTimeout(()=>{auQ=e.target.value;auPage=0;R.audit(1).then(()=>{const i=$('#ax-q');if(i){i.focus();i.setSelectionRange(i.value.length,i.value.length)}})},250)};
+  $('#ax-t').onchange=e=>{auType=e.target.value;auPage=0;R.audit(1)};
+  $('#ax-f').onchange=e=>{if(!e.target.value)return;auFrom=e.target.value;if(auFrom>auTo)auTo=auFrom;auPage=0;R.audit(1)};
+  $('#ax-to').onchange=e=>{if(!e.target.value)return;auTo=e.target.value;if(auTo<auFrom)auFrom=auTo;auPage=0;R.audit(1)};
+  $('#ax-clr').onclick=()=>{auQ='';auType='';auFrom=auTo=null;auPage=0;auSort=['at',-1];R.audit(1)};
+  $('#ax-sz').onchange=e=>{auSize=+e.target.value;auPage=0;R.audit(1)};
+  if($('#ax-prev')){$('#ax-prev').onclick=()=>{auPage--;R.audit(1)};$('#ax-next').onclick=()=>{auPage++;R.audit(1)}}
+  document.querySelectorAll('.aux-tbl th[data-sk]').forEach(th=>th.onclick=()=>{const k=th.dataset.sk;auSort=[k,auSort[0]===k?-auSort[1]:(k==='at'?-1:1)];R.audit(1)});
+  $('#ax-xl').onclick=async e=>{if(!L.length){toast('ไม่มีรายการให้ส่งออก');return}const b=e.target;b.disabled=true;
+    try{await loadJS('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',()=>window.XLSX);
+      const ws=XLSX.utils.aoa_to_sheet([['เวลา','การกระทำ','รหัสอ้างอิง','รายการ','รายละเอียด','โดย','สาขา'],...L.map(r=>[auDT(r.at),r._e.v,r._e.ref,r._e.item,r._e.detail,r.user_name||'',r._b])]);
+      ws['!cols']=[20,16,18,30,80,18,18].map(w=>({wch:w}));const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'ประวัติ');XLSX.writeFile(wb,`siam-history-${auFrom}_${auTo}.xlsx`)}
+    catch(err){alert('ส่งออกไม่สำเร็จ: '+err.message)}finally{b.disabled=false}};
 };
 
 let dltF='received',dltQ='';const dltSel=new Set();
