@@ -740,6 +740,8 @@ input.ac-fill{background:#eaf3de!important;transition:background .9s}
 body.mgmt .tbranch{display:none}
 .dj-pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .dj-late{color:#c81e1e;font-size:12.5px;font-weight:600}
+.dj-debt{color:#c81e1e;font-size:12.5px;font-weight:700;margin-top:2px}.dj-wait{color:#92400e;font-size:12.5px;margin-top:2px}
+.dj-alert.money{background:#fff8e6;border-color:#f5d48b;color:#7a4a00}
 .dj-alert{background:#fff1f1;border:1px solid #f5c2c2;color:#9b1c1c;border-radius:10px;padding:10px 14px;margin-bottom:12px;cursor:pointer;font-size:14px}
 .dj-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .dj-chips button{display:inline-flex;align-items:center;gap:8px;border:1px solid #dfe3e8;background:#fff;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer;color:#333}
@@ -1041,9 +1043,17 @@ button.ui-kpi{font:inherit;text-align:left;cursor:pointer;width:100%}button.ui-k
 .st-ni i{font-style:normal;width:22px;text-align:center;flex:none}.st-ni:hover{background:#f1f5f9}
 .st-ni.on{background:#fff4e5;border-color:#f59e0b;color:#b45309;font-weight:600}.st-ni .st-s{display:none}
 .st-main{display:flex;flex-direction:column;gap:14px;min-width:0}.st-main>.stf-card{margin:0}
+.st-sub .ltop{padding:0 0 4px;border:0}.st-sub .ltop .ui-ic,.st-sub .ui-head .ui-ic{display:none}.st-sub h1{font-size:19px}
 .st-main>.st-bar{position:sticky;bottom:0;background:linear-gradient(transparent,var(--bg) 30%);padding:14px 0 6px;z-index:3}
 @media (max-width:860px){.st-lay{grid-template-columns:1fr}.st-nav{position:static;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;padding:8px}.st-ng{grid-column:1/-1;padding:6px 4px 0}.st-ng:first-child{padding-top:0}
   .st-ni{flex-direction:column;gap:2px;padding:8px 2px;font-size:12.5px;text-align:center;justify-content:center;border-color:#e3e8ee;line-height:1.25}.st-ni i{font-size:18px;width:auto}.st-ni .st-l{display:none}.st-ni .st-s{display:block}}
+/* พอดีหน้าจอ: จอกว้างใช้พื้นที่มากขึ้น จอเตี้ยย่อการ์ดเมนูให้เห็นครบโดยไม่ต้องเลื่อน */
+@media (min-width:1400px){.topbar,.menu,.wrap{max-width:min(1320px,calc(100vw - 64px))}}
+.mcard{padding:clamp(12px,2.4vh,24px) 10px clamp(10px,2.2vh,22px)}
+.mic{width:clamp(40px,5.4vh,52px);height:clamp(40px,5.4vh,52px);margin-bottom:clamp(4px,1.2vh,12px)}
+.boot{display:none}html.booting #login{display:none!important}
+html.booting .boot{display:flex;position:fixed;inset:0;align-items:center;justify-content:center;gap:12px;background:var(--bg);color:#475569;font-size:15px;z-index:50}
+.boot-sp{width:22px;height:22px;border:3px solid #cbd5e1;border-top-color:#0e95ba;border-radius:50%;animation:bootsp .8s linear infinite}@keyframes bootsp{to{transform:rotate(360deg)}}
 .cl-ok,.cl-over,.cl-short{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12.5px;font-weight:600}
 .cl-ok{background:#dcfce7;color:#15803d}.cl-over{background:#dbeafe;color:#1d4ed8}.cl-short{background:#fee2e2;color:#c81e1e}
 .cl-h{margin:4px 0 0;font-size:15px}
@@ -1139,6 +1149,8 @@ button.ui-kpi{font:inherit;text-align:left;cursor:pointer;width:100%}button.ui-k
   .cl-cnt{border:0;width:auto}.cl-kpis>div{border-color:#999}}
 </style>
 
+<script id="boot-chk">try{if(localStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
+<div class="boot" id="boot"><span class="boot-sp"></span>กำลังเข้าสู่ระบบ...</div>
 <section class="login" id="login">
   <div class="brand"><span class="lg login-logo" role="img" aria-label="โลโก้ ตรอ."></span>
     <h1>ตรอ.สยาม<em>เซอร์วิส</em></h1>
@@ -1174,7 +1186,6 @@ button.ui-kpi{font:inherit;text-align:left;cursor:pointer;width:100%}button.ui-k
       <div class="pfmenu" id="pfmenu" hidden role="menu">
         <div class="pfhead"><span class="avatar lg pfbig"></span><div><small>เข้าสู่ระบบในฐานะ</small><b><span class="uname"></span> · <span class="pfrole"></span></b><em class="pfbr"></em></div></div>
         <button role="menuitem" data-chpw hidden>🔑 เปลี่ยนรหัสผ่าน</button>
-        <button role="menuitem" data-go="staff" data-owner hidden>👥 จัดการพนักงาน / สาขา</button>
         <button role="menuitem" data-go="settings" data-owner-any hidden>⚙️ ตั้งค่าระบบ</button>
         <button role="menuitem" data-go="audit" data-owner-any hidden>📜 ประวัติการใช้งาน</button>
         <button role="menuitem" class="pfout" data-logout>🚪 ออกจากระบบ</button>
@@ -1304,7 +1315,7 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 function renderNav(){$('.menu').innerHTML=navHTML(false)}
-function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit');renderNav();R[k]();
+function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -3562,7 +3573,8 @@ const DB=(()=>{
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
     try{if(!localStorage.getItem('siam-auth'))return}catch(e){return}
     try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
-      const u=await profile(data.session.user.id);await load();enterApp(u)}catch(err){console.warn(err)}}
+      const u=await profile(data.session.user.id);await load();enterApp(u)}catch(err){console.warn(err)}
+    finally{document.documentElement.classList.remove('booting')}} // ระหว่างกู้ session ซ่อนหน้าล็อกอิน ไม่ให้โผล่แวบตอนรีเฟรช
   async function logout(){try{if(sb)await sb.auth.signOut()}catch(e){}}
   // ----- จัดการพนักงาน / สาขา (เจ้าของร้าน) -----
   const rpcErr=r=>{if(r.error)throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''));return r.data};
@@ -3906,6 +3918,17 @@ function sendLine(k,c){const t=lineText(k,c);try{navigator.clipboard.writeText(t
 /* ---------- ตั้งค่าระบบ (เฉพาะเจ้าของร้าน) ---------- */
 // หน้าตั้งค่าระบบ: เมนูหมวดด้านซ้าย แสดงทีละหมวด
 let stSec='fee',stShow=null;
+// หมวด "ระบบ" เป็นแถบในหน้าตั้งค่า: แสดงเนื้อหาหน้าพนักงาน/สำรองข้อมูล/ประวัติ ในกรอบด้านขวา
+const ST_SYS=[['staff','👤','พนักงานและสาขา','พนักงาน'],['backup','💾','สำรองข้อมูล (Excel)','สำรองข้อมูล'],['audit','📜','ประวัติการใช้งาน','ประวัติ']];
+const stNavHTML=()=>`<nav class="st-nav" aria-label="หมวดการตั้งค่า">${ST_NAV.map(([g,list])=>`<div class="st-ng">${g}</div>${list.map(([k,ic,l,,sl])=>`<button type="button" class="st-ni" data-stn="${k}"><i>${ic}</i><span class="st-l">${l}</span><span class="st-s">${sl}</span></button>`).join('')}`).join('')}
+  <div class="st-ng">ระบบ</div>${ST_SYS.map(([k,ic,l,sl])=>`<button type="button" class="st-ni" data-stn="${k}"><i>${ic}</i><span class="st-l">${l}</span><span class="st-s">${sl}</span></button>`).join('')}</nav>`;
+const stNavBind=(lay,show)=>lay.querySelectorAll('[data-stn]').forEach(b=>b.onclick=()=>{const k=b.dataset.stn,sys=ST_SYS.some(x=>x[0]===k);
+  if(sys){if(cur!==k)go(k)}else if(cur==='settings'&&show)show(k);else{stSec=k;go('settings')}
+  if(innerWidth<860){const m=$('#view .st-main');if(m)m.scrollIntoView({behavior:'smooth',block:'start'})}});
+const stEmbed=k=>{if(!user||user.role!=='owner'||cur!==k)return;const v=$('#view'),f=v.firstElementChild;if(f&&f.classList.contains('st-shell'))return;
+  const nodes=[...v.childNodes];v.innerHTML=`<div class="st st-shell"><div class="ltop"><span class="ui-ic">⚙️</span><h1>ตั้งค่าระบบ</h1><span class="sub">${LIVE?'มีผลกับทุกสาขาและทุกเครื่องทันทีหลังบันทึก':'โหมดทดลอง: แก้ได้ แต่ไม่ถูกบันทึกจริง'}</span></div><div class="st-lay">${stNavHTML()}<div class="st-main st-sub"></div></div></div>`;
+  const lay=v.querySelector('.st-lay'),main=lay.querySelector('.st-main');nodes.forEach(n=>main.appendChild(n));
+  lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));stNavBind(lay)};
 const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
   ['เอกสาร',[['rc','🧾','รูปแบบใบเสร็จ',['🧾'],'ใบเสร็จ']]],
   ['การแจ้งเตือน',[['lineoa','🔑','เชื่อมต่อ LINE OA',['🔑'],'LINE OA'],['remind','🔔','เตือนลูกค้าทาง LINE',['🔔'],'เตือนลูกค้า'],['daily','💬','สรุปประจำวันทาง LINE',['💬'],'สรุปรายวัน'],['sms','📱','ส่ง SMS (ThaiBulkSMS)',['📱'],'SMS']]]];
@@ -3993,11 +4016,11 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   {const root=$('#view .st'),cards=[...root.querySelectorAll(':scope>.stf-card')],bar=root.querySelector(':scope>.st-bar'),items=ST_NAV.flatMap(g=>g[1]);
     cards.forEach(c=>{const t=c.querySelector('.sech').textContent.trim(),it=items.find(x=>x[3].some(e=>t.startsWith(e)));c.dataset.stsec=it?it[0]:'fee'});
     const lay=document.createElement('div');lay.className='st-lay';
-    lay.innerHTML=`<nav class="st-nav" aria-label="หมวดการตั้งค่า">${ST_NAV.map(([g,list])=>`<div class="st-ng">${g}</div>${list.map(([k,ic,l,,sl])=>`<button type="button" class="st-ni" data-stn="${k}"><i>${ic}</i><span class="st-l">${l}</span><span class="st-s">${sl}</span></button>`).join('')}`).join('')}
-      <div class="st-ng">ระบบ</div><button type="button" class="st-ni" data-go="staff"><i>👤</i><span class="st-l">พนักงานและสาขา</span><span class="st-s">พนักงาน</span></button><button type="button" class="st-ni" data-go="backup"><i>💾</i><span class="st-l">สำรองข้อมูล (Excel)</span><span class="st-s">สำรองข้อมูล</span></button><button type="button" class="st-ni" data-go="audit"><i>📜</i><span class="st-l">ประวัติการใช้งาน</span><span class="st-s">ประวัติ</span></button></nav><div class="st-main"></div>`;
+    lay.innerHTML=stNavHTML()+'<div class="st-main"></div>';
     root.insertBefore(lay,cards[0]);const main=lay.querySelector('.st-main');cards.forEach(c=>main.appendChild(c));main.appendChild(bar);
-    const show=k=>{if(!items.some(x=>x[0]===k))k='fee';stSec=k;cards.forEach(c=>c.hidden=c.dataset.stsec!==k);lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k))};
-    lay.querySelectorAll('[data-stn]').forEach(b=>b.onclick=()=>{show(b.dataset.stn);if(innerWidth<860)main.scrollIntoView({behavior:'smooth',block:'start'})});stShow=show;show(stSec)}
+    const show=k=>{if(!items.some(x=>x[0]===k))k='fee';stSec=k;cards.forEach(c=>c.hidden=c.dataset.stsec!==k);lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));
+      requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')))};// ตัวอย่างใบเสร็จต้องคำนวณขนาดใหม่หลังการ์ดแสดง
+    stNavBind(lay,show);stShow=show;show(stSec)}
   // รูปแบบใบเสร็จ + ตัวอย่างสด
   const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';
   const rcRead=()=>{const o={};document.querySelectorAll('[data-rc]').forEach(g=>{const on=g.querySelector('.on');o[g.dataset.rc]=on?on.dataset.v:RC_DEF[g.dataset.rc]});
@@ -4011,7 +4034,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     items:[['ค่าภาษีรถ',1600],['ค่าตรวจสภาพ',200],['พ.ร.บ.',645.21],['ค่าบริการต่อภาษี',100]],disc:0,amt:2545.21,paid:1545.21,pays:[{amt:1545.21,how:'เงินสด',by:user?user.name:''}]});
   let rcN=0;const rcPv=async()=>{const n=++rcN,o=rcRead(),b=rcSample();const a=await rcAssets(b,o,true);if(n!==rcN||!$('#rc-pv'))return;
     const box=$('#rc-pv');box.innerHTML=pv==='a4'?`<div class="rcx-wrap" id="rc-pvw">${rcA4(b,o,a)}</div>`:`<div class="st-rcslip">${rcSlip(b,o,a)}</div>`;if(pv==='a4')rcFit($('#rc-pvw'))};
-  rcPv();const rcRs=()=>{if(!$('#rc-pvw'))return window.removeEventListener('resize',rcRs);rcFit($('#rc-pvw'))};window.addEventListener('resize',rcRs);
+  rcPv();const rcRs=()=>{if(!$('#rc-pv'))return window.removeEventListener('resize',rcRs);if($('#rc-pvw'))rcFit($('#rc-pvw'))};window.addEventListener('resize',rcRs);
   const chipKey=x=>(Array.isArray(x)?x[0]:x).toLowerCase();
   document.querySelectorAll('.st-list[data-l]').forEach(box=>{const k=box.dataset.l,ins=k==='insurers',inp=box.querySelector('.st-in'),wrap=box.querySelector('.st-chips'),added=new Set();
     const draw=()=>{const q=inp.value.trim().toLowerCase();box.querySelector('.st-cnt').textContent=LS[k].length;
@@ -4462,8 +4485,9 @@ function dltSheet(list){const br=LIVE&&DB.branch?DB.branch:null,taxOf=b=>b.items
   </tbody><tfoot><tr><td colspan="5">รวม ${list.length} คัน</td><td class="num">${money(list.reduce((t,b)=>t+taxOf(b),0))}</td><td colspan="3"></td></tr></tfoot></table>
   <div class="ds-sign"><div>ลงชื่อ ..................................... ผู้นำส่ง<br>(${esc(user?user.name:'')})</div><div>ลงชื่อ ..................................... ผู้ตรวจรับ<br>วันที่ ........./........./.........</div></div>`}
 R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'||dltAge(b)<=30)).length,late=all.filter(dltLate);
+  const owe=b=>split(b).debt>0.004,owing=all.filter(b=>owe(b)&&(dltOf(b).st!=='done'||dltAge(b)<=30)),oweSum=owing.reduce((a,b)=>a+split(b).debt,0);
   const s=dltQ.replace(/\s/g,'').toLowerCase();
-  const list=all.filter(b=>(dltF==='late'?dltLate(b):dltOf(b).st===dltF&&(dltF!=='done'||dltAge(b)<=30))&&(!s||(b.plate+b.name+(b.tel||'')+(b.no||'')).replace(/\s/g,'').toLowerCase().includes(s)))
+  const list=all.filter(b=>(dltF==='late'?dltLate(b):dltF==='debt'?owing.includes(b):dltOf(b).st===dltF&&(dltF!=='done'||dltAge(b)<=30))&&(!s||(b.plate+b.name+(b.tel||'')+(b.no||'')).replace(/\s/g,'').toLowerCase().includes(s)))
     .sort((a,z)=>a.d-z.d||a.id-z.id);
   [...dltSel].forEach(id=>{if(!list.find(b=>b.id===id))dltSel.delete(id)});
   const chips=[...Object.entries(DLT_ST).map(([k,[l,fg,bg]])=>[k,l,cnt(k),fg,bg,k==='done'?'ใน 30 วันล่าสุด':'คัน']),['late','ค้างเกินกำหนด',late.length,'#c81e1e','#fdecec','ต้องติดตาม']];
@@ -4484,6 +4508,7 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
     <div class="ui-card"><div class="ui-card-h"><h2>ประเภทงานเดือนนี้</h2></div><div class="ui-card-b">
       ${mon.length?`<div class="ex-bars">${Object.entries(kinds).sort((a,z)=>z[1]-a[1]).map(([k,n])=>`<div class="ex-bar"><div class="ex-bar-t"><span>${esc(k)}</span><b>${n} คัน</b></div><div class="ex-bar-b"><i style="width:${(n/kMax*100).toFixed(1)}%;background:#1670d6"></i></div><small>${(n/mon.length*100).toFixed(0)}%</small></div>`).join('')}</div>`:'<div class="ui-empty">ยังไม่มีงานขนส่งในเดือนนี้</div>'}</div></div></div>
   ${late.length?`<div class="dj-alert" data-f="late">⚠️ มี <b>${late.length} คัน</b> ค้างเกินกำหนด (รอยื่นเกิน ${DLT_LATE.received} วัน · รอป้ายเกิน ${DLT_LATE.submitted} วัน · ลูกค้ายังไม่มารับเกิน ${DLT_LATE.plate} วัน) <u>ดูรายการ</u></div>`:''}
+  ${owing.length?`<div class="dj-alert money" data-f="debt">💰 มี <b>${owing.length} คัน</b> ที่ลูกค้ายังค้างชำระ รวม <b>${money(oweSum)} บาท</b> รับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน ${dltF==='debt'?'<u>กำลังแสดงรายการนี้</u>':'<u>ดูรายการ</u>'}</div>`:''}
   <div class="dj-bar"><label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="dj-q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์ / เลขบิล" value="${esc(dltQ)}"></label>
     <span class="sub" id="dj-n"></span>
     <button class="btn line" id="dj-print">🖨️ พิมพ์ใบนำส่ง</button>${dltF!=='late'&&DLT_NEXT[dltF]?`<button class="btn" id="dj-bulk">✓ ${DLT_NEXT[dltF][1]}</button>`:''}</div>
@@ -4493,7 +4518,7 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
     <td data-l="ทะเบียน"><b>${esc(b.plate)}</b><div class="sub">${esc(b.prov||'')}</div></td>
     <td data-l="เจ้าของ">${esc(b.name)}<div class="sub">${esc(b.tel||'')}</div></td>
     <td data-l="งาน">${esc(dltKind(b))}</td><td data-l="เล่มทะเบียน">${esc(b.doc||'สำเนา')}</td>
-    <td data-l="สถานะ">${dltPill(b)}${dltLate(b)?`<div class="dj-late">ค้าง ${dltAge(b)} วัน</div>`:j.st!=='done'?`<div class="sub">${dltAge(b)} วัน</div>`:''}${j.cert?`<div class="sub">ใบรับรอง ${esc(j.cert)}</div>`:''}</td>
+    <td data-l="สถานะ">${dltPill(b)}${dltLate(b)?`<div class="dj-late">ค้าง ${dltAge(b)} วัน</div>`:j.st!=='done'?`<div class="sub">${dltAge(b)} วัน</div>`:''}${j.cert?`<div class="sub">ใบรับรอง ${esc(j.cert)}</div>`:''}${owe(b)?`<div class="dj-debt">ค้างชำระ ${money(split(b).debt)} บาท</div>`:''}${trWait(b).length?'<div class="dj-wait">⏳ เงินโอนรอตรวจสอบ</div>':''}</td>
     <td class="act">${nx?`<button class="btn" data-nx="${nx[0]}">${nx[1]}</button>`:''}<button class="btn line" data-ed title="รายละเอียด">แก้ไข</button><button class="btn line" data-cp title="คัดลอกทะเบียนแล้วเปิดเว็บเช็คภาษีกรมขนส่ง">🔍</button><button class="btn line" data-showbill="${b.id}" title="ดูบิล">บิล</button></td></tr>`}).join('')}
   </tbody></table></div></div>`:`<div class="eempty"><div>ไม่มีรายการในหมวดนี้</div></div>`}
   </div><div class="dlt-sheet" id="dj-sheet"></div></div>`;
@@ -4503,11 +4528,12 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
   if($('#dj-all'))$('#dj-all').onchange=e=>{list.forEach(b=>e.target.checked?dltSel.add(b.id):dltSel.delete(b.id));document.querySelectorAll('[data-ck]').forEach(c=>c.checked=e.target.checked);upd()};
   document.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>{const id=+c.closest('tr').dataset.j;c.checked?dltSel.add(id):dltSel.delete(id);upd()});
   const rowB=x=>getBill(+x.closest('tr').dataset.j);
-  document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
+  const oweOk=bs=>{const d=bs.filter(b=>owe(b));return !d.length||confirm(`${d.length===1?'รถ '+d[0].plate+' ยังค้างชำระ '+money(split(d[0]).debt)+' บาท':'มี '+d.length+' คันที่ยังค้างชำระ รวม '+money(d.reduce((a,b)=>a+split(b).debt,0))+' บาท'}\nควรรับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน\n\nต้องการบันทึกว่าลูกค้ารับแล้วต่อหรือไม่?`)};
+  document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{if(x.dataset.nx==='done'&&!oweOk([rowB(x)]))return;x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-ed]').forEach(x=>x.onclick=()=>dltDlg([rowB(x)],R.dlt));
   document.querySelectorAll('[data-cp]').forEach(x=>x.onclick=()=>{copyPlate(dltPlate(rowB(x)));window.open('https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/','_blank','noopener')});
   if($('#dj-bulk'))$('#dj-bulk').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),nx=DLT_NEXT[dltF];if(!sel.length)return;
-    if(!confirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
+    if(nx[0]==='done'&&!oweOk(sel))return;if(!confirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
     try{await dltSet(sel,{st:nx[0]});dltSel.clear();toast('อัปเดต '+sel.length+' คันแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
   $('#dj-print').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),pl=sel.length?sel:list.filter(b=>dltOf(b).st==='received');
     if(!pl.length){alert('ไม่มีรถที่รอยื่นขนส่ง ติ๊กเลือกรถที่จะพิมพ์ก่อน');return}
@@ -4570,4 +4596,6 @@ R.staff=async()=>{
     if(!/^[A-Z0-9]{1,3}$/.test(code)){alert('รหัสสาขาเป็นตัวอังกฤษ/ตัวเลข 1-3 ตัว เช่น C');return}if(!name){alert('กรุณาใส่ชื่อสาขา');return}
     try{await DB.saveBranch(null,{code,name,address:$('#nb-addr').value.trim(),phone:$('#nb-tel').value.trim(),active:true});toast('เพิ่มสาขา '+name+' แล้ว');R.staff()}catch(err){alert('เพิ่มไม่สำเร็จ: '+(/duplicate|unique/i.test(err.message)?'รหัสสาขานี้มีอยู่แล้ว':err.message))}};
 };
+// แสดงในกรอบหน้าตั้งค่าระบบ (เฉพาะเจ้าของร้าน)
+ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k);await r;stEmbed(k);return r}});
 </script>
