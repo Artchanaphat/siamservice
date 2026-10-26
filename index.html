@@ -3750,15 +3750,16 @@ function auEntry(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='de
     rows=a==='update'?chg():auInfo(d,['cash','counted_cash','transfer','note']);break;
   case'insp_queue':v=A('รับรถเข้าคิว','อัปเดตคิวตรวจ','นำออกจากคิว');c=A('add','edit','del');ref=d.plate||o.plate||'#'+r.row_id;item='คิวตรวจสภาพ'+(d.vtype?' · '+d.vtype:'');
     rows=a==='update'?chg():auInfo(d,['note']);break;
-  case'dlt_jobs':v='งานขนส่ง';c='edit';ref='บิล #'+r.row_id;item='ติดตามงานขนส่ง';rows=a==='insert'?auInfo(d,['status','cert_no','receipt_no','note']):chg();break;
-  case'app_settings':{v='ตั้งค่าระบบ';c='set';ref='ตั้งค่า';item='การตั้งค่าระบบ';const ov=o.value||{},nv=n.value||{};
-    if(!r.old_data){rows=[['การดำเนินการ',undefined,'บันทึกการตั้งค่าครั้งแรก']];break}
+  case'dlt_jobs':v='อัปเดตงานขนส่ง';c='edit';ref='บิล #'+r.row_id;item=n.status?'สถานะ: '+(AU_ST[n.status]||n.status):'ข้อมูลงานขนส่ง';rows=a==='insert'?auInfo(d,['status','cert_no','receipt_no','note']):chg();break;
+  case'app_settings':{v='ตั้งค่าระบบ';c='set';ref='';const ov=o.value||{},nv=n.value||{};
+    if(!r.old_data){item='ค่าเริ่มต้นทั้งหมด';rows=[['การดำเนินการ',undefined,'บันทึกการตั้งค่าครั้งแรก']];break}
     Object.keys(nv).concat(Object.keys(ov)).filter((k,i,X)=>X.indexOf(k)===i&&JSON.stringify(ov[k])!==JSON.stringify(nv[k])).forEach(k=>{const L=AU_SL[k]||k,x=ov[k],y=nv[k];
       if(k==='line_days')return rows.push([L,x?x.map(z=>z+' วัน').join(', '):undefined,(y||[]).map(z=>z+' วัน').join(', ')||'–']);
       if(Array.isArray(y)||Array.isArray(x)){const nm=z=>Array.isArray(z)?z[0]:z,xs=(x||[]).map(nm),ys=(y||[]).map(nm);if(!x)return rows.push([L,undefined,ys.length+' รายการ']);
         const ad=ys.filter(z=>!xs.includes(z)),rm=xs.filter(z=>!ys.includes(z));
         return rows.push([L,undefined,[ad.length?'เพิ่ม '+ad.join(', '):'',rm.length?'นำออก '+rm.join(', '):'',!ad.length&&!rm.length?'ปรับรายละเอียด':''].filter(Boolean).join(' / ')])}
-      const fm=z=>z==null||z===''?'–':k==='reg_min_year'?'พ.ศ. '+(+z+543):typeof z==='number'?money(z)+' บาท':String(z);rows.push([L,x==null?undefined:fm(x),fm(y)])});break}
+      const fm=z=>z==null||z===''?'–':k==='reg_min_year'?'พ.ศ. '+(+z+543):typeof z==='number'?money(z)+' บาท':String(z);rows.push([L,x==null?undefined:fm(x),fm(y)])});
+    item=(rows.length>4?rows.slice(0,3):rows).map(x=>x[0]).join(', ')+(rows.length>4?' และอีก '+(rows.length-3)+' รายการ':'')||'ไม่มีการเปลี่ยนแปลง';break}
   case'staff':v=A('เพิ่มผู้ใช้','แก้ไขผู้ใช้','ลบผู้ใช้');c=A('add','edit','del');ref=d.username||o.username||'';item=d.full_name||o.full_name||'ผู้ใช้งาน';
     rows=a==='update'?chg():auInfo(d,['role','branch_id']);break;
   case'customers':v=A('เพิ่มลูกค้า','แก้ไขลูกค้า','ลบลูกค้า');c=A('add','edit','del');ref=d.tel||o.tel||'#'+r.row_id;item=[o.prefix||n.prefix,o.first_name||n.first_name,o.last_name||n.last_name].filter(Boolean).join(' ')||'ลูกค้า';
