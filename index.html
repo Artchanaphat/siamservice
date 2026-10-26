@@ -32,7 +32,7 @@ button,input,select{font:inherit;color:inherit}
 .tuser{min-width:0;line-height:1.25}
 .tuser .uname{font-weight:600;font-size:13px}
 .tuser .urole{color:var(--sticker);font-size:11.5px;font-weight:600;margin-left:6px}
-.tuser p{margin:0;font-size:14px}
+.tuser p{margin:0;font-size:15.5px;font-weight:600}
 .menu{max-width:1080px;margin:10px auto 0;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px}
 .nav{background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;cursor:pointer;color:var(--muted);font-size:14px;font-family:var(--font-display);white-space:nowrap;position:relative}
 .nav svg{width:18px;height:18px;flex:none}
@@ -865,10 +865,31 @@ body.mgmt .tbranch{display:none}
 .qc-fail{background:#dc2626}.qc-fail:hover{background:#b91c1c}
 .st-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 18px;padding:0 16px}
 .st-grid.two{grid-template-columns:1fr 1fr}
+.st-grid.two>*{min-width:0}
 .st .field>span{font-size:14px;font-weight:600}
 .st .field input{height:38px;box-sizing:border-box;width:100%}
 .st-num{display:flex;align-items:center;gap:6px}.st-num em{font-style:normal;color:#6b7280;font-size:13px}
-.st-list textarea{width:100%;box-sizing:border-box;font:14px/1.5 var(--font-body);padding:8px 10px;border:1px solid var(--input-line);border-radius:6px;resize:vertical}
+.st-list{display:flex;flex-direction:column;gap:6px;min-width:0}
+.st-add{display:flex;gap:6px;align-items:center}
+.st .st-add input{flex:1;min-width:0}.st .st-add .st-code{flex:0 0 96px;text-transform:uppercase}
+.st-ck{display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:13px}.st .st-ck input{width:auto;height:auto}
+.st-addb{height:38px;white-space:nowrap;padding:0 14px}
+.st-chips{display:flex;flex-wrap:wrap;align-content:flex-start;gap:6px;height:188px;overflow:auto;padding:8px;border:1px solid var(--input-line);border-radius:6px;background:#fafcfe;box-sizing:border-box}
+.st-chips.sm{height:120px}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#e8f5fd;border:1px solid #bfe3f7;color:#0b4f75;border-radius:999px;padding:2px 3px 2px 11px;font-size:13.5px;line-height:1.5;max-width:100%}
+.chip>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip em{font-style:normal;font-size:12px;color:#5b7c90}
+.chip i{font-style:normal;font-size:11px;background:#fff3d6;color:#8a5a00;border-radius:999px;padding:0 6px;white-space:nowrap}
+.chip button{flex:none;border:0;background:transparent;width:22px;height:22px;border-radius:50%;cursor:pointer;color:#5b7c90;font-size:15px;line-height:22px;padding:0}
+.chip button:hover{background:#dc2626;color:#fff}
+.chip.new{background:#e9f9ee;border-color:#a7e3b9;color:#14532d}
+.st-none{color:#8a96a3;font-size:13px;padding:4px}
+.st-tog{display:flex;flex-wrap:wrap;gap:6px}
+.st-line>.st-grid{padding:0}
+@media (max-width:640px){.st-add{flex-wrap:wrap}.st .st-add .st-in{flex:1 1 100%}.st .st-add .st-code{flex:1 1 80px}}
+.tog{border:1px solid var(--input-line);background:#fff;border-radius:999px;padding:6px 13px;cursor:pointer;font:13.5px var(--font-body);color:#374151}
+.tog.on{background:#00adef;border-color:#00adef;color:#fff;font-weight:600}
+.st select.st-time{height:38px;width:100%;box-sizing:border-box;border:1px solid var(--input-line);border-radius:6px;padding:0 8px;font:14px var(--font-body);background:#fff}
 .st-list em{font-style:normal;font-weight:400}
 .st-bar{display:flex;justify-content:flex-end;gap:10px}
 .pp-modal{max-width:340px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
@@ -927,7 +948,7 @@ body.mgmt .tbranch{display:none}
 <div class="topwrap">
   <header class="topbar">
     <div class="tleft"><button class="toplink" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>หน้าแรก</span></button></div>
-    <div class="tcenter"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div class="tuser"><span class="uname"></span><span class="urole"></span><p>โปรแกรมบริหาร ตรอ.สยามเซอร์วิส</p></div></div>
+    <div class="tcenter"><span class="avatar lg" role="img" aria-label="โลโก้ ตรอ."></span><div class="tuser"><p>โปรแกรมบริหาร ตรอ.สยามเซอร์วิส</p></div></div>
     <div class="tright pf">
       <button class="pfbtn" id="pfbtn" aria-haspopup="true" aria-expanded="false"><span class="avatar lg pfav"></span><span class="pfname uname"></span><svg class="pfcar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="pfmenu" id="pfmenu" hidden role="menu">
@@ -3255,11 +3276,14 @@ const DB=(()=>{
   const need08=e=>{if(/set_line_secrets|line_secret_status|could not find the function/i.test(e.message))throw new Error('ยังไม่ได้รัน 08-line-settings.sql ใน Supabase');throw e};
   async function lineStatus(){const c=await client();const r=await c.rpc('line_secret_status');if(r.error)need08(new Error(r.error.message));return r.data||{}}
   async function setLineSecrets(t,to,sec){const c=await client();const r=await c.rpc('set_line_secrets',{p_token:t,p_to:to,p_secret:sec});if(r.error)need08(new Error(r.error.message.replace(/^.*?ERROR:\s*/,'')))}
+  const need10=e=>{if(/line_schedule|could not find the function/i.test(e.message))throw new Error('ยังไม่ได้รัน 10-line-schedule.sql ใน Supabase');throw e};
+  async function lineSchedule(){const c=await client();const r=await c.rpc('line_schedule');if(r.error)need10(new Error(r.error.message));return r.data||{}}
+  async function setLineSchedule(d,rm){const c=await client();const r=await c.rpc('set_line_schedule',{p_daily:d,p_remind:rm});if(r.error)need10(new Error(r.error.message));return r.data||{}}
   async function lineRpc(fn){const c=await client();const r=await c.rpc(fn);if(r.error)need06(new Error(r.error.message));return r.data}
   async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3448,7 +3472,13 @@ function sendLine(k,c){const t=lineText(k,c);try{navigator.clipboard.writeText(t
 /* ---------- ตั้งค่าระบบ (เฉพาะเจ้าของร้าน) ---------- */
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
   const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
-  const T=(k,l,h,rows=8,fmtf=a=>a.join('\n'))=>`<label class="field st-list"><span>${l} <em class="sub">(${SET[k].length} รายการ)</em></span><textarea data-l="${k}" rows="${rows}" spellcheck="false">${esc(fmtf(SET[k]))}</textarea><small class="sub">${h}</small></label>`;
+  const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k])));
+  const T=(k,l,h,sm)=>`<div class="field st-list" data-l="${k}"><span>${l} <em class="sub">(<b class="st-cnt">${LS[k].length}</b> รายการ)</em></span>
+    <div class="st-add">${k==='insurers'?'<input class="st-in" placeholder="ค้นหา หรือพิมพ์ชื่อบริษัทใหม่" autocomplete="off"><input class="st-code" placeholder="รหัสย่อ" maxlength="10" autocomplete="off"><label class="st-ck"><input type="checkbox" class="st-cf">กองทุนกลาง</label>':'<input class="st-in" placeholder="ค้นหา หรือพิมพ์รายการใหม่" autocomplete="off">'}<button type="button" class="btn st-addb">＋ เพิ่ม</button></div>
+    <div class="st-chips${sm?' sm':''}"></div><small class="sub">${h}</small></div>`;
+  const DOPT=[...new Set([90,60,45,30,15,7,3,1,...SET.line_days])].sort((a,z)=>z-a);
+  const TIMES=[];for(let m=5*60;m<24*60;m+=30)TIMES.push(String(m/60|0).padStart(2,'0')+':'+(m%60?'30':'00'));
+  const TS=(id,v)=>`<select class="st-time" id="${id}">${TIMES.map(t=>`<option value="${t}"${t===v?' selected':''}>${t} น.</option>`).join('')}</select>`;
   $('#view').innerHTML=`<div class="st">
   <div class="ltop"><h1>ตั้งค่าระบบ</h1><span class="sub">${LIVE?'มีผลกับทุกสาขาและทุกเครื่องทันทีหลังบันทึก':'โหมดทดลอง: แก้ได้ แต่ไม่ถูกบันทึกจริง'}</span></div>
   <div class="card stf-card"><div class="sech teal">💰 ค่าบริการ (ใช้ตอนกดคำนวณภาษีอัตโนมัติ)</div><div class="st-grid">
@@ -3457,10 +3487,10 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">📅 ปีจดทะเบียน</div><div class="st-grid">
     <label class="field"><span>ปีจดทะเบียนเก่าสุดที่เลือกได้ (พ.ศ.)</span><input id="st-year" inputmode="numeric" maxlength="4" value="${(+SET.reg_min_year||1947)+543}"><small class="sub">ช่อง "วันจดทะเบียนรถ" จะให้เลือกปีตั้งแต่ปีนี้ถึงปีปัจจุบัน</small></label></div></div>
   <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
-    ${T('brands','ยี่ห้อรถ','บรรทัดละ 1 ยี่ห้อ',10)}${T('bodies','ลักษณะรถ','บรรทัดละ 1 รายการ',10)}
-    ${T('prefixes','คำนำหน้าชื่อ','บรรทัดละ 1 รายการ',8)}${T('insurers','บริษัทประกัน','บรรทัดละ 1 บริษัท แบบ ชื่อบริษัท | รหัสย่อ (ใส่ * ท้ายบรรทัด = กองทุนกลาง)',8,a=>a.map(x=>x[0]+(x[1]?' | '+x[1]:'')+(x[2]?' *':'')).join('\n'))}</div></div>
+    ${T('brands','ยี่ห้อรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('bodies','ลักษณะรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}
+    ${T('prefixes','คำนำหน้าชื่อ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('insurers','บริษัทประกัน','ป้ายสีเหลือง = กองทุนกลาง · กด × เพื่อลบ')}</div></div>
   <div class="card stf-card"><div class="sech teal">📒 รายจ่ายและกำไร</div><div class="st-grid two">
-    ${T('passthru','รายการที่เป็นเงินนำส่ง (ไม่นับเป็นรายได้ร้าน)','ชื่อต้องตรงกับรายการในบิล บรรทัดละ 1 รายการ',6)}${T('exp_cats','หมวดรายจ่าย','บรรทัดละ 1 หมวด',6)}</div></div>
+    ${T('passthru','รายการที่เป็นเงินนำส่ง (ไม่นับเป็นรายได้ร้าน)','ชื่อต้องตรงกับรายการในบิล',1)}${T('exp_cats','หมวดรายจ่าย','กด × เพื่อลบ',1)}</div></div>
   <div class="card stf-card"><div class="sech teal">🔑 เชื่อมต่อ LINE Official Account</div><div class="st-line">
     <p class="sub">คัดลอกจาก developers.line.biz › ช่องของร้าน · รหัสเก็บแบบเข้ารหัส หน้านี้แสดงแค่ 4 ตัวท้าย · ช่องที่เว้นว่างจะไม่ถูกเปลี่ยน</p>
     <div class="st-grid st-keys">
@@ -3471,23 +3501,45 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     <div class="st-lbtn"><button type="button" class="btn" id="lk-save">🔑 บันทึกรหัส LINE</button></div></div></div>
   <div class="card stf-card"><div class="sech teal">🔔 เตือนลูกค้าทาง LINE อัตโนมัติ</div><div class="st-grid">
     <label class="field"><span>LINE ID ของร้าน (Basic ID)</span><input id="st-oa" placeholder="เช่น @123abcde" value="${esc(SET.line_oa)}"><small class="sub">ใส่แล้วใบเสร็จจะมี QR ให้ลูกค้าสแกนผูก LINE</small></label>
-    <label class="field"><span>เตือนก่อนหมดอายุ (วัน)</span><input id="st-days" placeholder="30,7" value="${SET.line_days.join(',')}"><small class="sub">คั่นด้วย , ส่งเวลา 09:00 น. ทุกวัน (ภาษี พ.ร.บ. ประกัน)</small></label></div></div>
+    <label class="field"><span>เวลาส่งเตือนลูกค้า</span>${TS('st-rtime','09:00')}<small class="sub st-tnote">ส่งทุกวัน (ภาษี พ.ร.บ. ประกัน)</small></label>
+    <div class="field"><span>เตือนก่อนหมดอายุ <em class="sub">(เลือกได้หลายข้อ)</em></span><div class="st-tog" id="st-days">${DOPT.map(d=>`<button type="button" class="tog${SET.line_days.includes(d)?' on':''}" data-d="${d}">${d} วัน</button>`).join('')}</div></div></div></div>
   <div class="card stf-card"><div class="sech teal">💬 สรุปประจำวันทาง LINE เจ้าของร้าน</div><div class="st-line">
-    <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน เวลา 20:00 น. ให้คนที่ใส่ User ID ไว้ด้านบน</p>
+    <p class="sub">ระบบส่งสรุปยอดทุกสาขาเข้า LINE ทุกวัน ให้คนที่ใส่ User ID ไว้ด้านบน</p>
+    <div class="st-grid"><label class="field"><span>เวลาส่งสรุปประจำวัน</span>${TS('st-dtime','20:00')}<small class="sub st-tnote" id="st-dnote"></small></label></div>
     <div class="st-lbtn"><button class="btn line" id="ln-prev">👁️ ดูตัวอย่างข้อความวันนี้</button><button class="btn" id="ln-test">📤 ส่งทดสอบเข้า LINE ตอนนี้</button></div>
     <pre id="ln-out" class="st-pre" hidden></pre></div></div>
   <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
   const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='';
     document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))bad=bad||i.closest('label').querySelector('span').textContent;else o[i.dataset.k]=v});
     const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))bad=bad||'ปีจดทะเบียนเก่าสุด';else o.reg_min_year=y;
-    document.querySelectorAll('[data-l]').forEach(t=>{const L=[...new Set(t.value.split('\n').map(x=>x.trim()).filter(Boolean))];
-      o[t.dataset.l]=t.dataset.l==='insurers'?L.map(x=>{const c=/\*\s*$/.test(x),[n,code]=x.replace(/\*\s*$/,'').split('|').map(z=>z.trim());return[n,(code||'').toUpperCase(),c?1:0]}):L;
-      if(!L.length)bad=bad||'รายการว่าง'});
-    o.line_oa=$('#st-oa').value.trim();const dd=[...new Set($('#st-days').value.split(/[,\s]+/).filter(Boolean).map(Number))];
-    if(!dd.length||dd.some(x=>!(x>=1&&x<=365&&Number.isInteger(x))))bad=bad||'วันที่เตือนก่อนหมดอายุ';else o.line_days=dd.sort((a,z)=>z-a);
+    Object.keys(LS).forEach(k=>{if(!LS[k].length)bad=bad||'รายการว่าง';o[k]=JSON.parse(JSON.stringify(LS[k]))});
+    o.line_oa=$('#st-oa').value.trim();const dd=[...document.querySelectorAll('#st-days .on')].map(b=>+b.dataset.d);
+    if(!dd.length)bad=bad||'เตือนก่อนหมดอายุ (เลือกอย่างน้อย 1 ข้อ)';else o.line_days=dd.sort((a,z)=>z-a);
     return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
   $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
-    try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกการตั้งค่าแล้ว');R.settings()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+    try{if(LIVE)await DB.saveSettings(o);SET=o}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message);return}
+    const d=$('#st-dtime').value,rm=$('#st-rtime').value;
+    if(LIVE&&sch&&(d!==sch.daily||rm!==sch.remind)){try{await DB.setLineSchedule(d!==sch.daily?d:'',rm!==sch.remind?rm:'')}catch(err){alert('บันทึกการตั้งค่าแล้ว แต่ตั้งเวลาส่ง LINE ไม่สำเร็จ: '+err.message)}}
+    toast('บันทึกการตั้งค่าแล้ว');R.settings()};
+  let sch=null;const dNote=()=>{const v=$('#st-dtime').value;$('#st-dnote').textContent=v<'12:00'?'ส่งก่อนเที่ยง = ส่งสรุปของเมื่อวาน':'ส่งสรุปของวันนี้'};
+  const tSel=(id,v)=>{const el=$(id);if(v&&![...el.options].some(o=>o.value===v))el.add(new Option(v+' น.',v),0);if(v)el.value=v};
+  $('#st-dtime').onchange=dNote;dNote();
+  if(LIVE)DB.lineSchedule().then(r=>{if(!$('#st-dtime'))return;sch={daily:r.daily||'20:00',remind:r.remind||'09:00'};tSel('#st-dtime',sch.daily);tSel('#st-rtime',sch.remind);dNote()})
+    .catch(err=>{if(!$('#st-dtime'))return;['#st-dtime','#st-rtime'].forEach(i=>$(i).disabled=true);document.querySelectorAll('.st-tnote').forEach(n=>n.textContent=err.message)});
+  document.querySelectorAll('#st-days .tog').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+  const chipKey=x=>(Array.isArray(x)?x[0]:x).toLowerCase();
+  document.querySelectorAll('.st-list[data-l]').forEach(box=>{const k=box.dataset.l,ins=k==='insurers',inp=box.querySelector('.st-in'),wrap=box.querySelector('.st-chips'),added=new Set();
+    const draw=()=>{const q=inp.value.trim().toLowerCase();box.querySelector('.st-cnt').textContent=LS[k].length;
+      const rows=LS[k].map((x,i)=>[x,i]).filter(([x])=>!q||chipKey(x).includes(q)||(ins&&(x[1]||'').toLowerCase().includes(q)));
+      wrap.innerHTML=rows.map(([x,i])=>`<span class="chip${added.has(chipKey(x))?' new':''}"><span>${ins?esc(x[0])+(x[1]?` <em>${esc(x[1])}</em>`:''):esc(x)}</span>${ins&&x[2]?'<i>กองทุนกลาง</i>':''}<button type="button" data-i="${i}" title="ลบ" aria-label="ลบ ${esc(ins?x[0]:x)}">×</button></span>`).join('')
+        ||`<span class="st-none">${q?'ไม่พบ "'+esc(inp.value.trim())+'" กด ＋ เพิ่ม เพื่อเพิ่มรายการนี้':'ยังไม่มีรายการ'}</span>`};
+    const add=()=>{const v=inp.value.trim().replace(/\s+/g,' ');if(!v){inp.focus();return}
+      if(LS[k].some(x=>chipKey(x)===v.toLowerCase())){toast('มี "'+v+'" อยู่แล้ว');return}
+      LS[k].push(ins?[v,box.querySelector('.st-code').value.trim().toUpperCase(),box.querySelector('.st-cf').checked?1:0]:v);added.add(v.toLowerCase());
+      inp.value='';if(ins){box.querySelector('.st-code').value='';box.querySelector('.st-cf').checked=false}draw();wrap.scrollTop=wrap.scrollHeight;inp.focus();toast('เพิ่ม "'+v+'" แล้ว กดบันทึกการตั้งค่าเพื่อใช้งาน')};
+    inp.oninput=draw;box.querySelector('.st-addb').onclick=add;
+    box.querySelectorAll('input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
+    wrap.onclick=e=>{const b=e.target.closest('button[data-i]');if(!b)return;LS[k].splice(+b.dataset.i,1);draw()};draw()});
   const lkLoad=async()=>{if(!LIVE)return;try{const st=await DB.lineStatus();if(!$('#lk-save'))return;
       $('#lk-token-st').textContent=st.token?'✓ ใส่แล้ว ('+st.token+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-secret-st').textContent=st.secret?'✓ ใส่แล้ว ('+st.secret+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-token').placeholder=st.token?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel access token';$('#lk-secret').placeholder=st.secret?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel secret';$('#lk-to').value=st.to||''}
     catch(err){$('#lk-token-st').textContent=err.message}};lkLoad();
