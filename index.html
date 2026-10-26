@@ -293,7 +293,7 @@ tbody tr:nth-child(even) td{background:#fff}
 .xbtn.green{background:#5cb85c;color:#fff}.xbtn.red{background:#e9230f;color:#fff}.xbtn.blue{background:#0f75bd;color:#fff}.xbtn.grey{background:#e9eef5;color:#333}
 .xbtn.blue:hover{background:#fff;color:#0f75bd}
 .xbtn:focus-within,.xbtn:focus-visible{outline:2px solid #0e95ba;outline-offset:2px}
-.check-card{background:#fff!important;border:1px solid #e5e9f0!important;border-radius:8px!important;padding:0 0 12px!important;overflow:hidden}
+.check-card{background:#fff!important;border:1px solid #e5e9f0!important;border-radius:8px!important;padding:0 0 12px!important;overflow:visible}
 .check-card .sech{margin:0!important;border-radius:8px 8px 0 0!important;padding:9px 14px}
 .check-card>.row,.check-card>#x-res,.check-card>.note{padding:0 14px}
 .head h1{font-size:20px}
@@ -611,6 +611,8 @@ tbody tr:nth-child(even) td{background:#fff}
 .ss-in:focus{cursor:text}
 .ss-dd{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:40;background:#fff;border:1px solid #c9d6e3;border-radius:8px;box-shadow:0 8px 22px rgba(15,23,42,.16);max-height:240px;overflow:auto;font-size:13px}
 .ac-dd{min-width:min(340px,86vw)}
+.ac-co{display:flex;align-items:center;justify-content:space-between;gap:12px}.ac-co small{color:#9aa3af;font-size:11.5px;letter-spacing:.3px}
+.ac-badge{font-style:normal;font-size:10.5px;background:#fef3c7;color:#92400e;border-radius:999px;padding:1px 7px;margin-left:4px}
 .ss-it{padding:7px 10px;cursor:pointer;border-bottom:1px solid #f1f4f8;line-height:1.45}
 .ss-it.sel{font-weight:bold;color:#0e7fae}
 .ss-it.on,.ss-it:hover{background:#0e95ba;color:#fff}
@@ -775,6 +777,88 @@ body.mgmt .tbranch{display:none}
 .tb-menu button:hover{background:#f0f9ff}.tb-menu button[aria-selected=true]{color:#0369a1;font-weight:600}
 .tb-menu i{margin-left:auto;font-style:normal;color:#0369a1}
 .tb-code{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#e0f2fe;color:#0369a1;font-weight:700;font-size:13px}
+/* ---- หน้าใหม่: ปิดยอด / สำรอง / คิว / ตั้งค่า / พร้อมเพย์ ---- */
+.cl,.bk,.qq,.st{display:flex;flex-direction:column;gap:14px}
+.cl .ltop,.bk .ltop,.qq .ltop,.st .ltop{padding:4px 0 12px;flex-wrap:wrap}
+.cl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.cl-bar .btn,.st-bar .btn,.bk-card .btn{height:38px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center}
+.cl-date{display:inline-flex;align-items:center;gap:8px;font-size:14px;white-space:nowrap}
+.cl-date input{height:38px;box-sizing:border-box;padding:0 10px}
+.cl-bar .cl-date{margin-right:auto}
+.cl-done{background:#eef9f0;border:1px solid #bfe5c7;color:#1d6b32;border-radius:10px;padding:10px 14px;font-size:14px}
+.cl-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cl-kpis>div{background:#fff;border:1px solid #e3e8ee;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.cl-kpis span{font-size:13px;color:#6b7280}
+.cl-kpis b{font-size:20px;font-family:var(--font-display);font-variant-numeric:tabular-nums}
+.cl-kpis .tot{background:#e8f6fd;border-color:#9fd8f5}.cl-kpis .tot b{color:#0077b3}
+.cl-card{padding:0;overflow:hidden}
+.cl-tbl{width:100%;border-collapse:collapse;font-size:14px}
+.cl-tbl th{background:#f5f7fa;font-weight:600;text-align:left;padding:10px;white-space:nowrap;border-bottom:1px solid #e3e8ee}
+.cl-tbl td{padding:9px 10px;border-bottom:1px solid #eef1f4;vertical-align:middle}
+.cl-tbl .r{text-align:right;font-variant-numeric:tabular-nums}
+.cl-tbl tfoot td{font-weight:700;background:#fafbfc;border-top:2px solid #e3e8ee}
+.cl-cnt{width:120px;height:34px;box-sizing:border-box;text-align:right;padding:0 8px}
+.cl-diff{white-space:nowrap;min-width:90px}
+.cl-ok,.cl-over,.cl-short{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12.5px;font-weight:600}
+.cl-ok{background:#dcfce7;color:#15803d}.cl-over{background:#dbeafe;color:#1d4ed8}.cl-short{background:#fee2e2;color:#c81e1e}
+.cl-h{margin:4px 0 0;font-size:15px}
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bk-card{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.bk-card h3{margin:0;font-size:16px}.bk-card p{margin:0}
+.bk-card .btn{margin-top:auto}
+.qq-add{display:grid;grid-template-columns:auto 80px 90px 1.2fr 1.4fr 1.2fr 1fr auto;gap:8px;align-items:center}
+.qq-add input,.qq-add select,.qq-add .btn,.qq-add .ss-btn{height:38px;box-sizing:border-box;min-width:0;width:100%}
+.qq-add>b{white-space:nowrap;font-size:14px}
+.qq-board{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:start}
+.qq-col{display:flex;flex-direction:column;gap:8px;min-width:0}
+.qq-h{display:flex;justify-content:space-between;align-items:center;font-weight:700;border-radius:10px;padding:9px 12px;font-size:14.5px}
+.qq-h span{background:rgba(255,255,255,.75);border-radius:999px;padding:0 9px;font-size:13px}
+.qq-empty{text-align:center;color:#aaa;padding:14px 0;border:1.5px dashed #dfe3e8;border-radius:10px}
+.qc{background:#fff;border:1px solid #e3e8ee;border-left:4px solid var(--c);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.qc-top{display:flex;align-items:center;gap:8px}
+.qc-no{font-weight:700;color:var(--c);font-size:15px;min-width:28px}
+.qc-type{margin-left:auto;font-size:12px;background:#f1f3f6;border-radius:6px;padding:2px 7px;white-space:nowrap}
+.qc-name{font-size:13.5px}
+.qc-note{font-size:13px;background:#fff1f1;color:#9b1c1c;border-radius:6px;padding:4px 8px}
+.qc-act{display:flex;gap:6px}
+.qc-act .btn{flex:1;height:34px;padding:0 10px;font-size:13.5px}
+.qc-pass{background:#16a34a}.qc-pass:hover{background:#15803d}
+.qc-fail{background:#dc2626}.qc-fail:hover{background:#b91c1c}
+.st-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px 18px;padding:0 16px}
+.st-grid.two{grid-template-columns:1fr 1fr}
+.st .field>span{font-size:14px;font-weight:600}
+.st .field input{height:38px;box-sizing:border-box;width:100%}
+.st-num{display:flex;align-items:center;gap:6px}.st-num em{font-style:normal;color:#6b7280;font-size:13px}
+.st-list textarea{width:100%;box-sizing:border-box;font:14px/1.5 var(--font-body);padding:8px 10px;border:1px solid var(--input-line);border-radius:6px;resize:vertical}
+.st-list em{font-style:normal;font-weight:400}
+.st-bar{display:flex;justify-content:flex-end;gap:10px}
+.pp-modal{max-width:340px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.pp-head{background:#113566;color:#fff;font-weight:700;border-radius:8px;padding:8px;width:100%;box-sizing:border-box;font-size:17px}
+.pp-head small{font-weight:400;opacity:.8}
+.pp-qr{width:240px;height:240px;display:flex;align-items:center;justify-content:center}
+.pp-qr svg,.rc-qr svg{width:100%;height:100%}
+.pp-amt{font-size:24px;font-weight:700;color:#113566;font-family:var(--font-display)}
+.pp-modal p{font-size:15px}
+.pp-mini{height:32px;padding:0 12px;font-size:13px;margin-left:8px}
+.rc-head{display:flex;gap:12px;align-items:center;border-bottom:1px solid #e3e8ee;padding-bottom:10px}
+.rc-logo{width:52px;height:52px;flex:none}
+.rc-title{text-align:center;font-weight:700;font-size:17px;letter-spacing:.5px}
+.rc-qr{display:flex;flex-direction:column;align-items:center;gap:4px;border-top:1px dashed #ccc;padding-top:10px}
+.rc-qr>div:first-child{width:170px;height:170px}
+.rc-foot{text-align:center;font-size:12.5px;color:#666;border-top:1px dashed #ccc;padding-top:8px}
+.receipt.slip .rc-head{flex-direction:column;text-align:center}
+.line-btn{background:#06c755;color:#fff;border:0;border-radius:6px;padding:4px 10px;font-weight:700;font-size:12.5px;cursor:pointer}
+.line-btn:hover{background:#05a948}
+.line-banner{background:#effaf3;border:1px solid #b6e8c8;color:#14532d;border-radius:10px;padding:10px 14px;font-size:14px;margin-bottom:10px}
+@media (max-width:900px){.qq-board{grid-template-columns:1fr 1fr}.qq-add{grid-template-columns:1fr 1fr}.qq-add>b{grid-column:1/-1}.qq-add .btn{grid-column:1/-1}.st-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:640px){.cl .ltop,.bk .ltop,.qq .ltop,.st .ltop{flex-direction:column;align-items:flex-start;gap:4px}.cl-kpis{grid-template-columns:1fr 1fr}.bk-grid,.st-grid,.st-grid.two{grid-template-columns:1fr}.qq-board{grid-template-columns:1fr}
+  .cl-tbl thead{display:none}.cl-tbl,.cl-tbl tbody,.cl-tbl tfoot,.cl-tbl tr,.cl-tbl td{display:block;width:auto}
+  .cl-tbl tr{border-bottom:1px solid #e3e8ee;padding:8px 12px}.cl-tbl td{border:0;padding:3px 0;display:flex;justify-content:space-between;gap:10px;text-align:right}
+  .cl-tbl td[data-l]::before{content:attr(data-l);color:#6b7280;text-align:left}
+  .cl-tbl tfoot td:empty{display:none}.cl-tbl tfoot td{border:0;background:none}.cl-tbl tfoot tr{background:#fafbfc;border-top:2px solid #e3e8ee}.cl-bar .cl-date{width:100%}.st-bar .btn{flex:1}}
+@media print{body.print-one *{visibility:hidden!important}body.print-one .print-me,body.print-one .print-me *{visibility:visible!important}
+  body.print-one .print-me{position:absolute;left:0;top:0;width:100%;box-shadow:none;border:0}body.print-one .print-me.slip{width:72mm;max-width:none}
+  .cl-cnt{border:0;width:auto}.cl-kpis>div{border-color:#999}}
 </style>
 
 <section class="login" id="login">
@@ -810,7 +894,8 @@ body.mgmt .tbranch{display:none}
       <div class="pfmenu" id="pfmenu" hidden role="menu">
         <div class="pfhead"><span class="avatar lg pfbig"></span><div><small>เข้าสู่ระบบในฐานะ</small><b><span class="uname"></span> · <span class="pfrole"></span></b><em class="pfbr"></em></div></div>
         <button role="menuitem" data-chpw hidden>🔑 เปลี่ยนรหัสผ่าน</button>
-        <button role="menuitem" data-go="staff" data-owner hidden>⚙️ จัดการพนักงาน / สาขา</button>
+        <button role="menuitem" data-go="staff" data-owner hidden>👥 จัดการพนักงาน / สาขา</button>
+        <button role="menuitem" data-go="settings" data-owner-any hidden>⚙️ ตั้งค่าระบบ</button>
         <button role="menuitem" class="pfout" data-logout>🚪 ออกจากระบบ</button>
       </div>
     </div>
@@ -931,7 +1016,7 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 function renderNav(){$('.menu').innerHTML=navHTML(false)}
-function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff');renderNav();R[k]();
+function go(k){if(k!=='docs')psDay=null;cur=k;document.body.classList.toggle('mgmt',k==='staff'||k==='settings');renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -939,7 +1024,7 @@ const USERS={admin:{pw:'admin',name:'คุณอาร์ท',role:'owner'},dem
 let user=null;
 const ROLE_TH={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
 function enterApp(u){user=u;document.querySelectorAll('.uname').forEach(n=>n.textContent=u.name);
-  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));
+  document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));document.querySelectorAll('[data-owner-any]').forEach(b=>b.hidden=u.role!=='owner');
   document.querySelectorAll('.pfrole').forEach(n=>n.textContent=ROLE_TH[u.role]||'พนักงาน');document.querySelectorAll('.pfbr').forEach(n=>n.textContent=LIVE?(DB.branch?(u.role==='owner'?'ดูข้อมูล: ':'')+DB.branch.name:''):'โหมดทดลอง (ไม่บันทึกจริง)');
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;go('home');toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
@@ -965,10 +1050,13 @@ const MENU=[
   ['cust','ค้นหา | ดูข้อมูล','ทะเบียนและประวัติงาน','#edecfb','#5856d6','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="15.5" cy="17" r="2.6"/><path d="M17.5 19l2 2"/>'],
   ['docs','เอกสารรับ-ส่ง','สำหรับลูกค้าเซ็นรับ','#eeeef0','#4b4b52','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h4"/><circle cx="17" cy="18" r="3.2" fill="#3a3a40" stroke="#3a3a40"/><path d="M15.8 19.2l2.4-2.4" stroke="#fff"/>'],
   ['dlt','งานขนส่ง','ต่อภาษี / โอนย้าย ที่ต้องยื่นขนส่ง','#e8f0fe','#1a56db','<rect x="2" y="8" width="13" height="8" rx="1.5"/><path d="M15 11h4l3 3v2h-7z"/><circle cx="6" cy="17.5" r="1.8"/><circle cx="18" cy="17.5" r="1.8"/><path d="M5 5h7"/>'],
+  ['queue','คิวตรวจสภาพ','รถรอตรวจ / กำลังตรวจ / ผ่าน','#fff1e6','#c2410c','<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/><circle cx="17.5" cy="17.5" r="3.3" fill="#ea580c" stroke="#ea580c"/><path d="M16.2 17.6l1 1 1.7-1.9" stroke="#fff"/>'],
   ['income','รายได้ประจำวัน + ยอดค้าง','สรุปเงินรับจริงและรายการค้างชำระ','#fdf3dc','#c27c0e','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="17" cy="18" r="3.2" fill="#ef9a1a" stroke="#ef9a1a"/><path d="M17 16.4v3.2" stroke="#fff"/>'],
+  ['close','ปิดยอดเงินประจำวัน','เงินสด / โอน แยกตามพนักงาน','#ecfdf3','#15803d','<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'],
   ['inst','ผ่อนชำระประกัน','ติดตามงวดผ่อนรายลูกค้า','#e6f1fb','#2f7fd6','<rect x="3" y="6" width="16" height="11" rx="2"/><path d="M3 10h16"/><circle cx="18" cy="17" r="3.4" fill="#2f7fd6" stroke="#2f7fd6"/><path d="M18 15.6V17l1 .8" stroke="#fff"/>'],
   ['bell','ส่ง SMS แจ้งเตือน','เลือกประเภทที่ต้องการส่ง','#fde8e8','#e0474c','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
   ['news','ข่าวสาร','อัปเดต/ประกาศจากทีมงาน','#e2f6f4','#1aa598','<path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'],
+  ['backup','ส่งออก Excel / สำรองข้อมูล','ดาวน์โหลดรายงานรายเดือน','#eef2f7','#334155','<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/>'],
   ['calc','คำนวณภาษี','ค่าตรวจ ภาษี พ.ร.บ. ค่าปรับ','#eef3ff','#3d6fd6','<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>'],
 ];
 let expKind='tax',expQ='',hidden=new Set();
@@ -1088,23 +1176,32 @@ function payDlg(b){const s=split(b);
     <div class="sd-pay-due">ค้างชำระ <b>${money(s.debt)} บาท</b>${b.ins?`<small>(ทั่วไปค้าง ${money(s.gen-s.gp)} · ประกันค้าง ${money(b.ins-s.ip)})</small>`:''}</div>
     <label>จำนวนเงินที่รับ (บาท)<input id="pd-amt" inputmode="decimal" value="${s.debt.toFixed(2)}"></label>
     <div class="sd-pay-how"><label><input type="radio" name="pdh" value="เงินสด" checked> เงินสด</label><label><input type="radio" name="pdh" value="โอน"> โอนเงิน</label></div>
+    <button class="btn line" id="pd-qr" type="button" style="width:100%;margin-bottom:8px">📱 แสดง QR พร้อมเพย์ให้ลูกค้าสแกน</button>
     <button class="nb-main sd-pay-ok" id="pd-ok">ยืนยันรับเงิน</button><button class="nb-cancel" id="pd-no">ยกเลิก</button></div>`;
   $('#dlg').hidden=false;$('#pd-amt').select();
   $('#pd-no').onclick=()=>{$('#dlg').hidden=true};
+  $('#pd-qr').onclick=()=>{const a=Math.round(parseFloat($('#pd-amt').value.replace(/,/g,''))*100)/100;if(a>0){qrDlg(a,b.plate);const t=document.querySelector('[name=pdh][value="โอน"]');if(t)t.checked=true}else toast('ใส่จำนวนเงินก่อน')};
   $('#pd-ok').onclick=()=>{const a=Math.min(s.debt,Math.round(parseFloat($('#pd-amt').value.replace(/,/g,''))*100)/100);
     if(!(a>0)){toast('กรุณาใส่จำนวนเงิน');return}
     const now=new Date();b.pays.push({d:TODAY,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),amt:a,how:document.querySelector('[name=pdh]:checked').value,by:user?user.name:''});
     b.paid=Math.round((b.paid+a)*100)/100;DB.pay(b,b.pays[b.pays.length-1]);$('#dlg').hidden=true;toast(`รับเงิน ${money(a)} บาท จาก ${b.name} แล้ว`);R[cur]()}}
 
 /* ใบเสร็จ */
-function receiptDlg(b,kind){
-  $('#panel').innerHTML=`<div class="row between"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน ${kind} (ตัวอย่าง)</h2><button class="btn line" id="x">ปิด</button></div>
-    <div class="card receipt${kind==='แบบม้วน'?' slip':''}"><div class="row between"><div><b>ตรอ.สยามเซอร์วิส</b><div class="sub">ที่อยู่ร้าน · โทร 0X-XXX-XXXX</div></div><div style="text-align:right"><div class="sub">เลขที่</div><b class="num">${esc(b.no||'SS'+(b.d.getFullYear()+543)+'-'+String(b.id).padStart(5,'0'))}</b></div></div>
-    <div class="sub">วันที่ ${fmt(b.d)} · ${esc(b.plate)} ${esc(b.prov)} · ${esc(b.name)}</div>
+function receiptDlg(b,kind){const sh=shop(),debt=Math.max(0,Math.round((b.amt-b.paid)*100)/100);
+  $('#panel').innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน ${kind}</h2><button class="btn line" id="x">ปิด</button></div>
+    <div class="card receipt rc-doc${kind==='แบบม้วน'?' slip':''}"><div class="rc-head"><div class="lg rc-logo"></div><div><b>${esc(sh.title)}</b><div class="sub">${esc(sh.address)}</div>${sh.phone?`<div class="sub">โทร ${esc(sh.phone)}</div>`:''}</div></div>
+    <div class="rc-title">ใบเสร็จรับเงิน</div>
+    <div class="row between sub"><span>เลขที่ <b class="num">${esc(b.no||'SS'+(b.d.getFullYear()+543)+'-'+String(b.id).padStart(5,'0'))}</b></span><span>วันที่ ${beFull(b.d)} ${esc(b.t||'')}</span></div>
+    <div class="sub">ทะเบียน ${esc(b.plate)} ${esc(b.prov)} · คุณ${esc(b.name)}</div>
     <div class="list">${b.items.map(([l,x])=>`<div class="li"><span>${esc(l)}</span><span class="num">${money(x)}</span></div>`).join('')}${b.disc?`<div class="li"><span>ส่วนลด</span><span class="num">-${money(b.disc)}</span></div>`:''}</div>
-    <div class="row between"><b>สุทธิ</b><b class="num">${money(b.amt)}</b></div><div class="row between sub"><span>รับเงินแล้ว</span><span class="num">${money(b.paid)}</span></div>${b.amt-b.paid>0.004?`<div class="row between" style="color:#A32D2D"><span>ค้างชำระ</span><b class="num">${money(b.amt-b.paid)}</b></div>`:''}</div>
-    <button class="btn" onclick="toast('ระบบจริงจะส่งไปเครื่องพิมพ์')">🖨️ พิมพ์</button>`;
-  $('#dlg').hidden=false;$('#x').onclick=()=>{$('#dlg').hidden=true}}
+    <div class="row between"><b>รวมสุทธิ</b><b class="num">${money(b.amt)}</b></div><div class="row between sub"><span>รับเงินแล้ว</span><span class="num">${money(b.paid)}</span></div>${debt>0?`<div class="row between" style="color:#A32D2D"><span>ค้างชำระ</span><b class="num">${money(debt)}</b></div>`:''}
+    ${debt>0&&sh.pp?`<div class="rc-qr"><div id="rc-qr"></div><div class="sub">สแกนจ่ายยอดค้าง ${money(debt)} บาท ด้วยพร้อมเพย์</div></div>`:''}
+    <div class="rc-foot">ผู้รับเงิน ${esc((b.pays[b.pays.length-1]||{}).by||(user?user.name:''))} · ขอบคุณที่ใช้บริการ</div></div>
+    <div class="row non-printable" style="gap:8px">${debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์</button></div>`;
+  $('#dlg').hidden=false;$('#x').onclick=()=>{$('#dlg').hidden=true};
+  if($('#rc-qr'))qrSVG(ppPayload(sh.pp,debt)).then(svg=>{if($('#rc-qr'))$('#rc-qr').innerHTML=svg}).catch(()=>{});
+  if($('#rc-pp'))$('#rc-pp').onclick=()=>qrDlg(debt,b.plate);
+  $('#rc-print').onclick=()=>printEl($('.rc-doc'))}
 
 /* หน้ารายละเอียดบิล (show) */
 let curBill=null,billBack='income';
@@ -1122,7 +1219,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const kind=/บรรทุก/.test(b.type)?'บรรทุกส่วนบุคคล':/จักรยานยนต์/.test(b.type)?'จักรยานยนต์':'นั่งส่วนบุคคล';
   const exp=(l,d,extra)=>`<div class="exp-sub"><div class="row"><div class="lbl">${l}</div><div class="val">${d?`หมดอายุ ${beFull(d)}`:'<span class="exp-empty">ไม่มีข้อมูล</span>'}</div></div>${d&&extra?`<p class="exp-meta">${esc(extra)}</p>`:''}</div>`;
   $('#view').innerHTML=`<div class="sd">
-  <div class="sd-shop"><div class="sd-logo lg" role="img" aria-label="โลโก้ ตรอ."></div><div><h2>ตรอ.สยามเซอร์วิส${LIVE&&DB.branch?' · '+esc(DB.branch.name):''}</h2><div>${LIVE&&DB.branch&&DB.branch.address?esc(DB.branch.address):'ที่อยู่ร้าน (รอข้อมูลจริง)'}<br>โทร : ${LIVE&&DB.branch&&DB.branch.phone?esc(DB.branch.phone):'0X-XXX-XXXX'}</div></div></div>
+  <div class="sd-shop"><div class="sd-logo lg" role="img" aria-label="โลโก้ ตรอ."></div><div><h2>${esc(shop().title)}</h2><div>${esc(shop().address||'ที่อยู่ร้าน (ตั้งได้ที่ จัดการพนักงาน / สาขา)')}<br>โทร : ${esc(shop().phone||'-')}</div></div></div>
   <div class="hdr"><div class="hdr-left">
     <div class="hdr-badge reg">📅 วันจดทะเบียน:&nbsp;<span style="color:#185FA5">${beFull(c.created?new Date(c.created.getTime()-3650*DAY):new Date(b.d.getTime()-2000*DAY))}</span></div>
     <div class="hdr-badge exp">⏰ หมดอายุ:&nbsp;<span style="color:#E24B4A">${c.tax?beFull(c.tax):beFull(new Date(b.d.getFullYear()+1,b.d.getMonth(),b.d.getDate()))}</span></div></div>
@@ -1269,6 +1366,11 @@ const BODY=['นั่งส่วนบุคคล','นั่งและบ�
 const BRANDS='Audi|Aston Martin|Benz|BMW|Bentley|Benelli|Baco|BYD|Chevrolet|Citroen|Changan|CATERPILLAR|Datsun|Daihutsu|Deepal|Ducati|DFSK|Daewoo|Deva|Ford|Foton|Fiat|Ferrari|GWM|GPX Racing|Honda|Haval|Hino|Hyundai|Harley-Davidson|HAMM|Hale|Holden|Harde|Isuzu|Indian|Jeep|Jaguar|Kawasaki|KIA|KTM|Keeway|Kubota|Kobelco|Lexus|Lotus|Land Rover|Lamborghini|LAMBRETTA|Lifan|Lion|Mitsubishi|Mazda|MG|Mini|Maserati|McLaren|Maxus|Mitsuoka|MV Agusta|Nissan|NETA|Opel|ORA|Peugeot|Proton|Porsche|Piaggio|RIDDARA|Range Rover|Rolls-Royce|Royal Alloy|Royal Enfield|Ryuka|Suzuki|Subaru|Ssangyong|Skoda|SAKAI|SINO TRUCK|SYM|Stallions|Scomadi|Seat|Toyota|Tesla|TATA|Thairung|Tiger|Triumph|Volkswagen|Volvo|Vespa|Victory|Willys|Yamaha|Zongshen|Zero Engineering|ไม่ระบุ'.split('|');
 const INS_CO=["กรุงเทพประกันภัย", "กลางคุ้มครองผู้ประสบภัยจากรถ", "คิวบีอี ประกันภัย", "คุ้มภัยโตเกียวมารีนประกันภัย", "จรัญประกันภัย", "ชับบ์สามัคคีประกันภัย", "ซมโปะ ประกันภัย", "ทิพยประกันภัย", "ทูนประกันภัย", "ธนชาตประกันภัย", "นวกิจประกันภัย", "นำสินประกันภัย", "บางกอกสหประกันภัย", "ประกันคุ้มภัย", "ประกันภัยไทยวิวัฒน์", "พิพัทประกัน", "มิตรแท้ประกันภัย", "วิริยะประกันภัย", "ศรีอยุธยา เจนเนอรัล ประกันภัย", "สยามซิตี้ประกันภัย", "สหมงคลประกันภัย", "สินทรัพย์ประกันภัย", "สินมั่นคงประกันภัย", "อลิอันซ์ ประกันภัย", "อินทรประกันภัย", "เทเวศประกันภัย", "เมืองไทยประกันภัย", "เอ็ม เอส ไอ จี ประกันภัย", "เอราวัณประกันภัย", "เออร์โกประกันภัย", "แอกซ่าประกันภัย", "แอลเอ็มจี ประกันภัย", "ไทยประกันภัย", "ไทยพัฒนาประกันภัย", "ไทยศรีประกันภัย", "ไทยเศรษฐกิจประกันภัย", "ไทยไพบูลย์ประกันภัย", "ไอโออิ กรุงเทพ ประกันภัย"];
 const PREFIX=["คุณ", "นาย", "นาง", "นางสาว", "พลตำรวจเอก", "พลตำรวจเอก หญิง", "พลตำรวจโท", "พลตำรวจโท หญิง", "พลตำรวจตรี", "พลตำรวจตรี หญิง", "พันตำรวจเอก", "พันตำรวจเอก หญิง", "พันตำรวจเอกพิเศษ", "พันตำรวจเอกพิเศษ หญิง", "พันตำรวจโท", "พันตำรวจโท หญิง", "พันตำรวจตรี", "พันตำรวจตรี หญิง", "ร้อยตำรวจเอก", "ร้อยตำรวจเอก หญิง", "ร้อยตำรวจโท", "ร้อยตำรวจโท หญิง", "ร้อยตำรวจตรี", "ร้อยตำรวจตรี หญิง", "นายดาบตำรวจ", "ดาบตำรวจหญิง", "สิบตำรวจเอก", "สิบตำรวจเอก หญิง", "สิบตำรวจโท", "สิบตำรวจโท หญิง", "สิบตำรวจตรี", "สิบตำรวจตรี หญิง", "จ่าสิบตำรวจ", "จ่าสิบตำรวจ หญิง", "พลตำรวจ", "พลตำรวจ หญิง", "พลเอก", "พลเอก หญิง", "พลโท", "พลโท หญิง", "พลตรี", "พลตรี หญิง", "พันเอก", "พันเอก หญิง", "พันเอกพิเศษ", "พันเอกพิเศษ หญิง", "พันโท", "พันโท หญิง", "พันตรี", "พันตรี หญิง", "ร้อยเอก", "ร้อยเอก หญิง", "ร้อยโท", "ร้อยโท หญิง", "ร้อยตรี", "ร้อยตรี หญิง", "สิบเอก", "สิบเอก หญิง", "สิบโท", "สิบโท หญิง", "สิบตรี", "สิบตรี หญิง", "จ่าสิบเอก", "จ่าสิบเอก หญิง", "จ่าสิบโท", "จ่าสิบโท หญิง", "จ่าสิบตรี", "จ่าสิบตรี หญิง", "พลทหารบก", "ว่าที่ พ.ต.", "ว่าที่ พ.ต. หญิง", "ว่าที่ ร.อ.", "ว่าที่ ร.อ. หญิง", "ว่าที่ ร.ท.", "ว่าที่ ร.ท. หญิง", "ว่าที่ ร.ต.", "ว่าที่ ร.ต. หญิง", "พลเรือเอก", "พลเรือเอก หญิง", "พลเรือโท", "พลเรือโท หญิง", "พลเรือตรี", "พลเรือตรี หญิง", "นาวาเอก", "นาวาเอก หญิง", "นาวาเอกพิเศษ", "นาวาเอกพิเศษ หญิง", "นาวาโท", "นาวาโท หญิง", "นาวาตรี", "นาวาตรี หญิง", "เรือเอก", "เรือเอก หญิง", "เรือโท", "เรือโท หญิง", "เรือตรี", "เรือตรี หญิง", "พันจ่าเอก", "พันจ่าเอก หญิง", "พันจ่าโท", "พันจ่าโท หญิง", "พันจ่าตรี", "พันจ่าตรี หญิง", "จ่าเอก", "จ่าเอก หญิง", "จ่าโท", "จ่าโท หญิง", "จ่าตรี", "จ่าตรี หญิง", "พลทหารเรือ", "พลอากาศเอก", "พลอากาศเอก หญิง", "พลอากาศโท", "พลอากาศโท หญิง", "พลอากาศตรี", "พลอากาศตรี หญิง", "นาวาอากาศเอก", "นาวาอากาศเอก หญิง", "นาวาอากาศเอกพิเศษ", "นาวาอากาศเอกพิเศษ หญิง", "นาวาอากาศโท", "นาวาอากาศโท หญิง", "นาวาอากาศตรี", "นาวาอากาศตรี หญิง", "เรืออากาศเอก", "เรืออากาศเอก หญิง", "เรืออากาศโท", "เรืออากาศโท หญิง", "เรืออากาศตรี", "เรืออากาศตรี หญิง", "พันจ่าอากาศเอก", "พันจ่าอากาศเอก หญิง", "พันจ่าอากาศโท", "พันจ่าอากาศโท หญิง", "พันจ่าอากาศตรี", "พันจ่าอากาศตรี หญิง", "จ่าอากาศเอก", "จ่าอากาศเอก หญิง", "จ่าอากาศโท", "จ่าอากาศโท หญิง", "จ่าอากาศตรี", "จ่าอากาศตรี หญิง", "พลทหารอากาศ", "หม่อม", "หม่อมเจ้า", "หม่อมราชวงศ์", "หม่อมหลวง", "ดร.", "ศ.ดร.", "ศ.", "ผศ.ดร.", "ผศ.", "รศ.ดร.", "รศ.", "นพ.", "แพทย์หญิง", "สัตวแพทย์", "สพญ.", "ทพ.", "ทพญ.", "เภสัชกร", "ภกญ.", "วัด", "พระ", "พระครู", "พระมหา", "พระสมุห์", "พระอธิการ", "สามเณร", "แม่ชี", "บาทหลวง", "MR", "MRS", "MS", "MISS", "Dr.", "บริษัท", "หจก.", "โรงเรียน", "สหกรณ์", "อื่นๆ"];
+/* ตั้งค่าระบบ (เจ้าของร้านแก้ได้ที่ ตั้งค่าระบบ) ค่าเริ่มต้นด้านล่าง ระบบจริงเก็บในตาราง app_settings */
+const INS_DEF=[["กรุงเทพประกันภัย", "BKI", 0], ["กลางคุ้มครองผู้ประสบภัยจากรถ", "RVP", 1], ["คิวบีอี ประกันภัย", "QBE", 0], ["คุ้มภัยโตเกียวมารีนประกันภัย", "TMSTH", 0], ["จรัญประกันภัย", "CHARAN", 0], ["ชับบ์สามัคคีประกันภัย", "CHUBB", 0], ["ซมโปะ ประกันภัย", "SOMPO", 0], ["ทิพยประกันภัย", "TIP", 0], ["ทูนประกันภัย", "TUNE", 0], ["ธนชาตประกันภัย", "TNI", 0], ["นวกิจประกันภัย", "NAVAKIJ", 0], ["นำสินประกันภัย", "NAMSENG", 0], ["บางกอกสหประกันภัย", "BUS", 0], ["ประกันคุ้มภัย", "SAFETY", 0], ["ประกันภัยไทยวิวัฒน์", "TVI", 0], ["พิพัทประกัน", "PPI", 0], ["มิตรแท้ประกันภัย", "MITTARE", 0], ["วิริยะประกันภัย", "VIRIYAH", 0], ["ศรีอยุธยา เจนเนอรัล ประกันภัย", "SRIAYUD", 0], ["สยามซิตี้ประกันภัย", "SIAMCITY", 0], ["สหมงคลประกันภัย", "SAHAMONG", 0], ["สินทรัพย์ประกันภัย", "SINSAP", 0], ["สินมั่นคงประกันภัย", "SMK", 0], ["อลิอันซ์ ประกันภัย", "ALLIANZ", 0], ["อินทรประกันภัย", "INDARA", 0], ["เทเวศประกันภัย", "DEVES", 0], ["เมืองไทยประกันภัย", "MTI", 0], ["เอ็ม เอส ไอ จี ประกันภัย", "MSIG", 0], ["เอราวัณประกันภัย", "ERAWAN", 0], ["เออร์โกประกันภัย", "ERGO", 0], ["แอกซ่าประกันภัย", "AXA", 0], ["แอลเอ็มจี ประกันภัย", "LMG", 0], ["ไทยประกันภัย", "THAINS", 0], ["ไทยพัฒนาประกันภัย", "THAIPAT", 0], ["ไทยศรีประกันภัย", "THAISRI", 0], ["ไทยเศรษฐกิจประกันภัย", "TSI", 0], ["ไทยไพบูลย์ประกันภัย", "TPI", 0], ["ไอโออิ กรุงเทพ ประกันภัย", "AIOI", 0]];
+const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
+let SET=JSON.parse(JSON.stringify(SET_DEF));
+const insNames=()=>SET.insurers.map(x=>x[0]);
 const SVC=[['tax','ต่อภาษี / พรบ.ภาคบังคับ'],['tr','โอนย้าย / อื่นๆ'],['ins','ประกัน ภาคสมัครใจ'],['k','พรบ. ขนส่ง']];
 const SVCI={tax:'<path d="M11 2H4a1.5 1.5 0 00-1.5 1.5v11A1.5 1.5 0 004 16h10a1.5 1.5 0 00-1.5-1.5V5l-3-3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M11 2v3h3M6 10l1.5 1.5L11 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',tr:'<path d="M13 4l3 3-3 3M16 7H6a3 3 0 00-3 3v4M5 14l-3-3 3-3M2 11h10a3 3 0 003-3V4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',ins:'<path d="M9 2L3 5v5c0 3.3 2.5 6.4 6 7 3.5-.6 6-3.7 6-7V5L9 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M6 9l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>',k:'<path d="M2 4h9v9H2V4zm9 3h4l2 2v4h-6V7z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="4.5" cy="13.5" r="1.5" fill="currentColor"/><circle cx="13.5" cy="13.5" r="1.5" fill="currentColor"/>'};
 let svcOn=new Set(['tax']),svcView='tax';
@@ -2493,9 +2595,10 @@ function listAC(inp,list){
   const w=document.createElement('div');w.className='ss';if(inp.style.width)w.style.width=inp.style.width;inp.parentNode.insertBefore(w,inp);w.append(inp);
   const dd=document.createElement('div');dd.className='ss-dd ac-dd';dd.hidden=true;w.append(dd);let items=[],ai=0;
   const mark=()=>dd.querySelectorAll('.ss-it').forEach((el,i)=>{el.classList.toggle('on',i===ai);if(i===ai)el.scrollIntoView({block:'nearest'})});
-  const draw=()=>{const q=inp.value.trim();items=list.filter(x=>!q||x.includes(q)).sort((a,b)=>q?(b.startsWith(q))-(a.startsWith(q)):0);ai=0;
-    dd.innerHTML=items.map((x,i)=>`<div class="ss-it" data-i="${i}">${esc(x)}</div>`).join('')||'<div class="ss-no">ไม่พบชื่อนี้ในรายการ</div>';dd.hidden=false;mark()};
-  const pick=i=>{if(items[i]==null)return;inp.value=items[i];dd.hidden=true;inp.dispatchEvent(new Event('change',{bubbles:true}))};
+  const nm=x=>Array.isArray(x)?x[0]:x;
+  const draw=()=>{const q=inp.value.trim(),Q=q.toUpperCase();items=list.filter(x=>!q||nm(x).includes(q)||(Array.isArray(x)&&String(x[1]||'').includes(Q))).sort((a,b)=>q?(nm(b).startsWith(q))-(nm(a).startsWith(q)):0);ai=0;
+    dd.innerHTML=items.map((x,i)=>`<div class="ss-it ac-co" data-i="${i}"><span>${esc(nm(x))}${Array.isArray(x)&&x[2]?' <em class="ac-badge">กองทุนกลาง</em>':''}</span>${Array.isArray(x)&&x[1]?`<small>${esc(x[1])}</small>`:''}</div>`).join('')||'<div class="ss-no">ไม่พบชื่อนี้ในรายการ</div>';dd.hidden=false;mark()};
+  const pick=i=>{if(items[i]==null)return;inp.value=nm(items[i]);dd.hidden=true;inp.dispatchEvent(new Event('change',{bubbles:true}))};
   inp.addEventListener('input',draw);inp.addEventListener('focus',draw);
   inp.addEventListener('keydown',e=>{if(dd.hidden||!items.length)return;
     if(e.key==='ArrowDown'){e.preventDefault();ai=Math.min(ai+1,items.length-1);mark()}
@@ -2517,7 +2620,7 @@ R.add=(E)=>{
   const MI=(id,w=84)=>`<input id="${id}" class="money" inputmode="decimal" placeholder="บาท" style="width:${w}px">`;
   const D=(id,label,val='')=>{const [y,m,d]=val?val.split('-').map(Number):[0,0,0];
     const o=(n,from,to,cur,fmtf)=>{let h=`<option value="">${n}</option>`;for(let i=from;i<=to;i++)h+=`<option value="${i}" ${i===cur?'selected':''}>${fmtf(i)}</option>`;return h};
-    return `<label class="field"><span>${label}</span><div class="dsel"><input type="hidden" id="${id}" value="${val}"><select data-d="${id}" class="dsel-d">${o('วัน',1,31,d,i=>String(i).padStart(2,'0'))}</select>-<select data-m="${id}" class="dsel-m">${o('เดือน',1,12,m,i=>TH_M[i-1])}</select>-<select data-y="${id}" class="dsel-y">${(()=>{let h='<option value="">ปี</option>';const cy=TODAY.getFullYear(),pol=!['b-reg','b-taxexp','b-pick'].includes(id);for(let i=pol?cy-15:1947,to=id==='b-reg'?cy:id==='b-taxexp'||id==='b-pick'?cy+1:cy+15;i<=to;i++)h+=`<option value="${i}" ${i===y?'selected':''}>${i+543}</option>`;return h})()}</select></div></label>`};
+    return `<label class="field"><span>${label}</span><div class="dsel"><input type="hidden" id="${id}" value="${val}"><select data-d="${id}" class="dsel-d">${o('วัน',1,31,d,i=>String(i).padStart(2,'0'))}</select>-<select data-m="${id}" class="dsel-m">${o('เดือน',1,12,m,i=>TH_M[i-1])}</select>-<select data-y="${id}" class="dsel-y">${(()=>{let h='<option value="">ปี</option>';const cy=TODAY.getFullYear(),pol=!['b-reg','b-taxexp','b-pick'].includes(id);for(let i=pol?cy-15:id==='b-reg'?Math.min(cy,+SET.reg_min_year||1947):1947,to=id==='b-reg'?cy:id==='b-taxexp'||id==='b-pick'?cy+1:cy+15;i<=to;i++)h+=`<option value="${i}" ${i===y?'selected':''}>${i+543}</option>`;return h})()}</select></div></label>`};
   $('#view').innerHTML=`
 
   <div class="card sec check-card">
@@ -2541,8 +2644,8 @@ R.add=(E)=>{
         ${D('b-reg','วันจดทะเบียนรถ *')}
         <div class="field"><span>ป้ายทะเบียน *</span><div class="fc"><input id="b-cha" placeholder="ตัวอักษร" required style="width:62px"><input id="b-num" placeholder="ตัวเลข" required inputmode="numeric" style="width:62px"><span class="il">จังหวัด</span><select id="b-city" style="width:150px">${opt(PROVS,LIVE?'นราธิวาส':'กรุงเทพมหานคร')}</select></div></div>
         <label class="field"><span>ประเภทรถ *</span><select id="b-type"><option value="">--เลือกประเภทรถ--</option>${opt(CTYPES.filter(c=>!c[0].startsWith('ev')&&c[0]!=='other').map(c=>[c[0],c[1]]))}<optgroup label="⚡ รถไฟฟ้า (EV)">${opt(CTYPES.filter(c=>c[0].startsWith('ev')).map(c=>[c[0],c[1]]))}</optgroup><option value="other">อื่นๆ</option></select></label>
-        <div class="field"><span>ลักษณะรถ</span><div class="fc"><select id="b-body" style="width:190px"><option value="">--เลือกลักษณะรถ--</option>${opt(BODY)}</select><input id="b-body-other" placeholder="ระบุลักษณะรถ" maxlength="30" style="width:170px" hidden></div></div>
-        <div class="field full"><span>ยี่ห้อรถ *</span><div class="fc"><select id="b-brand" style="width:170px"><option value="">--เลือกยี่ห้อรถ--</option>${opt(BRANDS)}</select><span class="il">รุ่น</span><input id="b-model" style="width:110px"><span class="il">สี</span><input id="b-color" style="width:70px"></div></div>
+        <div class="field"><span>ลักษณะรถ</span><div class="fc"><select id="b-body" style="width:190px"><option value="">--เลือกลักษณะรถ--</option>${opt(SET.bodies)}</select><input id="b-body-other" placeholder="ระบุลักษณะรถ" maxlength="30" style="width:170px" hidden></div></div>
+        <div class="field full"><span>ยี่ห้อรถ *</span><div class="fc"><select id="b-brand" style="width:170px"><option value="">--เลือกยี่ห้อรถ--</option>${opt(SET.brands)}</select><span class="il">รุ่น</span><input id="b-model" style="width:110px"><span class="il">สี</span><input id="b-color" style="width:70px"></div></div>
         ${F('b-chassis','เลขตัวถัง')}
         ${F('b-engine','เลขเครื่อง')}
         <div class="field full"><span>ขนาดรถ</span><div class="fc"><input id="b-cc" placeholder="CC" inputmode="numeric" maxlength="5" style="width:70px"><span class="il">น้ำหนักรถ</span><input id="b-kg" placeholder="กก." inputmode="numeric" maxlength="5" style="width:70px"><span class="hint">(ต้องระบุ ระบบถึงคำนวณภาษี+ค่าปรับ AUTO - เฉพาะรถ (รย.1-3 / รย.12)</span></div></div>
@@ -2572,6 +2675,7 @@ R.add=(E)=>{
         ${D('b-prb-s','วันที่คุ้มครอง',T0)}
         ${D('b-prb-e','วันที่หมดอายุ',Y1)}
         <div class="field full"><span><em class="lc-blue"><b>ค่า พรบ.</b></em></span><div class="fc"><div class="mbox blue">${MI('b-prb',100)}</div><div class="mbox green" id="w-prb-net" hidden><b>เบี้ยประกันภัยสุทธิ (พรบ.)</b>${MI('b-prb-net',100)}<span class="hint">ⓘ ใช้คำนวนค่าคอมมิชชั่น ไม่ใช้งาน ให้เว้นว่างไว้</span></div></div></div>
+        ${M('b-prbfee','<em class="lc-blue">ค่าต่อ พ.ร.บ.</em>','full')}
         <label class="field full"><span>หมายเหตุ พรบ.</span><input id="b-prb-note" class="wide"></label>
       </div>
     </div>
@@ -2620,7 +2724,7 @@ R.add=(E)=>{
     <div class="card sec">
       <div class="sech orange">- ข้อมูลส่วนบุคคล -</div>
       <div class="form">
-        <div class="field full"><span>คำนำหน้า</span><div class="fc"><select id="c-pre" style="width:150px"><option value="">--คำนำหน้า--</option>${opt(PREFIX)}</select><span class="il"><b class="req">*</b>ชื่อ</span><input id="c-name" required style="width:170px"><span class="il"><b class="req">*</b>นามสกุล</span><input id="c-sur" required style="width:170px"></div></div>
+        <div class="field full"><span>คำนำหน้า</span><div class="fc"><select id="c-pre" style="width:150px"><option value="">--คำนำหน้า--</option>${opt(SET.prefixes)}</select><span class="il"><b class="req">*</b>ชื่อ</span><input id="c-name" required style="width:170px"><span class="il"><b class="req">*</b>นามสกุล</span><input id="c-sur" required style="width:170px"></div></div>
         ${F('c-id','เลขที่บัตร','inputmode="numeric" maxlength="17"')}
         ${F('c-nat','สัญชาติ','value="ไทย"')}
         ${F('c-addr','บ้านเลขที่','')}
@@ -2641,7 +2745,7 @@ R.add=(E)=>{
      <div class="pf"><span>เงินทอน</span><b class="num" id="change">-</b></div>
    </div>
    <div class="sec plain payfoot">
-     <div class="row" style="flex-wrap:wrap"><span>เลือกวิธีการชำระเงิน</span>${['เงินสด','บัตรเครดิต','โอนเข้าบัญชี'].map((m,i)=>`<label class="row" style="gap:6px"><input type="radio" name="paym" value="${m}" ${i?'':'checked'} style="width:auto"> ${m}</label>`).join('')}</div>
+     <div class="row" style="flex-wrap:wrap"><span>เลือกวิธีการชำระเงิน</span>${['เงินสด','บัตรเครดิต','โอนเข้าบัญชี'].map((m,i)=>`<label class="row" style="gap:6px"><input type="radio" name="paym" value="${m}" ${i?'':'checked'} style="width:auto"> ${m}</label>`).join('')}<button type="button" class="btn line pp-mini" id="pp-btn">📱 QR พร้อมเพย์</button></div>
      <div class="list" id="sum-list" hidden></div>
      <div class="actions">
        <label class="xbtn green">เพิ่มรูปภาพ<input id="b-img" type="file" accept="image/*" multiple hidden></label>
@@ -2653,7 +2757,7 @@ R.add=(E)=>{
      </div>
    </div>
   </form>
-  <datalist id="insco">${INS_CO.map(c=>`<option value="${c}">`).join('')}</datalist>`;
+`;
 
   const v=id=>$('#'+id).value.trim();
   const n=id=>{const el=$('#'+id);return el?parseFloat(el.value.replace(/,/g,''))||0:0};
@@ -2680,7 +2784,7 @@ R.add=(E)=>{
       const m=hit.plate.match(/^(\S+)\s*(\d+)$/)||[0,hit.plate,''];
       $('#b-cha').value=m[1];$('#b-num').value=m[2];$('#b-city').value=hit.prov;
       $('#b-type').value=hit.type==='มอเตอร์ไซค์'?'moto':hit.type==='กระบะ'?'pickup':'sedan';
-      const bm=hit.model.split(' ');if(BRANDS.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
+      const bm=hit.model.split(' ');if(SET.brands.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
       $('#b-cc').value=hit.cc;setDate('b-taxexp',iso(hit.tax));
       const nm=hit.name.split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=hit.tel;$('#c-prov').value=hit.prov;
       ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
@@ -2696,7 +2800,7 @@ R.add=(E)=>{
     // ageIn = รอบปีภาษีที่กำลังจะต่อ (ใช้คิดส่วนลด) / trueAge = อายุจริงเต็มปี (ใช้เช็คเกณฑ์ตรวจสภาพ)
     let ageIn=1,trueAge=0;
     if(reg){trueAge=TODAY.getFullYear()-reg.getFullYear();if(TODAY.getMonth()<reg.getMonth()||(TODAY.getMonth()===reg.getMonth()&&TODAY.getDate()<reg.getDate()))trueAge--;trueAge=Math.max(0,trueAge);ageIn=Math.max(1,TODAY.getFullYear()-reg.getFullYear()+1)}
-    const car7=reg&&trueAge>7?(kg>2000?300:200):0,moto5=reg&&trueAge>5?60:0;
+    const car7=reg&&trueAge>7?(kg>2000?SET.insp_heavy:SET.insp_car):0,moto5=reg&&trueAge>5?SET.insp_moto:0;
     let tax=0,insp=0,prb=0,note='';
     if(ty==='sedan'){tax=carTax(cc);const pct=reg&&ageIn>=6?(ageIn>=10?50:(ageIn-5)*10):0;tax*=1-pct/100;insp=car7;prb=645.21;note=`รถปีที่ ${ageIn}${pct?` ลด ${pct}%`:''}`}
     else if(ty==='van'){tax=kg>0?vanTax(kg):0;insp=car7;prb=1182.35;note='รย.2 คิดตามน้ำหนัก'}
@@ -2707,7 +2811,7 @@ R.add=(E)=>{
     else if(ty==='ev_moto'){tax=50;insp=moto5;prb=motoPrb(cc);note='EV จักรยานยนต์ เหมาคัน'}
     else{$('#b-auto-note').textContent=ty?'ประเภทรถนี้ระบบคิดให้ไม่ได้ กรุณากรอกยอดเอง':'เลือกประเภทรถ วันจดทะเบียน และขนาดรถ แล้วระบบจะคิดภาษีให้';$('#b-tro').hidden=true;recalc();return}
     if($('#b-tax').dataset.user!=='1')setM('b-tax',tax);else note+=' · ใช้ค่าภาษีที่พิมพ์เอง';
-    setM('b-insp',insp);if($('#b-prb').dataset.user!=='1')setM('b-prb',prb);if(!n('b-fee'))setM('b-fee',200);
+    setM('b-insp',insp);if($('#b-prb').dataset.user!=='1')setM('b-prb',prb);if(!n('b-fee'))setM('b-fee',SET.fee_tax);if($('#b-prbfee').dataset.user!=='1')setM('b-prbfee',/moto/.test(ty)?SET.fee_prb_moto:SET.fee_prb_car);
     $('#b-tro').hidden=!insp;$('#b-auto-note').textContent=note;calcLate();
   };
   // ค่าปรับล่าช้า 1% ต่อเดือนของค่าภาษี เศษของวันนับเป็น 1 เดือน (ไม่มีวันหมดอายุเดิม ใช้วันครบรอบจดทะเบียนปีนี้)
@@ -2725,6 +2829,7 @@ R.add=(E)=>{
     $('#b-taxexp').addEventListener('change',calcLate);
     $('#b-tax').addEventListener('input',function(){this.dataset.user='1';calcLate()});
     $('#b-prb').addEventListener('input',function(){this.dataset.user='1'});
+    $('#b-prbfee').addEventListener('input',function(){this.dataset.user='1'});
   }
   // ยอดประกันที่รับจริง ตามยอดเต็มกรมธรรม์ จนกว่าจะพิมพ์แก้เอง / จำนวนเงินที่ได้รับ ตามยอดรวม จนกว่าจะพิมพ์แก้เอง
   $('#b-ins').addEventListener('input',()=>{if($('#b-ins-dep').dataset.user!=='1')$('#b-ins-dep').value=$('#b-ins').value});
@@ -2740,7 +2845,7 @@ R.add=(E)=>{
     lines=[];const add=(l,x)=>{if(x)lines.push([l,up(x)])};const ln0=()=>lines.length;
     // เหมือน recalcSum() ของ easyth: รวมยอด = ทุกช่อง + ค่าประกันเต็ม - ส่วนลด / จำนวนเงินที่ได้รับ = ทุกช่อง + ประกันที่รับจริงวันนี้ - ส่วนลด
     svcOn=new Set();let k0=ln0();
-    add('ค่าภาษีรถ',n('b-tax'));add('ค่าตรวจสภาพ',n('b-insp'));add('ค่าปรับล่าช้า',n('b-late'));add('ค่าฝากต่อภาษี',n('b-fee'));add(v('b-ex1')||'ค่าอื่นๆ 1',n('b-o1'));add(v('b-ex2')||'ค่าอื่นๆ 2',n('b-o2'));add('พ.ร.บ.',n('b-prb'));if(ln0()>k0||n('b-dis'))svcOn.add('tax');
+    add('ค่าภาษีรถ',n('b-tax'));add('ค่าตรวจสภาพ',n('b-insp'));add('ค่าปรับล่าช้า',n('b-late'));add('ค่าฝากต่อภาษี',n('b-fee'));add(v('b-ex1')||'ค่าอื่นๆ 1',n('b-o1'));add(v('b-ex2')||'ค่าอื่นๆ 2',n('b-o2'));add('พ.ร.บ.',n('b-prb'));add('ค่าต่อ พ.ร.บ.',n('b-prbfee'));if(ln0()>k0||n('b-dis'))svcOn.add('tax');
     k0=ln0();[['b-t1','ค่าโอน'],['b-t2','ค่าย้าย'],['b-t3','ค่าเปลี่ยนสี'],['b-t4','ค่าตรวจสภาพโอน'],['b-t5','ค่าเรื่อง'],['b-t6','ค่าอากรแสตมป์'],['b-t7','ค่าบริการ']].forEach(([i,l])=>add(l,n(i)));add(v('b-ex3')||'ค่าอื่นๆ 3',n('b-o3'));add(v('b-ex4')||'ค่าอื่นๆ 4',n('b-o4'));if(ln0()>k0)svcOn.add('tr');
     const insFull=up(n('b-ins')),insDep=$('#b-ins-dep').value.trim()===''?insFull:up(n('b-ins-dep'));
     if(insFull||insDep){add('ประกันภาคสมัครใจ',insFull||insDep);svcOn.add('ins')}
@@ -2766,7 +2871,7 @@ R.add=(E)=>{
     const need=[[()=>$('[data-d="b-reg"]').value,'กรุณาระบุ วัน (วันที่จดทะเบียนรถ) ด้วยค่ะ','[data-d="b-reg"]'],[()=>$('[data-m="b-reg"]').value,'กรุณาระบุ เดือน (เดือนที่จดทะเบียนรถ) ด้วยค่ะ','[data-m="b-reg"]'],[()=>$('[data-y="b-reg"]').value,'กรุณาระบุ ปี พ.ศ. (ปีที่จดทะเบียนรถ) ด้วยค่ะ','[data-y="b-reg"]'],
       [()=>$('#b-type').value,'กรุณาระบุ ประเภทรถ ด้วยค่ะ','.ss:has(#b-type) .ss-in'],[()=>$('#b-brand').value,'กรุณาระบุ ยี่ห้อรถ ด้วยค่ะ','.ss:has(#b-brand) .ss-in'],[()=>v('b-cha'),'กรุณาระบุ ตัวอักษร ป้ายทะเบียนรถ ด้วยค่ะ','#b-cha'],[()=>v('b-num'),'กรุณาระบุ ตัวเลข ป้ายทะเบียนรถ ด้วยค่ะ','#b-num'],[()=>$('#b-city').value,'กรุณาระบุ จังหวัด ป้ายทะเบียนรถ ด้วยค่ะ','.ss:has(#b-city) .ss-in'],
       [()=>v('c-name'),'กรุณาระบุ ชื่อ ด้วยค่ะ','#c-name'],[()=>v('c-sur'),'กรุณาระบุ นามสกุล ด้วยค่ะ','#c-sur'],[()=>v('c-sub'),'กรุณาระบุ ตำบล / แขวง ด้วยค่ะ','#c-sub'],[()=>v('c-dist'),'กรุณาระบุ อำเภอ ด้วยค่ะ','#c-dist'],[()=>v('c-prov'),'กรุณาระบุ จังหวัด ด้วยค่ะ','#c-prov'],[()=>v('c-zip'),'กรุณาระบุ รหัสไปรษณีย์ ด้วยค่ะ','#c-zip'],
-      [()=>!v('b-prb-co')||INS_CO.includes(v('b-prb-co')),'กรุณาเลือกบริษัทประกัน พรบ. จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-prb-co','tax'],[()=>!v('b-ins-co')||INS_CO.includes(v('b-ins-co')),'กรุณาเลือกบริษัทประกันภาคสมัครใจ จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-ins-co','ins']];
+      [()=>!v('b-prb-co')||insNames().includes(v('b-prb-co')),'กรุณาเลือกบริษัทประกัน พรบ. จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-prb-co','tax'],[()=>!v('b-ins-co')||insNames().includes(v('b-ins-co')),'กรุณาเลือกบริษัทประกันภาคสมัครใจ จากรายการที่ค้นหา (คลิกเลือกจริง ไม่ใช่แค่พิมพ์)','#b-ins-co','ins']];
     for(const [ok,msg,sel,tab] of need){if(!ok()){if(tab&&svcView!==tab){svcView=tab;syncSvc()}alert(msg);const el=document.querySelector(sel);if(el){el.scrollIntoView({block:'center'});el.focus()}return false}}
     return true};
   $('#bill').onsubmit=e=>{
@@ -2787,7 +2892,7 @@ R.add=(E)=>{
     $('#panel').innerHTML=`
       <div class="row between"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน (ตัวอย่าง)</h2><button class="btn line" id="x">ปิด</button></div>
       <div class="card receipt">
-        <div class="row between"><div><b>ตรอ.สยามเซอร์วิส</b><div class="sub">ที่อยู่ร้าน · โทร 0X-XXX-XXXX</div></div><div style="text-align:right"><div class="sub">เลขที่</div><b class="num" id="rc-no">${LIVE?'กำลังบันทึก...':billNo}</b></div></div>
+        <div class="row between"><div><b>${esc(shop().title)}</b><div class="sub">${esc(shopLine())}</div></div><div style="text-align:right"><div class="sub">เลขที่</div><b class="num" id="rc-no">${LIVE?'กำลังบันทึก...':billNo}</b></div></div>
         <div class="sub">วันที่ ${fmt(TODAY)} · ${payM} · ผู้รับเงิน ${esc(user.name)}</div>
         <div class="row">${plateHTML(c)}<div>${esc($('#c-pre').value+name)}<div class="sub">${esc(c.model)}</div></div></div>
         <div class="list">${lines.map(([l,x])=>`<div class="li"><span>${esc(l)}</span><span class="num">${baht(x)}</span></div>`).join('')}</div>
@@ -2807,7 +2912,8 @@ R.add=(E)=>{
   // ช่องค้นหา + ตำบลอัตโนมัติ
   ['x-city','b-city','b-type','b-body','b-brand','b-ins-type','c-pre'].forEach(id=>ssel($('#'+id)));
   tumbolAC($('#c-sub'),$('#c-dist'),$('#c-prov'),$('#c-zip'));
-  ['#b-prb-co','#b-ins-co'].forEach(id=>{if($(id))listAC($(id),INS_CO)});
+  ['#b-prb-co','#b-ins-co'].forEach(id=>{if($(id))listAC($(id),SET.insurers)});
+  $('#pp-btn').onclick=()=>{const a=n('pay')||recalc();if(!(a>0)){toast('ยังไม่มียอดเงิน');return}qrDlg(a,($('#b-cha').value+' '+$('#b-num').value).trim());const t=document.querySelector('[name=paym][value="โอนเข้าบัญชี"]');if(t)t.checked=true};
   $('#bill').addEventListener('change',e=>{const t=e.target;if(!t.matches('input.money')||t.id==='b-dis'||t.readOnly)return;const x=parseFloat(t.value.replace(/,/g,''));if(x>0&&x!==up(x)){t.value=String(up(x));t.dispatchEvent(new Event('input',{bubbles:true}))}});
   $('#b-body').addEventListener('change',()=>{const o=$('#b-body').value==='อื่นๆ';$('#b-body-other').hidden=!o;if(!o)$('#b-body-other').value=''});
   document.querySelectorAll('#bill .field>span').forEach(sp=>{if(/ \*$/.test(sp.textContent)&&!sp.querySelector('.req'))sp.innerHTML='<b class="req">*</b>'+sp.innerHTML.replace(/ \*$/,'')});
@@ -2824,7 +2930,7 @@ R.add=(E)=>{
     $('#b-cha').value=pm[1];$('#b-num').value=pm[2];$('#b-city').value=E.prov;
     $('#b-type').value=c.type==='มอเตอร์ไซค์'?'moto':c.type==='กระบะ'?'pickup':'sedan';
     if(c.type==='มอเตอร์ไซค์')$('#b-body').value='จักรยานยนต์';
-    const bm=(E.model||'').split(' ');if(BRANDS.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
+    const bm=(E.model||'').split(' ');if(SET.brands.includes(bm[0]))$('#b-brand').value=bm[0];$('#b-model').value=bm.slice(1).join(' ');
     $('#b-cc').value=E.cc||'';$('#b-kg').value='';$('#b-color').value='';
     if(c.tax){const d=new Date(c.tax);d.setFullYear(d.getFullYear()-1);setDate('b-taxexp',iso(d))}
     if(c.insCo)$('#b-ins-co').value=c.insCo.replace(/\s*(ชั้น|ประเภท).*$/,'');
@@ -2833,7 +2939,7 @@ R.add=(E)=>{
     // ยอดเงินจากบิลเดิม
     document.querySelectorAll('#bill .money').forEach(i=>{i.value=''});
     svcOn=new Set();
-    const MAP={'ค่าภาษีรถ':['tax','b-tax'],'ค่าตรวจสภาพ':['tax','b-insp'],'ค่าปรับล่าช้า':['tax','b-late'],'ค่าฝากต่อภาษี':['tax','b-fee'],'ค่าบริการ':['tax','b-fee'],'พ.ร.บ.':['tax','b-prb'],'ค่าโอน':['tr','b-t1'],'ค่าโอนย้าย':['tr','b-t1'],'ค่าย้าย':['tr','b-t2'],'ค่าเปลี่ยนสี':['tr','b-t3'],'ค่าตรวจสภาพโอน':['tr','b-t4'],'ค่าเรื่อง':['tr','b-t5'],'ค่าอากรแสตมป์':['tr','b-t6'],'ประกันภาคสมัครใจ':['ins','b-ins'],'ค่าประกอบการขนส่ง':['k','b-k']};
+    const MAP={'ค่าภาษีรถ':['tax','b-tax'],'ค่าตรวจสภาพ':['tax','b-insp'],'ค่าปรับล่าช้า':['tax','b-late'],'ค่าฝากต่อภาษี':['tax','b-fee'],'ค่าบริการ':['tax','b-fee'],'พ.ร.บ.':['tax','b-prb'],'ค่าต่อ พ.ร.บ.':['tax','b-prbfee'],'ค่าโอน':['tr','b-t1'],'ค่าโอนย้าย':['tr','b-t1'],'ค่าย้าย':['tr','b-t2'],'ค่าเปลี่ยนสี':['tr','b-t3'],'ค่าตรวจสภาพโอน':['tr','b-t4'],'ค่าเรื่อง':['tr','b-t5'],'ค่าอากรแสตมป์':['tr','b-t6'],'ประกันภาคสมัครใจ':['ins','b-ins'],'ค่าประกอบการขนส่ง':['k','b-k']};
     const SLOT=[['b-ex1','b-o1','tax'],['b-ex2','b-o2','tax'],['b-ex3','b-o3','tr'],['b-ex4','b-o4','tr']];let ox=0;
     E.items.forEach(([l,a])=>{const mp=MAP[l];if(mp){svcOn.add(mp[0]);setM(mp[1],n(mp[1])+a)}else if(SLOT[ox]){const[x,o,k]=SLOT[ox++];$('#'+x).value=l;setM(o,a);svcOn.add(k)}});
     if(E.disc){svcOn.add('tax');setM('b-dis',E.disc)}
@@ -2876,9 +2982,9 @@ let kind='all',pick=new Set();
 /* ส่ง SMS แจ้งเตือน (ทะเบียนรถ / ประกันภาคสมัครใจ) */
 let smsCredit=20;const smsSent={reg:new Set(),ins:new Set()},smsToday={reg:0,ins:0};
 const SMSK={reg:{f:'tax',title:'SMS แจ้งเตือนวันหมดอายุ ทะเบียนรถ',lbl:'ทะเบียนรถ',sub:'แจ้งเตือนวันหมดอายุทะเบียน',sec:'หมดอายุ 1–30 วัน',
-    msg:c=>`รถทะเบียน <span class="sms-var">${esc(c.plate.replace(/\s/g,''))}</span> <span class="sms-var">${esc(c.prov)}</span> ใกล้หมดความคุ้มครอง ติดต่อ 0X-XXX-XXXX`},
+    msg:c=>`รถทะเบียน <span class="sms-var">${esc(c.plate.replace(/\s/g,''))}</span> <span class="sms-var">${esc(c.prov)}</span> ใกล้หมดอายุภาษี ติดต่อ ${esc(shop().phone)}`},
   ins:{f:'ins',title:'SMS แจ้งเตือนประกันภัยภาคสมัครใจ',lbl:'ประกันภาคสมัครใจ',sub:'แจ้งเตือนวันหมดอายุกรมธรรม์',sec:'ประกันภาคสมัครใจ หมดอายุ 1–30 วัน',
-    msg:c=>`ประกันรถ <span class="sms-var">${esc(c.plate.replace(/\s/g,''))}</span> <span class="sms-var">${esc(c.prov)}</span> ครบอายุความคุ้มครอง <span class="sms-var">${fmt(c.ins)}</span> ต่ออายุได้ที่ 0X-XXX-XXXX`}};
+    msg:c=>`ประกันรถ <span class="sms-var">${esc(c.plate.replace(/\s/g,''))}</span> <span class="sms-var">${esc(c.prov)}</span> ครบอายุความคุ้มครอง <span class="sms-var">${fmt(c.ins)}</span> ต่ออายุได้ที่ ${esc(shop().phone)}`}};
 const smsPending=k=>cars.filter(c=>{const d=c[SMSK[k].f];if(!d||!c.tel)return false;const n=daysTo(d);return n>=1&&n<=30&&!smsSent[k].has(c.id)}).sort((a,b)=>a[SMSK[k].f]-b[SMSK[k].f]);
 const SMSIC={reg:'<rect x="3" y="7" width="18" height="11" rx="3"/><path d="M6 7l2-3h8l2 3"/>',ins:'<path d="M12 3l8 3v6c0 4.5-3 8-8 9-5-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'};
 R.bell=()=>{
@@ -2892,22 +2998,24 @@ let smsKind='reg',smsQ='';
 R.sms=()=>{const K=SMSK[smsKind],list=smsPending(smsKind);
   const badge=c=>{const n=daysTo(c[K.f]);return `<span class="badge-exp ${n<=7?'critical':n<=15?'warning':'normal'}">${fmt(c[K.f])} · อีก ${n} วัน</span>`};
   $('#view').innerHTML=`<div class="smsp ${smsKind}">
-  <div class="smsp-head"><button class="smsp-back" id="sms-back">← ย้อนกลับ</button><span class="smsp-title"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${K.title}</span><span class="smsp-shop">ตรอ.สยามเซอร์วิส</span></div>
+  <div class="smsp-head"><button class="smsp-back" id="sms-back">← ย้อนกลับ</button><span class="smsp-title"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>${K.title}</span><span class="smsp-shop">${esc(shop().title)}</span></div>
   <div class="stats-row"><div class="stat-card accent"><div class="label">รอส่ง SMS</div><div class="value">${list.length}</div></div>
     <div class="stat-card success"><div class="label">ส่งแล้ววันนี้</div><div class="value">${smsToday[smsKind]}</div></div>
     <div class="stat-card credit"><div class="label">เครดิตคงเหลือ</div><div class="value">${smsCredit}</div></div></div>
   <div class="section-card"><div class="section-header"><h2 class="section-title">ส่ง SMS อัตโนมัติ</h2></div><div class="section-body">
     ${smsCredit<1?`<div class="credit-out-banner"><span class="msg">⚠️ <span><strong>เครดิต SMS หมดแล้ว</strong> ต้องเติมเครดิตก่อนถึงจะส่งได้</span></span><button class="topup-btn" id="sms-top">เติมเครดิต</button></div>`:''}
+    <div class="template-banner line-banner">💚 <span><strong>ส่งทาง LINE ได้ฟรี:</strong> กดปุ่ม <b>LINE</b> ท้ายแถว ระบบจะเปิด LINE พร้อมข้อความเตือน แล้วเลือกแชตของลูกค้าเพื่อส่ง (ลูกค้าต้องเป็นเพื่อนกับ LINE ร้านก่อน)</span></div>
     <div class="template-banner">ℹ️ <span><strong>ข้อความที่ใช้ส่ง:</strong> ${K.msg(list[0]||{plate:'กก 9999',prov:'ราชบุรี',ins:plus(30)})}<br><br>ต้องการเปลี่ยนข้อความ ติดต่อผู้ดูแลระบบ</span></div>
     <div class="smsp-send"><button class="btn-send" id="sms-go" ${!list.length||smsCredit<1?'disabled':''}>➤ ส่ง SMS ทั้งหมด ${list.length} รายการ</button></div>
     <div id="send-progress" hidden><div class="progress-bar-wrap"><div class="progress-bar-fill" id="sms-fill" style="width:0%"></div></div><div class="progress-label" id="sms-plabel"></div></div>
   </div></div>
   <div class="section-card"><div class="section-header"><h2 class="section-title">รายการถึงกำหนดส่ง &nbsp;·&nbsp; ${K.sec} <span class="smsp-count">${list.length} รายการ</span></h2>
     <label class="smsp-search">ค้นหา: <input id="sms-q" value="${esc(smsQ)}"></label></div>
-    <div class="section-body" style="padding:15px;overflow-x:auto"><table class="smsp-tbl"><thead><tr><th>ผู้บันทึก</th><th>ประเภท</th><th>ยี่ห้อ</th><th>ทะเบียน</th><th>จังหวัด</th><th>หมดอายุ</th><th>เบอร์โทร</th></tr></thead><tbody id="sms-rows"></tbody></table></div></div></div>`;
+    <div class="section-body" style="padding:15px;overflow-x:auto"><table class="smsp-tbl"><thead><tr><th>ผู้บันทึก</th><th>ประเภท</th><th>ยี่ห้อ</th><th>ทะเบียน</th><th>จังหวัด</th><th>หมดอายุ</th><th>เบอร์โทร</th><th>LINE</th></tr></thead><tbody id="sms-rows"></tbody></table></div></div></div>`;
   const draw=()=>{const q=smsQ.replace(/\s/g,'').toLowerCase();const rows=list.filter(c=>!q||(c.plate+c.prov+c.tel+c.model).replace(/\s/g,'').toLowerCase().includes(q));
-    $('#sms-rows').innerHTML=rows.length?rows.map(c=>`<tr data-open="${c.id}"><td>admin</td><td>${esc(c.type)}</td><td>${esc(c.model.split(' ')[0])}</td><td><b>${esc(c.plate)}</b></td><td>${esc(c.prov)}</td><td>${badge(c)}</td><td>${esc(c.tel)}</td></tr>`).join(''):'<tr><td colspan="7" class="smsp-empty">ไม่พบข้อมูล</td></tr>'};
+    $('#sms-rows').innerHTML=rows.length?rows.map(c=>`<tr data-open="${c.id}"><td>admin</td><td>${esc(c.type)}</td><td>${esc(c.model.split(' ')[0])}</td><td><b>${esc(c.plate)}</b></td><td>${esc(c.prov)}</td><td>${badge(c)}</td><td>${esc(c.tel)}</td><td><button class="line-btn" data-line="${c.id}" title="ส่งข้อความเตือนทาง LINE">LINE</button></td></tr>`).join(''):'<tr><td colspan="8" class="smsp-empty">ไม่พบข้อมูล</td></tr>'};
   draw();$('#sms-q').oninput=e=>{smsQ=e.target.value;draw()};
+  $('#sms-rows').addEventListener('click',e=>{const b=e.target.closest('[data-line]');if(!b)return;e.stopPropagation();const c=cars.find(x=>x.id==b.dataset.line);if(c){sendLine(smsKind==='ins'?'ins':'reg',c);b.textContent='ส่งแล้ว ✓';b.classList.add('done')}},true);
   $('#sms-back').onclick=()=>go('bell');
   if($('#sms-top'))$('#sms-top').onclick=()=>{smsCredit+=100;toast('ตัวอย่าง: เติมเครดิต 100 ข้อความแล้ว');R.sms()};
   $('#sms-go').onclick=()=>{const n=Math.min(list.length,smsCredit),b=$('#sms-go');b.disabled=true;b.innerHTML='<span class="spinner"></span> กำลังส่ง '+n+' รายการ...';
@@ -2916,8 +3024,8 @@ R.sms=()=>{const K=SMSK[smsKind],list=smsPending(smsKind);
       $('#send-progress').hidden=false;$('#sms-fill').style.width='100%';$('#sms-plabel').textContent=`ส่งสำเร็จ ${n} รายการ · คงเหลือรอส่ง ${list.length-n} รายการ`;toast(`ส่งสำเร็จ ${n} รายการ (จำลอง)`)},900)};
 };
 
-let ct={type:'car',cc:1500,kg:1700,age:3,late:0,prb:true,fee:200};
-R.calc=()=>{
+let ct={type:'car',cc:1500,kg:1700,age:3,late:0,prb:true,fee:null};
+R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
   $('#view').innerHTML=`
   <div class="head"><div><div class="sub">ใช้ตอนลูกค้าถามราคาหน้าเคาน์เตอร์หรือทางโทรศัพท์</div><h1>คำนวณภาษีและค่าใช้จ่าย</h1></div></div>
   <div class="cols">
@@ -2927,23 +3035,23 @@ R.calc=()=>{
       <label class="field" id="w-kg"><span>น้ำหนักรถ (กก.)</span><input id="c-kg" type="number" step="50"></label>
       <label class="field" id="w-age"><span>อายุรถ</span><select id="c-age"><option value="3">1–5 ปี</option><option value="6">6 ปี (ลด 10%)</option><option value="7">7 ปี (ลด 20%)</option><option value="8">8 ปี (ลด 30%)</option><option value="9">9 ปี (ลด 40%)</option><option value="10">10 ปีขึ้นไป (ลด 50%)</option></select></label>
       <label class="field"><span>ค้างชำระ (เดือน)</span><input id="c-late" type="number" min="0"></label>
-      <label class="field"><span>ค่าบริการร้าน (บาท)</span><input id="c-fee" type="number" min="0"></label>
+      <label class="field"><span>ค่าฝากต่อภาษี (บาท)</span><input id="c-fee" type="number" min="0"></label>
       <label class="row full" style="gap:8px"><input id="c-prb" type="checkbox" style="width:auto"> รวม พ.ร.บ.</label>
     </div>
     <div class="card"><div class="list" id="c-out"></div><div class="row between" style="margin-top:8px"><span class="h3">รวม</span><span class="h3 num" id="c-tot" style="font-size:24px;color:var(--brand)"></span></div>
-      <p class="note">ภาษีตามอัตรากรมการขนส่งทางบก ค่าตรวจและ พ.ร.บ. ใช้อัตราทั่วไป ค่าบริการร้านแก้ได้</p></div>
+      <p class="note">ภาษีตามอัตรากรมการขนส่งทางบก ค่าตรวจและ พ.ร.บ. ใช้อัตราทั่วไป ค่าบริการแก้ได้ที่ ตั้งค่าระบบ</p></div>
   </div>`;
   const ids={type:'c-type',cc:'c-cc',kg:'c-kg',age:'c-age',late:'c-late',fee:'c-fee'};
   for(const k in ids)$('#'+ids[k]).value=ct[k];$('#c-prb').checked=ct.prb;
   const run=()=>{for(const k in ids)ct[k]=k==='type'?$('#'+ids[k]).value:+$('#'+ids[k]).value||0;ct.prb=$('#c-prb').checked;
     $('#w-cc').hidden=ct.type==='pickup';$('#w-kg').hidden=ct.type!=='pickup';$('#w-age').hidden=ct.type!=='car';
     const disc={3:0,6:.1,7:.2,8:.3,9:.4,10:.5}[ct.age]||0;
-    const insp=ct.type==='moto'?60:ct.type==='pickup'&&ct.kg>2000?300:200;
+    const insp=ct.type==='moto'?SET.insp_moto:ct.type==='pickup'&&ct.kg>2000?SET.insp_heavy:SET.insp_car;
     const tax=ct.type==='moto'?100:ct.type==='pickup'?pickupTax(ct.kg):carTax(ct.cc)*(1-disc);
     const rows=[['ค่าตรวจสภาพ',insp],['ภาษีประจำปี',tax]];
     if(ct.late)rows.push([`เงินเพิ่ม ${ct.late} เดือน (1%/เดือน)`,tax*.01*ct.late]);
-    if(ct.prb)rows.push(['พ.ร.บ.',ct.type==='moto'?motoPrb(ct.cc):ct.type==='pickup'?967.28:645.21]);
-    rows.push(['ค่าบริการร้าน',ct.fee]);rows.forEach(r=>r[1]=up(r[1]));
+    if(ct.prb){rows.push(['พ.ร.บ.',ct.type==='moto'?motoPrb(ct.cc):ct.type==='pickup'?967.28:645.21]);const pf=ct.type==='moto'?SET.fee_prb_moto:SET.fee_prb_car;if(pf)rows.push(['ค่าต่อ พ.ร.บ.',pf])}
+    rows.push(['ค่าฝากต่อภาษี',ct.fee]);rows.forEach(r=>r[1]=up(r[1]));
     $('#c-out').innerHTML=rows.map(([k,v])=>`<div class="li"><span>${k}</span><span class="num">${baht(v)}</span></div>`).join('');
     $('#c-tot').textContent=baht(rows.reduce((s,r)=>s+r[1],0))};
   $('#view').querySelectorAll('input,select').forEach(el=>el.addEventListener('input',run));
@@ -2987,6 +3095,8 @@ const DB=(()=>{
   async function load(){
     const c=await client();
     const since=new Date(TODAY.getTime()-400*DAY).toISOString();
+    // ค่าตั้งค่าระบบ (ถ้ายังไม่ได้รัน 05-features.sql จะใช้ค่าเริ่มต้น)
+    try{await loadSettings(c)}catch(_){}
     const [vs,bs]=await Promise.all([
       c.from('vehicles').select('*,customers(*)').order('updated_at',{ascending:false}).limit(5000).then(chk),
       (async()=>{const q=x=>c.from('bills').select(x).eq('branch_id',branch.id).gte('bill_at',since).order('bill_at').limit(5000);
@@ -3068,10 +3178,24 @@ const DB=(()=>{
   async function resetPw(uid,pw){const c=await client();rpcErr(await c.rpc('reset_staff_password',{p_user:uid,p_password:pw}))}
   async function updStaff(uid,patch){const c=await client();const r=chk(await c.from('staff').update(patch).eq('user_id',uid).select('user_id'));if(!r.length)throw new Error('ไม่มีสิทธิ์แก้ไข')}
   async function saveBranch(id,o){const c=await client();
-    if(id)chk(await c.from('branches').update(o).eq('id',id));else chk(await c.from('branches').insert(o));
-    branches=chk(await c.from('branches').select('*').eq('active',true).order('id'));if(!branches.find(b=>b.id===branch.id))branch=branches[0];branchUI()}
+    try{if(id)chk(await c.from('branches').update(o).eq('id',id));else chk(await c.from('branches').insert(o))}
+    catch(e){if(/promptpay/i.test(e.message))throw new Error('ยังไม่ได้รัน 05-features.sql ใน Supabase (ช่องพร้อมเพย์)');throw e}
+    branches=chk(await c.from('branches').select('*').eq('active',true).order('id'));branch=branches.find(b=>b.id===branch.id)||branches[0];branchUI()}
+  // ----- ปิดยอด / คิวตรวจ / ตั้งค่า (ต้องรัน 05-features.sql) -----
+  const need05=err=>{if(/cash_closes|insp_queue|app_settings|does not exist|schema cache/i.test(err.message))throw new Error('ยังไม่ได้รัน 05-features.sql ใน Supabase');throw err};
+  async function listCloses(day){const c=await client();try{const r=chk(await c.from('cash_closes').select('*').eq('branch_id',branch.id).eq('close_date',day));
+    return Object.fromEntries(r.map(x=>[x.staff_name,{counted:x.counted_cash,by:x.closed_by_name,at:hm(new Date(x.updated_at||x.created_at))}]))}catch(e){need05(e)}}
+  async function saveCloses(day,list){const c=await client();try{chk(await c.from('cash_closes').upsert(list.map(x=>({branch_id:branch.id,close_date:day,staff_name:x.staff,cash:x.cash,transfer:x.tr,card:x.card,other:x.other,counted_cash:x.counted,closed_by_name:x.by})),{onConflict:'branch_id,close_date,staff_name'}))}catch(e){need05(e)}}
+  const qRow=r=>({id:r.id,plate:r.plate,prov:r.province,ctype:r.car_type,name:r.cust_name,tel:r.tel,st:r.status,note:r.note||'',billed:!!r.billed,at:{created:r.created_at,started:r.started_at,done:r.finished_at}});
+  const qDb=q=>{const o={};if('st' in q)o.status=q.st;if('note' in q)o.note=q.note;if('billed' in q)o.billed=q.billed;if(q.at){o.started_at=q.at.started||null;o.finished_at=q.at.done||null}o.updated_by_name=me.name;return o};
+  async function listQueue(){const c=await client();const since=new Date(TODAY.getTime()-DAY).toISOString();try{return chk(await c.from('insp_queue').select('*').eq('branch_id',branch.id).gte('created_at',since).order('created_at')).map(qRow)}catch(e){need05(e)}}
+  async function addQueue(q){const c=await client();try{return chk(await c.from('insp_queue').insert({branch_id:branch.id,plate:q.plate,province:q.prov,car_type:q.ctype,cust_name:q.name,tel:q.tel,status:'wait',updated_by_name:me.name}).select('id,created_at').single()).id}catch(e){need05(e)}}
+  async function updQueue(id,q){const c=await client();try{chk(await c.from('insp_queue').update(qDb(q)).eq('id',id))}catch(e){need05(e)}}
+  async function delQueue(id){const c=await client();try{chk(await c.from('insp_queue').delete().eq('id',id))}catch(e){need05(e)}}
+  async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
+  async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
-  return{login,load,newBill,pay,edit,saveDlt,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
+  return{login,load,newBill,pay,edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get dltReady(){return dltReady}}})();
 DB.resume();
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
@@ -3098,6 +3222,192 @@ document.addEventListener('click',e=>{if(!e.target.closest('[data-chpw]'))return
 /* จัดการพนักงาน / สาขา (เจ้าของร้าน) */
 const ROLE_OPT=[['staff','พนักงาน'],['head','หัวหน้าสาขา'],['owner','เจ้าของร้าน']];
 const genPw=()=>{const c='abcdefghjkmnpqrstuvwxyz23456789';let p='';for(let i=0;i<8;i++)p+=c[Math.floor(Math.random()*c.length)];return p};
+/* ---------- ข้อมูลร้านตามสาขา (ระบบจริงอ่านจากตาราง branches โหมดทดลองใช้สาขา 1) ---------- */
+const SHOP_DEMO={name:'สยามเซอร์วิส',address:'60 ซอยพนาสณฑ์ ต.บางนาค อ.เมืองนราธิวาส จ.นราธิวาส 96000',phone:'098-672-1018',promptpay:''};
+function shop(){const b=LIVE&&DB.branch?DB.branch:SHOP_DEMO,n=b.name||'';
+  return{title:/สยาม/.test(n)?'ตรอ.'+n:'ตรอ.สยามเซอร์วิส'+(n?' '+n:''),address:b.address||'',phone:b.phone||'',pp:String(b.promptpay||'').replace(/\D/g,'')}}
+const shopLine=()=>{const s=shop();return [s.address,s.phone&&'โทร '+s.phone].filter(Boolean).join(' · ')};
+function loadJS(url,test){return new Promise((ok,no)=>{if(test())return ok();const s=document.createElement('script');s.src=url;s.onload=()=>ok();s.onerror=()=>no(new Error('โหลดไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองใหม่'));document.head.appendChild(s)})}
+
+/* ---------- QR พร้อมเพย์ (มาตรฐาน EMVCo ของธนาคารแห่งประเทศไทย) ---------- */
+function crc16(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?(c<<1)^0x1021:c<<1;c&=0xFFFF}return c.toString(16).toUpperCase().padStart(4,'0')}
+function ppPayload(id,amt){id=String(id).replace(/\D/g,'');const f=(t,v)=>t+String(v.length).padStart(2,'0')+v;
+  const acc=id.length>=13?(id.length>=15?f('03',id):f('02',id)):f('01',('0000000000000'+id.replace(/^0/,'66')).slice(-13));
+  const p=f('00','01')+f('01',amt?'12':'11')+f('29',f('00','A000000677010111')+acc)+f('58','TH')+f('53','764')+(amt?f('54',(+amt).toFixed(2)):'')+'6304';
+  return p+crc16(p)}
+async function qrSVG(text){await loadJS('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js',()=>window.qrcode);
+  const q=qrcode(0,'M');q.addData(text);q.make();return q.createSvgTag({cellSize:5,margin:2,scalable:true})}
+function qrDlg(amt,sub){const s=shop(),ov=document.createElement('div');ov.className='nb-overlay show';
+  ov.innerHTML=`<div class="nb-modal pp-modal"><div class="pp-head">พร้อมเพย์ <small>PromptPay</small></div>
+    ${s.pp?`<div class="pp-qr" id="pp-qr"><span class="sub">กำลังสร้าง QR...</span></div><div class="pp-amt">${money(amt)} บาท</div><div class="sub">${esc(s.title)}${sub?' · '+esc(sub):''}</div><div class="sub">พร้อมเพย์ ${esc(s.pp)}</div>`
+      :`<p>ยังไม่ได้ตั้งเลขพร้อมเพย์ของสาขานี้</p><p class="sub">เจ้าของร้านตั้งได้ที่ เมนูมุมขวาบน › จัดการพนักงาน / สาขา › ช่องพร้อมเพย์</p>`}
+    <button class="btn line" id="pp-x" style="width:100%;margin-top:8px">ปิด</button></div>`;
+  document.body.appendChild(ov);ov.onclick=e=>{if(e.target===ov||e.target.id==='pp-x')ov.remove()};
+  if(s.pp)qrSVG(ppPayload(s.pp,amt)).then(svg=>{const b=ov.querySelector('#pp-qr');if(b)b.innerHTML=svg}).catch(err=>{const b=ov.querySelector('#pp-qr');if(b)b.textContent=err.message})}
+
+/* ---------- พิมพ์ใบเสร็จ ---------- */
+function printEl(el){el.classList.add('print-me');document.body.classList.add('print-one');window.print();setTimeout(()=>{document.body.classList.remove('print-one');el.classList.remove('print-me')},500)}
+
+/* ---------- 1. ปิดยอดเงินประจำวัน ---------- */
+let closeDate=null;const CLOSES={};
+const payKind=h=>/สด/.test(h)?'cash':/โอน/.test(h)?'tr':/บัตร/.test(h)?'card':'other';
+R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
+  const pays=[];[...intake,...oldBills].forEach(b=>(b.pays||[]).forEach(p=>{if(p.d&&iso(p.d)===day)pays.push({b,p})}));
+  pays.sort((a,z)=>(a.p.t||'').localeCompare(z.p.t||''));
+  const by={};pays.forEach(({p})=>{const k=p.by||'ไม่ระบุ',r=by[k]||(by[k]={name:k,cash:0,tr:0,card:0,other:0,n:0});r[payKind(p.how||'')]+=p.amt;r.n++});
+  const rows=Object.values(by).sort((a,z)=>a.name.localeCompare(z.name,'th')),sum=k=>rows.reduce((t,r)=>t+r[k],0);
+  $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  let saved={};try{saved=LIVE?await DB.listCloses(day):(CLOSES[day]||{})}catch(err){saved={};toast('ยังโหลดข้อมูลปิดยอดไม่ได้: '+err.message)}
+  if(cur!=='close'||closeDate!==day)return;
+  const anySaved=Object.values(saved)[0];
+  $('#view').innerHTML=`<div class="cl">
+  <div class="ltop"><h1>ปิดยอดเงินประจำวัน</h1><span class="sub">${esc(shop().title)} · วันที่ ${beFull(new Date(day+'T00:00'))}</span></div>
+  <div class="cl-bar non-printable"><label class="cl-date">วันที่ <input type="date" id="cl-d" value="${day}" max="${iso(TODAY)}"></label>
+    <button class="btn line" id="cl-print">🖨️ พิมพ์สรุป</button>${rows.length?`<button class="btn" id="cl-save">💾 บันทึกปิดยอด</button>`:''}</div>
+  ${anySaved?`<div class="cl-done">✅ ปิดยอดแล้ว โดย ${esc(anySaved.by||'-')} เวลา ${esc(anySaved.at||'-')} (แก้ตัวเลขแล้วกดบันทึกใหม่ได้)</div>`:''}
+  <div class="cl-kpis"><div><span>เงินสด</span><b>${money(sum('cash'))}</b></div><div><span>เงินโอน</span><b>${money(sum('tr'))}</b></div><div><span>บัตรเครดิต</span><b>${money(sum('card'))}</b></div><div class="tot"><span>รวมรับเงินทั้งวัน</span><b>${money(sum('cash')+sum('tr')+sum('card')+sum('other'))}</b></div></div>
+  ${rows.length?`<div class="card cl-card"><div class="tablewrap"><table class="cl-tbl"><thead><tr><th>พนักงานที่รับเงิน</th><th class="r">ครั้ง</th><th class="r">เงินสด</th><th class="r">เงินโอน</th><th class="r">บัตร</th><th class="r">รวม</th><th class="r">เงินสดที่นับได้</th><th class="r">ผลต่าง</th></tr></thead><tbody>
+    ${rows.map(r=>{const sv=saved[r.name]||{};return `<tr data-st="${esc(r.name)}" data-cash="${r.cash}"><td data-l="พนักงาน"><b>${esc(r.name)}</b></td><td class="r" data-l="ครั้ง">${r.n}</td><td class="r" data-l="เงินสด">${money(r.cash)}</td><td class="r" data-l="เงินโอน">${money(r.tr)}</td><td class="r" data-l="บัตร">${money(r.card)}</td><td class="r" data-l="รวม"><b>${money(r.cash+r.tr+r.card+r.other)}</b></td>
+      <td class="r" data-l="เงินสดที่นับได้"><input class="cl-cnt" inputmode="decimal" placeholder="นับแล้วใส่" value="${sv.counted!=null?sv.counted:''}"></td><td class="r cl-diff" data-l="ผลต่าง"></td></tr>`}).join('')}
+    </tbody><tfoot><tr><td>รวมทั้งวัน</td><td class="r" data-l="ครั้ง">${pays.length}</td><td class="r" data-l="เงินสด">${money(sum('cash'))}</td><td class="r" data-l="เงินโอน">${money(sum('tr'))}</td><td class="r" data-l="บัตร">${money(sum('card'))}</td><td class="r" data-l="รวม">${money(sum('cash')+sum('tr')+sum('card')+sum('other'))}</td><td class="r" data-l="เงินสดที่นับได้" id="cl-cnt-sum"></td><td class="r" data-l="ผลต่าง" id="cl-diff-sum"></td></tr></tfoot></table></div></div>
+  <h3 class="cl-h">รายการรับเงินทั้งหมดวันนี้ (${pays.length} รายการ)</h3>
+  <div class="card cl-card"><div class="tablewrap"><table class="cl-tbl cl-list"><thead><tr><th>เวลา</th><th>เลขบิล</th><th>ทะเบียน</th><th>ลูกค้า</th><th>วิธี</th><th>ผู้รับเงิน</th><th class="r">จำนวน</th></tr></thead><tbody>
+    ${pays.map(({b,p})=>`<tr data-showbill="${b.id}" class="rowbtn"><td data-l="เวลา">${esc(p.t||'')}</td><td data-l="เลขบิล">${esc(b.no||'#'+b.id)}</td><td data-l="ทะเบียน">${esc(b.plate)}</td><td data-l="ลูกค้า">${esc(b.name)}</td><td data-l="วิธี">${esc(p.how||'')}</td><td data-l="ผู้รับเงิน">${esc(p.by||'')}</td><td class="r" data-l="จำนวน">${money(p.amt)}</td></tr>`).join('')}
+  </tbody></table></div></div>`:`<div class="eempty"><div>ไม่มีการรับเงินในวันนี้</div></div>`}</div>`;
+  const calc=()=>{let cs=0,ds=0,any=false;document.querySelectorAll('.cl-tbl tr[data-st]').forEach(tr=>{const v=tr.querySelector('.cl-cnt').value.replace(/,/g,'').trim(),c=+tr.dataset.cash,d=tr.querySelector('.cl-diff');
+      if(v===''){d.innerHTML='<span class="sub">–</span>';return}any=true;const x=parseFloat(v)||0,df=Math.round((x-c)*100)/100;cs+=x;ds+=df;
+      d.innerHTML=Math.abs(df)<0.005?'<span class="cl-ok">ตรง</span>':df>0?`<span class="cl-over">เกิน ${money(df)}</span>`:`<span class="cl-short">ขาด ${money(-df)}</span>`});
+    if($('#cl-cnt-sum')){$('#cl-cnt-sum').textContent=any?money(cs):'';$('#cl-diff-sum').innerHTML=!any?'':Math.abs(ds)<0.005?'<span class="cl-ok">ตรง</span>':ds>0?`<span class="cl-over">เกิน ${money(ds)}</span>`:`<span class="cl-short">ขาด ${money(-ds)}</span>`}};
+  document.querySelectorAll('.cl-cnt').forEach(i=>i.oninput=calc);calc();
+  $('#cl-d').onchange=e=>{if(e.target.value){closeDate=e.target.value;R.close()}};
+  $('#cl-print').onclick=()=>window.print();
+  if($('#cl-save'))$('#cl-save').onclick=async e=>{const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),list=[];
+    document.querySelectorAll('.cl-tbl tr[data-st]').forEach(tr=>{const r=by[tr.dataset.st],v=tr.querySelector('.cl-cnt').value.replace(/,/g,'').trim();
+      list.push({staff:r.name,cash:r.cash,tr:r.tr,card:r.card,other:r.other,counted:v===''?null:parseFloat(v)||0,by:user?user.name:'',at})});
+    if(list.every(x=>x.counted==null)&&!confirm('ยังไม่ได้ใส่เงินสดที่นับได้ จะบันทึกยอดตามระบบอย่างเดียวใช่ไหม?'))return;
+    e.target.disabled=true;try{if(LIVE)await DB.saveCloses(day,list);else CLOSES[day]=Object.fromEntries(list.map(x=>[x.staff,x]));toast('บันทึกปิดยอดแล้ว');R.close()}
+    catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+};
+
+/* ---------- 2. ส่งออก Excel / สำรองข้อมูล ---------- */
+let expMonth=null;
+const BK_KEY='siam-last-backup';
+const lastBackup=()=>{try{return localStorage.getItem(BK_KEY)}catch(_){return null}};
+async function exportXlsx(bills,fname){await loadJS('https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',()=>window.XLSX);
+  const d=x=>x?iso(x):'',debt=b=>Math.max(0,Math.round((b.amt-b.paid)*100)/100);
+  const sB=[['เลขบิล','วันที่','เวลา','ทะเบียน','จังหวัด','ชื่อลูกค้า','เบอร์โทร','ประเภทรถ','รายการ','ยอดสุทธิ','ส่วนลด','ค่าประกัน','รับเงินแล้ว','ค้างชำระ','เอกสาร','สถานะงานขนส่ง']]
+    .concat(bills.map(b=>[b.no||'',d(b.d),b.t||'',b.plate,b.prov||'',b.name,b.tel||'',b.type||'',b.what||b.items.map(i=>i[0]).join(' + '),b.amt,b.disc||0,b.ins||0,b.paid,debt(b),b.doc||'',dltKind(b)?DLT_ST[dltOf(b).st][0]:'']));
+  const sI=[['เลขบิล','วันที่','ทะเบียน','รายการ','จำนวนเงิน']].concat(bills.flatMap(b=>b.items.map(i=>[b.no||'',d(b.d),b.plate,i[0],i[1]])));
+  const sP=[['วันที่','เวลา','เลขบิล','ทะเบียน','ลูกค้า','จำนวนเงิน','วิธีชำระ','ผู้รับเงิน']].concat(bills.flatMap(b=>(b.pays||[]).map(p=>[d(p.d),p.t||'',b.no||'',b.plate,b.name,p.amt,p.how||'',p.by||''])));
+  const sC=[['ทะเบียน','จังหวัด','ชื่อลูกค้า','เบอร์โทร','ประเภทรถ','ยี่ห้อ/รุ่น','CC','ภาษีหมดอายุ','พ.ร.บ.หมดอายุ','ประกันหมดอายุ','บริษัทประกัน']].concat(cars.map(c=>[c.plate,c.prov||'',c.name,c.tel||'',c.type||'',c.model||'',c.cc||'',d(c.tax),d(c.prb),d(c.ins),c.insCo||'']));
+  const wb=XLSX.utils.book_new(),add=(rows,n,w)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=w.map(x=>({wch:x}));XLSX.utils.book_append_sheet(wb,ws,n)};
+  add(sB,'บิล',[12,11,6,11,14,20,13,22,40,10,8,10,10,10,8,18]);add(sI,'รายการค่าใช้จ่าย',[12,11,11,26,10]);add(sP,'รับเงิน',[11,6,12,11,20,10,12,16]);add(sC,'ลูกค้าและรถ',[11,14,20,13,22,20,6,12,12,12,20]);
+  XLSX.writeFile(wb,fname)}
+R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'));
+  const all=[...intake,...oldBills],inM=all.filter(b=>iso(b.d).slice(0,7)===expMonth),lb=lastBackup(),old=!lb||(Date.now()-new Date(lb))>30*DAY;
+  const br=LIVE&&DB.branch?DB.branch:null,tag=(br?br.code+'-':'');
+  $('#view').innerHTML=`<div class="bk">
+  <div class="ltop"><h1>ส่งออก Excel / สำรองข้อมูล</h1><span class="sub">${esc(shop().title)}</span></div>
+  ${old?`<div class="dj-alert">⚠️ ${lb?'สำรองข้อมูลครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยสำรองข้อมูลจากเครื่องนี้'} แนะนำให้กด <b>สำรองข้อมูลทั้งหมด</b> เก็บไว้เดือนละครั้ง</div>`:`<div class="cl-done">✅ สำรองข้อมูลล่าสุด ${beFull(new Date(lb))}</div>`}
+  <div class="bk-grid">
+    <div class="card bk-card"><h3>📊 รายงานรายเดือน</h3><p class="sub">บิล รายการค่าใช้จ่าย การรับเงิน และข้อมูลลูกค้า ของเดือนที่เลือก เปิดด้วย Excel หรือ Google Sheets ได้</p>
+      <label class="cl-date">เดือน <input type="month" id="bk-m" value="${expMonth}"></label><p class="sub">${inM.length} บิลในเดือนนี้</p>
+      <button class="btn" id="bk-month" ${inM.length?'':'disabled'}>📥 ดาวน์โหลด Excel เดือนนี้</button></div>
+    <div class="card bk-card"><h3>💾 สำรองข้อมูลทั้งหมด</h3><p class="sub">บิลทั้งหมด ${all.length} ใบ (ย้อนหลังสูงสุด 13 เดือน) และลูกค้า/รถ ${cars.length} คัน รวมไว้ในไฟล์เดียว เก็บไว้ในคอมหรือ Google Drive</p>
+      <button class="btn" id="bk-all">💾 สำรองข้อมูลทั้งหมด</button></div></div>
+  <p class="note">ไฟล์เป็นข้อมูลของ${br?' <b>'+esc(br.name)+'</b>':'สาขาที่เลือกอยู่'} ถ้าต้องการสาขาอื่น ให้เปลี่ยนสาขาที่ปุ่ม 📍 ด้านบนก่อน</p></div>`;
+  $('#bk-m').onchange=e=>{if(e.target.value){expMonth=e.target.value;R.backup()}};
+  const run=async(btn,bills,name,mark)=>{const t=btn.textContent;btn.disabled=true;btn.textContent='กำลังสร้างไฟล์...';
+    try{await exportXlsx(bills,name);if(mark){try{localStorage.setItem(BK_KEY,new Date().toISOString())}catch(_){}}toast('ดาวน์โหลดแล้ว: '+name);if(mark)R.backup()}
+    catch(err){alert('สร้างไฟล์ไม่สำเร็จ: '+err.message)}finally{if(btn.isConnected){btn.disabled=false;btn.textContent=t}}};
+  $('#bk-month').onclick=e=>run(e.target,inM,`siam-${tag}${expMonth}.xlsx`,false);
+  $('#bk-all').onclick=e=>run(e.target,all,`siam-backup-${tag}${iso(TODAY)}.xlsx`,true);
+};
+
+/* ---------- 3. คิวตรวจสภาพหน้าลาน ---------- */
+const QUEUE=[];let qSeq=0,qTimer=null;
+const Q_ST={wait:['รอตรวจ','#b45309','#fef3c7'],check:['กำลังตรวจ','#1d4ed8','#dbeafe'],pass:['ผ่าน','#15803d','#dcfce7'],fail:['ไม่ผ่าน','#c81e1e','#fee2e2']};
+const Q_TYPES=[['รย.1','รถเก๋ง / รถยนต์นั่ง (รย.1)','sedan'],['รย.2','รถตู้ (รย.2)','van'],['รย.3','รถกระบะ (รย.3)','pickup'],['รย.12','รถจักรยานยนต์ (รย.12)','moto'],['อื่นๆ','อื่นๆ','']];
+const hmOf=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const minsSince=t=>Math.max(0,Math.round((Date.now()-new Date(t))/60000));
+async function qReload(){if(!LIVE)return;const rows=await DB.listQueue();QUEUE.length=0;QUEUE.push(...rows)}
+R.queue=async()=>{clearInterval(qTimer);
+  if(LIVE){$('#view').innerHTML='<div class="empty">กำลังโหลดคิว...</div>';try{await qReload()}catch(err){$('#view').innerHTML=`<div class="empty">โหลดคิวไม่สำเร็จ: ${esc(err.message)}</div>`;return}if(cur!=='queue')return}
+  const today=QUEUE.filter(q=>iso(new Date(q.at.created))===iso(TODAY)).sort((a,z)=>new Date(a.at.created)-new Date(z.at.created));
+  const no=q=>today.indexOf(q)+1;
+  const card=q=>{const [l,fg,bg]=Q_ST[q.st];return `<div class="qc" data-q="${q.id}" style="--c:${fg}">
+    <div class="qc-top"><span class="qc-no">#${no(q)}</span><span class="plate"><b>${esc(q.plate)}</b><small>${esc(q.prov)}</small></span><span class="qc-type">${esc(q.ctype||'')}</span></div>
+    ${q.name||q.tel?`<div class="qc-name">${esc([q.name,q.tel].filter(Boolean).join(' · '))}</div>`:''}
+    <div class="sub">เข้าคิว ${hmOf(q.at.created)}${q.st==='wait'?` · รอ ${minsSince(q.at.created)} นาที`:q.st==='check'&&q.at.started?` · เริ่มตรวจ ${hmOf(q.at.started)} (${minsSince(q.at.started)} นาที)`:q.at.done?` · เสร็จ ${hmOf(q.at.done)}`:''}</div>
+    ${q.note?`<div class="qc-note">${esc(q.note)}</div>`:''}
+    <div class="qc-act">${q.st==='wait'?`<button class="btn" data-qs="check">▶ เริ่มตรวจ</button><button class="btn line" data-qdel>ลบ</button>`
+      :q.st==='check'?`<button class="btn qc-pass" data-qs="pass">✓ ผ่าน</button><button class="btn qc-fail" data-qs="fail">✗ ไม่ผ่าน</button>`
+      :q.st==='pass'?(q.billed?`<span class="sub">เปิดบิลแล้ว</span>`:`<button class="btn" data-qbill>เปิดบิล</button>`)
+      :`<button class="btn line" data-qs="wait">ตรวจซ้ำ</button>`}</div></div>`};
+  const prov0=LIVE?'นราธิวาส':'กรุงเทพมหานคร';
+  $('#view').innerHTML=`<div class="qq">
+  <div class="ltop"><h1>คิวตรวจสภาพ</h1><span class="sub">วันนี้ ${today.length} คัน · รอ ${today.filter(q=>q.st==='wait').length} · ผ่าน ${today.filter(q=>q.st==='pass').length} · ไม่ผ่าน ${today.filter(q=>q.st==='fail').length}</span></div>
+  <form class="card qq-add" id="qa" autocomplete="off"><b>➕ รถเข้าคิว</b>
+    <input id="qa-cha" placeholder="อักษร" maxlength="3" required><input id="qa-num" placeholder="ตัวเลข" maxlength="4" inputmode="numeric" required>
+    <select id="qa-prov">${PROVS.map(p=>`<option ${p===prov0?'selected':''}>${p}</option>`).join('')}</select>
+    <select id="qa-type">${Q_TYPES.map(t=>`<option value="${t[0]}">${t[1]}</option>`).join('')}</select>
+    <input id="qa-name" placeholder="ชื่อลูกค้า (ถ้ามี)"><input id="qa-tel" placeholder="เบอร์โทร (ถ้ามี)" inputmode="tel">
+    <button class="btn" type="submit">เพิ่มเข้าคิว</button></form>
+  <div class="qq-board">${Object.entries(Q_ST).map(([k,[l,fg,bg]])=>{const L=today.filter(q=>q.st===k);return `<div class="qq-col"><div class="qq-h" style="color:${fg};background:${bg}">${l}<span>${L.length}</span></div>${L.map(card).join('')||'<div class="qq-empty">–</div>'}</div>`}).join('')}</div>
+  ${LIVE?'<p class="note">หน้านี้อัปเดตเองทุก 20 วินาที ใช้หลายเครื่องพร้อมกันได้ เช่น จอหน้าลาน กับเครื่องที่เคาน์เตอร์</p>':''}</div>`;
+  ssel($('#qa-prov'));
+  const qOf=x=>QUEUE.find(q=>q.id==x.closest('[data-q]').dataset.q);
+  const set=async(q,patch)=>{const now=new Date().toISOString();if(patch.st==='check')patch.at={...q.at,started:now};if(patch.st==='pass'||patch.st==='fail')patch.at={...q.at,done:now};if(patch.st==='wait')patch.at={created:q.at.created};
+    if(LIVE)await DB.updQueue(q.id,patch);Object.assign(q,patch);R.queue()};
+  $('#qa').onsubmit=async e=>{e.preventDefault();const cha=$('#qa-cha').value.trim(),num=$('#qa-num').value.trim();if(!cha||!num){alert('กรุณาใส่ทะเบียนรถ');return}
+    const q={plate:cha+' '+num,prov:$('#qa-prov').value,ctype:$('#qa-type').value,name:$('#qa-name').value.trim(),tel:$('#qa-tel').value.trim(),st:'wait',note:'',billed:false,at:{created:new Date().toISOString()}};
+    try{if(LIVE)q.id=await DB.addQueue(q);else q.id=++qSeq;QUEUE.push(q);toast('เพิ่ม '+q.plate+' เข้าคิวแล้ว');R.queue()}catch(err){alert('เพิ่มไม่สำเร็จ: '+err.message)}};
+  document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=async()=>{const q=qOf(b),st=b.dataset.qs;let note=q.note;
+    if(st==='fail'){const r=prompt('ไม่ผ่านเพราะอะไร (เช่น ไฟหน้าไม่ติด, ควันดำ)',q.note||'');if(r==null)return;note=r.trim()}
+    if(st==='wait')note='';b.disabled=true;try{await set(q,{st,note})}catch(err){b.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
+  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{const q=qOf(b);if(!confirm('ลบ '+q.plate+' ออกจากคิว?'))return;
+    try{if(LIVE)await DB.delQueue(q.id);QUEUE.splice(QUEUE.indexOf(q),1);R.queue()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
+  document.querySelectorAll('[data-qbill]').forEach(b=>b.onclick=async()=>{const q=qOf(b);try{if(LIVE)await DB.updQueue(q.id,{billed:true});q.billed=true}catch(_){}
+    go('add');const [cha,num]=q.plate.split(' '),s=(id,v)=>{const e=$('#'+id);if(!e||v==null)return;e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))};
+    s('b-cha',cha);s('b-num',num);s('b-city',q.prov);const t=Q_TYPES.find(x=>x[0]===q.ctype);if(t&&t[2])s('b-type',t[2]);
+    const nm=(q.name||'').split(' ');s('c-name',nm[0]||'');s('c-sur',nm.slice(1).join(' '));s('c-tel',q.tel);s('b-insp',q.ctype==='รย.12'?SET.insp_moto:SET.insp_car);ssRefresh();toast('เปิดบิลจากคิว '+q.plate)});
+  if(LIVE)qTimer=setInterval(async()=>{if(cur!=='queue'){clearInterval(qTimer);return}const a=document.activeElement;if(a&&/INPUT|SELECT/.test(a.tagName)&&a.closest('#qa'))return;try{await qReload();R.queue()}catch(_){}},20000);
+};
+
+/* ---------- 5. ส่งเตือนทาง LINE ---------- */
+const lineText=(k,c)=>{const s=shop(),p=c.plate+' '+c.prov;
+  return k==='ins'?`เรียนคุณ${c.name} ประกันรถทะเบียน ${p} จะครบกำหนดวันที่ ${beFull(c.ins)} ต่ออายุได้ที่ ${s.title}${s.phone?' โทร '+s.phone:''} ขอบคุณครับ`
+    :`เรียนคุณ${c.name} รถทะเบียน ${p} ภาษีจะหมดอายุวันที่ ${beFull(c.tax)} ต่อภาษีและตรวจสภาพได้ที่ ${s.title}${s.address?' '+s.address:''}${s.phone?' โทร '+s.phone:''} ขอบคุณครับ`};
+function sendLine(k,c){const t=lineText(k,c);try{navigator.clipboard.writeText(t).catch(()=>{})}catch(_){}
+  window.open('https://line.me/R/share?text='+encodeURIComponent(t),'_blank','noopener');toast('เปิด LINE แล้ว เลือกแชตลูกค้าแล้วกดส่ง (คัดลอกข้อความไว้ให้ด้วย)')}
+
+/* ---------- ตั้งค่าระบบ (เฉพาะเจ้าของร้าน) ---------- */
+R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
+  const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
+  const T=(k,l,h,rows=8,fmtf=a=>a.join('\n'))=>`<label class="field st-list"><span>${l} <em class="sub">(${SET[k].length} รายการ)</em></span><textarea data-l="${k}" rows="${rows}" spellcheck="false">${esc(fmtf(SET[k]))}</textarea><small class="sub">${h}</small></label>`;
+  $('#view').innerHTML=`<div class="st">
+  <div class="ltop"><h1>ตั้งค่าระบบ</h1><span class="sub">${LIVE?'มีผลกับทุกสาขาและทุกเครื่องทันทีหลังบันทึก':'โหมดทดลอง: แก้ได้ แต่ไม่ถูกบันทึกจริง'}</span></div>
+  <div class="card stf-card"><div class="sech teal">💰 ค่าบริการ (ใช้ตอนกดคำนวณภาษีอัตโนมัติ)</div><div class="st-grid">
+    ${N('fee_tax','ค่าฝากต่อภาษี','ทุกประเภทรถ')}${N('fee_prb_moto','ค่าต่อ พ.ร.บ. มอเตอร์ไซค์')}${N('fee_prb_car','ค่าต่อ พ.ร.บ. รถยนต์','ใส่ 0 ถ้าไม่เก็บ')}
+    ${N('insp_car','ค่าตรวจสภาพ รถยนต์','รถอายุเกิน 7 ปี')}${N('insp_heavy','ค่าตรวจสภาพ รถหนักเกิน 2,000 กก.')}${N('insp_moto','ค่าตรวจสภาพ มอเตอร์ไซค์','รถอายุเกิน 5 ปี')}</div></div>
+  <div class="card stf-card"><div class="sech teal">📅 ปีจดทะเบียน</div><div class="st-grid">
+    <label class="field"><span>ปีจดทะเบียนเก่าสุดที่เลือกได้ (พ.ศ.)</span><input id="st-year" inputmode="numeric" maxlength="4" value="${(+SET.reg_min_year||1947)+543}"><small class="sub">ช่อง "วันจดทะเบียนรถ" จะให้เลือกปีตั้งแต่ปีนี้ถึงปีปัจจุบัน</small></label></div></div>
+  <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
+    ${T('brands','ยี่ห้อรถ','บรรทัดละ 1 ยี่ห้อ',10)}${T('bodies','ลักษณะรถ','บรรทัดละ 1 รายการ',10)}
+    ${T('prefixes','คำนำหน้าชื่อ','บรรทัดละ 1 รายการ',8)}${T('insurers','บริษัทประกัน','บรรทัดละ 1 บริษัท แบบ ชื่อบริษัท | รหัสย่อ (ใส่ * ท้ายบรรทัด = กองทุนกลาง)',8,a=>a.map(x=>x[0]+(x[1]?' | '+x[1]:'')+(x[2]?' *':'')).join('\n'))}</div></div>
+  <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
+  const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='';
+    document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))bad=bad||i.closest('label').querySelector('span').textContent;else o[i.dataset.k]=v});
+    const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))bad=bad||'ปีจดทะเบียนเก่าสุด';else o.reg_min_year=y;
+    document.querySelectorAll('[data-l]').forEach(t=>{const L=[...new Set(t.value.split('\n').map(x=>x.trim()).filter(Boolean))];
+      o[t.dataset.l]=t.dataset.l==='insurers'?L.map(x=>{const c=/\*\s*$/.test(x),[n,code]=x.replace(/\*\s*$/,'').split('|').map(z=>z.trim());return[n,(code||'').toUpperCase(),c?1:0]}):L;
+      if(!L.length)bad=bad||'รายการว่าง'});
+    return bad?(alert('ตรวจข้อมูลอีกครั้ง: '+bad),null):o};
+  $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
+    try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกการตั้งค่าแล้ว');R.settings()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  $('#st-reset').onclick=()=>{if(!confirm('คืนค่าเริ่มต้นทั้งหมด? (ยังไม่บันทึกจนกว่าจะกดบันทึก)'))return;const keep=SET;SET=JSON.parse(JSON.stringify(SET_DEF));R.settings();SET=keep;toast('แสดงค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน')};
+};
+
 let dltF='received',dltQ='';const dltSel=new Set();
 const dltPlate=b=>(b.plate+' '+(b.prov||'')).trim();
 function copyPlate(t){try{navigator.clipboard.writeText(t);toast('คัดลอกทะเบียน '+t+' แล้ว วางในหน้าเว็บกรมการขนส่งได้เลย')}catch(_){toast('ทะเบียน '+t)}}
@@ -3119,7 +3429,7 @@ function dltDlg(list,after){const one=list.length===1?list[0]:null,j=one?dltOf(o
     if(one)Object.assign(patch,{cert:ov.querySelector('#dj-cert').value.trim(),rcpt:ov.querySelector('#dj-rcpt').value.trim(),note:ov.querySelector('#dj-note').value.trim()});
     try{await dltSet(list,patch);close();toast('บันทึกงานขนส่งแล้ว');after&&after()}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}}}
 function dltSheet(list){const br=LIVE&&DB.branch?DB.branch:null,taxOf=b=>b.items.filter(i=>['ค่าภาษีรถ','ค่าปรับล่าช้า'].includes(i[0])).reduce((t,i)=>t+i[1],0);
-  return `<div class="ds-head"><div class="lg ds-logo"></div><div><h2>ใบนำส่งงานกรมการขนส่งทางบก</h2><div>ตรอ.สยามเซอร์วิส${br?' · '+esc(br.name):''}${br&&br.phone?' · โทร '+esc(br.phone):''}</div></div>
+  return `<div class="ds-head"><div class="lg ds-logo"></div><div><h2>ใบนำส่งงานกรมการขนส่งทางบก</h2><div>${esc(shop().title)}${shop().phone?' · โทร '+esc(shop().phone):''}</div></div>
     <div class="ds-meta">วันที่ ${beFull(TODAY)}<br>จำนวน ${list.length} คัน</div></div>
   <table class="ds-tbl"><thead><tr><th>ที่</th><th>ทะเบียน</th><th>ประเภทรถ</th><th>ชื่อเจ้าของ</th><th>งาน</th><th>ค่าภาษี+ค่าปรับ</th><th>เล่มทะเบียน</th><th>เลขบิล</th><th>หมายเหตุ</th></tr></thead><tbody>
   ${list.map((b,i)=>`<tr><td>${i+1}</td><td><b>${esc(dltPlate(b))}</b></td><td>${esc(((b.type||'').match(/\((ร[ยส]\.\s?\d+)\)/)||[])[1]||b.type||'')}</td><td>${esc(b.name)}</td><td>${esc(dltKind(b))}</td><td class="num">${taxOf(b)?money(taxOf(b)):"–"}</td><td>${esc(b.doc||'สำเนา')}</td><td>${esc(b.no||'')}</td><td></td></tr>`).join('')}
@@ -3192,11 +3502,11 @@ R.staff=async()=>{
       <td data-l="สาขา">${x.role==='owner'?'<span class="sub">ทุกสาขา</span>':`<select data-f="branch_id">${bOpt(x.branch_id,true)}</select>`}</td>
       <td data-l="สถานะ"><label class="sw"><input type="checkbox" data-f="active" ${x.active?'checked':''} ${self?'disabled':''}><span>${x.active?'ใช้งาน':'ปิดบัญชี'}</span></label></td>
       <td><button class="btn line" data-rp>ตั้งรหัสใหม่</button></td></tr>`}).join('')}</tbody></table></div></div>
-  <div class="card stf-card"><div class="sech teal">🏢 สาขา</div><div class="tablewrap"><table class="stf-tbl"><colgroup><col style="width:70px"><col style="width:20%"><col><col style="width:16%"><col style="width:13%"><col style="width:130px"></colgroup><thead><tr><th>รหัส</th><th>ชื่อสาขา</th><th>ที่อยู่</th><th>เบอร์โทร</th><th>สถานะ</th><th></th></tr></thead><tbody>
-    ${brs.map(b=>`<tr data-b="${b.id}"><td class="num"><b>${esc(b.code)}</b></td><td data-l="ชื่อสาขา"><input data-bf="name" value="${esc(b.name)}"></td><td data-l="ที่อยู่"><input data-bf="address" value="${esc(b.address||'')}" placeholder="ที่อยู่สาขา"></td><td data-l="เบอร์โทร"><input data-bf="phone" value="${esc(b.phone||'')}" placeholder="เบอร์โทร"></td>
+  <div class="card stf-card"><div class="sech teal">🏢 สาขา</div><div class="tablewrap"><table class="stf-tbl"><colgroup><col style="width:60px"><col style="width:17%"><col><col style="width:13%"><col style="width:14%"><col style="width:10%"><col style="width:110px"></colgroup><thead><tr><th>รหัส</th><th>ชื่อสาขา</th><th>ที่อยู่</th><th>เบอร์โทร</th><th>พร้อมเพย์</th><th>สถานะ</th><th></th></tr></thead><tbody>
+    ${brs.map(b=>`<tr data-b="${b.id}"><td class="num"><b>${esc(b.code)}</b></td><td data-l="ชื่อสาขา"><input data-bf="name" value="${esc(b.name)}"></td><td data-l="ที่อยู่"><input data-bf="address" value="${esc(b.address||'')}" placeholder="ที่อยู่สาขา"></td><td data-l="เบอร์โทร"><input data-bf="phone" value="${esc(b.phone||'')}" placeholder="เบอร์โทร"></td><td data-l="พร้อมเพย์"><input data-bf="promptpay" value="${esc(b.promptpay||'')}" placeholder="เบอร์/เลขบัตร" inputmode="numeric"></td>
       <td data-l="สถานะ"><label class="sw"><input type="checkbox" data-bf="active" ${b.active?'checked':''}><span>${b.active?'เปิด':'ปิด'}</span></label></td><td><button class="btn line" data-bsave>บันทึก</button></td></tr>`).join('')}
-    <tr class="stf-new"><td data-l="รหัสสาขาใหม่"><input id="nb-code" placeholder="C" maxlength="3" style="text-transform:uppercase"></td><td data-l="ชื่อสาขา"><input id="nb-name" placeholder="ชื่อสาขาใหม่"></td><td data-l="ที่อยู่"><input id="nb-addr" placeholder="ที่อยู่สาขา"></td><td data-l="เบอร์โทร"><input id="nb-tel" placeholder="เบอร์โทร"></td><td></td><td><button class="btn" id="nb-add">เพิ่มสาขา</button></td></tr>
-    </tbody></table></div><p class="note">รหัสสาขาใช้ขึ้นต้นเลขบิล เช่น สาขา A ได้บิล A-690001 · ปิดสาขาแล้วจะไม่แสดงให้เลือก แต่ข้อมูลเดิมยังอยู่</p></div></div>`;
+    <tr class="stf-new"><td data-l="รหัสสาขาใหม่"><input id="nb-code" placeholder="C" maxlength="3" style="text-transform:uppercase"></td><td data-l="ชื่อสาขา"><input id="nb-name" placeholder="ชื่อสาขาใหม่"></td><td data-l="ที่อยู่"><input id="nb-addr" placeholder="ที่อยู่สาขา"></td><td data-l="เบอร์โทร"><input id="nb-tel" placeholder="เบอร์โทร"></td><td></td><td></td><td><button class="btn" id="nb-add">เพิ่มสาขา</button></td></tr>
+    </tbody></table></div><p class="note">รหัสสาขาใช้ขึ้นต้นเลขบิล เช่น สาขา A ได้บิล A-690001 · ปิดสาขาแล้วจะไม่แสดงให้เลือก แต่ข้อมูลเดิมยังอยู่ · พร้อมเพย์ใส่เบอร์มือถือหรือเลขบัตรประชาชน/เลขผู้เสียภาษีของบัญชีที่รับเงิน ใช้สร้าง QR ในใบเสร็จ</p></div></div>`;
   const syncRole=()=>{$('#sf-brw').style.visibility=$('#sf-role').value==='owner'?'hidden':''};$('#sf-role').onchange=syncRole;syncRole();
   $('#sf-gen').onclick=()=>{$('#sf-pw').value=genPw()};
   $('#sf').onsubmit=async e=>{e.preventDefault();const er=$('#sf-err');er.hidden=true;
