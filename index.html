@@ -863,6 +863,7 @@ body.mgmt .tbranch{display:none}
 @media (max-width:640px){.st-grid.st-keys{grid-template-columns:1fr}}
 /* ---- ใบเสร็จ A4 (แบ่งครึ่ง ลูกค้า/ร้าน) ---- */
 .panel:has(.rcx-wrap){width:880px}
+.rc-why{background:#fff8e1;border:1px solid #ffe08a;color:#7a5a00;border-radius:8px;padding:8px 12px;font-size:13px;line-height:1.6;margin:6px 0 10px}
 .rcx-wrap{width:100%;overflow:hidden;border-radius:6px;background:#e9edf3;flex:none}
 .rcx-a4{position:relative;width:210mm;height:297mm;box-sizing:border-box;background:#fff;transform-origin:top left;display:flex;flex-direction:column;color:#111;font-family:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .rcx-copy{height:148.5mm;box-sizing:border-box;padding:7mm 11mm 5mm;display:flex;flex-direction:column;gap:2mm;font-size:9.5pt;line-height:1.38;overflow:hidden}
@@ -3586,7 +3587,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
       <div class="field"><span>แสดงในใบเสร็จ</span><div class="st-tog st-rcflags">${[['logo','โลโก้ร้าน'],['pp','QR พร้อมเพย์ (เมื่อมียอดค้าง)'],['line','QR ผูก LINE'],['sign','ช่องเซ็นชื่อ'],['shopQr','QR ในสำเนาร้านด้วย']].map(([k,l])=>`<button type="button" class="tog" data-f="${k}">${l}</button>`).join('')}</div></div>
       <label class="field"><span>เลขประจำตัวผู้เสียภาษี <em class="sub">(ถ้ามี)</em></span><input id="rc-tax" inputmode="numeric" maxlength="17" placeholder="เว้นว่างถ้าไม่มี"></label>
       <label class="field"><span>ข้อความท้ายใบเสร็จ</span><input id="rc-foot" maxlength="120" placeholder="เช่น ขอบคุณที่ใช้บริการ"></label></div>
-    <div class="st-rcp"><div class="rc-tabs st-tog"><button type="button" class="tog on" data-pv="a4">ตัวอย่าง A4</button><button type="button" class="tog" data-pv="slip">ตัวอย่างแบบม้วน</button><span class="sub" style="align-self:center;margin-left:auto">ข้อมูลตัวอย่าง · แก้แล้วเห็นทันที</span></div><div id="rc-pv"></div></div></div></div>
+    <div class="st-rcp"><div class="rc-tabs st-tog"><button type="button" class="tog on" data-pv="a4">ตัวอย่าง A4</button><button type="button" class="tog" data-pv="slip">ตัวอย่างแบบม้วน</button><span class="sub" style="align-self:center;margin-left:auto">ข้อมูลตัวอย่าง · แก้แล้วเห็นทันที</span></div>${(()=>{const n=[];if(!(SET.line_oa||'').trim())n.push('QR ผูก LINE จะขึ้นในใบเสร็จจริงเมื่อใส่ LINE ID ของร้าน (ช่อง "LINE ID ของร้าน" ด้านล่าง) แล้วกดบันทึก');if(!shop().pp)n.push('QR พร้อมเพย์จะขึ้นในใบเสร็จจริงเมื่อใส่เบอร์พร้อมเพย์ของสาขา (จัดการพนักงาน / สาขา › 🏢 สาขา) และขึ้นเฉพาะบิลที่มียอดค้าง');return n.length?`<div class="rc-why">ℹ️ ${n.join('<br>ℹ️ ')}</div>`:''})()}<div id="rc-pv"></div></div></div></div>
   <div class="card stf-card"><div class="sech teal">🔑 เชื่อมต่อ LINE Official Account</div><div class="st-line">
     <p class="sub">คัดลอกจาก developers.line.biz › ช่องของร้าน · รหัสเก็บแบบเข้ารหัส หน้านี้แสดงแค่ 4 ตัวท้าย · ช่องที่เว้นว่างจะไม่ถูกเปลี่ยน</p>
     <div class="st-grid st-keys">
@@ -3791,10 +3792,14 @@ function bahtText(n){const D=['','หนึ่ง','สอง','สาม','ส�
   return (ib?ib+'บาท':fb?'':'ศูนย์บาท')+(fb?fb+'สตางค์':'ถ้วน')}
 const rcNo=b=>b.no||'SS'+(b.d.getFullYear()+543)+'-'+String(b.id).padStart(5,'0');
 // เตรียม QR (พร้อมเพย์ยอดค้าง + ผูก LINE) ก่อนสร้างใบเสร็จ
-async function rcAssets(b,o,demo){const sh=shop(),debt=Math.max(0,Math.round((b.amt-b.paid)*100)/100),pp=sh.pp||(demo?'0812345678':''),out={debt,pp:null,line:null};
-  try{if(o.pp&&debt>0&&pp)out.pp=await qrSVG(ppPayload(pp,debt))}catch(_){}
-  try{if(o.line&&SET.line_oa){const car=cars.find(c=>c.id===b.carId);
-    if(car&&car.line&&!demo)out.line={linked:1};else{const code=demo||!LIVE?'123456':car&&car.custId?await DB.lineCode(car.custId):null;if(code)out.line={code,svg:await qrSVG(lineOaUrl(code))}}}}catch(_){}
+async function rcAssets(b,o,demo){const sh=shop(),debt=Math.max(0,Math.round((b.amt-b.paid)*100)/100),pp=sh.pp||(demo?'0812345678':''),out={debt,pp:null,line:null,why:[]},w=out.why;
+  if(o.pp){if(!debt)w.push('ไม่มี QR พร้อมเพย์ เพราะบิลนี้ชำระครบแล้ว (QR พร้อมเพย์ขึ้นเฉพาะบิลที่มียอดค้าง)');else if(!pp)w.push('ไม่มี QR พร้อมเพย์ เพราะยังไม่ได้ใส่เบอร์พร้อมเพย์ของสาขา (จัดการพนักงาน / สาขา › 🏢 สาขา)')}
+  try{if(o.pp&&debt>0&&pp)out.pp=await qrSVG(ppPayload(pp,debt))}catch(_){w.push('สร้าง QR พร้อมเพย์ไม่สำเร็จ')}
+  if(o.line){if(!(SET.line_oa||'').trim())w.push('ไม่มี QR ผูก LINE เพราะยังไม่ได้ใส่ LINE ID ของร้าน (ตั้งค่าระบบ › เตือนลูกค้าทาง LINE อัตโนมัติ)');
+  else try{const car=cars.find(c=>c.id===b.carId);
+    if(car&&car.line&&!demo){out.line={linked:1};w.push('ไม่มี QR ผูก LINE เพราะลูกค้ารายนี้ผูก LINE ไว้แล้ว')}
+    else{const code=demo||!LIVE?'123456':car&&car.custId?await DB.lineCode(car.custId):null;if(code)out.line={code,svg:await qrSVG(lineOaUrl(code))};else w.push('ไม่มี QR ผูก LINE เพราะไม่พบข้อมูลลูกค้าของบิลนี้')}}
+  catch(e){w.push('สร้าง QR ผูก LINE ไม่สำเร็จ: '+(e&&e.message||e))}}
   return out}
 function rcCopy(b,o,a,label,isShop,full){const sh=shop(),debt=a.debt,cust=((b.prefix||'คุณ')+(b.name||'')).trim();
   const pays=(b.pays||[]).reduce((m,p)=>(m[p.how||'เงินสด']=(m[p.how||'เงินสด']||0)+(+p.amt||0),m),{}),by=((b.pays||[]).slice(-1)[0]||{}).by||(user?user.name:'');
@@ -3847,6 +3852,7 @@ async function receiptDlg(b,kind){const o=rcOpt(),a4=kind!=='แบบม้ว�
   pn.classList.toggle('wide',a4);pn.innerHTML='<div class="empty">กำลังสร้างใบเสร็จ...</div>';$('#dlg').hidden=false;
   const a=await rcAssets(b,o),html=a4?rcA4(b,o,a):rcSlip(b,o,a);
   pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
+    ${a.why.length?`<div class="rc-why non-printable">ℹ️ ${a.why.map(esc).join('<br>ℹ️ ')}</div>`:''}
     ${a4?`<div class="rcx-wrap" id="rc-wrap">${html}</div>`:html}
     <div class="row non-printable" style="gap:8px">${a.debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(a.debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์${a4?' (กระดาษ A4)':''}</button></div>`;
   const x=()=>{$('#dlg').hidden=true;pn.classList.remove('wide');window.removeEventListener('resize',fit)},fit=()=>rcFit($('#rc-wrap'));
