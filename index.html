@@ -176,6 +176,8 @@ tr:last-child td{border-bottom:0}
   .tleft{order:1}.tright{order:2}
   .tcenter{order:3;flex:1 1 100%;justify-content:flex-start}
   .toplink{padding:6px 10px;font-size:14px}
+  .tb-btn{height:34px;padding:0 10px;font-size:14px}
+  .tleft .toplink span{display:none}.tleft{gap:4px}.tright{margin-left:auto}
   .form{grid-template-columns:1fr}
   .hide-sm{display:none}
   .lcard{padding:26px 20px 22px}
@@ -762,9 +764,11 @@ body.mgmt .tbranch{display:none}
 .pfmenu>button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-bottom:1px solid #f2f2f5;padding:12px 16px;text-align:left;font:inherit;font-size:14.5px;cursor:pointer;color:#1c1c1e}
 .pfmenu>button:hover{background:#fdf6ec}.pfmenu>button:last-child{border-bottom:0}.pfmenu .pfout{color:#c0392b}
 @media (max-width:640px){.pfname{max-width:90px}.pfmenu{width:min(260px,calc(100vw - 32px))}}
-.tbranch{position:relative;display:inline-flex;margin-left:8px;vertical-align:middle}
-.tb-btn{display:inline-flex;align-items:center;gap:5px;background:#fff;color:#0369a1;border:0;border-radius:999px;padding:3px 10px 3px 8px;font:inherit;font-size:13px;line-height:1.3;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.15);white-space:nowrap}
-.tb-btn:hover{background:#f0f9ff}.tb-btn.static{cursor:default}.tb-btn b{font-weight:700}
+.tleft{display:flex;align-items:center;gap:8px}
+.tbranch{position:relative;display:inline-flex}
+.tb-btn{display:inline-flex;align-items:center;gap:7px;height:38px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.55);border-radius:20px;padding:0 14px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .2s}
+.tb-btn svg{width:16px;height:16px;flex:none}
+.tb-btn:hover{background:rgba(255,255,255,.22)}.tb-btn.static{cursor:default}.tb-btn b{font-weight:600}
 .tb-menu{position:absolute;left:0;top:calc(100% + 8px);min-width:220px;background:#fff;color:#1c1c1e;border-radius:12px;box-shadow:0 12px 32px rgba(15,23,42,.22);border:1px solid #e5e7eb;z-index:45;overflow:hidden}
 .tb-h{font-size:12px;color:#6b7280;padding:10px 14px 6px}
 .tb-menu button{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;border-top:1px solid #f2f2f5;padding:11px 14px;font:inherit;font-size:14.5px;text-align:left;cursor:pointer}
@@ -3016,7 +3020,7 @@ const DB=(()=>{
       if(c&&c.id&&c.id<1e9){const mm=(E.model||'').split(' ');chk(await s.from('vehicles').update({plate:E.plate,province:E.prov,brand:mm[0]||'',model:mm.slice(1).join(' '),cc:+E.cc||null}).eq('id',c.id))}}
     catch(err){fail('บันทึกการแก้ไข',err)}}
   function branchUI(){document.querySelectorAll('.tbranch').forEach(x=>x.remove());if(!LIVE||!branch)return;
-    const host=document.querySelector('.tuser');if(!host)return;
+    const host=document.querySelector('.tleft');if(!host)return;
     const w=document.createElement('span');w.className='tbranch';const pin='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
     if(me.role==='owner'&&branches.length>1){
       w.innerHTML=`<button type="button" class="tb-btn" aria-haspopup="listbox" aria-expanded="false">${pin}<b>${esc(branch.name)}</b><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -3028,7 +3032,7 @@ const DB=(()=>{
         branch=nb;try{localStorage.setItem('siam-branch',branch.id)}catch(_){}
         toast('กำลังโหลดข้อมูล '+branch.name+'...');try{await load();branchUI();document.querySelectorAll('.pfbr').forEach(n=>n.textContent='ดูข้อมูล: '+branch.name);go('home');toast('เปลี่ยนเป็น '+branch.name+' แล้ว')}catch(err){fail('โหลดข้อมูล',err)}})}
     else w.innerHTML=`<span class="tb-btn static">${pin}<b>${esc(branch.name)}</b></span>`;
-    host.querySelector('.urole').after(w)}
+    host.appendChild(w)}
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
     try{if(!localStorage.getItem('siam-auth'))return}catch(e){return}
     try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
