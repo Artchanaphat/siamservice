@@ -835,6 +835,8 @@ function enterApp(u){user=u;document.querySelectorAll('.uname').forEach(n=>n.tex
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;go('home');toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // ปุ่มบัญชีตัวอย่าง = เข้าโหมดทดลอง (ข้อมูลตัวอย่าง ไม่บันทึกลงฐานข้อมูล)
+// บนเว็บจริงซ่อนปุ่มทดลอง (เปิดได้ด้วย ?demo ท้ายลิงก์) กันกดผิดแล้วนึกว่าบันทึกจริง
+if(/github\.io$/.test(location.hostname)&&!/[?&]demo/.test(location.search))document.querySelectorAll('.demo,.lcard .divider').forEach(e=>e.hidden=true);
 document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hidden=true;enterApp(USERS[b.dataset.demo])});
 $('#lf').onsubmit=async e=>{e.preventDefault();$('#lerr').hidden=true;
   const un=$('#lu').value.trim().toLowerCase(),pw=$('#lp').value,btn=$('#lf .lbtn');
