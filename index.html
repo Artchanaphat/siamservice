@@ -2828,15 +2828,32 @@ R.income=()=>moneyPage(INC);
 R.inst=()=>moneyPage(INST);
 
 /* รับเงินยอดค้าง */
-function payDlg(b){const s=split(b);
-  $('#panel').innerHTML=`<div class="sd-pay"><h3>รับชำระยอดค้าง</h3>
-    <div class="sd-pay-info"><b>${esc(b.plate)}</b> ${esc(b.prov)} · ${esc(b.name)}<div>บิลวันที่ ${fmt(b.d)} · ยอดสุทธิ ${money(b.amt)} บาท</div></div>
-    <div class="sd-pay-due">ค้างชำระ <b>${money(s.debt)} บาท</b>${b.ins?`<small>(ทั่วไปค้าง ${money(s.gen-s.gp)} · ประกันค้าง ${money(b.ins-s.ip)})</small>`:''}</div>
-    <div class="pm-h" style="margin:4px 0 8px"><b>วิธีรับชำระเงิน</b><span class="sub">เลือกได้มากกว่า 1 วิธี</span></div>${pmHTML('pm-pd',{none:false})}
-    <button class="nb-main sd-pay-ok" id="pd-ok" style="margin-top:12px">ยืนยันรับชำระเงิน</button><button class="nb-cancel" id="pd-no">ยกเลิก</button></div>`;
+function payDlg(b){const s=split(b),pn=$('#panel');
+  // SIAMSERVICE_PAY_DRAWER_V1: UI-only. Existing pmHTML/pmBind, DB.pay, and receipt logic are preserved.
+  pn.classList.remove('wide');
+  pn.innerHTML=`<div class="sd-pay siam-pay-drawer" role="region" aria-label="รับชำระยอดค้าง">
+    <div class="spay-head"><div class="spay-head-text"><div class="spay-eyebrow">การเงิน · รับชำระเพิ่มเติม</div><h3>รับชำระยอดค้าง</h3></div><button type="button" class="spay-close" id="pd-x" aria-label="ปิดหน้ารับชำระ" title="ปิด">✕</button></div>
+    <div class="spay-customer"><div class="spay-customer-plate">${esc(b.plate)} <span>${esc(b.prov)}</span></div><div class="spay-customer-name">${esc(b.name)}</div><div class="spay-customer-meta">บิลวันที่ ${fmt(b.d)} · ยอดบิล ${money(b.amt)} บาท</div></div>
+    <div class="spay-due"><div class="spay-due-label">ยอดค้างชำระปัจจุบัน</div><div class="spay-due-value">${money(s.debt)} <small>บาท</small></div>${b.ins?`<div class="spay-due-split">ทั่วไป ${money(s.gen-s.gp)} · ประกัน ${money(b.ins-s.ip)} บาท</div>`:''}</div>
+    <div class="spay-method"><div class="spay-section-title">1. เลือกวิธีรับชำระ</div><p class="spay-help">เลือกได้มากกว่า 1 วิธี เมื่อแบ่งชำระเงินสด / โอน / บัตร</p>${pmHTML('pm-pd',{none:false})}</div>
+    <div class="spay-summary" aria-live="polite"><div class="spay-section-title">2. ตรวจสอบยอดก่อนบันทึก</div>
+      <div class="spay-srow"><span>ยอดรับที่ระบุ</span><b id="pd-got">0.00 บาท</b></div>
+      <div class="spay-srow spay-remaining"><span>คงค้างหลังรับชำระ</span><b id="pd-debt-after">${money(s.debt)} บาท</b></div>
+      <div class="spay-srow spay-change" id="pd-change-row" hidden><span>เงินทอน (กรณีเงินสด)</span><b id="pd-change">0.00 บาท</b></div>
+    </div>
+    <p class="spay-footnote">เงินโอนต้องตรวจสอบเงินเข้าบัญชีตามขั้นตอนเดิม ก่อนนับเป็นยอดรับที่ยืนยันแล้ว</p>
+    <div class="spay-actions"><button type="button" class="nb-main sd-pay-ok" id="pd-ok">✓ ยืนยันรับชำระเงิน</button><button type="button" class="nb-cancel" id="pd-no">ยกเลิก / กลับไปดูบิล</button></div>
+  </div>`;
   $('#dlg').hidden=false;
-  const w=pmBind($('#pm-pd'),{due:()=>s.debt,qr:()=>b.plate}),key=uid();
-  $('#pd-no').onclick=()=>{$('#dlg').hidden=true};
+  const refreshSummary=got=>{const d=s.debt,r=Math.round((d-got)*100)/100;
+    $('#pd-got').textContent=money(got)+' บาท';
+    $('#pd-debt-after').textContent=money(Math.max(0,r))+' บาท';
+    $('#pd-change-row').hidden=!(r<-.004);
+    if(r<-.004)$('#pd-change').textContent=money(-r)+' บาท';
+  };
+  const w=pmBind($('#pm-pd'),{due:()=>s.debt,qr:()=>b.plate,onChange:refreshSummary}),key=uid();
+  const cancel=()=>{$('#dlg').hidden=true};
+  $('#pd-no').onclick=cancel;$('#pd-x').onclick=cancel;
   $('#pd-ok').onclick=async()=>{const r=w.read();if(r.err){alert(r.err);if(r.focus)r.focus.focus();return}
     const ok=$('#pd-ok');if(ok.disabled)return;
     const now=new Date(),t=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
@@ -7171,3 +7188,73 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAMSERVICE_SLIP_PRINT_VISIBILITY_V1 -->
+
+
+<!-- SIAMSERVICE_PAY_DRAWER_V1: screen-only UI; no receipt dimensions or payment calculations changed -->
+<style id="siamservice-pay-drawer-v1">
+@media screen {
+  body:has(#dlg:not([hidden]) .siam-pay-drawer){overflow:hidden}
+  #dlg:has(.siam-pay-drawer){background:rgba(9,23,49,.52)}
+  #dlg #panel:has(.siam-pay-drawer){width:min(460px,100%);max-width:100%;padding:0!important;background:#fff;display:block;overflow-y:auto;overscroll-behavior:contain;box-shadow:-15px 0 55px rgba(11,39,102,.18)}
+  #dlg .siam-pay-drawer{display:flex;flex-direction:column;gap:0;min-height:100%;padding:0 22px 26px;color:#142b50;font-family:var(--font-body);}
+  #dlg .siam-pay-drawer .spay-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:24px 0 17px;border-bottom:1px solid #e7edf6}
+  #dlg .siam-pay-drawer .spay-eyebrow{font-size:12px;color:#687b98;font-weight:650;letter-spacing:.015em;margin-bottom:3px}
+  #dlg .siam-pay-drawer h3{font-size:21px;font-weight:760;color:#0b2766;line-height:1.35;margin:0}
+  #dlg .siam-pay-drawer .spay-close{width:38px;height:38px;min-width:38px;border-radius:11px;background:#f1f5fb;color:#314665;border:1px solid #dbe3f0;cursor:pointer;font-size:17px;display:grid;place-items:center}
+  #dlg .siam-pay-drawer .spay-close:hover{background:#e8eff9}
+  #dlg .siam-pay-drawer .spay-customer{margin:17px 0 13px;line-height:1.5}
+  #dlg .siam-pay-drawer .spay-customer-plate{font-size:17px;font-weight:750;color:#163969}
+  #dlg .siam-pay-drawer .spay-customer-plate span{font-size:13px;font-weight:500;color:#64748b;margin-left:5px}
+  #dlg .siam-pay-drawer .spay-customer-name{font-size:14px;color:#253c60;font-weight:650;margin-top:2px}
+  #dlg .siam-pay-drawer .spay-customer-meta{font-size:12px;color:#6c7c93;margin-top:3px}
+  #dlg .siam-pay-drawer .spay-due{padding:17px 18px;background:#fff8ef;border:1px solid #f8d7a7;border-radius:14px;text-align:center;margin-bottom:22px}
+  #dlg .siam-pay-drawer .spay-due-label{color:#986424;font-size:13px;font-weight:700;margin-bottom:2px}
+  #dlg .siam-pay-drawer .spay-due-value{color:#ad3a26;font-weight:800;font-size:32px;line-height:1.28;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+  #dlg .siam-pay-drawer .spay-due-value small{font-size:15px;font-weight:600}
+  #dlg .siam-pay-drawer .spay-due-split{color:#795b44;font-size:12px;margin-top:5px}
+  #dlg .siam-pay-drawer .spay-section-title{font-size:14px;font-weight:750;color:#0b2766;margin-bottom:6px}
+  #dlg .siam-pay-drawer .spay-help{font-size:12px;color:#687991;line-height:1.55;margin:0 0 12px}
+  #dlg .siam-pay-drawer .pmx{gap:11px;min-width:0}
+  #dlg .siam-pay-drawer .pmx-chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;min-width:0}
+  #dlg .siam-pay-drawer .pmx-c{width:100%;min-width:0;min-height:68px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:3px;padding:8px 5px;background:#f8faff;border:1.5px solid #d6e3f7;color:#1b3f70;border-radius:12px;font-size:12.5px;line-height:1.25;white-space:normal;text-align:center;box-shadow:none}
+  #dlg .siam-pay-drawer .pmx-c i{font-size:21px;line-height:1.1}
+  #dlg .siam-pay-drawer .pmx-c:hover{background:#eaf2ff;border-color:#9cbbf5}
+  #dlg .siam-pay-drawer .pmx-c.on{background:#1d63ed;border-color:#1d63ed;color:#fff;box-shadow:0 3px 9px rgba(29,99,237,.2)}
+  #dlg .siam-pay-drawer .pmx-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;background:#f5f8fe;border:1px solid #dee7f5;border-radius:12px;padding:11px 12px}
+  #dlg .siam-pay-drawer .pmx-r[hidden]{display:none!important}
+  #dlg .siam-pay-drawer .pmx-l{grid-column:1/-1;min-width:0;width:auto;font-size:13px;color:#183b67}
+  #dlg .siam-pay-drawer .pmx-in{display:flex;min-width:0;width:100%}
+  #dlg .siam-pay-drawer .pmx-in input{min-width:0;max-width:100%;width:100%!important;height:43px;font-size:20px!important;border:1px solid #cddbee;border-radius:9px;background:#fff;color:#0b2766;padding:8px 10px}
+  #dlg .siam-pay-drawer .pmx-in em{font-size:12px;font-style:normal;white-space:nowrap;color:#526681}
+  #dlg .siam-pay-drawer .pmx-full{min-width:0;min-height:40px;height:auto;padding:8px 12px;font-size:11.5px;font-weight:650;max-width:154px;color:#1d63ed;background:#e8f1ff;border:1px solid #c5d9ff;border-radius:9px;white-space:normal}
+  #dlg .siam-pay-drawer .pmx-full:hover{background:#d8e9ff}
+  #dlg .siam-pay-drawer .pmx-r [data-qr]{grid-column:1/-1;max-width:none;width:100%;background:#fff}
+  #dlg .siam-pay-drawer .pmx-note{grid-column:1/-1;font-size:11px;color:#88601d;line-height:1.5}
+  #dlg .siam-pay-drawer .pmx-st{font-size:12px;line-height:1.5;padding:6px 0 0}
+  #dlg .siam-pay-drawer .spay-summary{background:#f3f7ff;border:1px solid #dfe9fa;border-radius:14px;padding:14px 15px;margin-top:23px}
+  #dlg .siam-pay-drawer .spay-summary .spay-section-title{margin-bottom:13px}
+  #dlg .siam-pay-drawer .spay-srow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:13px;padding:6px 0}
+  #dlg .siam-pay-drawer .spay-srow span{color:#62738c}
+  #dlg .siam-pay-drawer .spay-srow b{color:#1f426c;font-size:15px;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+  #dlg .siam-pay-drawer .spay-remaining{border-top:1px solid #d9e5f6;margin-top:5px;padding-top:12px}
+  #dlg .siam-pay-drawer .spay-remaining b{color:#1655be;font-size:20px}
+  #dlg .siam-pay-drawer .spay-change b{color:#24794a}
+  #dlg .siam-pay-drawer .spay-actions{position:sticky;bottom:0;z-index:4;margin-top:13px;display:flex;flex-direction:column;gap:9px;background:#fff;padding:12px 0 10px;box-shadow:0 -8px 16px -14px rgba(11,39,102,.20)}
+  #dlg .siam-pay-drawer .spay-actions #pd-ok{margin:0!important;min-height:50px;padding:12px 18px;border:1px solid #1d63ed;background:#1d63ed;color:#fff;font-family:var(--font-body);font-size:15px;font-weight:750;text-align:center;justify-content:center;border-radius:11px;box-shadow:0 4px 12px rgba(29,99,237,.2);animation:none}
+  #dlg .siam-pay-drawer .spay-actions #pd-ok:hover{background:#154fc6;color:#fff;border-color:#154fc6}
+  #dlg .siam-pay-drawer .spay-actions #pd-no{margin:0;min-height:43px;border:1px solid #dce5f2;background:#fff;color:#536985;border-radius:11px;font-size:13px;font-weight:650}
+  #dlg .siam-pay-drawer .spay-actions #pd-no:hover{background:#f1f5fb;color:#0b2766}
+  #dlg .siam-pay-drawer .spay-footnote{font-size:11px;line-height:1.6;color:#78879a;text-align:center;margin:14px 0 4px}
+  #dlg .siam-pay-drawer :is(button,input):focus-visible{outline:3px solid rgba(29,99,237,.33)!important;outline-offset:2px}
+  @media(max-width:600px){
+    #dlg #panel:has(.siam-pay-drawer){width:100%;max-width:100%;}
+    #dlg .siam-pay-drawer{padding:0 16px 24px}
+    #dlg .siam-pay-drawer .spay-head{padding-top:16px}
+    #dlg .siam-pay-drawer .spay-due-value{font-size:29px}
+    #dlg .siam-pay-drawer .pmx-c{min-height:62px;font-size:12px}
+    #dlg .siam-pay-drawer .pmx-r{grid-template-columns:minmax(0,1fr)}
+    #dlg .siam-pay-drawer .pmx-full{width:100%;max-width:none}
+  }
+}
+</style>
+<!-- /SIAMSERVICE_PAY_DRAWER_V1 -->
