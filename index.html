@@ -6430,3 +6430,284 @@ R.health=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div cla
   catch(err){$('#hc-box').innerHTML=`<div class="ui-empty">ตรวจไม่สำเร็จ: ${esc(err.message)}</div>`}};
 ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k);await r;stEmbed(k);return r}});
 </script>
+
+<style id="siamservice-settings-actions-20261027">
+/*
+ * SIAM SERVICE — Settings & Action Clarity · 2026-10-27
+ * Visual-only screen layer based on the deployed design language.
+ * No changes to business rules, HTML ids/classes/functions or printing.
+ * In particular: no receipt CSS or print stylesheet rules.
+ */
+@media screen {
+  /* 1) Invoice: distinguish actionable controls from disabled controls.
+     The receipt layout itself remains untouched. */
+  #view .nb-tools .ios-row{gap:12px;align-items:stretch}
+  #view .nb-tools .ios-row .ios-btn{
+    min-width:0;min-height:59px;padding:11px 16px;border-radius:12px;
+    font-weight:720;font-size:14px;line-height:1.3;
+    box-shadow:0 3px 10px rgba(18,52,107,.08);
+    transition:background-color .16s,color .16s,box-shadow .16s,border-color .16s,transform .16s;
+  }
+  #view .nb-tools .ios-row .ios-btn.success:not(:disabled){
+    background:#1d63ed;color:#fff;border:1.5px solid #1d63ed;
+    box-shadow:0 5px 13px rgba(29,99,237,.18);
+  }
+  #view .nb-tools .ios-row .ios-btn.success:not(:disabled):hover{
+    background:#174cc2;color:#fff;border-color:#174cc2;
+    box-shadow:0 7px 16px rgba(29,99,237,.23);transform:translateY(-1px);
+  }
+  #view .nb-tools .ios-row .ios-btn.success[data-print="แบบ A4"]:not(:disabled){
+    background:#eff5ff;color:#0b2766;border-color:#90b7ff;
+    box-shadow:0 3px 9px rgba(26,77,160,.07);
+  }
+  #view .nb-tools .ios-row .ios-btn.success[data-print="แบบ A4"]:not(:disabled):hover{
+    background:#dceaff;color:#0b2766;border-color:#1d63ed;
+  }
+  #view .nb-tools .ios-row .ios-btn.secondary:not(:disabled){
+    background:#fff;color:#263b60;border-color:#bfccde;box-shadow:0 2px 6px rgba(24,48,81,.04);
+  }
+  #view .nb-tools .ios-row .ios-btn.secondary:not(:disabled):hover{
+    background:#edf3fc;color:#0b2766;border-color:#87a8da;
+  }
+  #view .nb-tools .ios-row .ios-btn:disabled{
+    opacity:.58;cursor:not-allowed;box-shadow:none;transform:none;
+    background:#eef1f5;color:#788599;border-color:#d9dfe8;
+  }
+  #view .nb-tools .ios-row .ios-btn small{font-size:12px;line-height:1.45;opacity:.88}
+  #view .nb-tools .ios-row .ios-btn:focus-visible{
+    outline:3px solid #fbbf24;outline-offset:2px;
+  }
+  /* Previously only the hidden select was widened.  .ss is the visible custom province selector. */
+  #view .bf-find .check-card .row{display:flex;flex-wrap:wrap;gap:9px!important;align-items:stretch}
+  #view .bf-find .check-card .row #x-cha,
+  #view .bf-find .check-card .row #x-num{flex:1 1 calc(50% - 5px);width:calc(50% - 5px)!important;min-width:0;height:43px!important;font-size:14px}
+  #view .bf-find .check-card .row > .ss{
+    display:block;flex:1 1 100%!important;width:100%!important;
+    min-width:0;max-width:100%;box-sizing:border-box;
+  }
+  #view .bf-find .check-card .row > .ss .ss-in{
+    display:block;width:100%!important;max-width:100%;min-width:0;
+    min-height:44px;box-sizing:border-box;border-radius:10px;font-size:14px;
+    padding:9px 14px!important;background:#fff;color:#15345c;
+    border:1px solid #b8cce8;
+  }
+  #view .bf-find .check-card .row > .ss .ss-in:focus{border-color:#1d63ed;box-shadow:0 0 0 3px rgba(29,99,237,.12);outline:none}
+  #view .bf-find #x-go{
+    min-height:43px;border-radius:10px;background:#1d63ed;color:#fff;
+    border:1px solid #1d63ed;font-size:14px;font-weight:740;
+  }
+  #view .bf-find #x-go:hover{background:#174fc7;border-color:#174fc7}
+  /* When the search card sits inside the main bill form (smaller screens),
+     use the same widths. The original selector only handled the right sidebar. */
+  #view .check-card .row{gap:9px;min-width:0}
+  #view .check-card .row > .ss{flex:1 1 100%!important;width:100%!important;min-width:0;max-width:100%;box-sizing:border-box}
+  #view .check-card .row > .ss .ss-in{width:100%!important;max-width:100%;min-height:43px;box-sizing:border-box;border-radius:10px}
+  #view .check-card .row > #x-go{min-height:43px;border-radius:10px;background:#1d63ed;color:#fff}
+  #view .check-card .row > #x-go:hover{background:#174fc7}
+  /* Summary pricing stays exactly as it was. */
+
+  /* 2) Settings shell — one clear hierarchy at every viewport. */
+  #view .st{min-width:0}
+  #view .st .ltop{gap:12px;align-items:center;min-height:52px;margin-bottom:15px}
+  #view .st .ltop h1{font-size:22px!important;letter-spacing:-.25px;line-height:1.35;color:#0b2766}
+  #view .st .ltop .sub{font-size:12.5px;line-height:1.5;color:#667b98}
+  #view .st .st-lay{
+    display:grid;grid-template-columns:clamp(228px,19vw,252px) minmax(0,1fr);
+    align-items:start;gap:17px;min-width:0;
+  }
+  #view .st .st-nav{
+    position:sticky;top:97px;max-height:calc(100vh - 115px);
+    overflow-y:auto;overflow-x:hidden;
+    border:1px solid #dce7f7;border-radius:16px;background:#fff;
+    box-shadow:0 4px 17px rgba(23,54,106,.055);padding:11px;
+    scrollbar-width:thin;scrollbar-color:#b9cbe8 transparent;
+  }
+  #view .st .st-ng{
+    padding:14px 11px 7px;font-size:11.5px;font-weight:760;
+    color:#8092b0;letter-spacing:.2px;
+  }
+  #view .st .st-ng:first-child{padding-top:5px}
+  #view .st .st-ni{
+    display:flex;flex-direction:row;align-items:center;gap:9px;
+    width:100%;min-height:41px;padding:9px 10px;
+    border-radius:10px;border:1px solid transparent;
+    text-align:left;color:#2c4165;background:transparent;font-size:13.4px;
+    line-height:1.35;font-weight:570;
+    transition:background .14s,border-color .14s,color .14s,box-shadow .14s;
+  }
+  #view .st .st-ni i{flex:0 0 22px;font-size:16px;line-height:1.3;text-align:center}
+  #view .st .st-ni .st-l{display:inline;min-width:0}
+  #view .st .st-ni .st-s{display:none}
+  #view .st .st-ni:not(.on):hover{
+    background:#edf4ff;border-color:#cfddf3;color:#123a78;
+  }
+  #view .st .st-ni.on{
+    background:#eaf2ff;border-color:#9bbdf6;color:#0b43ad;
+    font-weight:760;box-shadow:inset 3px 0 0 #1d63ed;
+  }
+  #view .st .st-ni:focus-visible{outline:3px solid #f9bc45;outline-offset:1px}
+  #view .st .st-main{min-width:0;gap:15px}
+  #view .st .stf-card{
+    min-width:0;margin:0;border-radius:16px;
+    border:1px solid #dfe8f5;box-shadow:0 4px 15px rgba(20,53,111,.05);
+    background:#fff;overflow:hidden;gap:17px;padding-bottom:19px;
+  }
+  #view .st .stf-card > .sech{
+    min-height:51px;display:flex;align-items:center;padding:13px 19px!important;
+    border-radius:0!important;margin:0!important;
+    background:linear-gradient(105deg,#134bba,#2e76ec)!important;
+    color:#fff!important;box-shadow:none;border:0;
+    font-size:15px;font-weight:760;line-height:1.35;
+  }
+  #view .st .stf-card>*:not(.sech){margin-left:19px;margin-right:19px}
+  #view .st .st-grid{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:17px 15px;padding:0!important;min-width:0;
+  }
+  #view .st .st-grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .st .st-grid>*{min-width:0}
+  #view .st .field{min-width:0;gap:6px;line-height:1.45}
+  #view .st .field>span{font-size:13px!important;font-weight:740;color:#304b70;line-height:1.45}
+  #view .st .field .sub,#view .st .field small{font-size:11.8px;line-height:1.45;color:#7284a0}
+  #view .st :is(input:not([type=checkbox]):not([type=radio]), select, textarea){
+    max-width:100%;min-width:0;box-sizing:border-box;
+    min-height:43px;border:1px solid #cbd9ec;border-radius:10px;
+    background:#fff;color:#162f56;font-size:13.5px;
+  }
+  #view .st :is(input:not([type=checkbox]):not([type=radio]),select,textarea):focus{
+    border-color:#1d63ed;outline:0;box-shadow:0 0 0 3px rgba(29,99,237,.13);
+  }
+  #view .st .st-num{display:flex;align-items:center;gap:8px;min-width:0}
+  #view .st .st-num>input{flex:1 1 auto;width:100%;min-width:0}
+  #view .st .st-num em{flex:none;font-style:normal;font-size:12.5px;color:#647b9d}
+  #view .st .st-add{gap:8px;min-width:0;flex-wrap:wrap}
+  #view .st .st-add .st-in{min-width:125px;flex:1 1 180px}
+  #view .st .st-add .st-code{min-width:85px;flex:0 1 103px}
+  #view .st .st-addb{min-height:42px;padding:0 13px;border-radius:9px}
+  #view .st .st-chips{
+    min-width:0;max-width:100%;height:174px;padding:11px;gap:7px;
+    background:#f8fbff;border:1px solid #dce7f7;border-radius:12px;
+  }
+  #view .st .st-chips.sm{height:124px}
+  #view .st .st-tog{display:flex;flex-wrap:wrap;gap:7px;max-width:100%}
+  #view .st .st-tog .tog:not(:disabled){
+    min-height:36px;padding:7px 12px;border:1px solid #ccd9ec;
+    background:#f8fbff;color:#24456d;border-radius:9px;
+  }
+  #view .st .st-tog .tog.on:not(:disabled){
+    background:#1d63ed!important;color:#fff!important;border-color:#1d63ed!important;
+  }
+  #view .st .st-line{gap:13px;padding:0}
+  #view .st .st-lbtn{display:flex;gap:9px;flex-wrap:wrap}
+  #view .st .st-lbtn .btn{min-height:42px;border-radius:10px}
+  #view .st .st-pre{white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+  #view .st .st-bar{
+    position:sticky;bottom:0;z-index:5;
+    display:flex;justify-content:flex-end;align-items:center;gap:9px;
+    margin:0;padding:14px 2px 8px;
+    background:linear-gradient(180deg,rgba(242,247,255,0) 0%,#f2f6fd 35%);
+  }
+  #view .st .st-bar .btn{min-height:43px;border-radius:10px;font-weight:730;padding:0 17px}
+  #view .st #st-save:not(:disabled){
+    background:#1d63ed;color:#fff;border:1px solid #1d63ed;
+    box-shadow:0 4px 12px rgba(29,99,237,.16);
+  }
+  #view .st #st-save:not(:disabled):hover{background:#174fc7;border-color:#174fc7}
+  #view .st #st-reset:not(:disabled){background:#fff;color:#425778;border:1px solid #cbd7e7}
+  #view .st #st-reset:not(:disabled):hover{background:#edf4ff;border-color:#94b6ef}
+  #view .st .btn:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+
+  /* Settings embeds: staff, backup and audit retain their own behavior. */
+  #view .st-shell .st-main.st-sub{min-width:0}
+  #view .st-shell .st-main.st-sub :is(.ui-card,.aux-card,.card){max-width:100%}
+  #view .st-shell .st-main.st-sub .aux-bar{gap:8px 10px;flex-wrap:wrap}
+  #view .st-shell .st-main.st-sub .aux-bar input{flex:1 1 220px;min-width:0}
+  #view .st-shell .st-main.st-sub .aux-bar select{min-width:135px}
+  #view .st-shell .st-main.st-sub .aux-top{flex-wrap:wrap;gap:10px}
+  #view .st-shell .st-main.st-sub .aux-top h1{font-size:19px!important}
+  #view .st-shell .st-main.st-sub .aux-card{overflow-x:auto}
+  #view .st-shell .st-main.st-sub .aux-tbl{width:100%}
+
+  /* Staff/branch forms in the existing Settings screen, with no changes to permissions. */
+  #view .st-shell .stf-form{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:15px 16px;align-items:end;min-width:0;
+  }
+  #view .st-shell .stf-form .field{min-width:0}
+  #view .st-shell .stf-form .row{gap:7px;min-width:0}
+  #view .st-shell .stf-form .row input{min-width:0;flex:1}
+  #view .st-shell .stf-form .row .btn{flex:0 0 43px;min-height:43px}
+  #view .st-shell .stf-form #sf-ok:not(:disabled){
+    min-height:43px;background:#1d63ed;color:#fff;border:1px solid #1d63ed;
+    border-radius:10px;font-weight:730;
+  }
+  #view .st-shell .stf-tbl{border-collapse:separate;border-spacing:0;width:100%}
+  #view .st-shell .stf-tbl th{
+    background:#edf3fb;color:#304b70;font-size:12px;font-weight:760;
+    border-bottom:1px solid #dce6f5;
+  }
+  #view .st-shell .stf-tbl td{font-size:12.5px;line-height:1.5;border-bottom:1px solid #e8eef8}
+  #view .st-shell .stf-tbl tbody tr:hover{background:#f8fbff}
+  #view .st-shell .stf-tbl tbody tr.off{background:#f8fafc}
+  #view .st-shell .stf-tbl :is(input,select){width:100%;min-width:0;box-sizing:border-box;min-height:36px}
+  #view .st-shell .stf-tbl .btn{min-height:35px;border-radius:9px}
+  #view .st-shell .stf .note{font-size:12px;line-height:1.6;color:#70829d}
+  #view .st-shell .stf .sa-pair{align-items:center;gap:9px}
+  /* Receipt settings: improve surrounding controls, not the actual A4/slip content. */
+  #view .st .st-rc{display:grid;grid-template-columns:minmax(230px,290px) minmax(0,1fr);gap:19px;padding:0;align-items:start}
+  #view .st .st-rco,#view .st .st-rcp{min-width:0;max-width:100%}
+  #view .st .st-rcp{padding:12px;border:1px solid #e0e9f5;border-radius:12px;background:#f8faff}
+  #view .st .st-rcp .rc-tabs{flex-wrap:wrap}
+  #view .st .st-rcp :is(.st-tog,.rc-tabs){min-width:0}
+}
+@media screen and (max-width:1250px){
+  #view .st .st-lay{grid-template-columns:220px minmax(0,1fr);gap:13px}
+  #view .st .st-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  #view .st .st-rc{grid-template-columns:1fr}
+}
+@media screen and (max-width:900px){
+  #view .st .st-lay{grid-template-columns:1fr!important;gap:12px}
+  /* A compact, horizontally swipeable settings navigation; does not create page overflow. */
+  #view .st .st-nav{
+    position:static;display:flex!important;flex-direction:row!important;align-items:center;
+    width:100%;max-width:100%;box-sizing:border-box;
+    gap:7px;padding:9px;max-height:none;overflow-x:auto;overflow-y:hidden;
+    scrollbar-width:thin;
+  }
+  #view .st .st-ng{display:none!important}
+  #view .st .st-ni{
+    flex:0 0 auto!important;width:auto!important;min-height:38px;
+    padding:8px 11px;white-space:nowrap;
+  }
+  #view .st .st-ni .st-l{display:inline!important}
+  #view .st .st-ni .st-s{display:none!important}
+  #view .st .st-ni i{width:auto;flex:0 0 auto;font-size:15px}
+  #view .st .st-main{min-width:0}
+}
+@media screen and (max-width:640px){
+  #view .st .ltop{gap:7px;align-items:flex-start}
+  #view .st .ltop h1{font-size:19px!important}
+  #view .st .ltop::after{content:"เลื่อนแถบหมวดตั้งค่าไปด้านข้างเพื่อดูรายการอื่น →";display:block;width:100%;font-size:11px;color:#647b9a;line-height:1.45}
+  #view .st .stf-card{border-radius:13px;gap:14px;padding-bottom:15px}
+  #view .st .stf-card>.sech{min-height:46px;padding:11px 13px!important;font-size:13.4px}
+  #view .st .stf-card>*:not(.sech){margin-left:13px;margin-right:13px}
+  #view .st .st-grid,#view .st .st-grid.two{grid-template-columns:1fr;gap:13px}
+  #view .st .st-rc{grid-template-columns:1fr;gap:12px}
+  #view .st .st-rcp{padding:8px}
+  #view .st .st-rcp .rc-tabs{gap:5px}
+  #view .st .st-bar{position:static;background:transparent;padding:12px 0 0}
+  #view .st .st-bar .btn{flex:1 1 0;min-width:0;padding:0 8px;font-size:12.5px}
+  #view .st .st-add .st-in{flex:1 1 100%}
+  #view .st .st-add .st-code{flex:1 1 88px}
+  #view .st-shell .st-main.st-sub .aux-bar input{flex:1 1 100%}
+  #view .st-shell .stf-form{grid-template-columns:1fr;gap:13px}
+  #view .st-shell .stf-tbl tr{border-color:#dfe8f5;border-radius:11px;background:#fff;box-shadow:0 2px 8px rgba(24,56,108,.04)}
+  #view .st-shell .stf-tbl td::before{font-weight:680;color:#6e829d}
+  #view .nb-tools .ios-row{grid-template-columns:1fr;gap:9px}
+  #view .nb-tools .ios-row .ios-btn{min-height:51px;padding:8px 12px}
+  #view .bf-find .check-card .row > .ss .ss-in{min-height:45px}
+}
+@media screen and (prefers-reduced-motion:reduce){
+  #view .nb-tools .ios-row .ios-btn,#view .st .st-ni{transition:none;transform:none!important}
+}
+</style>
