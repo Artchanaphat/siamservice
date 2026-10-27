@@ -6806,3 +6806,93 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAMSERVICE_BRANCH_SELECTOR_VISIBILITY_FIX_V1 -->
+
+<!-- SIAMSERVICE_CHROME_AUTOFILL_GUARD_V1
+     Reduces Chrome credential suggestions on ordinary vehicle lookup and settings fields.
+     Does not disable actual login autofill, billing, Supabase, or receipt rules.
+     Merge this single script into the latest GitHub index.html; do not overwrite newer app code. -->
+<script id="siamservice-chrome-autofill-guard">
+(()=>{
+  'use strict';
+  const selectors = [
+    '#tq',                         // Global search in newer GitHub revisions
+    '.tsrch input',               // Defensive fallback for the same global search
+    '#view .st-find',             // Filter existing settings lists
+    '#view .st-in',               // Add new settings list values
+    '#view .st-code',             // Insurer short code
+    '#view #lk-to',               // LINE user ID (not a login name)
+    '#view #st-oa',               // LINE official account ID
+    '#view #st-sender',           // SMS sender name
+    '#view #sk-to'                // Test SMS mobile number
+  ].join(',');
+  const secretIds=['lk-token','lk-secret','sk-key','sk-secret'];
+  const skipAttrs={
+    'autocomplete':'off', 'autocorrect':'off', 'autocapitalize':'off',
+    'spellcheck':'false', 'data-lpignore':'true',
+    'data-1p-ignore':'', 'data-bwignore':'true'
+  };
+  function protect(el){
+    if(!el||el.dataset.siamNoCredentialAutofill==='1')return;
+    for(const [name,val] of Object.entries(skipAttrs))el.setAttribute(name,val);
+    el.dataset.siamNoCredentialAutofill='1';
+    // A true search field is much less likely to be classified by Chrome as username.
+    if(el.id==='tq'||el.closest('.tsrch')){
+      if(el.tagName==='INPUT'&&el.type==='text')el.type='search';
+      if(!el.name)el.name='siam_vehicle_search_query';
+      el.setAttribute('aria-autocomplete','list');
+    }else if(!el.name){
+      el.name='siam_config_'+(el.id||el.className||'value').toString().replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,40);
+    }
+  }
+  function protectVisibleSettings(){
+    document.querySelectorAll(selectors).forEach(protect);
+    for(const id of secretIds){
+      const el=document.getElementById(id);
+      if(!el||el.dataset.siamNoCredentialAutofill==='1')continue;
+      // Keep type=password: API secrets must not be shown as plain text.
+      for(const [name,val] of Object.entries(skipAttrs))el.setAttribute(name,val);
+      el.setAttribute('autocomplete','new-password'); // Prevent offering the saved site-login password for API tokens.
+      if(!el.name)el.name='siam_service_setting_'+id.replace(/-/g,'_');
+      el.dataset.siamNoCredentialAutofill='1';
+    }
+  }
+  // Chrome can mistake a hidden login form's password field for the credential field
+  // of unrelated inputs. Park ONLY #lp while the authenticated app is shown;
+  // restore the very same input before logging out. Existing event handlers remain.
+  const loginPassword=document.getElementById('lp');
+  const shell=document.getElementById('shell');
+  let slot=null;
+  function restoreLoginField(){
+    if(slot&&slot.parentNode&&loginPassword){
+      slot.parentNode.replaceChild(loginPassword,slot);
+      loginPassword.disabled=false;
+      slot=null;
+    }
+  }
+  function syncLoginField(){
+    if(!loginPassword||!shell)return;
+    if(!shell.hidden){
+      if(!slot&&loginPassword.parentNode){
+        loginPassword.value='';
+        loginPassword.type='password';
+        loginPassword.disabled=true;
+        slot=document.createComment('login-only password parked while authenticated');
+        loginPassword.parentNode.replaceChild(slot,loginPassword);
+      }
+    }else restoreLoginField();
+  }
+  // Capture-phase restore ensures the app's existing demo logout handler can still
+  // read #lp immediately, without changing any original login/logout functions.
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-logout]'))restoreLoginField();
+  },true);
+  protectVisibleSettings();
+  const view=document.getElementById('view');
+  if(view)new MutationObserver(protectVisibleSettings).observe(view,{childList:true,subtree:true});
+  const head=document.querySelector('.topbar');
+  if(head)new MutationObserver(protectVisibleSettings).observe(head,{childList:true,subtree:true});
+  if(shell)new MutationObserver(syncLoginField).observe(shell,{attributes:true,attributeFilter:['hidden']});
+  syncLoginField();
+})();
+</script>
+<!-- /SIAMSERVICE_CHROME_AUTOFILL_GUARD_V1 -->
