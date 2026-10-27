@@ -6764,3 +6764,45 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 /* END SIAMSERVICE SETTINGS LIST USABILITY */
 </style>
+
+<!-- SIAMSERVICE_BRANCH_SELECTOR_VISIBILITY_FIX_V1 -->
+<style id="siamservice-branch-selector-fix">
+/* Screen-only: restore the existing owner branch selector in the header.
+   No changes to account permissions, branch data, JS, receipt styles, or billing. */
+@media screen {
+  body.mgmt .topbar .tbranch {display:inline-flex!important;}
+  .shell .topbar .tleft .tbranch {min-width:0;max-width:100%;z-index:3;}
+  .shell .topbar .tleft .tbranch .tb-btn {
+    background:#fff!important;color:#0b2766!important;
+    border:1px solid #bfd0ec!important;box-shadow:0 2px 8px rgba(9,38,90,.1);
+    max-width:100%;min-width:0;
+  }
+  .shell .topbar .tleft .tbranch .tb-btn:hover,
+  .shell .topbar .tleft .tbranch .tb-btn[aria-expanded="true"] {
+    background:#eaf3ff!important;border-color:#7ba6eb!important;
+  }
+  .shell .topbar .tleft .tbranch .tb-btn svg {color:#1d63ed!important;}
+  .shell .topbar .tleft .tbranch .tb-btn b {
+    min-width:0;max-width:155px;overflow:hidden;text-overflow:ellipsis;
+  }
+  .shell .topbar .tleft .tb-menu {max-width:min(280px,calc(100vw - 24px));}
+}
+@media screen and (min-width:1000px) {
+  /* Reference dashboard hid .tleft, which is also the branch selector's host. */
+  .shell .topbar>.tleft {
+    display:flex!important;align-items:center!important;
+    flex:0 0 auto!important;min-width:0!important;
+    position:relative;z-index:3;
+  }
+}
+@media screen and (min-width:1000px) and (max-width:1024px) {
+  /* Existing 1000/1024 media rules disagreed, causing the header column to collapse. */
+  .shell {grid-template-columns:minmax(0,1fr)!important;}
+}
+@media screen and (max-width:600px) {
+  .shell .topbar .tleft .tbranch .tb-btn {height:34px;padding:0 8px;font-size:12px;gap:4px;}
+  .shell .topbar .tleft .tbranch .tb-btn b {max-width:86px;}
+  .shell .topbar .tleft .tb-menu {max-width:calc(100vw - 24px);}
+}
+</style>
+<!-- /SIAMSERVICE_BRANCH_SELECTOR_VISIBILITY_FIX_V1 -->
