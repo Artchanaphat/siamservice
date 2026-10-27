@@ -5739,9 +5739,11 @@ const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่�
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
   const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k])));
-  const T=(k,l,h,sm)=>`<div class="field st-list" data-l="${k}"><span>${l} <em class="sub">(<b class="st-cnt">${LS[k].length}</b> รายการ)</em></span>
-    <div class="st-add">${k==='insurers'?'<input class="st-in" placeholder="ค้นหา หรือพิมพ์ชื่อบริษัทใหม่" autocomplete="off"><input class="st-code" placeholder="รหัสย่อ" maxlength="10" autocomplete="off"><label class="st-ck"><input type="checkbox" class="st-cf">กองทุนกลาง</label>':'<input class="st-in" placeholder="ค้นหา หรือพิมพ์รายการใหม่" autocomplete="off">'}<button type="button" class="btn st-addb">＋ เพิ่ม</button></div>
-    <div class="st-chips${sm?' sm':''}"></div><small class="sub">${h}</small></div>`;
+  const T=(k,l,h,sm)=>`<div class="field st-list st-list-readable" data-l="${k}"><span>${l} <em class="sub">(<b class="st-cnt">${LS[k].length}</b> รายการ)</em></span>
+    <label class="st-searchline"><span class="st-search-label">ค้นหาในรายการที่มีอยู่</span><input class="st-find" type="search" name="ss_filter_${k}" placeholder="พิมพ์เพื่อกรองรายการ…" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true"></label>
+    <div class="st-add">${k==='insurers'?'<input class="st-in" name="ss_add_insurer" placeholder="เพิ่มชื่อบริษัทประกันใหม่" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true"><input class="st-code" name="ss_insurer_code" placeholder="รหัสย่อ" maxlength="10" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true"><label class="st-ck"><input type="checkbox" class="st-cf">กองทุนกลาง</label>':`<input class="st-in" name="ss_add_${k}" placeholder="เพิ่มรายการใหม่ (ชื่อที่จะบันทึก)" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true">`}<button type="button" class="btn st-addb">＋ เพิ่มรายการ</button></div>
+    <div class="st-list-summary"><span class="st-showing" aria-live="polite"></span><span>เลื่อนดูรายการเพิ่มเติมได้</span></div>
+    <div class="st-chips${sm?' sm':''}"></div><small class="sub">${h} · การแก้ไขมีผลหลังจากกด “บันทึกการตั้งค่า”</small></div>`;
   const DOPT=[...new Set([90,60,45,30,15,7,3,1,...SET.line_days])].sort((a,z)=>z-a);
   const TIMES=[];for(let m=5*60;m<24*60;m+=30)TIMES.push(String(m/60|0).padStart(2,'0')+':'+(m%60?'30':'00'));
   const TS=(id,v)=>`<select class="st-time" id="${id}">${TIMES.map(t=>`<option value="${t}"${t===v?' selected':''}>${t} น.</option>`).join('')}</select>`;
@@ -5768,9 +5770,9 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">🔑 เชื่อมต่อ LINE Official Account</div><div class="st-line">
     <p class="sub">คัดลอกจาก developers.line.biz › ช่องของร้าน · รหัสเก็บแบบเข้ารหัส หน้านี้แสดงแค่ 4 ตัวท้าย · ช่องที่เว้นว่างจะไม่ถูกเปลี่ยน</p>
     <div class="st-grid st-keys">
-      <label class="field"><span>Channel access token <em class="sub">(แท็บ Messaging API › ล่างสุด › Issue)</em></span><input id="lk-token" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-token-st"></small></label>
+      <label class="field"><span>Channel access token <em class="sub">(แท็บ Messaging API › ล่างสุด › Issue)</em></span><input id="lk-token" type="password" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-token-st"></small></label>
       <label class="field"><span>User ID ของคนที่รับสรุปประจำวัน <em class="sub">(แท็บ Basic settings › Your user ID)</em></span><input id="lk-to" autocomplete="off" spellcheck="false" placeholder="U… (หลายคนคั่นด้วย ,)"><small class="sub">ต้องแอดไลน์ร้านเป็นเพื่อนก่อน ถึงจะได้รับข้อความ</small></label>
-      <label class="field"><span>Channel secret <em class="sub">(แท็บ Basic settings)</em></span><input id="lk-secret" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-secret-st"></small></label>
+      <label class="field"><span>Channel secret <em class="sub">(แท็บ Basic settings)</em></span><input id="lk-secret" type="password" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true" placeholder="ยังไม่ได้ใส่"><small class="sub" id="lk-secret-st"></small></label>
       <label class="field"><span>Webhook URL <em class="sub">(วางใน LINE แท็บ Messaging API › Webhook URL)</em></span><div class="st-num"><input id="lk-hook" readonly value="${SB_URL}/functions/v1/line-webhook"><button type="button" class="btn line" id="lk-copy">คัดลอก</button></div></label></div>
     <div class="st-lbtn"><button type="button" class="btn" id="lk-save">🔑 บันทึกรหัส LINE</button></div></div></div>
   <div class="card stf-card"><div class="sech teal">🔔 เตือนลูกค้าทาง LINE อัตโนมัติ</div><div class="st-grid">
@@ -5785,8 +5787,8 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card st-sms" id="st-sms"><div class="sech teal">📱 ส่ง SMS แจ้งเตือนลูกค้า (ThaiBulkSMS)</div><div class="st-line">
     <p class="sub">สมัครและเติมเครดิตที่ thaibulksms.com › เมนู API Key สร้าง Key แล้วนำมาใส่ที่นี่ · รหัสเก็บแบบเข้ารหัส หน้านี้แสดงแค่ 4 ตัวท้าย · ช่องที่เว้นว่างจะไม่ถูกเปลี่ยน</p>
     <div class="st-grid st-keys">
-      <label class="field"><span>API Key</span><input id="sk-key" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="sk-key-st"></small></label>
-      <label class="field"><span>API Secret</span><input id="sk-secret" type="password" autocomplete="off" placeholder="ยังไม่ได้ใส่"><small class="sub" id="sk-secret-st"></small></label></div>
+      <label class="field"><span>API Key</span><input id="sk-key" type="password" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true" placeholder="ยังไม่ได้ใส่"><small class="sub" id="sk-key-st"></small></label>
+      <label class="field"><span>API Secret</span><input id="sk-secret" type="password" autocomplete="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true" placeholder="ยังไม่ได้ใส่"><small class="sub" id="sk-secret-st"></small></label></div>
     <div class="st-lbtn"><button type="button" class="btn" id="sk-save">🔑 บันทึกรหัส SMS</button><button type="button" class="btn line" id="sk-credit">💳 ตรวจสอบเครดิต</button><span class="sub" id="sk-credit-st" style="align-self:center"></span></div>
     <div class="st-grid st-keys">
       <label class="field"><span>ชื่อผู้ส่ง (Sender name) <em class="sub">(ต้องเป็นชื่อที่อนุมัติแล้วใน ThaiBulkSMS)</em></span><input id="st-sender" maxlength="11" autocomplete="off" spellcheck="false" placeholder="เช่น SiamService" value="${esc(SET.sms_sender||'')}"><small class="sub">ภาษาอังกฤษหรือตัวเลข ไม่เกิน 11 ตัว</small></label>
@@ -5840,18 +5842,32 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     const box=$('#rc-pv');box.innerHTML=pv==='a4'?`<div class="rcx-wrap" id="rc-pvw">${rcA4(b,o,a)}</div>`:`<div class="st-rcslip">${rcSlip(b,o,a)}</div>`;if(pv==='a4')rcFit($('#rc-pvw'))};
   rcPv();const rcRs=()=>{if(!$('#rc-pv'))return window.removeEventListener('resize',rcRs);if($('#rc-pvw'))rcFit($('#rc-pvw'))};window.addEventListener('resize',rcRs);
   const chipKey=x=>(Array.isArray(x)?x[0]:x).toLowerCase();
-  document.querySelectorAll('.st-list[data-l]').forEach(box=>{const k=box.dataset.l,ins=k==='insurers',inp=box.querySelector('.st-in'),wrap=box.querySelector('.st-chips'),added=new Set();
-    const draw=()=>{const q=inp.value.trim().toLowerCase();box.querySelector('.st-cnt').textContent=LS[k].length;
+  document.querySelectorAll('.st-list[data-l]').forEach(box=>{
+    const k=box.dataset.l,ins=k==='insurers',inp=box.querySelector('.st-in'),find=box.querySelector('.st-find'),wrap=box.querySelector('.st-chips'),added=new Set();
+    const draw=()=>{
+      const q=find.value.trim().toLowerCase();box.querySelector('.st-cnt').textContent=LS[k].length;
       const rows=LS[k].map((x,i)=>[x,i]).filter(([x])=>!q||chipKey(x).includes(q)||(ins&&(x[1]||'').toLowerCase().includes(q)));
-      wrap.innerHTML=rows.map(([x,i])=>`<span class="chip${added.has(chipKey(x))?' new':''}"><span>${ins?esc(x[0])+(x[1]?` <em>${esc(x[1])}</em>`:''):esc(x)}</span>${ins&&x[2]?'<i>กองทุนกลาง</i>':''}<button type="button" data-i="${i}" title="ลบ" aria-label="ลบ ${esc(ins?x[0]:x)}">×</button></span>`).join('')
-        ||`<span class="st-none">${q?'ไม่พบ "'+esc(inp.value.trim())+'" กด ＋ เพิ่ม เพื่อเพิ่มรายการนี้':'ยังไม่มีรายการ'}</span>`};
-    const add=()=>{const v=inp.value.trim().replace(/\s+/g,' ');if(!v){inp.focus();return}
+      box.querySelector('.st-showing').textContent=`แสดง ${rows.length} จาก ${LS[k].length} รายการ`;
+      wrap.innerHTML=rows.map(([x,i])=>`<span class="chip st-item${added.has(chipKey(x))?' new':''}"><span class="st-item-label">${ins?esc(x[0])+(x[1]?` <em>${esc(x[1])}</em>`:''):esc(x)}${ins&&x[2]?'<i>กองทุนกลาง</i>':''}</span><button type="button" data-i="${i}" title="ลบรายการนี้" aria-label="ลบ ${esc(ins?x[0]:x)}">ลบ</button></span>`).join('')
+        ||`<span class="st-none">${q?'ไม่พบรายการที่ค้นหา · พิมพ์ชื่อในช่อง “เพิ่มรายการใหม่” หากต้องการเพิ่ม':'ยังไม่มีรายการ'}</span>`;
+    };
+    const add=()=>{
+      const v=inp.value.trim().replace(/\s+/g,' ');if(!v){inp.focus();return}
       if(LS[k].some(x=>chipKey(x)===v.toLowerCase())){toast('มี "'+v+'" อยู่แล้ว');return}
       LS[k].push(ins?[v,box.querySelector('.st-code').value.trim().toUpperCase(),box.querySelector('.st-cf').checked?1:0]:v);added.add(v.toLowerCase());
-      inp.value='';if(ins){box.querySelector('.st-code').value='';box.querySelector('.st-cf').checked=false}draw();wrap.scrollTop=wrap.scrollHeight;inp.focus();toast('เพิ่ม "'+v+'" แล้ว กดบันทึกการตั้งค่าเพื่อใช้งาน')};
-    inp.oninput=draw;box.querySelector('.st-addb').onclick=add;
-    box.querySelectorAll('input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
-    wrap.onclick=e=>{const b=e.target.closest('button[data-i]');if(!b)return;LS[k].splice(+b.dataset.i,1);draw()};draw()});
+      inp.value='';if(ins){box.querySelector('.st-code').value='';box.querySelector('.st-cf').checked=false}
+      find.value='';draw();wrap.scrollTop=wrap.scrollHeight;inp.focus();toast('เพิ่ม "'+v+'" แล้ว กดบันทึกการตั้งค่าเพื่อใช้งาน')
+    };
+    find.oninput=()=>{draw();wrap.scrollTop=0};box.querySelector('.st-addb').onclick=add;
+    box.querySelectorAll('.st-add input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
+    wrap.onclick=e=>{
+      const b=e.target.closest('button[data-i]');if(!b)return;
+      const index=+b.dataset.i,row=LS[k][index];if(row===undefined)return;
+      const label=ins?row[0]:row;
+      if(!confirm('ลบ "'+label+'" ออกจากรายการตั้งค่า?\nรายการจะยังไม่ถูกบันทึกจนกว่าจะกด “บันทึกการตั้งค่า”'))return;
+      LS[k].splice(index,1);draw();toast('นำ "'+label+'" ออกจากรายการชั่วคราวแล้ว')
+    };draw();
+  });
   const lkLoad=async()=>{if(!LIVE)return;try{const st=await DB.lineStatus();if(!$('#lk-save'))return;
       $('#lk-token-st').textContent=st.token?'✓ ใส่แล้ว ('+st.token+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-secret-st').textContent=st.secret?'✓ ใส่แล้ว ('+st.secret+') กรอกใหม่เฉพาะตอนต้องการเปลี่ยน':'ยังไม่ได้ใส่';$('#lk-token').placeholder=st.token?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel access token';$('#lk-secret').placeholder=st.secret?'ใส่แล้ว · เว้นว่างไว้ถ้าไม่เปลี่ยน':'วาง Channel secret';$('#lk-to').value=st.to||''}
     catch(err){$('#lk-token-st').textContent=err.message}};lkLoad();
@@ -6710,4 +6726,41 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 @media screen and (prefers-reduced-motion:reduce){
   #view .nb-tools .ios-row .ios-btn,#view .st .st-ni{transition:none;transform:none!important}
 }
+
+/* SIAMSERVICE SETTINGS LIST USABILITY / DISPLAY-ONLY -- does not affect printed receipts */
+@media screen {
+  #view .st .st-list-readable{display:flex;flex-direction:column;gap:10px;min-width:0}
+  #view .st .st-list-readable>span:first-child{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;color:#102d64;font-weight:740;font-size:15px}
+  #view .st .st-searchline{display:flex;flex-direction:column;gap:6px;min-width:0}
+  #view .st .st-search-label{color:#51647e;font-size:12.5px;font-weight:650}
+  #view .st .st-searchline .st-find{display:block;box-sizing:border-box;width:100%;min-width:0;min-height:43px;border:1px solid #cbd7eb;background:#f8fbff;color:#102d64;border-radius:10px;padding:9px 12px;font:inherit;font-size:14px;outline-offset:2px}
+  #view .st .st-searchline .st-find:focus{border-color:#1d63ed;outline:2px solid #cbdcff;background:#fff}
+  #view .st .st-list-readable .st-add{display:flex;gap:8px;align-items:center;min-width:0;flex-wrap:wrap;padding:10px;border:1px solid #dce6f5;border-radius:12px;background:#f8fbff}
+  #view .st .st-list-readable .st-add .st-in{background:#fff;min-width:150px;flex:1 1 180px;min-height:42px}
+  #view .st .st-list-readable .st-add .st-code{background:#fff;min-height:42px;flex:0 1 95px}
+  #view .st .st-list-readable .st-addb{min-height:42px;background:#1d63ed;color:#fff;flex:0 0 auto}
+  #view .st .st-list-summary{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#657992;font-size:12px}
+  #view .st .st-list-summary .st-showing{color:#163b77;font-weight:650}
+  #view .st .st-list-readable .st-chips{display:flex;flex-direction:column;flex-wrap:nowrap;align-content:stretch;gap:0;height:auto;max-height:318px;min-height:78px;overflow-y:auto;overflow-x:hidden;background:#fff;border:1px solid #dce6f5;border-radius:12px;padding:4px 9px;box-sizing:border-box}
+  #view .st .st-list-readable .st-chips.sm{height:auto;max-height:260px;min-height:78px}
+  #view .st .st-list-readable .st-chips .chip.st-item{width:100%;max-width:100%;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto;margin:0;padding:9px 4px;border:0;border-radius:0;border-bottom:1px solid #edf1f7;background:#fff;color:#183257;font-size:13.5px;line-height:1.5;min-height:41px}
+  #view .st .st-list-readable .st-chips .chip.st-item:last-child{border-bottom:0}
+  #view .st .st-list-readable .st-chips .chip.st-item.new{background:#eefaf2}
+  #view .st .st-list-readable .st-chips .st-item-label{flex:1;min-width:0;overflow-wrap:anywhere;word-break:break-word}
+  #view .st .st-list-readable .st-chips .st-item-label em{font-size:11.5px;color:#657992;font-weight:500}
+  #view .st .st-list-readable .st-chips .st-item-label i{display:inline-block;margin-left:6px;color:#945c0b;font-size:11px;font-style:normal;background:#fff3d5;padding:2px 7px;border-radius:999px}
+  #view .st .st-list-readable .st-chips .st-item>button{position:static;flex:0 0 auto;border:1px solid #fecaca;border-radius:7px;background:#fff5f5;color:#b91c1c;padding:6px 11px;min-height:33px;width:auto;height:auto;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;opacity:1}
+  #view .st .st-list-readable .st-chips .st-item>button:hover{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+  #view .st .st-list-readable .st-chips .st-none{padding:18px 10px;text-align:center}
+  #view .st .st-list-readable .st-chips::-webkit-scrollbar{width:7px}
+  #view .st .st-list-readable .st-chips::-webkit-scrollbar-thumb{border-radius:10px;background:#b9cbe2}
+  #view .st .st-list-readable input:focus-visible,#view .st .st-list-readable button:focus-visible{outline:2px solid #1d63ed;outline-offset:2px}
+  @media(max-width:720px){
+    #view .st .st-list-readable .st-add .st-in{flex:1 1 100%}
+    #view .st .st-list-readable .st-addb{flex:1 1 100%}
+    #view .st .st-list-readable .st-chips{max-height:270px}
+    #view .st .st-list-readable .st-chips.sm{max-height:230px}
+  }
+}
+/* END SIAMSERVICE SETTINGS LIST USABILITY */
 </style>
