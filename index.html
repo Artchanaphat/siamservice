@@ -2005,6 +2005,248 @@ body{margin:0}
 }
 </style>
 <!-- /SIAM_WORKFLOW_V1_SCREEN_STYLES -->
+
+<style id="siamservice-ux-unify-v2">
+/* SIAM SERVICE · UI UNIFY 2026-10-27
+   หน้ารองให้ใช้ visual language เดียวกับ Dashboard / เปิดบิลใหม่
+   Screen-only visual layer. No receipt, billing, tax, database, or navigation logic changes.
+   Safe to remove as one block; use the installer for current index.html.
+*/
+@media screen {
+  /* Base visual consistency — scoped to working screens, not the sidebar or print */
+  #view :is(.ui-head,.ltop){
+    display:flex;align-items:center;gap:11px 13px;flex-wrap:wrap;
+    margin-bottom:16px;padding-bottom:14px;
+    border-bottom:1px solid #dce6f3;
+  }
+  #view :is(.ui-head,.ltop) :is(h1,.ui-tt h1){
+    font-size:20px!important;line-height:1.36!important;font-weight:780!important;
+    letter-spacing:-.025em;color:#102957!important;
+  }
+  #view .ui-head .ui-tt {min-width:0;flex:1 1 auto}
+  #view .ui-head .ui-sub,#view .ltop .sub {font-size:12.5px;line-height:1.5;color:#617590}
+  #view :is(.ui-head,.ltop) .ui-ic{
+    width:42px;height:42px;flex:none;border-radius:13px;
+    background:#e8f1ff;color:#165ad7;box-shadow:inset 0 0 0 1px #dbe9ff;
+    display:inline-flex;align-items:center;justify-content:center;
+  }
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st,.ps-scope,.ctabs) :is(button,input,select,textarea):focus-visible{
+    outline:3px solid rgba(29,99,237,.30)!important;outline-offset:2px;
+  }
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st) :is(.btn,.sort-btn,.chip):not(:disabled){
+    transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,transform .12s ease;
+  }
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st) :is(.btn,.sort-btn,.chip):not(:disabled):active{
+    transform:translateY(1px);
+  }
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st) .btn:not(.sm){min-height:37px;border-radius:10px}
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st) :is(input:not([type=checkbox]):not([type=radio]),select,textarea){
+    border-radius:10px;accent-color:#1d63ed;
+  }
+  #view :is(.ui,.dj,.qq,.sm,.tk,.aux,.st) :is(input,select,textarea)::placeholder{color:#8493aa;opacity:1}
+
+  /* KPI cards across finance, tracking, delivery and monthly report */
+  #view .ui-kpis{gap:12px;margin-bottom:16px}
+  #view .ui-kpi{
+    position:relative;min-height:94px;border:1px solid #dde7f5!important;
+    border-radius:17px!important;padding:17px 18px!important;
+    background:linear-gradient(160deg,#fff 55%,#f7faff 100%)!important;
+    box-shadow:0 4px 16px rgba(19,52,103,.045)!important;
+    overflow:hidden;
+  }
+  #view .ui-kpi::before{
+    content:"";position:absolute;inset:0 auto 0 0;width:3px;
+    background:#78a9fb;opacity:.62;border-radius:12px;
+  }
+  #view .ui-kpi[data-t=green]::before{background:#23bd83}
+  #view .ui-kpi[data-t=orange]::before,#view .ui-kpi[data-t=amber]::before{background:#f4a71c}
+  #view .ui-kpi[data-t=red]::before{background:#ee646d}
+  #view .ui-kpi[data-t=violet]::before{background:#8460d9}
+  #view .ui-kpi .k-l{font-size:12.5px!important;color:#61718c!important;line-height:1.4}
+  #view .ui-kpi .k-v{font-size:clamp(19px,1.75vw,27px)!important;font-weight:800!important;line-height:1.28;letter-spacing:-.03em}
+  #view .ui-kpi .k-s{font-size:11.5px!important;line-height:1.45;color:#71839d}
+  #view .ui-kpi .k-ic{border-radius:12px!important;flex:none}
+  #view .ui-kpi:hover{border-color:#b7cef1!important;box-shadow:0 8px 22px rgba(19,52,103,.08)!important}
+  #view button.ui-kpi.on{background:#f4f8ff!important;box-shadow:0 0 0 2px var(--t),0 4px 16px rgba(19,52,103,.06)!important}
+
+  /* Unified panels and table density. Important: print rules are untouched. */
+  #view :is(.ui-card,.dj-card,.qq-add,.sm-scard,.tk-c,.aux-card,.ps-head-card,.ps-date-card){
+    border:1px solid #dee8f5;border-radius:16px;
+    box-shadow:0 4px 15px rgba(19,52,103,.045);
+  }
+  #view .ui-card{background:#fff;overflow:hidden}
+  #view .ui-card-h{min-height:48px;padding:13px 17px;border-bottom:1px solid #e7edf6}
+  #view .ui-card-h h2{font-size:15px!important;font-weight:750;color:#152d59!important}
+  #view .ui-card-b{padding:16px}
+  #view :is(.ui-tbl,.ltable,.dj-tbl,.aux-tbl,.cl-list,.cl-tbl,.db-tbl2) th{
+    background:#f0f5fd!important;color:#344c75!important;
+    font-size:12.5px!important;font-weight:750!important;letter-spacing:0!important;
+    white-space:normal;
+  }
+  #view :is(.ui-tbl,.ltable,.dj-tbl,.aux-tbl,.cl-list,.cl-tbl,.db-tbl2) td{
+    font-size:13px!important;line-height:1.5;color:#213657;
+    border-bottom-color:#eaf0f7;
+  }
+  #view :is(.ui-tbl,.ltable,.dj-tbl,.aux-tbl,.cl-list,.cl-tbl,.db-tbl2) tbody tr:nth-child(even){background:#fbfdff}
+  #view :is(.ui-tbl,.ltable,.dj-tbl,.aux-tbl,.cl-list,.cl-tbl,.db-tbl2) tbody tr:hover{background:#f0f6ff!important}
+  #view :is(.ui-pill,.dj-pill,.st-ok,.st-debt){font-weight:700;line-height:1.4}
+  #view .ui-empty{padding:42px 20px;color:#667b99;text-align:center}
+  #view .ui-note{border-radius:12px;line-height:1.55}
+
+  /* TRACK: hierarchy and a compact, readable 5-step journey */
+  #view .tk .tk-f{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+  #view .tk .tk-f .chip{border-radius:999px;min-height:37px;padding:7px 14px;font-size:12.5px;font-weight:650}
+  #view .tk .tk-f .chip.on{background:#1d63ed;color:#fff;border-color:#1d63ed;box-shadow:0 3px 8px rgba(29,99,237,.16)}
+  #view .tk .tk-f .chip b{padding:2px 6px;border-radius:999px;background:rgba(100,121,162,.10);font-size:11px}
+  #view .tk .tk-f .chip.on b{background:rgba(255,255,255,.20)}
+  #view .tk .tk-k .ui-kpi{min-height:77px!important;padding:13px 16px!important}
+  #view .tk .tk-k .k-v{font-size:25px!important}
+  #view .tk .tk-list{gap:11px}
+  #view .tk .tk-c{padding:14px 17px;transition:border-color .2s,box-shadow .2s}
+  #view .tk .tk-c:hover{border-color:#b7cef1;box-shadow:0 8px 24px rgba(15,43,92,.09)}
+  #view .tk .tk-h{gap:8px 11px;margin-bottom:8px}
+  #view .tk .tk-h .plate{font-weight:760}
+  #view .tk .tk-h .sub{font-size:12.5px;line-height:1.45;color:#667b98}
+  #view .tk .tk-h .btn{min-height:32px;padding:6px 13px}
+  #view .tk .jt{gap:3px;list-style:none;margin:0;padding:2px 0 0}
+  #view .tk .jt li{gap:3px;padding:2px 2px 3px}
+  #view .tk .jt li i{width:27px;height:27px;font-size:12px;z-index:1}
+  #view .tk .jt li b{font-size:12.5px;font-weight:720;line-height:1.3}
+  #view .tk .jt li small{font-size:11.5px;line-height:1.25;color:#7888a1}
+  #view .tk .jt li.jt-now b{color:#a65d0c}
+  #view .tk .jt li.jt-bad b{color:#c62838}
+  #view .tk .jt li:not(:last-child)::after{top:15px}
+
+  /* CUSTOMER: four cards, month chips and tidy searching */
+  #view .ctabs{gap:11px;margin:0 0 14px}
+  #view .ctabs .tab-card{
+    min-height:103px;padding:14px!important;background:#fff;
+    border:1px solid #e0e8f5!important;border-radius:15px!important;
+    box-shadow:0 4px 12px rgba(20,48,98,.045);
+  }
+  #view .ctabs .tab-card:hover{border-color:#aac9f8!important;transform:translateY(-1px)}
+  #view .ctabs .tab-card.active{border-color:#a5b8f3!important;background:#f1f5ff!important;box-shadow:0 3px 11px rgba(29,99,237,.08)}
+  #view .ctabs .tab-icon-box{border-radius:11px!important;width:41px;height:41px}
+  #view .ctabs .tab-label{font-size:12.5px!important;font-weight:750;line-height:1.4}
+  #view .months{display:flex;gap:5px 7px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+  #view .months .mchip{min-height:32px;border-radius:9px;padding:6px 10px;font-size:12px}
+  #view .sortbar{gap:9px;min-height:54px;padding:8px 0 13px;flex-wrap:wrap}
+  #view .sortbar .sort-btn{min-height:35px;border-radius:9px;font-size:12.5px;font-weight:650}
+  #view .sortbar .search-pill{min-height:37px;border-radius:11px;background:#fff;border:1px solid #dae5f5}
+  #view .ltable .sub{font-size:11.5px}
+  #view .ltable tbody tr{transition:background .14s ease}
+
+  /* DLT: overview and action bar matching the main page */
+  #view .dj .dj-ovs{border-radius:16px}
+  #view .dj .dj-chips{gap:10px;margin-bottom:14px}
+  #view .dj .dj-chips button{border-radius:15px!important;padding:14px!important;min-height:86px;border:1px solid #dce6f4!important;box-shadow:0 3px 12px rgba(20,48,98,.04)}
+  #view .dj .dj-chips button:hover{border-color:#a9c6f5!important}
+  #view .dj .dj-bar{gap:9px;flex-wrap:wrap}
+  #view .dj .dj-card{overflow:hidden}
+  #view .dj .dj-alert{border-radius:12px;padding:11px 14px;line-height:1.5}
+  #view .dj .dj-tbl td{vertical-align:middle}
+  #view .dj .dj-tbl .btn{font-size:12px}
+
+  /* Finance: income / receivables / daily close / expense / monthly summary */
+  #view .sm-topbar{gap:10px 12px;margin-bottom:15px}
+  #view .sm-topbar .tb-title{font-size:19px!important;font-weight:770;color:#102b59!important;line-height:1.4}
+  #view .sm-topbar-actions{display:flex;flex-wrap:wrap;gap:8px}
+  #view .sm-summary{gap:12px;margin-bottom:14px}
+  #view .sm-scard{min-height:110px;padding:18px!important;background:#fff!important;box-shadow:0 4px 14px rgba(19,52,103,.04)!important}
+  #view .sm-scard.active-card{box-shadow:0 0 0 2px rgba(29,99,237,.14),0 6px 18px rgba(17,58,125,.1)!important}
+  #view .sm-filterbar{gap:8px 12px;padding:13px!important;border:1px solid #e1e9f6;border-radius:13px!important;background:#fff!important}
+  #view .sm-filterbar :is(input,select){min-height:35px}
+  #view .sm-tbl{background:#fff;border:1px solid #e2e9f5;border-radius:14px;overflow:hidden}
+  #view .sm-r{line-height:1.5}
+  #view :is(.cl2,.ex2,.db2) .ui-head{margin-bottom:16px}
+  #view .cl2 .ui-card,#view .ex2 .ui-card,#view .db2 .ui-card{border-radius:16px}
+  #view .cl2 .ui-tbl td,#view .ex2 .ui-tbl td,#view .db2 .ui-tbl td{padding-top:12px;padding-bottom:12px}
+  #view .cl2 #cl-save{border-radius:10px!important;min-height:42px}
+  #view .ex2 .ex-cols{gap:13px}
+  #view .ex2 .ex-cats{gap:7px}
+  #view .ex2 .ex-cats button{border-radius:10px;min-height:33px}
+  #view .ex2 .ui-card-h,#view .db2 .ui-card-h{min-height:50px}
+  #view .db2 .db-tabs{display:flex;gap:7px;flex-wrap:wrap}
+  #view .db2 .db-tabs button{border-radius:999px;min-height:34px;padding:6px 14px;font-weight:650}
+  #view .db2 #db-chart{min-height:215px}
+
+  /* Queue, documents, notifications, settings and audit */
+  #view .qq-add{padding:12px!important}
+  #view .qq-board{gap:12px}
+  #view .qq-col{min-width:0}
+  #view .qq .qc{border-radius:14px;border-color:#e2eaf6;padding:12px 13px;box-shadow:0 3px 9px rgba(16,47,101,.035)}
+  #view .qq .qc .sub{font-size:11.5px;line-height:1.5}
+  #view .qq .qc .qc-act{gap:7px}
+  #view .qq .qc .btn{min-height:35px}
+  #view .ps-scope{max-width:100%}
+  #view .ps-head-card{padding:18px}
+  #view .ps-date-card{padding:15px 17px;margin-bottom:9px}
+  #view .ps-date-card:hover{border-color:#adc8f6;background:#f8fbff}
+  #view .st .stf-card{border:1px solid #e0e9f5;border-radius:15px;box-shadow:0 4px 14px rgba(19,52,103,.045)}
+  #view .st .st-grid{gap:13px}
+  #view .st .field>span{font-size:12.5px;font-weight:680}
+  #view .aux .aux-top{gap:12px;margin-bottom:14px}
+  #view .aux .aux-top h1{font-size:20px!important;color:#102957}
+  #view .aux .aux-bar{gap:9px;flex-wrap:wrap}
+  #view .aux .aux-card{overflow:hidden;background:#fff}
+  #view .aux .aux-tbl td{font-size:12.5px!important}
+
+  /* Empty state and visual feedback, without changing any functionality */
+  #view .empty,#view .ui-empty,#view .ps-empty{line-height:1.7}
+  #view .ui-card:has(.ui-empty){min-height:178px}
+  #view :is(.ui-card,.sm-scard,.tab-card,.tk-c,.qc,.dj-card,.ps-date-card){transition:border-color .16s,box-shadow .16s,transform .12s}
+}
+@media screen and (max-width:1080px){
+  #view .ui-kpi{padding:14px!important}
+  #view .tk .tk-k{grid-template-columns:repeat(auto-fit,minmax(145px,1fr))}
+  #view .dj .dj-chips button{padding:12px!important}
+}
+@media screen and (max-width:640px){
+  #view :is(.ui-head,.ltop){padding-bottom:12px;margin-bottom:12px;gap:8px}
+  #view :is(.ui-head,.ltop) :is(h1,.ui-tt h1){font-size:17px!important}
+  #view :is(.ui-head,.ltop) .ui-ic{width:34px;height:34px;border-radius:10px}
+  #view .ui-head .ui-sub,#view .ltop .sub{font-size:11px}
+  #view .ui-kpis{gap:8px}
+  #view .ui-kpi{min-height:78px;padding:11px 12px!important;border-radius:13px!important}
+  #view .ui-kpi .k-l{font-size:11px!important}
+  #view .ui-kpi .k-v{font-size:18px!important}
+  #view .ui-kpi .k-s{font-size:10px!important}
+  #view .ui-kpi .k-ic{width:36px;height:36px}
+  #view .ui-card-b{padding:12px}
+  #view .tk .tk-c{padding:12px 10px}
+  #view .tk .tk-h{gap:6px 7px;margin-bottom:6px}
+  #view .tk .tk-h .sub{font-size:11px}
+  #view .tk .jt{gap:1px}
+  #view .tk .jt li{padding:3px 0 2px}
+  #view .tk .jt li i{width:23px;height:23px;font-size:11px}
+  #view .tk .jt li b{font-size:10.5px!important}
+  #view .tk .jt li small{font-size:9.5px!important}
+  #view .tk .jt li:not(:last-child)::after{top:14px;left:calc(50% + 13px);right:calc(-50% + 13px)}
+  #view .tk .tk-f{gap:6px}
+  #view .tk .tk-f .chip{min-height:34px;padding:6px 10px;font-size:11.5px}
+  #view .ctabs{gap:7px}
+  #view .ctabs .tab-card{min-height:86px;padding:10px!important;border-radius:12px!important}
+  #view .ctabs .tab-icon-box{width:34px;height:34px}
+  #view .ctabs .tab-label{font-size:11px!important}
+  #view .months{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px;max-width:100%;scrollbar-width:thin}
+  #view .months .mchip{flex:none}
+  #view .sortbar .sort-btn{min-height:34px;font-size:11px}
+  #view .sm-topbar .tb-title{font-size:17px!important}
+  #view .sm-summary{gap:8px}
+  #view .sm-scard{min-height:93px;padding:12px!important}
+  #view .dj .dj-chips{gap:7px}
+  #view .dj .dj-chips button{min-height:73px;padding:10px!important;border-radius:12px!important}
+  #view .qq-add{padding:10px!important}
+  #view .ps-head-card{padding:12px}
+  #view .ps-date-card{padding:12px}
+  #view .aux .aux-top h1{font-size:17px!important}
+  #view .ui-card:has(.ui-empty){min-height:148px}
+}
+@media screen and (prefers-reduced-motion:reduce){
+  #view :is(.ui-card,.sm-scard,.tab-card,.tk-c,.qc,.dj-card,.ps-date-card,.btn,.sort-btn,.chip){transition:none!important;transform:none!important}
+}
+
+</style>
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
 <div class="boot" id="boot"><span class="boot-sp"></span>กำลังโหลดข้อมูล...</div>
 <section class="login" id="login">
