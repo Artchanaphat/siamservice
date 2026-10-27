@@ -1388,3 +1388,282 @@ body{margin:0}
 .sm-carbtn{border-color:#c9d8f5;background:#eef3ff;color:#1d4ed8;border-radius:10px}.sm-carbtn:hover{background:#dfe9ff}
 .sm-paybtn{border-color:#f5d9a8;background:#fffaf0;color:#b45309;border-radius:10px;font-weight:600}.sm-paybtn:hover{background:#fff1d6}
 @media(max-width:760px){.sm-scard{padding:14px}.sm-ic{width:42px;height:42px;border-radius:13px}.sm-ic svg{width:22px;height:22px}.sm-scard-val{font-size:23px}.sm-alldebt,.sm .btn-csv,.sm .btn-printA4{padding:8px 12px;font-size:13.5px}.sm-filterbar{border-radius:14px 14px 0 0;margin:0;padding:12px}.sm .tbl-wrap,.sm .row-count{margin-left:0;margin-right:0}.sm-summary{gap:10px}}
+
+/* ============================================================================
+   SIAM SERVICE — Navy / Royal Blue professional refresh
+   Presentation-only overrides. Original class/id names and original print rules
+   are preserved in full above. These rules apply to screens ONLY.
+   ============================================================================ */
+@media screen {
+  :root {
+    --bg:#f3f6fc;
+    --surface:#ffffff;
+    --surface-2:#f8faff;
+    --line:#e2e9f4;
+    --input-line:#cbd7e8;
+    --ink:#132746;
+    --muted:#657792;
+    --nav:#0b2766;
+    --navy:#0b2766;
+    --navy2:#12408d;
+    --brand:#1d63ed;
+    --brand-ink:#ffffff;
+    --brand-soft:#edf3ff;
+    --action:#1d63ed;
+    --action-dark:#154fc4;
+    --blue:#1d63ed;
+    --blue-dk:#154fc4;
+    --h-blue:#1d63ed;
+    --h-green:#168c59;
+    --h-purple:#7254cc;
+    --h-orange:#dc7f2b;
+    --font-display:"Kanit","IBM Plex Sans Thai",Tahoma,sans-serif;
+    --font-body:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif;
+  }
+  body {background:var(--bg);color:var(--ink);font-family:var(--font-body);line-height:1.55}
+  .sbody {min-width:0}
+  .side {background:linear-gradient(178deg,#0b2766 0%,#0a2258 60%,#071b45 100%)}
+  .sbrand {background:linear-gradient(115deg,#092257,#103781 80%,#1d63ed 100%);border-bottom-color:rgba(255,255,255,.13)}
+  .sbrand b {font-size:21px;letter-spacing:.1px}
+  .sbrand small {color:#cddcf7}
+  .snav {gap:4px}
+  .sn-i {border-radius:10px;color:#deebff}
+  .sn-i:hover {background:rgba(255,255,255,.11)}
+  .sn-i.on {background:linear-gradient(110deg,#1d63ed,#367cff);box-shadow:0 5px 14px rgba(6,20,65,.25)}
+  .ssum {border-color:rgba(255,255,255,.13);background:rgba(255,255,255,.065);border-radius:15px}
+  .topwrap {border-bottom-color:#e4ebf6;box-shadow:0 3px 18px rgba(11,39,102,.045)}
+  .topbar,.topbar.topbar {color:#132746}
+  .pfname,.ltop h1,.ui-head h1 {color:#0b2766}
+  .tbell-btn,.tb-btn svg {color:#1d63ed}
+  .pfbtn {border-radius:12px!important}
+  .tbell-menu {border-color:#dbe5f3;box-shadow:0 16px 40px rgba(11,39,102,.13)}
+  main {background:transparent}
+  .wrap {gap:19px}
+  .head h1,.bf-head h1 {font-family:var(--font-display);font-size:24px;font-weight:600;color:#0b2766}
+  .sub,.label,.bf-crumb {color:#64758f}
+  .card,.ui-card,.ui-kpi,.bf-card,.sm-scard,.exp,.tbl-wrap {
+    border-color:#e1e9f4;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(11,39,102,.055);
+  }
+  .card {background:#fff}
+  .h3,.bf-card h3,.sm-topbar .tb-title {color:#0b2766;font-weight:600}
+  .ltop .ui-ic,.ui-head .ui-ic {background:#eaf1ff;color:#1d63ed}
+  .btn,.btn-add,.btn-apply,.btn-send {background:#1d63ed;color:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(29,99,237,.16)}
+  .btn:hover,.btn-add:hover,.btn-apply:hover,.btn-send:hover {background:#1452cb;color:#fff;box-shadow:0 6px 15px rgba(29,99,237,.19)}
+  .btn.ghost {background:#edf3ff;color:#0b2766;box-shadow:none}
+  .btn.ghost:hover {background:#e0eaff;color:#0b2766}
+  .btn.line {background:#fff;border-color:#d2dff0;color:#23416c;box-shadow:none;border-radius:10px}
+  .btn.line:hover {background:#f0f5ff;border-color:#aec6f5;color:#0b2766}
+  .chip,.mchip,.sort-btn,.nav {border-color:#d3dff0}
+  .chip[aria-pressed="true"],.mchip.on,.sort-btn.on,.nav[aria-current="page"] {background:#1d63ed;border-color:#1d63ed;color:#fff}
+  .pill,.hp {border-radius:999px}
+  input:not([type="checkbox"]):not([type="radio"]),select,textarea {border-color:#cbd7e8;border-radius:10px;font-family:var(--font-body)}
+  input:focus,select:focus,textarea:focus {border-color:#1d63ed;box-shadow:0 0 0 3px rgba(29,99,237,.12)}
+  .field>span {color:#53647d}
+  .tablewrap,.tbl-wrap {max-width:100%;min-width:0}
+  th {background:#eef4ff;color:#25416b;font-weight:600}
+  td {border-bottom-color:#e8edf6}
+  .rowbtn:hover td,.hm-t tbody tr:hover td,.sm-r:hover td {background:#f4f8ff}
+  .plate {border-radius:7px}
+  .ss-dd {border-color:#cbd7e8;border-radius:11px;box-shadow:0 12px 28px rgba(11,39,102,.14)}
+  .ss-it.on,.ss-it:hover {background:#1d63ed;color:#fff}
+  .ss-it.sel,.ac-zip {color:#1d63ed}
+  .panel {background:#f5f8fe}
+  .toast {background:#0b2766;border-radius:12px;box-shadow:0 10px 26px rgba(11,39,102,.22)}
+  /* Home: visual hierarchy, without changing the existing card or button flow. */
+  .hd {gap:19px}
+  .hk-row,.hb-row {gap:14px}
+  .hk {border-color:#e1e9f4;border-radius:17px;box-shadow:0 4px 16px rgba(11,39,102,.045)}
+  .hk:hover {box-shadow:0 9px 23px rgba(11,39,102,.085)}
+  .hk-l {color:#294264}
+  .hk-v b {color:#0b2766}
+  .hk-d {color:#697b94}
+  .hq {border-radius:18px;border-color:#d6e3fa;background:linear-gradient(120deg,#eef4ff 0%,#e4edff 60%,#d9e6ff 100%)}
+  .hq-h h2 {color:#0b2766}
+  .hq-b {border-radius:13px;box-shadow:0 6px 16px rgba(11,39,102,.11)}
+  .hm,.hm-side {gap:16px}
+  .hm-fc {border-color:#d9e4f3;border-radius:9px}
+  .hm-fc.on {background:#1d63ed;border-color:#1d63ed}
+  .hm-t th {background:#f2f6fe;color:#315072;border-color:#e4eaf5}
+  .hc-h h2 {color:#0b2766}
+  .cal-d.today {background:#1d63ed}
+  .hb {border-radius:16px}
+  /* Bill entry: clear groups, friendlier controls, same input names and actions. */
+  .bf-head {gap:12px 18px}
+  .bf-steps {gap:5px}
+  .bf-steps button {border-radius:11px;color:#60738e}
+  .bf-steps button.on {background:#e9f1ff;color:#0b2766}
+  .bf-steps button.on span {background:#1d63ed}
+  .bf-lay {gap:16px}
+  #bill .card.sec {border-color:#dfe8f4;border-radius:16px;box-shadow:0 5px 17px rgba(11,39,102,.055)}
+  #bill .sech.bf-sh {border-radius:15px 15px 0 0;font-family:var(--font-display);font-weight:600}
+  #bill .sech.s1 {background:linear-gradient(100deg,#0b2766,#1d63ed)}
+  #bill .sech.s2 {background:linear-gradient(100deg,#0d7548,#19a66e)}
+  #bill .sech.s3 {background:linear-gradient(100deg,#a85a19,#e9943d)}
+  #bill .field>span {color:#34455f;font-weight:500}
+  #bill .field {gap:8px}
+  #bill .form {column-gap:18px;row-gap:9px}
+  #bill input,#bill select {border-color:#cad7e8;border-radius:9px}
+  #bill input:focus,#bill select:focus {border-color:#1d63ed;box-shadow:0 0 0 3px rgba(29,99,237,.12)}
+  #svc {background:#f5f9ff}
+  [data-svc] {border-radius:10px;box-shadow:0 2px 7px rgba(11,39,102,.055)}
+  [data-svc]:hover {box-shadow:0 5px 13px rgba(11,39,102,.13)}
+  .bf-card {padding:16px}
+  .bf-find {background:linear-gradient(180deg,#f1f6ff,#fff 72%)}
+  .bf-sum {background:linear-gradient(180deg,#fff,#f8faff)}
+  .bf-sum .paybar .pf:first-child {background:#eaf2ff}
+  .bf-sum .paybar #sum-total {color:#1d63ed!important}
+  .bf-btns .btn {border-radius:11px}
+  .paybar {border-top-color:#b5ccf6}
+  /* Other modules receive the same coherent surfaces / controls. */
+  .mcard,.tab-card,.ps-head-card,.ps-date-card,.ps-paper,.smspick,.smsp-head,.smsp .section-card {
+    border-color:#e1e9f4;border-radius:15px;box-shadow:0 4px 15px rgba(11,39,102,.045);
+  }
+  .mic,.tab-icon-box {border-radius:13px}
+  .exp {background:#fff}
+  .expt {background:#eff4fc}
+  .expt button[aria-selected="true"] {color:#1d63ed}
+  .sm-topbar .tb-title {font-size:21px}
+  .sm-scard {border-color:#e1e9f4}
+  .sm-filterbar,.sm .tbl-wrap {border-color:#e1e9f4}
+  .sm-tbl th,.ltable th,.smsp-tbl th {background:#f2f6fe;color:#29456f}
+  .sm-tel,.sm-dash,.tel {color:#1d63ed!important}
+  .sum-row.net,.sd .sum-row.net {background:#eaf2ff}
+  .sum-row.net .sval,.sd .sum-row.net .sval {color:#1d63ed}
+  .sd .hdr,.sd .card,.sd .sum-card {border-color:#e1e9f4;border-radius:15px;box-shadow:0 3px 13px rgba(11,39,102,.04)}
+  .sd .card-head {background:#f5f8ff;color:#0b2766;border-bottom-color:#e5ebf5}
+  .sd .val.blue {color:#1d63ed}
+  .news-row {border-color:#e1e9f4}
+  .news-row:hover {border-color:#c1d4f8;box-shadow:0 6px 16px rgba(11,39,102,.09)}
+  .news-row .row-dot {background:#1d63ed}
+  .search-pill:focus-within {border-color:#1d63ed}
+  .btn-add,.sort-btn.on,.mchip.on {background:#1d63ed;border-color:#1d63ed}
+  .xbtn.blue {background:#1d63ed}
+  .xbtn.blue:hover {background:#1452cb;color:#fff}
+}
+/* Responsive adjustments are limited to screens, never A4 print output. */
+@media screen and (max-width:1024px) {
+  .shell,.sbody,main,.wrap {min-width:0;max-width:100%}
+  .topbar,.topbar.topbar {gap:10px}
+  .tleft,.tmid,.tright {min-width:0}
+  .bf-lay {grid-template-columns:minmax(0,1fr)}
+  .bf-side {position:static;max-height:none;overflow:visible}
+  .sm-summary {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media screen and (max-width:760px) {
+  .topbar,.topbar.topbar {padding:0 12px}
+  .tbell-menu {max-width:calc(100vw - 24px)}
+  main {padding:15px 12px 36px!important}
+  .wrap,.hd {gap:13px}
+  .head h1,.bf-head h1 {font-size:21px}
+  .hk-row,.hb-row,.hq-g {gap:10px}
+  .hm-side,.cols {grid-template-columns:minmax(0,1fr)}
+  .form,#bill .form {grid-template-columns:minmax(0,1fr)}
+  #bill .field {flex-direction:column;align-items:stretch;gap:5px}
+  #bill .field>span {flex:none;text-align:left;font-size:13.5px}
+  #bill .field>input,#bill .field>select,#bill .field>.row,#bill .field>.fc,#bill .field>.dsel {max-width:100%;width:100%;min-width:0;flex:1 1 auto}
+  #bill .field>input.money,#bill .field>input.wide,#bill .field.full>input.wide {max-width:100%}
+  #bill .fc>input,#bill .fc>select,#bill .fc>.ss {max-width:100%;min-width:0}
+  #bill .card.sec {border-radius:13px}
+  #bill .sech.bf-sh {border-radius:12px 12px 0 0}
+  .bf-steps {max-width:100%;gap:4px}
+  .bf-steps button {font-size:12.5px;padding:5px 7px 5px 5px;min-width:0}
+  .bf-steps button span {width:23px;height:23px;font-size:12px}
+  .bf-card {padding:12px}
+  .sm-summary {grid-template-columns:minmax(0,1fr)}
+  .sm-filterbar {min-width:0}
+  .sm-search,.sm-search-wrap {min-width:0;max-width:100%}
+  .sm-daterow {max-width:100%;gap:7px}
+  .sm-field-wrap {min-width:0;flex-wrap:wrap}
+  .sm-field-wrap select {max-width:100%}
+  .sm-tbl tr.sm-r td {min-width:0;overflow-wrap:anywhere}
+  .sm-tbl tr.sm-r td.sm-type {min-width:0}
+  .ltable td {overflow-wrap:anywhere}
+  .panel {max-width:100vw}
+  .dates {grid-template-columns:repeat(3,minmax(0,1fr))}
+  .mgrid,.ctabs,.tiles,.kpis {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ps-picker-row,.smsp .section-header {flex-wrap:wrap}
+  .ps-picker-select {min-width:0}
+  .row,.actions,.lrow {min-width:0}
+  .tablewrap,.tbl-wrap {max-width:100%;overflow-x:auto}
+}
+@media screen and (max-width:480px) {
+  html,body {max-width:100%;overflow-x:clip}
+  .shell,.sbody,.topwrap,.topbar,main,.wrap,.hd,.bf-lay,.billmain,.bf-side {max-width:100%;min-width:0}
+  .topbar,.topbar.topbar {padding:0 10px;gap:7px}
+  .tleft {gap:6px;min-width:0}
+  .tleft .tb-btn {max-width:120px;min-width:0}
+  .tleft .tb-btn b {max-width:78px}
+  .tmlogo {width:34px!important;height:34px!important}
+  .sburger {width:38px;height:38px;border-radius:11px}
+  .tbell-btn {width:35px;height:35px}
+  .tright.pf,.tbell {padding-left:3px}
+  .pfbtn {padding:3px!important}
+  .pfbtn .avatar {width:34px;height:34px}
+  main {padding:13px 10px 34px!important}
+  .head {gap:8px}
+  .head h1,.bf-head h1 {font-size:20px}
+  .card {padding:13px;border-radius:13px}
+  .hk-row,.hq-g {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hk {padding:12px;gap:7px;border-radius:14px}
+  .hk-l {font-size:12.5px}
+  .hk-v b {font-size:25px}
+  .hk-d {font-size:11.5px}
+  .hq {padding:14px 12px;border-radius:15px}
+  .hq-h h2 {font-size:19px}
+  .hq-b {padding:11px;border-radius:12px}
+  .hq-b b {font-size:14.5px}
+  .hq-b small {font-size:11.5px}
+  .hm-tabs {max-width:100%}
+  .hm-tabs button {min-width:0}
+  .hm-t tr {padding:9px 10px}
+  .hm-t td {min-width:0;overflow-wrap:anywhere}
+  .bf-head,.bf-steps,.bf-lay {max-width:100%}
+  .bf-steps button {font-size:11.5px;padding:4px 6px 4px 4px}
+  .bf-steps button span {width:21px;height:21px}
+  #bill .sec {padding:10px 12px}
+  #bill .form {gap:8px}
+  #bill .field {min-width:0}
+  #bill .field>.fc {min-width:0;max-width:100%}
+  #bill .fc>input,#bill .fc>select,#bill .fc>.ss {flex:1 1 95px}
+  #bill .dsel {max-width:100%;min-width:0}
+  #bill .dsel select {min-width:0;max-width:100%}
+  #bill .sech.s2 small {display:none}
+  #svc {grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:10px}
+  [data-svc] {max-width:100%;min-width:0;font-size:12px;white-space:normal;padding:9px 7px}
+  .bf-btns {gap:8px}
+  .bf-btns .btn {min-width:0;font-size:13.5px}
+  .paybar,.pf {gap:8px;min-width:0}
+  .actions .xbtn {min-width:0;flex:1 1 42%}
+  .sm-summary {gap:9px}
+  .sm-scard {min-width:0;border-radius:13px}
+  .sm-topbar .tb-title {font-size:19px}
+  .sm-filterbar {padding:10px}
+  .sm-daterow {width:100%}
+  .sm-search {flex:1 1 100%}
+  .sm-tbl tr.sm-r td {padding-right:24px;overflow-wrap:anywhere}
+  .sm-xg,.sm-items {grid-template-columns:minmax(0,1fr)}
+  .sm-xg>div {min-width:0}
+  .ltop:has(.ui-ic) h1 {min-width:0;font-size:17px}
+  .ctabs,.mgrid,.tiles,.kpis {gap:9px}
+  .tab-card,.mcard {min-width:0;padding:13px 7px;border-radius:13px}
+  .tab-label,.mcard b {font-size:12.5px}
+  .search-pill {max-width:100%;min-width:0}
+  .smsp .stats-row {grid-template-columns:repeat(2,minmax(0,1fr))}
+  .smsp .stat-card {min-width:0;padding:12px}
+  .smsp .stat-card .value {font-size:24px}
+  .smsp-search {flex-wrap:wrap;min-width:0}
+  .smsp-search input {width:100%;max-width:100%}
+  .smsp-head,.smsp .section-header,.smsp .section-body {padding:12px}
+  .ps-head-card,.ps-paper {padding:13px}
+  .ps-picker-select {font-size:14px!important}
+  .sd .hdr,.sd .card,.sd .sum-card {max-width:100%}
+  .sd .row {min-width:0;overflow-wrap:anywhere}
+  .sd .val {max-width:100%;overflow-wrap:anywhere}
+  .news-row {min-width:0;padding:12px;gap:8px}
+  .news-row .row-title {overflow-wrap:anywhere}
+  .nb-modal {max-width:100%;padding:18px}
+  .ss-dd {max-width:min(330px,calc(100vw - 30px))}
+  .ac-dd {min-width:0}
+}
