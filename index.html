@@ -1994,6 +1994,17 @@ body{margin:0}
 }
 </style>
 <!-- /SIAMSERVICE_V6_CLIPBOARD_ADDON_V1 -->
+
+<!-- SIAM_WORKFLOW_V1_SCREEN_STYLES: screen-only; receipt styles unchanged -->
+<style id="siam-workflow-screen-styles">
+@media screen {
+  .qq-board .qc.siam-q-focused {outline:3px solid #1d63ed;outline-offset:3px;box-shadow:0 0 0 6px rgba(29,99,237,.11),0 8px 22px rgba(17,40,89,.15)}
+  .siam-dlt-history {display:inline-flex;align-items:center;gap:8px;color:#31456a;font-size:12px;font-weight:600;flex-wrap:wrap}
+  .siam-dlt-history select {padding:9px 27px 9px 10px;min-height:36px;background:#fff;border:1px solid #cad6e8;border-radius:9px;color:#0b2766;font:inherit}
+  @media(max-width:540px){.siam-dlt-history {width:100%}.siam-dlt-history select{flex:1;min-width:155px}}
+}
+</style>
+<!-- /SIAM_WORKFLOW_V1_SCREEN_STYLES -->
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
 <div class="boot" id="boot"><span class="boot-sp"></span>กำลังโหลดข้อมูล...</div>
 <section class="login" id="login">
@@ -2404,12 +2415,17 @@ R.home=()=>{
   const QP={wait:'warn',check:'info',pass:'ok',fail:'bad'};
   const rows=()=>{const s=hdQ.replace(/\s/g,'').toLowerCase(),hit=x=>!s||[x.plate,x.name,x.tel,x.no].join('').replace(/\s/g,'').toLowerCase().includes(s);
     if(hdTab==='queue'){const L=qT.filter(q=>(hdQF==='all'||q.st===hdQF)&&hit(q));
-      return L.length?`<div class="tablewrap"><table class="hm-t"><thead><tr><th>ลำดับ</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ประเภทรถ</th><th>ชื่อลูกค้า</th><th>สถานะ</th><th></th></tr></thead><tbody>${L.map(q=>`<tr><td data-l="ลำดับ">${qT.indexOf(q)+1}</td><td data-l="เวลา">${hmOf(q.at.created)}</td><td data-l="ทะเบียน"><b>${esc(q.plate)}</b><div class="sub">${esc(q.prov||'')}</div></td><td data-l="ประเภทรถ" title="${esc(q.ctype||'')}">${esc(ctShort(q.ctype))}</td><td data-l="ลูกค้า">${esc(q.name||'–')}</td><td data-l="สถานะ"><span class="hp ${QP[q.st]}">${Q_ST[q.st][0]}</span></td><td class="act"><button type="button" class="btn line sm" data-go="queue">จัดการ</button></td></tr>`).join('')}</tbody></table></div>`
+      return L.length?`<div class="tablewrap"><table class="hm-t"><thead><tr><th>ลำดับ</th><th>เวลา</th><th>ทะเบียนรถ</th><th>ประเภทรถ</th><th>ชื่อลูกค้า</th><th>สถานะ</th><th></th></tr></thead><tbody>${L.map(q=>`<tr><td data-l="ลำดับ">${qT.indexOf(q)+1}</td><td data-l="เวลา">${hmOf(q.at.created)}</td><td data-l="ทะเบียน"><b>${esc(q.plate)}</b><div class="sub">${esc(q.prov||'')}</div></td><td data-l="ประเภทรถ" title="${esc(q.ctype||'')}">${esc(ctShort(q.ctype))}</td><td data-l="ลูกค้า">${esc(q.name||'–')}</td><td data-l="สถานะ"><span class="hp ${QP[q.st]}">${Q_ST[q.st][0]}</span></td><td class="act"><button type="button" class="btn line sm" data-queue-focus="${esc(String(q.id))}">จัดการ</button></td></tr>`).join('')}</tbody></table></div>`
         :`<div class="hm-empty">${I(IC.queue)}<b>${qtot?'ไม่มีรายการตามที่เลือก':'ยังไม่มีรถเข้าคิววันนี้'}</b><span>รับรถเข้าคิวได้ที่ปุ่ม "รับรถเข้าคิว" ด้านบน</span></div>`}
     const L=td.filter(hit).sort((a,z)=>z.d-a.d||(z.t>a.t?1:-1));
     return L.length?`<div class="tablewrap"><table class="hm-t"><thead><tr><th>เวลา</th><th class="hm-no">เลขที่บิล</th><th>ทะเบียนรถ</th><th>ประเภทรถ</th><th>ชื่อลูกค้า</th><th class="r">ยอดเงิน</th><th>สถานะ</th><th></th></tr></thead><tbody>${L.map(b=>{const d=b.amt-b.paid>0.004,w=trWait(b).length;return `<tr><td data-l="เวลา">${esc(b.t||'')}</td><td data-l="เลขที่บิล" class="hm-no">${esc(b.no||'–')}</td><td data-l="ทะเบียน"><b>${esc(b.plate)}</b><div class="sub">${esc(b.prov||'')}</div></td><td data-l="ประเภทรถ" title="${esc(b.type||'')}">${esc(ctShort(b.type))}</td><td data-l="ลูกค้า">${esc(b.name)}</td><td data-l="ยอดเงิน" class="r num">${money(b.amt)}</td><td data-l="สถานะ"><span class="hp ${d?'bad':w?'warn':'ok'}">${d?'ค้าง '+money(b.amt-b.paid):w?'โอนรอตรวจสอบ':'ชำระครบ'}</span></td><td class="act"><button type="button" class="btn line sm" data-showbill="${b.id}">ดูบิล</button></td></tr>`}).join('')}</tbody></table></div>`
       :`<div class="hm-empty">${I(IC.bill)}<b>${td.length?'ไม่พบบิลตามคำค้น':'ยังไม่มีบิลวันนี้'}</b><span>เปิดบิลใหม่ได้ที่ปุ่ม "เปิดบิลใหม่"</span></div>`};
-  const drawRows=()=>{$('#hd-rows').innerHTML=rows()};drawRows();
+  const drawRows=()=>{
+    $('#hd-rows').innerHTML=rows();
+    $('#hd-rows').querySelectorAll('[data-queue-focus]').forEach(b=>b.onclick=()=>{
+      siamQueueFocus=String(b.dataset.queueFocus);go('queue');
+    });
+  };drawRows();
   document.querySelectorAll('[data-ht]').forEach(b=>b.onclick=()=>{hdTab=b.dataset.ht;R.home()});
   document.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{hdQF=b.dataset.qf;document.querySelectorAll('[data-qf]').forEach(x=>x.classList.toggle('on',x===b));drawRows()});
   $('#hd-q').oninput=e=>{hdQ=e.target.value;drawRows()};
@@ -5317,7 +5333,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
 
 /* ---------- 3. คิวตรวจสภาพหน้าลาน ---------- */
 const QUEUE=[];let qSeq=0,qTimer=null;
-let qPending=null;
+let qPending=null; let siamQueueFocus=null;
 const Q_FAIL=['ไฟหน้าไม่ติด','ไฟเลี้ยว/ไฟเบรกไม่ติด','ควันดำเกินมาตรฐาน','เสียงดังเกินมาตรฐาน','เบรกไม่ผ่าน','ศูนย์ล้อ/ช่วงล่าง','ยางสึก','กระจก/ที่ปัดน้ำฝน','แตรไม่ดัง','เลขตัวถัง/เลขเครื่องไม่ชัด'];
 /* ทำเครื่องหมายคิวว่าเปิดบิลแล้ว เมื่อบันทึกบิลสำเร็จจริงเท่านั้น */
 // คิวที่กด "เปิดบิล" มา: ส่งรหัสคิวไปพร้อมบิล ฐานข้อมูลผูกคิวกับบิลในธุรกรรมเดียวกัน
@@ -5415,6 +5431,19 @@ R.queue=async()=>{clearInterval(qTimer);
   <div class="qq-board">${Object.entries(Q_ST).map(([k,[l,fg,bg]])=>{const L=today.filter(q=>q.st===k);return `<div class="qq-col"><div class="qq-h" style="color:${fg};background:${bg}">${l}<span>${L.length}</span></div>${L.map(card).join('')||'<div class="qq-empty">–</div>'}</div>`}).join('')}</div>
   ${LIVE?'<p class="note">หน้านี้อัปเดตเองทุก 20 วินาที ใช้หลายเครื่องพร้อมกันได้ เช่น จอหน้าลาน กับเครื่องที่เคาน์เตอร์</p>':''}</div>`;
   if(draft)QA.forEach(id=>{const e=$('#'+id);if(e&&draft[id]!=null)e.value=draft[id]});
+  // SIAM_WORKFLOW_V1: one-time focus for the exact queue card selected from Dashboard.
+  if(siamQueueFocus!==null){
+    const id=String(siamQueueFocus);siamQueueFocus=null;
+    const target=[...document.querySelectorAll('.qq-board .qc[data-q]')].find(el=>el.dataset.q===id);
+    if(target){
+      target.classList.add('siam-q-focused');target.setAttribute('tabindex','-1');
+      requestAnimationFrame(()=>{
+        if(cur!=='queue'||!target.isConnected)return;
+        target.scrollIntoView({behavior:'smooth',block:'center'});
+        target.focus({preventScroll:true});
+      });
+    }else toast('ไม่พบรายการคิวที่เลือกในคิววันนี้ กรุณาตรวจสอบสถานะอีกครั้ง');
+  }
   ssel($('#qa-prov'));if(fo){const e=$('#'+fo);if(e){e.focus();try{const L=e.value.length;e.setSelectionRange(L,L)}catch(_){}}}
   const qOf=x=>QUEUE.find(q=>q.id==x.closest('[data-q]').dataset.q);
   const set=async(q,patch)=>{const now=new Date().toISOString();if(patch.st==='check')patch.at={...q.at,started:now};if(patch.st==='pass'||patch.st==='fail')patch.at={...q.at,done:now};if(patch.st==='wait')patch.at={created:q.at.created};
@@ -5991,12 +6020,26 @@ R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div c
     catch(err){alert('ส่งออกไม่สำเร็จ: '+err.message)}finally{b.disabled=false}};
 };
 
-let dltF='received',dltQ='';const dltSel=new Set();
+let dltF='received',dltQ='',siamDltDoneRange='30';const dltSel=new Set();
 const dltPlate=b=>(b.plate+' '+(b.prov||'')).trim();
-function copyPlate(t){try{navigator.clipboard.writeText(t);toast('คัดลอกทะเบียน '+t+' แล้ว วางในหน้าเว็บกรมการขนส่งได้เลย')}catch(_){toast('ทะเบียน '+t)}}
-async function dltSet(list,patch){const by=user?user.name:'';const now=new Date().toISOString();
-  list.forEach(b=>{const j=dltOf(b);if(patch.st&&patch.st!==j.st){j.st=patch.st;j.at[patch.st]=now}['cert','rcpt','note'].forEach(k=>{if(patch[k]!=null)j[k]=patch[k]});j.by=by});
-  if(LIVE)await DB.saveDlt(list)}
+async function copyPlate(t){
+  const ok=await sv6CopyText(t);
+  if(ok)toast('คัดลอกทะเบียน '+t+' แล้ว วางในหน้าเว็บกรมการขนส่งได้เลย');
+  else alert('ไม่สามารถคัดลอกทะเบียนอัตโนมัติได้ กรุณาคัดลอกด้วยตนเอง: '+t);
+  return ok;
+}
+// SIAM_WORKFLOW_V1: stage changes and persist first, commit to the UI only on success.
+async function dltSet(list,patch){
+  const by=user?user.name:'';const now=new Date().toISOString();
+  const staged=list.map(b=>{
+    const old=b.dlt||{st:'received',cert:'',rcpt:'',note:'',by:'',at:{}},j={...old,at:{...(old.at||{})}};
+    if(patch.st&&patch.st!==j.st){j.st=patch.st;j.at[patch.st]=now}
+    ['cert','rcpt','note'].forEach(k=>{if(patch[k]!=null)j[k]=patch[k]});
+    j.by=by;return{...b,dlt:j};
+  });
+  if(LIVE)await DB.saveDlt(staged);
+  staged.forEach((value,i)=>{list[i].dlt=value.dlt});
+}
 function dltDlg(list,after){const one=list.length===1?list[0]:null,j=one?dltOf(one):{st:dltOf(list[0]).st,cert:'',rcpt:'',note:''};
   const ov=document.createElement('div');ov.className='nb-overlay show';
   ov.innerHTML=`<div class="nb-modal dj-modal"><h3>🚚 อัปเดตงานขนส่ง</h3><p class="sub">${one?esc(dltPlate(one))+' · '+esc(one.name)+' · '+esc(dltKind(one)):list.length+' คัน'}</p>
@@ -6018,13 +6061,15 @@ function dltSheet(list){const br=LIVE&&DB.branch?DB.branch:null,taxOf=b=>b.items
   ${list.map((b,i)=>`<tr><td>${i+1}</td><td><b>${esc(dltPlate(b))}</b></td><td>${esc(((b.type||'').match(/\((ร[ยส]\.\s?\d+)\)/)||[])[1]||b.type||'')}</td><td>${esc(b.name)}</td><td>${esc(dltKind(b))}</td><td class="num">${taxOf(b)?money(taxOf(b)):"–"}</td><td>${esc(b.doc||'สำเนา')}</td><td>${esc(b.no||'')}</td><td></td></tr>`).join('')}
   </tbody><tfoot><tr><td colspan="5">รวม ${list.length} คัน</td><td class="num">${money(list.reduce((t,b)=>t+taxOf(b),0))}</td><td colspan="3"></td></tr></tfoot></table>
   <div class="ds-sign"><div>ลงชื่อ ..................................... ผู้นำส่ง<br>(${esc(user?user.name:'')})</div><div>ลงชื่อ ..................................... ผู้ตรวจรับ<br>วันที่ ........./........./.........</div></div>`}
-R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'||dltAge(b)<=30)).length,late=all.filter(dltLate);
-  const owe=b=>split(b).debt>0.004,owing=all.filter(b=>owe(b)&&(dltOf(b).st!=='done'||dltAge(b)<=30)),oweSum=owing.reduce((a,b)=>a+split(b).debt,0);
+R.dlt=()=>{const all=dltJobs(),doneVisible=b=>siamDltDoneRange==='all'||dltAge(b)<=30,
+  cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'||doneVisible(b))).length,late=all.filter(dltLate);
+  // Overdue debts must not disappear after 30 days, including bills marked done.
+  const owe=b=>split(b).debt>0.004,owing=all.filter(owe),oweSum=owing.reduce((a,b)=>a+split(b).debt,0);
   const s=dltQ.replace(/\s/g,'').toLowerCase();
-  const list=all.filter(b=>(dltF==='late'?dltLate(b):dltF==='debt'?owing.includes(b):dltOf(b).st===dltF&&(dltF!=='done'||dltAge(b)<=30))&&(!s||(b.plate+b.name+(b.tel||'')+(b.no||'')).replace(/\s/g,'').toLowerCase().includes(s)))
+  const list=all.filter(b=>(dltF==='late'?dltLate(b):dltF==='debt'?owing.includes(b):dltOf(b).st===dltF&&(dltF!=='done'||doneVisible(b)))&&(!s||(b.plate+b.name+(b.tel||'')+(b.no||'')).replace(/\s/g,'').toLowerCase().includes(s)))
     .sort((a,z)=>a.d-z.d||a.id-z.id);
   [...dltSel].forEach(id=>{if(!list.find(b=>b.id===id))dltSel.delete(id)});
-  const chips=[...Object.entries(DLT_ST).map(([k,[l,fg,bg]])=>[k,l,cnt(k),fg,bg,k==='done'?'ใน 30 วันล่าสุด':'คัน']),['late','ค้างเกินกำหนด',late.length,'#c81e1e','#fdecec','ต้องติดตาม']];
+  const chips=[...Object.entries(DLT_ST).map(([k,[l,fg,bg]])=>[k,l,cnt(k),fg,bg,k==='done'?(siamDltDoneRange==='all'?'ทุกรายการที่โหลด':'ใน 30 วันล่าสุด'):'คัน']),['late','ค้างเกินกำหนด',late.length,'#c81e1e','#fdecec','ต้องติดตาม']];
   const DIC={received:'📥',submitted:'🏛️',plate:'🪪',done:'✅',late:'⚠️'};
   // ภาพรวมเดือนนี้
   const ym=ymOf(TODAY),mon=all.filter(b=>ymOf(b.d)===ym),kinds={};mon.forEach(b=>{const k=dltKind(b);kinds[k]=(kinds[k]||0)+1});
@@ -6045,6 +6090,7 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
   ${owing.length?`<div class="dj-alert money" data-f="debt">💰 มี <b>${owing.length} คัน</b> ที่ลูกค้ายังค้างชำระ รวม <b>${money(oweSum)} บาท</b> รับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน ${dltF==='debt'?'<u>กำลังแสดงรายการนี้</u>':'<u>ดูรายการ</u>'}</div>`:''}
   <div class="dj-bar"><label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="dj-q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์ / เลขบิล" value="${esc(dltQ)}"></label>
     <span class="sub" id="dj-n"></span>
+    ${dltF==='done'?`<label class="siam-dlt-history">แสดงงานที่เสร็จแล้ว <select id="siam-dlt-history" aria-label="ช่วงเวลางานขนส่งที่เสร็จแล้ว"><option value="30" ${siamDltDoneRange==='30'?'selected':''}>30 วันล่าสุด</option><option value="all" ${siamDltDoneRange==='all'?'selected':''}>ทั้งหมดที่โหลดอยู่</option></select></label>`:''}
     <button class="btn line" id="dj-print">🖨️ พิมพ์ใบนำส่ง</button>${dltF!=='late'&&DLT_NEXT[dltF]?`<button class="btn" id="dj-bulk">✓ ${DLT_NEXT[dltF][1]}</button>`:''}</div>
   ${list.length?`<div class="card dj-card"><div class="tablewrap"><table class="dj-tbl"><thead><tr><th class="ck"><input type="checkbox" id="dj-all" aria-label="เลือกทั้งหมด"></th><th>วันที่รับ / บิล</th><th>ทะเบียน</th><th>เจ้าของ</th><th>งาน</th><th>เล่มทะเบียน</th><th>สถานะ</th><th></th></tr></thead><tbody>
   ${list.map(b=>{const j=dltOf(b),nx=DLT_NEXT[j.st];return `<tr data-j="${b.id}" class="${dltLate(b)?'late':''}"><td class="ck"><input type="checkbox" data-ck ${dltSel.has(b.id)?'checked':''} aria-label="เลือก"></td>
@@ -6058,6 +6104,7 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
   </div><div class="dlt-sheet" id="dj-sheet"></div></div>`;
   const upd=()=>{const n=dltSel.size;$('#dj-n').textContent=n?`เลือก ${n} คัน`:`${list.length} คัน`;if($('#dj-bulk'))$('#dj-bulk').disabled=!n;if($('#dj-all'))$('#dj-all').checked=n&&n===list.length};
   document.querySelectorAll('.dj [data-f]').forEach(x=>x.onclick=()=>{dltF=x.dataset.f;dltSel.clear();R.dlt()});
+  if($('#siam-dlt-history'))$('#siam-dlt-history').onchange=e=>{siamDltDoneRange=e.target.value==='all'?'all':'30';dltSel.clear();R.dlt()};
   $('#dj-q').oninput=e=>{dltQ=e.target.value;const pos=e.target.selectionStart;R.dlt();const q=$('#dj-q');q.focus();q.setSelectionRange(pos,pos)};
   if($('#dj-all'))$('#dj-all').onchange=e=>{list.forEach(b=>e.target.checked?dltSel.add(b.id):dltSel.delete(b.id));document.querySelectorAll('[data-ck]').forEach(c=>c.checked=e.target.checked);upd()};
   document.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>{const id=+c.closest('tr').dataset.j;c.checked?dltSel.add(id):dltSel.delete(id);upd()});
@@ -6065,7 +6112,7 @@ R.dlt=()=>{const all=dltJobs(),cnt=k=>all.filter(b=>dltOf(b).st===k&&(k!=='done'
   const oweOk=bs=>{const d=bs.filter(b=>owe(b));return !d.length||confirm(`${d.length===1?'รถ '+d[0].plate+' ยังค้างชำระ '+money(split(d[0]).debt)+' บาท':'มี '+d.length+' คันที่ยังค้างชำระ รวม '+money(d.reduce((a,b)=>a+split(b).debt,0))+' บาท'}\nควรรับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน\n\nต้องการบันทึกว่าลูกค้ารับแล้วต่อหรือไม่?`)};
   document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{if(x.dataset.nx==='done'&&!oweOk([rowB(x)]))return;x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-ed]').forEach(x=>x.onclick=()=>dltDlg([rowB(x)],R.dlt));
-  document.querySelectorAll('[data-cp]').forEach(x=>x.onclick=()=>{copyPlate(dltPlate(rowB(x)));window.open('https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/','_blank','noopener')});
+  document.querySelectorAll('[data-cp]').forEach(x=>x.onclick=()=>{void copyPlate(dltPlate(rowB(x)));window.open('https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/','_blank','noopener')});
   if($('#dj-bulk'))$('#dj-bulk').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),nx=DLT_NEXT[dltF];if(!sel.length)return;
     if(nx[0]==='done'&&!oweOk(sel))return;if(!confirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
     try{await dltSet(sel,{st:nx[0]});dltSel.clear();toast('อัปเดต '+sel.length+' คันแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
