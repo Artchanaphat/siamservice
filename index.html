@@ -2703,6 +2703,9 @@ R.home=()=>{
 function moneyPage(cfg){
   const TD=TODAY.getDate(),TMo=TODAY.getMonth()+1,TY=TODAY.getFullYear();
   const st=cfg.st||(cfg.st={tab:cfg.defTab,mode:'day',d:TD,m:TMo,y:TY,from:[TD,TMo,TY],to:[TD,TMo,TY],q:'',open:new Set()});
+  // SIAM_INCOME_FILTER_V2: View-only state; finance totals/export still use existing cfg.recs and split logic.
+  if(!st.quick)st.quick=st.mode==='day'&&+st.d===TD&&+st.m===TMo&&+st.y===TY?'today':st.mode==='month'&&+st.m===TMo&&+st.y===TY?'month':st.mode==='all'?'all':st.mode==='week'?'week':'custom';
+  if(!st.customMode)st.customMode=st.quick==='custom'&&['day','month','year','range'].includes(st.mode)?st.mode:'range';
   const opt=(arr,v)=>arr.map(([k,t])=>`<option value="${k}"${String(k)===String(v)?' selected':''}>${t}</option>`).join('');
   const DD=[...Array(31)].map((_,i)=>[i+1,i+1]),MM=TH_MF.map((t,i)=>[i+1,t]),YY=[...Array(10)].map((_,i)=>[TY+1-i,TY+544-i]);
   const tri=(p,v,lbl)=>`<span class="sm-field-wrap" data-w="${p}"><label>${lbl[0]}</label><select id="f-${p}d">${opt(DD,v[0])}</select></span><span class="sm-field-wrap" data-w="${p}"><label>${lbl[1]}</label><select id="f-${p}m">${opt(MM,v[1])}</select></span><span class="sm-field-wrap" data-w="${p}"><label>ปี</label><select id="f-${p}y">${opt(YY,v[2])}</select></span>`;
@@ -2716,30 +2719,71 @@ function moneyPage(cfg){
     <div class="sm-scard orange" data-tab="debt"><span class="sm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div class="sm-scard-lbl">${cfg.labels[1]}</div><div class="sm-scard-val" id="sm-v-debt">–</div><div class="sm-scard-sub" id="sm-s-debt"></div>${cfg.debtNote?`<div class="sm-scard-note">${cfg.debtNote}</div>`:''}</div>
     <div class="sm-scard green" data-tab="done"><span class="sm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.8 2.8L16 9.5"/></svg></span><div class="sm-scard-lbl">${cfg.labels[2]}</div><div class="sm-scard-val" id="sm-v-done">–</div><div class="sm-scard-sub" id="sm-s-done"></div></div>
   </div>
-  <div class="sm-filterbar">
-    <span class="sm-field-wrap"><label>ดูข้อมูลแบบ</label><select id="f-mode">${opt([['day','รายวัน'],['month','รายเดือน'],['year','รายปี'],['range','ช่วงวันที่']],st.mode)}</select></span>
-    <div class="sm-daterow">${tri('',[st.d,st.m,st.y],['วันที่','เดือน'])}${tri('a',st.from,['จากวันที่','เดือน'])}<span class="sm-sep" data-w="r">ถึง -</span>${tri('b',st.to,['วันที่','เดือน'])}</div>
-    <button type="button" class="btn-apply" id="f-apply">กรองข้อมูล</button>
-    <a href="#" class="sm-clear-filter" id="f-clear">↺ กลับไปวันนี้</a>
-    <div class="sm-search"><div class="sm-search-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="f-q" autocomplete="off" placeholder="ค้นหา ทะเบียนรถ / ชื่อลูกค้า" value="${esc(st.q)}"></div>
-    <button class="btn-icon red" id="f-x" title="ล้างการค้นหา">✕</button></div>
-  </div>
+  <section class="sm-filterbar sm-filter-v2" aria-label="ค้นหาและกรองรายการ">
+    <div class="sm-filter-header"><strong>ค้นหาและกรองรายการ</strong><small>เลือกสถานะและช่วงวันที่ออกบิล · รายการเปลี่ยนทันที</small></div>
+    <div class="sm-filter-line"><span class="sm-filter-label">สถานะชำระเงิน</span>
+      <div class="sm-status-options" role="group" aria-label="สถานะชำระเงิน">
+        <button type="button" class="sm-status-chip" data-sm-tab="all">ทั้งหมด</button>
+        <button type="button" class="sm-status-chip" data-sm-tab="debt">ค้างชำระ</button>
+        <button type="button" class="sm-status-chip" data-sm-tab="done">ชำระครบ</button>
+      </div>
+    </div>
+    <div class="sm-filter-line"><span class="sm-filter-label">ช่วงวันที่ออกบิล</span>
+      <div class="sm-period-options" role="group" aria-label="ช่วงวันที่ออกบิล">
+        <button type="button" class="sm-period-chip" data-sm-period="today">วันนี้</button>
+        <button type="button" class="sm-period-chip" data-sm-period="week">7 วันที่ผ่านมา</button>
+        <button type="button" class="sm-period-chip" data-sm-period="month">เดือนนี้</button>
+        <button type="button" class="sm-period-chip" data-sm-period="all">ทุกช่วงเวลา</button>
+        <button type="button" class="sm-period-chip" data-sm-period="custom">กำหนดเอง</button>
+      </div>
+    </div>
+    <div class="sm-custom-dates" id="sm-custom-dates" hidden>
+      <div class="sm-custom-heading"><span>กำหนดวัน เดือน ปี สำหรับรายงาน</span><small>เลือกแล้วอัปเดตทันที</small></div>
+      <div class="sm-custom-tools"><span class="sm-field-wrap"><label for="f-mode">รูปแบบ</label><select id="f-mode">${opt([['day','รายวัน'],['month','รายเดือน'],['year','รายปี'],['range','ช่วงวันที่']],st.customMode)}</select></span>
+        <div class="sm-daterow">${tri('',[st.d,st.m,st.y],['วันที่','เดือน'])}${tri('a',st.from,['จากวันที่','เดือน'])}<span class="sm-sep" data-w="r">ถึง</span>${tri('b',st.to,['วันที่','เดือน'])}</div>
+        <button type="button" class="btn-apply" id="f-apply">ใช้ช่วงวันที่</button>
+      </div>
+    </div>
+    <div class="sm-filter-line sm-search-line"><label class="sm-filter-label" for="f-q">ค้นหารถ / ลูกค้า</label>
+      <div class="sm-search"><div class="sm-search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" name="siam-bill-search" id="f-q" autocomplete="off" placeholder="พิมพ์ทะเบียนรถ หรือชื่อลูกค้า" value="${esc(st.q)}"></div>
+      <button type="button" class="btn-icon red" id="f-x" title="ล้างคำค้น" aria-label="ล้างคำค้น">✕</button></div>
+    </div>
+    <div class="sm-filter-footer"><span id="sm-filter-context" aria-live="polite"></span><button type="button" class="sm-clear-filter" id="f-clear">↺ ล้างตัวกรอง</button></div>
+  </section>
   <div class="row-count" id="sm-count"></div>
   <div class="tbl-wrap" id="sm-tbl"></div></div>`;
   const v=id=>+$('#'+id).value,ymd=(y,m,d)=>y*10000+m*100+d;
   const inPeriod=b=>{const x=b.d,k=ymd(x.getFullYear(),x.getMonth()+1,x.getDate());
     if(st.mode==='all')return true;
+    if(st.mode==='week'){const start=new Date(TY,TMo-1,TD-6);return k>=ymd(start.getFullYear(),start.getMonth()+1,start.getDate())&&k<=ymd(TY,TMo,TD)}
     if(st.mode==='range'){let a=ymd(st.from[2],st.from[1],st.from[0]),z=ymd(st.to[2],st.to[1],st.to[0]);if(a>z)[a,z]=[z,a];return k>=a&&k<=z}
     return x.getFullYear()===+st.y&&(st.mode==='year'||x.getMonth()+1===+st.m)&&(st.mode!=='day'||x.getDate()===+st.d)};
   const full=(d,m,y)=>`วันที่ ${d} เดือน${TH_MF[m-1]} พ.ศ. ${y+543}`;
-  const isToday=()=>st.mode==='day'&&+st.d===TD&&+st.m===TMo&&+st.y===TY;
-  const countUp=(el,to)=>{const from=+(el.dataset.raw||0),t0=performance.now();const step=t=>{const p=Math.min((t-t0)/700,1),e=1-Math.pow(1-p,3);el.textContent=money(from+(to-from)*e)+' บาท';p<1?requestAnimationFrame(step):el.dataset.raw=to};requestAnimationFrame(step)};
+  const isToday=()=>st.quick==='today'&&st.mode==='day'&&+st.d===TD&&+st.m===TMo&&+st.y===TY;
+  const countUp=(el,to)=>{el.textContent=money(to)+' บาท';el.dataset.raw=to};
+  const periodLabel=()=>{
+    const md=st.mode;
+    if(md==='all')return 'ทุกช่วงเวลา (ข้อมูลที่โหลดอยู่)';
+    if(md==='week')return '7 วันที่ผ่านมา';
+    if(isToday())return 'วันนี้';
+    if(md==='range'){const a=full(...st.from),z=full(...st.to);return a===z?a:a+' ถึง '+z}
+    if(md==='day')return full(+st.d,+st.m,+st.y);
+    if(md==='month')return `${TH_MF[st.m-1]} พ.ศ. ${+st.y+543}`;
+    return `พ.ศ. ${+st.y+543}`;
+  };
   const sync=()=>{const md=st.mode;
-    document.querySelectorAll('[data-w=""]').forEach((e,i)=>e.style.display=(md==='range'||md==='all')?'none':(i===0&&md!=='day')||(i===1&&md==='year')?'none':'');
-    document.querySelectorAll('[data-w="a"],[data-w="b"],[data-w="r"]').forEach(e=>e.style.display=md==='range'?'':'none');
-    $('#f-clear').style.display=isToday()?'none':'';
-    $('#sm-period').textContent=md==='all'?'ทั้งหมด (ไม่จำกัดวันที่)':isToday()?'วันนี้':md==='range'?(()=>{const a=full(...st.from),z=full(...st.to);return a===z?a:a+' ถึง '+z})():md==='day'?full(+st.d,+st.m,+st.y):md==='month'?`${TH_MF[st.m-1]} พ.ศ. ${+st.y+543}`:`พ.ศ. ${+st.y+543}`;
-    document.querySelectorAll('.sm-scard').forEach(c=>c.classList.toggle('active-card',c.dataset.tab===st.tab))};
+    $('#sm-custom-dates').hidden=st.quick!=='custom';
+    $('#f-mode').value=st.customMode;
+    document.querySelectorAll('.sm-custom-dates [data-w=""]').forEach((e,i)=>e.style.display=(md==='range'||md==='all'||md==='week')?'none':(i===0&&md!=='day')||(i===1&&md==='year')?'none':'');
+    document.querySelectorAll('.sm-custom-dates [data-w="a"],.sm-custom-dates [data-w="b"],.sm-custom-dates [data-w="r"]').forEach(e=>e.style.display=md==='range'?'':'none');
+    document.querySelectorAll('.sm-status-chip').forEach(b=>{const on=b.dataset.smTab===st.tab;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',on?'true':'false')});
+    document.querySelectorAll('.sm-period-chip').forEach(b=>{const on=b.dataset.smPeriod===st.quick;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',on?'true':'false')});
+    document.querySelectorAll('.sm-scard').forEach(c=>{const on=c.dataset.tab===st.tab;c.classList.toggle('active-card',on);c.setAttribute('aria-pressed',on?'true':'false')});
+    $('#sm-period').textContent=periodLabel();
+    $('#f-x').hidden=!st.q;
+    const tabL={all:'ทุกสถานะ',debt:'ค้างชำระ',done:'ชำระครบ'};
+    $('#sm-filter-context').textContent=`กำลังแสดง: ${tabL[st.tab]} · ${periodLabel()}${st.q.trim()?' · ค้นหา: '+st.q.trim():''}`;
+  };
   let lastRows=[],lastPer=[];
   const draw=()=>{sync();
     const per=cfg.recs().filter(r=>inPeriod(r.b)),debt=per.filter(r=>r.amt-r.paid>0.004),done=per.filter(r=>r.amt-r.paid<=0.004);
@@ -2751,14 +2795,43 @@ function moneyPage(cfg){
     $('#sm-tbl').innerHTML=rows.length?`<table class="sm-tbl"><thead><tr><th>#</th>${cfg.head.map(h=>`<th>${h}</th>`).join('')}<th class="c">สถานะ</th><th></th></tr></thead><tbody>${rows.map((r,n)=>{const op=st.open.has(r.b.id);return `<tr class="sm-r${op?' open':''}" data-b="${r.b.id}"><td class="sm-n">${n+1}</td>${cfg.row(r)}<td class="c" data-l="สถานะ">${r.b.void?'<span class="st-void">ยกเลิก</span>':r.amt-r.paid>0.004?`<span class="st-debt">ค้างชำระ</span>${r.paid===0?'<div class="sm-never">(ยังไม่เคยรับเงิน)</div>':''}`:`<span class="st-ok">${cfg.okLabel}</span>`}</td><td class="chev">›</td></tr><tr class="sm-x"${op?'':' hidden'}><td colspan="${cfg.head.length+3}">${cfg.exp(r)}</td></tr>`}).join('')}</tbody></table>`:`<div class="empty-state"><div class="es-icon">📭</div><p>ไม่พบข้อมูลในช่วงที่เลือก</p></div>`;
     document.querySelectorAll('.sm-r').forEach(tr=>tr.onclick=e=>{if(e.target.closest('a,button'))return;const id=+tr.dataset.b;st.open.has(id)?st.open.delete(id):st.open.add(id);tr.classList.toggle('open');tr.nextElementSibling.hidden=!tr.nextElementSibling.hidden});
   };
-  const apply=()=>{st.mode=$('#f-mode').value;st.d=v('f-d');st.m=v('f-m');st.y=v('f-y');st.from=[v('f-ad'),v('f-am'),v('f-ay')];st.to=[v('f-bd'),v('f-bm'),v('f-by')];draw()};
-  document.querySelectorAll('.sm-filterbar select').forEach(s=>s.onchange=apply);
+  const validDMY=(d,m,y)=>{const dt=new Date(y,m-1,d);return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d};
+  const apply=()=>{
+    const md=$('#f-mode').value, d=v('f-d'),m=v('f-m'),y=v('f-y');
+    const from=[v('f-ad'),v('f-am'),v('f-ay')],to=[v('f-bd'),v('f-bm'),v('f-by')];
+    if((md==='day'&&!validDMY(d,m,y))||(md==='range'&&(!validDMY(...from)||!validDMY(...to)))){alert('วันที่ไม่ถูกต้อง กรุณาเลือกวันที่ที่มีอยู่จริง');return}
+    Object.assign(st,{mode:md,quick:'custom',customMode:md,d,m,y,from,to});draw();
+  };
+  $('#f-mode').onchange=apply;
+  document.querySelectorAll('.sm-custom-dates select').forEach(s=>{if(s.id!=='f-mode')s.onchange=apply});
   $('#f-apply').onclick=apply;
-  $('#f-clear').onclick=e=>{e.preventDefault();Object.assign(st,{mode:'day',d:TD,m:TMo,y:TY,from:[TD,TMo,TY],to:[TD,TMo,TY]});R[cur]()};
-  $('#sm-alldebt').onclick=()=>{st.mode='all';st.tab='debt';draw()};
-  document.querySelectorAll('.sm-scard').forEach(c=>c.onclick=()=>{st.tab=c.dataset.tab;draw()});
-  let tm;$('#f-q').oninput=e=>{clearTimeout(tm);tm=setTimeout(()=>{st.q=e.target.value;draw()},250)};
-  $('#f-x').onclick=()=>{$('#f-q').value='';st.q='';draw()};
+  const preset=which=>{
+    if(st.quick==='custom')st.savedCustom={customMode:st.customMode,d:st.d,m:st.m,y:st.y,from:[...st.from],to:[...st.to]};
+    st.quick=which;
+    if(which==='today'){Object.assign(st,{mode:'day',d:TD,m:TMo,y:TY})}
+    else if(which==='week'){st.mode='week'}
+    else if(which==='month'){Object.assign(st,{mode:'month',m:TMo,y:TY})}
+    else if(which==='all'){st.mode='all'}
+    else{
+      if(st.savedCustom)Object.assign(st,st.savedCustom);
+      else{st.customMode='range';st.from=[1,TMo,TY];st.to=[TD,TMo,TY]}
+      st.mode=st.customMode;
+      [['f-d',st.d],['f-m',st.m],['f-y',st.y],['f-ad',st.from[0]],['f-am',st.from[1]],['f-ay',st.from[2]],['f-bd',st.to[0]],['f-bm',st.to[1]],['f-by',st.to[2]]].forEach(([id,val])=>{const x=$('#'+id);if(x)x.value=String(val)});
+      $('#f-mode').value=st.customMode;
+    }
+    draw();
+  };
+  document.querySelectorAll('.sm-period-chip').forEach(b=>b.onclick=()=>preset(b.dataset.smPeriod));
+  document.querySelectorAll('.sm-status-chip').forEach(b=>b.onclick=()=>{st.tab=b.dataset.smTab;draw()});
+  $('#f-clear').onclick=()=>{Object.assign(st,{tab:cfg.defTab,mode:'day',quick:'today',d:TD,m:TMo,y:TY,q:''});$('#f-q').value='';draw()};
+  $('#sm-alldebt').onclick=()=>{st.mode='all';st.quick='all';st.tab='debt';draw()};
+  document.querySelectorAll('.sm-scard').forEach(c=>{
+    c.setAttribute('role','button');c.setAttribute('tabindex','0');
+    c.onclick=()=>{st.tab=c.dataset.tab;draw()};
+    c.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click()}};
+  });
+  let tm;$('#f-q').oninput=e=>{clearTimeout(tm);st.q=e.target.value;tm=setTimeout(draw,150)};
+  $('#f-x').onclick=()=>{$('#f-q').value='';st.q='';clearTimeout(tm);draw();$('#f-q').focus()};
   // ส่งออกตามช่วงวันที่ แท็บ และคำค้นที่เลือกอยู่
   const isIns=cfg===INST,tabL={all:cfg.labels[0],debt:cfg.labels[1],done:cfg.labels[2]};
   const r2m=x=>Math.round(x*100)/100;
@@ -7258,3 +7331,69 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAMSERVICE_PAY_DRAWER_V1 -->
+
+<!-- SIAM_INCOME_FILTER_V2: screen UI only; no rc-/rcx-/print changes -->
+<style>
+@media screen {
+  #view .sm-filter-v2{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:16px 18px!important;margin:0 0 0;background:#fff!important;border:1px solid #dfe8f5!important;border-radius:16px 16px 0 0!important;box-shadow:0 4px 14px rgba(16,45,97,.035)}
+  #view .sm-filter-v2 .sm-filter-header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:4px 14px;margin-bottom:14px}
+  #view .sm-filter-v2 .sm-filter-header strong{font-size:16px;font-weight:750;color:#0b2766}
+  #view .sm-filter-v2 .sm-filter-header small{font-size:12px;color:#64748b}
+  #view .sm-filter-v2 .sm-filter-line{display:grid;grid-template-columns:135px minmax(0,1fr);align-items:center;gap:10px 15px;padding:10px 0;border-top:1px solid #edf1f8;min-width:0;width:100%}
+  #view .sm-filter-v2 .sm-filter-label{font-size:13px;font-weight:720;color:#334565;white-space:nowrap}
+  #view .sm-filter-v2 .sm-status-options,#view .sm-filter-v2 .sm-period-options{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
+  #view .sm-filter-v2 :is(.sm-status-chip,.sm-period-chip){font-family:inherit;font-size:13px;font-weight:650;line-height:1.3;min-height:38px;padding:8px 15px;background:#f8faff;border:1px solid #dfe6f1;color:#415776;border-radius:10px;cursor:pointer;transition:background .13s,border-color .13s,color .13s,box-shadow .13s}
+  #view .sm-filter-v2 :is(.sm-status-chip,.sm-period-chip):hover{background:#eaf2ff;border-color:#aac7fa;color:#0b2766}
+  #view .sm-filter-v2 :is(.sm-status-chip,.sm-period-chip).selected{background:#1d63ed!important;border-color:#1d63ed!important;color:white!important;box-shadow:0 3px 8px rgba(29,99,237,.18)}
+  #view .sm-filter-v2 :is(.sm-status-chip,.sm-period-chip):focus-visible,#view .sm-filter-v2 button:focus-visible{outline:3px solid rgba(29,99,237,.25);outline-offset:2px}
+  #view .sm-filter-v2 .sm-search-line{padding-bottom:12px}
+  #view .sm-filter-v2 .sm-search{margin:0;display:flex;min-width:0;flex:1 1 auto;max-width:650px;gap:8px}
+  #view .sm-filter-v2 .sm-search-wrap{height:43px;min-width:0;flex:1;border-color:#cbd8e9;background:#fff}
+  #view .sm-filter-v2 #f-q{font-size:14px;min-height:40px}
+  #view .sm-filter-v2 #f-x{border:1px solid #e2e9f5;border-radius:9px;background:#f8faff;padding:6px 12px;min-width:37px;min-height:40px;color:#60728f}
+  #view .sm-filter-v2 .sm-custom-dates{background:#f7faff;border:1px solid #deebfe;border-radius:12px;padding:12px 14px;margin:5px 0 10px}
+  #view .sm-filter-v2 .sm-custom-dates[hidden]{display:none!important}
+  #view .sm-filter-v2 .sm-custom-heading{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;color:#153263;font-size:13px;font-weight:700;margin-bottom:9px}
+  #view .sm-filter-v2 .sm-custom-heading small{font-size:11px;font-weight:500;color:#637694}
+  #view .sm-filter-v2 .sm-custom-tools{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px}
+  #view .sm-filter-v2 .sm-custom-tools .sm-daterow{display:flex;flex-wrap:wrap;gap:7px;align-items:center;min-width:0}
+  #view .sm-filter-v2 .sm-custom-tools .sm-field-wrap{gap:5px}
+  #view .sm-filter-v2 .sm-custom-tools .sm-field-wrap label{font-size:12px}
+  #view .sm-filter-v2 .sm-custom-tools select{min-height:38px;border-color:#cfdeef;background:white;border-radius:9px;max-width:170px}
+  #view .sm-filter-v2 .sm-custom-tools .btn-apply{min-height:38px;background:#0b2766;box-shadow:none}
+  #view .sm-filter-v2 .sm-filter-footer{display:flex;gap:10px 20px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-top:1px solid #edf1f8;padding-top:11px}
+  #view .sm-filter-v2 #sm-filter-context{font-size:12.5px;color:#536783;line-height:1.5;min-width:0;overflow-wrap:anywhere}
+  #view .sm-filter-v2 .sm-clear-filter{flex:none;font-size:12.5px;font-weight:700;background:#fff;color:#2453a4;padding:7px 11px;border:1px solid #d7e4f6;border-radius:9px;cursor:pointer;text-decoration:none}
+  #view .sm-filter-v2 .sm-clear-filter:hover{background:#eef4ff}
+  #view .sm-cardhint{margin:0 0 11px;color:#546888;font-size:13px}
+  #view .sm-scard{cursor:pointer}
+  #view .sm-tbl th{font-size:13px!important;padding:12px 12px!important;letter-spacing:0}
+  #view .sm-tbl td{font-size:14px!important;padding:13px 12px!important;line-height:1.5}
+  #view .sm-tbl .sm-name,#view .sm-tbl .sm-plate{font-size:14px;font-weight:760}
+  #view .sm-tbl .sm-amt{font-size:15px;font-weight:740;color:#0b2766}
+  #view .sm-tbl .sm-split,#view .sm-tbl .sm-debt{font-size:12.5px;line-height:1.45}
+  #view .sm-tbl .st-debt,#view .sm-tbl .st-ok{font-size:12px;padding:5px 9px;border-radius:999px;font-weight:740}
+  #view .sm .row-count{font-size:13px;color:#536783}
+}
+@media screen and (max-width:920px){
+  #view .sm-filter-v2 .sm-filter-line{grid-template-columns:1fr;gap:8px}
+  #view .sm-filter-v2 .sm-filter-header{margin-bottom:11px}
+}
+@media screen and (max-width:600px){
+  #view .sm-filter-v2{padding:13px 12px!important;border-radius:13px 13px 0 0!important}
+  #view .sm-filter-v2 .sm-status-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  #view .sm-filter-v2 .sm-status-options .sm-status-chip{padding:8px 3px;font-size:12px}
+  #view .sm-filter-v2 .sm-period-options{gap:6px}
+  #view .sm-filter-v2 .sm-period-options .sm-period-chip{padding:7px 10px;font-size:12px;min-height:36px}
+  #view .sm-filter-v2 .sm-filter-label{font-size:12px}
+  #view .sm-filter-v2 .sm-custom-dates{padding:10px 9px}
+  #view .sm-filter-v2 .sm-custom-tools select{max-width:115px;min-width:0}
+  #view .sm-filter-v2 .sm-custom-tools .sm-field-wrap{min-width:0}
+  #view .sm-filter-v2 .sm-custom-tools .sm-daterow{width:100%;gap:6px}
+  #view .sm-filter-v2 .sm-custom-tools .sm-daterow .sm-field-wrap{flex:0 1 auto}
+  #view .sm-filter-v2 .sm-filter-footer{align-items:flex-start}
+  #view .sm-tbl tr.sm-r td{padding-left:100px!important;padding-top:10px!important;padding-bottom:10px!important}
+  #view .sm-tbl tr.sm-r td[data-l]::before{font-size:11.5px}
+}
+</style>
+<!-- /SIAM_INCOME_FILTER_V2 -->
