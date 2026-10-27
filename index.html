@@ -1734,11 +1734,11 @@ body{margin:0}
  .sbody .tb-btn {background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.24)!important;color:#fff!important}
  .sbody .tb-btn svg {color:#e0ebff!important}
  /* Uses EXISTING data-go click delegation: this field navigates to customer search. */
- .sbody .topbar>button[data-go="cust"] {display:flex;align-items:center;gap:10px;flex:1 1 420px;min-width:120px;max-width:540px;height:43px;padding:0 15px;background:rgba(255,255,255,.98);border:1px solid rgba(255,255,255,.7);border-radius:12px;color:#7887a2;font:inherit;font-size:13.5px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(6,23,60,.10);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
- .sbody .topbar>button[data-go="cust"] svg {width:19px;height:19px;flex:none;color:#1d63ed}
- .sbody .topbar>button[data-go="cust"] span {flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
- .sbody .topbar>button[data-go="cust"]:hover {background:#f1f6ff;color:#0b2766}
- .sbody .topbar>button[data-go="cust"]:focus-visible {outline:3px solid #9dc0ff;outline-offset:2px}
+ .sbody .topbar>.tsrch {display:flex;align-items:center;gap:10px;flex:1 1 420px;min-width:120px;max-width:540px;height:43px;padding:0 15px;background:rgba(255,255,255,.98);border:1px solid rgba(255,255,255,.7);border-radius:12px;color:#7887a2;font:inherit;font-size:13.5px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(6,23,60,.10);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .sbody .topbar>.tsrch svg {width:19px;height:19px;flex:none;color:#1d63ed}
+ .sbody .topbar>.tsrch input {flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+ .sbody .topbar>.tsrch:hover {background:#f1f6ff;color:#0b2766}
+ .sbody .topbar>.tsrch:focus-visible {outline:3px solid #9dc0ff;outline-offset:2px}
  /* Elevated white surfaces, calm surfaces, consistent text rhythm. */
  .card,.ui-card,.ui-kpi,.bf-card,.hk,.hc,.hm-main,.exp,.tbl-wrap,.sumcard,.ps-head-card,.ps-date-card,.ps-paper,.smsp-head,.smspick,.smsp .section-card,.sd .card,.sd .hdr,.sd .sum-card {background:#fff;border-color:#e2e9f4!important;border-radius:16px;box-shadow:0 3px 16px rgba(11,39,102,.055)}
  .card,.ui-card,.bf-card,.exp {min-width:0}
@@ -1843,7 +1843,7 @@ body{margin:0}
 @media screen and (min-width:1025px) {
  .shell {grid-template-columns:264px minmax(0,1fr)}
  .side {min-width:0}
- .sbody .topbar>button[data-go="cust"] {max-width:560px}
+ .sbody .topbar>.tsrch {max-width:560px}
 }
 @media screen and (min-width:1600px) {
  .shell {grid-template-columns:272px minmax(0,1fr)}
@@ -1857,7 +1857,7 @@ body{margin:0}
 @media screen and (min-width:1025px) and (max-width:1450px) {
  .sbody .topbar,.sbody .topbar.topbar {gap:11px}
  .sbody .tmid {gap:10px;font-size:12.5px}
- .sbody .topbar>button[data-go="cust"] {max-width:none}
+ .sbody .topbar>.tsrch {max-width:none}
  .hk {gap:10px;padding:13px}
  .hk-ic {width:45px;height:45px}
  .hk-v b {font-size:29px}
@@ -1866,14 +1866,14 @@ body{margin:0}
  .hq-b b {font-size:15.5px}
 }
 @media screen and (max-width:1200px) {
- .sbody .topbar>button[data-go="cust"] {min-width:115px}
+ .sbody .topbar>.tsrch {min-width:115px}
  .sbody .tdate {display:none}
 }
 @media screen and (max-width:1024px) {
  .shell {grid-template-columns:minmax(0,1fr)}
  .sbody .topbar,.sbody .topbar.topbar {height:65px;padding:0 14px!important;gap:10px}
  .sbody .tleft {display:flex;align-items:center;gap:9px;order:0}
- .sbody .topbar>button[data-go="cust"] {order:1;max-width:none}
+ .sbody .topbar>.tsrch {order:1;max-width:none}
  .sbody .tmid {order:2;gap:7px}
  .sbody .tright.pf {order:3}
  .bf-lay {grid-template-columns:minmax(0,1fr)}
@@ -1890,9 +1890,9 @@ body{margin:0}
  .wrap,.hd {gap:13px}
  .head h1,.bf-head h1 {font-size:21px}
  .sbody .topbar,.sbody .topbar.topbar {padding:0 12px!important;gap:8px}
- .sbody .topbar>button[data-go="cust"] {padding:0 9px;height:39px;flex:1 1 85px;font-size:12px}
- .sbody .topbar>button[data-go="cust"] span {display:none}
- .sbody .topbar>button[data-go="cust"] svg {margin:auto}
+ .sbody .topbar>.tsrch {padding:0 9px;height:39px;flex:1 1 85px;font-size:12px}
+ .sbody .topbar>.tsrch input {display:none}
+ .sbody .topbar>.tsrch svg {margin:auto}
  .sbody .tmid {gap:0}
  .sbody .tdate,.sbody .ttime {display:none}
  .sbody .tbell {padding-left:4px;border-left:0}
@@ -1931,7 +1931,7 @@ body{margin:0}
  .sbody .tleft {gap:5px}
  .sbody .sburger {width:38px;height:38px}
  .sbody .tmlogo {width:34px!important;height:34px!important}
- .sbody .topbar>button[data-go="cust"] {flex:1 1 38px;max-width:50px;min-width:34px;height:37px;padding:0 8px;border-radius:10px}
+ .sbody .topbar>.tsrch {flex:1 1 38px;max-width:50px;min-width:34px;height:37px;padding:0 8px;border-radius:10px}
  .sbody .tbell-btn {width:37px;height:37px}
  .sbody .pfav {width:32px;height:32px}
  .sbody .pfcar {display:none}
@@ -1968,7 +1968,7 @@ body{margin:0}
 }
 @media print {
  /* Do not change rc-/rcx- or any receipt measurement. UI-only search excluded. */
- .topbar>button[data-go="cust"] {display:none!important}
+ .topbar>.tsrch {display:none!important}
 }
 
 
@@ -2004,7 +2004,28 @@ body{margin:0}
 .hc-ul{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px;color:#334155}
 /* v59: แถบบนจอแท็บเล็ต ให้ช่องค้นหาหดแทนปุ่มโปรไฟล์ล้นจอ */
 .topbar>.tright{flex:none}.topbar>.tmid{min-width:0}
-@media (max-width:900px){.topbar>button[data-go="cust"]{min-width:44px}.topbar>button[data-go="cust"] span{display:none}.topbar>button[data-go="cust"]{flex:0 0 44px;justify-content:center;padding:0}}
+@media (max-width:900px){.topbar>.tsrch{min-width:44px}.topbar>.tsrch input{display:none}.topbar>.tsrch{flex:0 0 44px;justify-content:center;padding:0}}
+
+/* v60 แถบบน: ช่องค้นหาพิมพ์ได้ + จัดเรียง */
+.topbar>.tsrch{cursor:text}
+.topbar>.tsrch input{border:0;outline:0;background:transparent;font:inherit;color:#0b2766;padding:0;height:100%;width:100%;min-width:0}
+.topbar>.tsrch input::placeholder{color:#7887a2;opacity:1}
+.topbar>.tsrch:focus-within{outline:3px solid #9dc0ff;outline-offset:1px}
+.topbar>.tsrch:hover{background:#fff!important}
+@media screen and (min-width:1025px){
+ .sbody .topbar,.sbody .topbar.topbar{gap:12px}
+ .sbody .topbar>.tsrch{height:44px;flex:1 1 420px;max-width:620px}
+ .sbody .tmid{margin-left:auto;gap:12px}
+ .sbody .tleft .tb-btn{height:44px;border-radius:12px}
+ .sbody .tdate,.sbody .ttime{height:44px;padding:0 14px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18)}
+ .sbody .tdate+.ttime{margin-left:-12px;border-left:0;border-top-left-radius:0;border-bottom-left-radius:0;padding-left:4px}
+ .sbody .tdate:has(+.ttime){border-right:0;border-top-right-radius:0;border-bottom-right-radius:0}
+ .sbody .tbell,.sbody .tright.pf{padding-left:0!important;border-left:0!important;margin-left:0}
+ .sbody .tbell-btn{width:44px;height:44px;border:1px solid rgba(255,255,255,.18)!important}
+ .sbody .pfbtn{height:44px;padding:0 12px 0 4px!important;border-radius:12px!important}
+ .sbody .pfbtn .avatar{width:34px;height:34px}
+}
+@media print{.topbar>.tsrch{display:none!important}}
 </style>
 
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
@@ -2045,7 +2066,7 @@ body{margin:0}
 <div class="topwrap">
   <header class="topbar">
     <div class="tleft"><button type="button" class="sburger" id="sburger" aria-label="เปิดเมนู" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="avatar lg tmlogo" role="img" aria-label="โลโก้ ตรอ."></span></div>
-    <button type="button" data-go="cust" aria-label="เปิดหน้าค้นหาทะเบียนรถ ชื่อลูกค้า หรือเบอร์โทรศัพท์" title="ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.1-4.1"/></svg><span>ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์</span></button>
+    <label class="tsrch" title="ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.1-4.1"/></svg><input id="tq" type="search" placeholder="ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์" autocomplete="off" enterkeyhint="search" aria-label="ค้นหาทะเบียนรถ ชื่อลูกค้า หรือเบอร์โทรศัพท์"></label>
     <div class="tmid"><span class="tdate" id="tdate"></span><span class="ttime" id="ttime"></span>
       <div class="tbell"><button type="button" class="tbell-btn" id="tbell" aria-haspopup="true" aria-expanded="false" aria-label="รายการแจ้งเตือน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="tbell-n" id="tbell-n" hidden></span></button><div class="tbell-menu" id="tbell-menu" hidden></div></div></div>
     <div class="tright pf">
@@ -2232,7 +2253,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.tbell'))bellTog(fal
 const sideTog=o=>{document.body.classList.toggle('side-open',o);$('#sveil').hidden=!o;$('#sburger').setAttribute('aria-expanded',o)};
 $('#sburger').onclick=()=>sideTog(!document.body.classList.contains('side-open'));$('#sveil').onclick=()=>sideTog(false);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){sideTog(false);bellTog(false)}});
-function go(k){if(k!=='docs')psDay=null;cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}sideTog(false);document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||k==='health'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
+function go(k){if(k!=='docs')psDay=null;{const t=document.getElementById('tq');if(t)t.value=k==='cust'?q:''}cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}sideTog(false);document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||k==='health'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -2262,6 +2283,11 @@ if(/github\.io$/.test(location.hostname)&&!/[?&]demo/.test(location.search))docu
 // โหมดทดลองมีเฉพาะหน้าต้นแบบ/ไฟล์ทดสอบ เว็บร้านจริงไม่แสดง
 if(location.protocol!=='file:'&&!/claude/i.test(location.hostname)){document.querySelectorAll('.demo,.divider').forEach(e=>e.remove())}
 document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hidden=true;enterApp(USERS[b.dataset.demo])});
+// ช่องค้นหาด้านบน: พิมพ์แล้วไปหน้าลูกค้าและกรองทันที (จอเล็ก กดไอคอนแล้วไปช่องค้นหาในหน้า)
+(()=>{const tq=$('#tq'),lb=document.querySelector('.tsrch');if(!tq||!lb)return;
+  tq.oninput=()=>{q=tq.value;if(cur!=='cust')go('cust');else{const i=$('#q');if(i){i.value=q;i.dispatchEvent(new Event('input'))}}};
+  tq.onkeydown=e=>{if(e.key==='Enter')e.preventDefault();if(e.key==='Escape'&&tq.value){tq.value='';tq.oninput()}};
+  lb.onclick=e=>{if(getComputedStyle(tq).display==='none'){e.preventDefault();if(cur!=='cust')go('cust');const i=$('#q');if(i)i.focus()}}})();
 $('#lpeye').onclick=()=>{const i=$('#lp'),show=i.type==='password';i.type=show?'text':'password';$('#lpeye').innerHTML=show?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 4.1M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.7 9.7 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';$('#lpeye').setAttribute('aria-label',show?'ซ่อนรหัสผ่าน':'แสดงรหัสผ่าน');$('#lpeye').title=$('#lpeye').getAttribute('aria-label');i.focus()};
 ['keydown','keyup'].forEach(t=>$('#lp').addEventListener(t,e=>{if(e.getModifierState)$('#lcaps').hidden=!e.getModifierState('CapsLock')}));$('#lp').addEventListener('blur',()=>$('#lcaps').hidden=true);
 $('#lforgot').onclick=()=>{$('#lhint').hidden=!$('#lhint').hidden};
@@ -2799,7 +2825,7 @@ R.cust=()=>{
   document.querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>{cSort=b.dataset.so;R.cust()});
   $('#c-clear').onclick=()=>{q='';cMonth=0;cSort='latest';R.cust()};
   $('#c-print').onclick=()=>toast('ต้นแบบนี้ยังสั่งพิมพ์ไม่ได้ ตัวจริงจะพิมพ์รายการเป็น A4');
-  $('#q').oninput=e=>{q=e.target.value;draw()};draw();
+  $('#q').oninput=e=>{q=e.target.value;const t=$('#tq');if(t&&t!==document.activeElement)t.value=q;draw()};draw();
 };
 
 function closeDlg(){$('#dlg').hidden=true;R[cur]()}
