@@ -1674,6 +1674,302 @@ body{margin:0}
   .ac-dd {min-width:0}
 }
 
+
+/* ============================================================================
+ SIAM SERVICE | BACKOFFICE PROFESSIONAL UI 2026
+ Screen-only presentation upgrade. Existing application selectors, event handlers,
+ data flow and all receipt rules (rc-/rcx-) remain unchanged.
+ Navy #0b2766 · Blue #1d63ed · responsive full-canvas layout
+ ============================================================================ */
+@media screen {
+ :root {
+  --bg:#f3f6fc;--surface:#fff;--surface-2:#f8faff;
+  --line:#e2e9f5;--input-line:#cbd8ec;--ink:#152a4b;--muted:#64748b;
+  --nav:#0b2766;--brand:#1d63ed;--brand-soft:#edf3ff;
+  --action:#1d63ed;--action-dark:#154fca;
+  --h-blue:#1d63ed;--h-green:#13966a;--h-purple:#7353d9;
+  --h-orange:#e58d32;--h-gold:#d9a423;
+  --font-display:"Kanit","IBM Plex Sans Thai",Tahoma,sans-serif;
+  --font-body:"IBM Plex Sans Thai","Noto Sans Thai",Tahoma,sans-serif;
+ }
+ html,body {max-width:100%;margin:0}
+ body {background:#f3f6fc;color:var(--ink);font-family:var(--font-body);font-size:14px;line-height:1.6}
+ .shell,.sbody,main,.wrap {min-width:0}
+ .shell {min-height:100dvh}
+ .sbody {width:100%;max-width:100%}
+ main {background:transparent!important;padding:22px clamp(16px,1.85vw,36px) 48px!important;min-width:0}
+ .wrap {width:100%;max-width:none!important;margin-inline:auto;gap:18px}
+ .head h1,.bf-head h1,.ltop h1,.ui-head h1 {font-family:var(--font-display);font-weight:600;color:#0b2766}
+ .head h1 {font-size:25px}
+ .sub,.label,.bf-crumb,.note {color:#667895}
+ .side {background:linear-gradient(180deg,#0b2766,#092458 55%,#071b44 100%)!important}
+ .sbrand {background:linear-gradient(115deg,#082256,#113c8e 70%,#1d63ed 100%)!important;border-bottom-color:rgba(255,255,255,.13)}
+ .sbrand b {font-size:20px;letter-spacing:.1px}
+ .sbrand small {color:#c8dafa}
+ .sn-i {color:#deebff;border-radius:11px;min-height:45px}
+ .sn-i:hover {background:rgba(255,255,255,.095)}
+ .sn-i.on {background:linear-gradient(105deg,#1d63ed,#317cff)!important;box-shadow:0 5px 13px rgba(3,19,62,.22)}
+ .sn-sub button:hover {background:rgba(255,255,255,.08)}
+ .ssum {border-color:rgba(255,255,255,.15);border-radius:15px;background:rgba(255,255,255,.055)}
+ /* The old inline theme forces a white topbar via !important. */
+ .sbody .topwrap {background:linear-gradient(110deg,#0b2766 0%,#123d87 55%,#0b2766 100%)!important;border-bottom:1px solid #1a458a!important;box-shadow:0 4px 18px rgba(6,23,67,.17)!important}
+ .sbody .topbar,.sbody .topbar.topbar {background:transparent!important;color:#fff!important;box-shadow:none!important;border-radius:0;max-width:none!important;height:76px;padding:0 clamp(16px,1.85vw,36px)!important;gap:14px;flex-wrap:nowrap}
+ .sbody .tleft {flex:0 0 auto;min-width:0}
+ .sbody .tmid {flex:0 0 auto;color:#eef4ff!important;gap:16px;font-size:13px}
+ .sbody .tdate,.sbody .ttime {color:#edf4ff!important;font-weight:500;white-space:nowrap}
+ .sbody .tdate svg,.sbody .ttime svg {color:#c0d7ff!important;width:17px;height:17px}
+ .sbody .tbell,.sbody .tright.pf {border-left-color:rgba(255,255,255,.19)!important}
+ .sbody .tbell {padding-left:12px}
+ .sbody .tbell-btn {background:rgba(255,255,255,.095)!important;color:#fff!important;border-radius:11px}
+ .sbody .tbell-btn:hover,.sbody .tbell-btn[aria-expanded="true"] {background:rgba(255,255,255,.2)!important}
+ .sbody .tbell-n {border-color:#0b2766}
+ .sbody .pfbtn {background:rgba(255,255,255,.095)!important;color:#fff!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:13px!important;padding:5px 11px 5px 5px!important;box-shadow:none!important}
+ .sbody .pfbtn:hover {background:rgba(255,255,255,.18)!important}
+ .sbody .pfname,.sbody .pfcar {color:#fff!important}
+ .sbody .pfbtn .avatar {color:#0b2766!important;border-color:#fff!important}
+ .sbody .tbell-menu,.sbody .pfmenu {background:#fff;color:#122c54;border-color:#dce6f5;border-radius:15px;box-shadow:0 14px 38px rgba(8,25,71,.18)}
+ .sbody .sburger {background:rgba(255,255,255,.1)!important;border:1px solid rgba(255,255,255,.25)!important;color:#fff!important}
+ .sbody .sburger:hover {background:rgba(255,255,255,.2)!important}
+ .sbody .tb-btn {background:rgba(255,255,255,.09)!important;border-color:rgba(255,255,255,.24)!important;color:#fff!important}
+ .sbody .tb-btn svg {color:#e0ebff!important}
+ /* Uses EXISTING data-go click delegation: this field navigates to customer search. */
+ .sbody .topbar>button[data-go="cust"] {display:flex;align-items:center;gap:10px;flex:1 1 420px;min-width:120px;max-width:540px;height:43px;padding:0 15px;background:rgba(255,255,255,.98);border:1px solid rgba(255,255,255,.7);border-radius:12px;color:#7887a2;font:inherit;font-size:13.5px;text-align:left;cursor:pointer;box-shadow:0 3px 10px rgba(6,23,60,.10);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .sbody .topbar>button[data-go="cust"] svg {width:19px;height:19px;flex:none;color:#1d63ed}
+ .sbody .topbar>button[data-go="cust"] span {flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+ .sbody .topbar>button[data-go="cust"]:hover {background:#f1f6ff;color:#0b2766}
+ .sbody .topbar>button[data-go="cust"]:focus-visible {outline:3px solid #9dc0ff;outline-offset:2px}
+ /* Elevated white surfaces, calm surfaces, consistent text rhythm. */
+ .card,.ui-card,.ui-kpi,.bf-card,.hk,.hc,.hm-main,.exp,.tbl-wrap,.sumcard,.ps-head-card,.ps-date-card,.ps-paper,.smsp-head,.smspick,.smsp .section-card,.sd .card,.sd .hdr,.sd .sum-card {background:#fff;border-color:#e2e9f4!important;border-radius:16px;box-shadow:0 3px 16px rgba(11,39,102,.055)}
+ .card,.ui-card,.bf-card,.exp {min-width:0}
+ .h3,.hc-h h2,.mgh,.bf-card h3,.sm-topbar .tb-title,.sd .card-head {color:#0b2766;font-weight:600}
+ .ltop .ui-ic,.ui-head .ui-ic,.mic {background:#eaf2ff;color:#1d63ed;border-radius:12px}
+ .btn,.btn-add,.btn-apply,.btn-send,.xbtn.blue {background:#1d63ed;color:#fff;border-radius:10px;box-shadow:0 4px 12px rgba(29,99,237,.13)}
+ .btn:hover,.btn-add:hover,.btn-apply:hover,.btn-send:hover,.xbtn.blue:hover {background:#1654cd;color:#fff;box-shadow:0 5px 16px rgba(29,99,237,.2)}
+ .btn.ghost {background:#edf3ff;color:#0b2766;box-shadow:none}
+ .btn.ghost:hover {background:#dde9ff;color:#0b2766}
+ .btn.line,.ltop .btn.line {background:#fff;color:#24416b;border:1px solid #d0def0;border-radius:10px;box-shadow:none}
+ .btn.line:hover {background:#f2f6ff;border-color:#9cbbf5;color:#0b2766}
+ .chip,.mchip,.sort-btn,.nav {border-color:#d0ddef;border-radius:10px}
+ .chip[aria-pressed="true"],.mchip.on,.sort-btn.on,.nav[aria-current="page"] {background:#1d63ed;color:#fff;border-color:#1d63ed}
+ .pill,.xp,.hp {border-radius:100px;box-shadow:none}
+ input:not([type="checkbox"]):not([type="radio"]),select,textarea {background-color:#fff;border-color:#cbd8e8;border-radius:9px;color:#1e3455;font-family:var(--font-body);min-width:0}
+ input:focus,select:focus,textarea:focus {border-color:#1d63ed;box-shadow:0 0 0 3px rgba(29,99,237,.12)}
+ input[type=checkbox],input[type=radio] {accent-color:#1d63ed}
+ .field>span {color:#435674}
+ .tablewrap,.tbl-wrap {max-width:100%;min-width:0}
+ th,.ltable th,.sm-tbl th,.smsp-tbl th {background:#eff4fd;color:#2b4973;font-weight:600;border-bottom-color:#dfe8f5}
+ td {border-bottom-color:#ebeff7}
+ .rowbtn:hover td,.hm-t tbody tr:hover td,.sm-r:hover td {background:#f5f8ff}
+ .plate {border-radius:7px}
+ .ss-dd {border-color:#cedcf0;border-radius:12px;box-shadow:0 12px 26px rgba(11,39,102,.14)}
+ .ss-it.on,.ss-it:hover {background:#1d63ed;color:#fff}
+ .ss-it.sel,.ac-zip {color:#1d63ed}
+ .panel {background:#f7f9fe}
+ .toast {background:#0b2766;color:#fff;border-radius:12px;box-shadow:0 10px 24px rgba(11,39,102,.22)}
+ /* Dashboard -- responsive KPI counts + high contrast fast actions. */
+ .hd {gap:18px}
+ .hk-row {gap:14px}
+ .hk {padding:17px;min-height:112px}
+ .hk:hover {box-shadow:0 8px 23px rgba(11,39,102,.11)}
+ .hk-ic {border-radius:15px}
+ .hk-l {color:#365173;font-weight:600}
+ .hk-v b {color:#0b2766}
+ .hk-d {color:#657895}
+ .hq {border:1px solid #d8e4fa;border-radius:18px;background:linear-gradient(115deg,#eef4ff 0%,#e2edff 65%,#d4e5ff 100%);padding:19px 20px 20px}
+ .hq-h h2 {color:#0b2766;font-size:21px}
+ .hq-g {gap:12px}
+ .hq-b {border-radius:12px;padding:15px 14px;min-height:83px;box-shadow:0 5px 15px rgba(11,39,102,.10)}
+ .hq-b b {font-size:17px}
+ .hq-b.blue {background:linear-gradient(110deg,#1d63ed,#307eff)}
+ .hq-b.green {background:linear-gradient(110deg,#08784d,#10a66d)}
+ .hq-b.yellow {background:linear-gradient(110deg,#ffc400,#ffdc42)}
+ .hq-b.purple {background:linear-gradient(110deg,#613dcc,#8059e9)}
+ .hm {gap:16px}
+ .hm-side {gap:16px}
+ .hm-main {overflow:hidden}
+ .hm-h {padding:15px 16px 12px}
+ .hm-tabs {background:#eff4fd}
+ .hm-fc {border-color:#d9e3f3}
+ .hm-fc.on {background:#1d63ed;border-color:#1d63ed}
+ .hm-t th {background:#f3f7ff;color:#365174}
+ .hc-h h2 svg {color:#1d63ed}
+ .cal-d.today {background:#1d63ed}
+ /* Billing screens: keep original fields, validation and sticky payment. */
+ .bf-head {gap:12px 18px}
+ .bf-head h1 {font-size:25px}
+ .bf-steps button {border-radius:10px;color:#5b708c}
+ .bf-steps button.on {background:#e8f0ff;color:#0b2766}
+ .bf-steps button.on span {background:#1d63ed}
+ .bf-lay {gap:16px}
+ .bf-card {padding:16px}
+ .bf-find {background:linear-gradient(180deg,#f0f6ff,#fff 68%)}
+ .bf-sum {background:linear-gradient(180deg,#fff,#f8fbff)}
+ .bf-sum .paybar .pf:first-child {background:#eaf2ff}
+ .bf-sum .paybar #sum-total {color:#1d63ed!important}
+ #bill .card.sec {background:#fff;border-radius:15px;border:1px solid #dfe8f4!important;box-shadow:0 4px 16px rgba(11,39,102,.06)}
+ #bill .sech.bf-sh {border-radius:14px 14px 0 0;font-family:var(--font-display);font-weight:600}
+ #bill .sech.s1 {background:linear-gradient(105deg,#0b2766,#1d63ed)}
+ #bill .sech.s2 {background:linear-gradient(105deg,#0b754c,#14a56f)}
+ #bill .sech.s3 {background:linear-gradient(105deg,#955023,#e89438)}
+ #bill .field>span {color:#364b68;font-weight:500}
+ #bill .field {gap:8px}
+ #bill .form {column-gap:18px;row-gap:9px}
+ #bill input,#bill select {border-color:#cad8e9;border-radius:9px}
+ #bill input:focus,#bill select:focus {border-color:#1d63ed;box-shadow:0 0 0 3px rgba(29,99,237,.12)}
+ #svc {background:#f6f9ff}
+ [data-svc] {border-radius:10px;box-shadow:0 2px 7px rgba(11,39,102,.045)}
+ .paybar {border-top-color:#b2c9f2}
+ .bf-btns .btn {border-radius:11px}
+ .bf-save {background:linear-gradient(110deg,#08784d,#16a66d)!important}
+ .sm-topbar .tb-title {font-size:20px}
+ .sm-summary {gap:14px}
+ .sm-scard {border-radius:16px;border-color:#e1e9f4;box-shadow:0 3px 13px rgba(11,39,102,.04)}
+ .sm-filterbar,.sm .tbl-wrap {border-color:#dfe8f4}
+ .sm-tel,.sm-dash,.tel {color:#1d63ed!important}
+ .sum-row.net,.sd .sum-row.net {background:#eaf2ff}
+ .sum-row.net .sval,.sd .sum-row.net .sval {color:#1d63ed}
+ .sd .card-head {background:#f2f6fe;color:#0b2766}
+ .sd .val.blue {color:#1d63ed}
+ .ps-car-badge {background:#eaf1ff;color:#1d63ed}
+ .news-row:hover {border-color:#c9d9f7}
+ .news-row .row-dot {background:#1d63ed}
+ .search-pill:focus-within {border-color:#1d63ed}
+ .mcard,.tab-card,.news-row,.ps-date-card {border-radius:15px;border-color:#e2e9f4}
+ .mcard:hover,.tab-card:hover {box-shadow:0 8px 20px rgba(11,39,102,.08)}
+ .mchip.on,.sort-btn.on,.btn-add {background:#1d63ed;border-color:#1d63ed}
+}
+/* Fit 1025–1600px desktops: preserve comfortable form width and KPI layout. */
+@media screen and (min-width:1025px) {
+ .shell {grid-template-columns:264px minmax(0,1fr)}
+ .side {min-width:0}
+ .sbody .topbar>button[data-go="cust"] {max-width:560px}
+}
+@media screen and (min-width:1600px) {
+ .shell {grid-template-columns:272px minmax(0,1fr)}
+ main {padding-left:32px!important;padding-right:32px!important}
+ .hk-row {grid-template-columns:repeat(4,minmax(0,1fr))}
+ .bf-lay {grid-template-columns:minmax(0,1fr) 330px}
+ .bf-side {position:sticky;top:96px;display:flex;max-height:calc(100vh - 110px);overflow-y:auto}
+ .bf-side .bf-find,.bf-side .bf-sum,.bf-side .bf-btns {display:initial}
+ .bf-side .bf-btns {display:grid}
+}
+@media screen and (min-width:1025px) and (max-width:1450px) {
+ .sbody .topbar,.sbody .topbar.topbar {gap:11px}
+ .sbody .tmid {gap:10px;font-size:12.5px}
+ .sbody .topbar>button[data-go="cust"] {max-width:none}
+ .hk {gap:10px;padding:13px}
+ .hk-ic {width:45px;height:45px}
+ .hk-v b {font-size:29px}
+ .hq-b {gap:9px;padding:13px 12px}
+ .hq-b svg {width:31px;height:31px}
+ .hq-b b {font-size:15.5px}
+}
+@media screen and (max-width:1200px) {
+ .sbody .topbar>button[data-go="cust"] {min-width:115px}
+ .sbody .tdate {display:none}
+}
+@media screen and (max-width:1024px) {
+ .shell {grid-template-columns:minmax(0,1fr)}
+ .sbody .topbar,.sbody .topbar.topbar {height:65px;padding:0 14px!important;gap:10px}
+ .sbody .tleft {display:flex;align-items:center;gap:9px;order:0}
+ .sbody .topbar>button[data-go="cust"] {order:1;max-width:none}
+ .sbody .tmid {order:2;gap:7px}
+ .sbody .tright.pf {order:3}
+ .bf-lay {grid-template-columns:minmax(0,1fr)}
+ .bf-side {position:static;max-height:none;overflow:visible}
+ .sm-summary {grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+/* On tablets the two-column bill row can crowd long Thai labels. */
+@media screen and (min-width:761px) and (max-width:960px) {
+ #bill .form {grid-template-columns:minmax(0,1fr)!important}
+ #bill .field>input,#bill .field>select,#bill .field>.row,#bill .field>.fc,#bill .field>.dsel {max-width:100%;min-width:0}
+}
+@media screen and (max-width:760px) {
+ main {padding:14px 12px 38px!important}
+ .wrap,.hd {gap:13px}
+ .head h1,.bf-head h1 {font-size:21px}
+ .sbody .topbar,.sbody .topbar.topbar {padding:0 12px!important;gap:8px}
+ .sbody .topbar>button[data-go="cust"] {padding:0 9px;height:39px;flex:1 1 85px;font-size:12px}
+ .sbody .topbar>button[data-go="cust"] span {display:none}
+ .sbody .topbar>button[data-go="cust"] svg {margin:auto}
+ .sbody .tmid {gap:0}
+ .sbody .tdate,.sbody .ttime {display:none}
+ .sbody .tbell {padding-left:4px;border-left:0}
+ .sbody .tright.pf {padding-left:4px;border-left:0}
+ .sbody .pfbtn {padding:4px!important}
+ .sbody .pfname {display:none}
+ .sbody .pfcar {width:13px}
+ .hk-row,.hb-row,.hq-g {gap:9px}
+ .hk {padding:12px;min-height:0}
+ .hk-v b {font-size:27px}
+ .hq {padding:15px 12px;border-radius:15px}
+ .hq-h h2 {font-size:18px}
+ .hq-b {min-height:70px;gap:7px;padding:11px}
+ .hq-b b {font-size:14.5px}
+ .hq-b small {font-size:11.5px}
+ .hm,.hm-side,.cols {grid-template-columns:minmax(0,1fr)}
+ .form,#bill .form {grid-template-columns:minmax(0,1fr)}
+ .bf-steps {width:100%;gap:4px}
+ .bf-steps button {font-size:12px;padding:5px 7px 5px 5px}
+ #bill .field {flex-direction:column;align-items:stretch;gap:5px;min-width:0}
+ #bill .field>span {flex:none;text-align:left;font-size:13px}
+ #bill .field>input,#bill .field>select,#bill .field>.row,#bill .field>.fc,#bill .field>.dsel {max-width:100%;width:100%;min-width:0;flex:1 1 auto}
+ #bill .field>input.money,#bill .field>input.wide,#bill .field.full>input.wide {max-width:100%}
+ #bill .fc>input,#bill .fc>select,#bill .fc>.ss {max-width:100%;min-width:0}
+ #bill .card.sec {border-radius:13px}
+ #bill .sech.bf-sh {border-radius:12px 12px 0 0}
+ .sm-summary {grid-template-columns:1fr}
+ .sm-search {flex:1 1 100%;margin-left:0;min-width:0}
+ .sm-filterbar {margin:0;padding:11px}
+ .panel {max-width:100%;padding:16px}
+ .mgrid {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .ctabs {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media screen and (max-width:480px) {
+ .sbody .topbar,.sbody .topbar.topbar {height:60px;padding:0 10px!important;gap:6px}
+ .sbody .tleft {gap:5px}
+ .sbody .sburger {width:38px;height:38px}
+ .sbody .tmlogo {width:34px!important;height:34px!important}
+ .sbody .topbar>button[data-go="cust"] {flex:1 1 38px;max-width:50px;min-width:34px;height:37px;padding:0 8px;border-radius:10px}
+ .sbody .tbell-btn {width:37px;height:37px}
+ .sbody .pfav {width:32px;height:32px}
+ .sbody .pfcar {display:none}
+ main {padding:12px 10px 42px!important}
+ .wrap {gap:12px}
+ .head h1,.bf-head h1 {font-size:20px}
+ .hk-row {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hk {flex-direction:column;align-items:flex-start;gap:7px;padding:11px;min-width:0}
+ .hk-ic {width:38px;height:38px;border-radius:10px}
+ .hk-ic svg {width:21px;height:21px}
+ .hk-v b {font-size:25px}
+ .hk-l {font-size:12px}
+ .hk-d {font-size:11px}
+ .hq-g,.hb-row {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .hq-b {flex-direction:column;align-items:flex-start;gap:6px;border-radius:11px;padding:11px}
+ .hq-b svg {width:26px;height:26px}
+ .hq-b b {font-size:13.5px}
+ .hq-b small {font-size:11px}
+ .hm-h {padding:12px;gap:8px}
+ .hm-tabs {width:100%}
+ .hm-tabs button {flex:1;justify-content:center;font-size:12px;padding:7px 4px}
+ .hm-s {min-width:0;flex:1 1 90px}
+ .bf-steps button {font-size:11.5px}
+ .bf-steps button span {width:22px;height:22px}
+ .form {min-width:0}
+ .mcard {padding:15px 7px}
+ .sm-topbar-actions,.actions,.lrow,.sm-daterow {flex-wrap:wrap}
+ .sm-field-wrap,.sm-field-wrap select {min-width:0;max-width:100%}
+ .search-pill,.esearch {width:100%;max-width:100%}
+ .sm-tbl tr.sm-r td {padding-left:92px}
+ .sm-tbl tr.sm-r td[data-l]::before {left:9px;font-size:11px}
+ .dlg .panel {width:100%;max-width:100%}
+ .news-row {gap:8px;padding:12px}
+}
+@media print {
+ /* Do not change rc-/rcx- or any receipt measurement. UI-only search excluded. */
+ .topbar>button[data-go="cust"] {display:none!important}
+}
+
 </style>
 
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
@@ -1714,6 +2010,7 @@ body{margin:0}
 <div class="topwrap">
   <header class="topbar">
     <div class="tleft"><button type="button" class="sburger" id="sburger" aria-label="เปิดเมนู" aria-controls="side" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="avatar lg tmlogo" role="img" aria-label="โลโก้ ตรอ."></span></div>
+    <button type="button" data-go="cust" aria-label="เปิดหน้าค้นหาทะเบียนรถ ชื่อลูกค้า หรือเบอร์โทรศัพท์" title="ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.1-4.1"/></svg><span>ค้นหาทะเบียนรถ / ชื่อลูกค้า / เบอร์โทรศัพท์</span></button>
     <div class="tmid"><span class="tdate" id="tdate"></span><span class="ttime" id="ttime"></span>
       <div class="tbell"><button type="button" class="tbell-btn" id="tbell" aria-haspopup="true" aria-expanded="false" aria-label="รายการแจ้งเตือน"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span class="tbell-n" id="tbell-n" hidden></span></button><div class="tbell-menu" id="tbell-menu" hidden></div></div></div>
     <div class="tright pf">
