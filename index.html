@@ -2985,9 +2985,9 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
       <button class="nb-btn light-blue" id="nb-edit">✏️ <span>แก้ไขข้อมูลที่ผิดพลาด<small>ใช้เมื่อกรอกผิดเท่านั้น (ไม่นับเป็นรายได้ใหม่)</small></span></button>
     </div>
     ${b.ins?`<div class="nb-row" style="margin-top:10px"><button class="nb-btn primary" id="nb-inst">🛡️ <span>ตรวจสอบประวัติผ่อนชำระประกัน<small>${b.ins-s.ip>0.004?`ค่าประกันค้างอีก ${money(b.ins-s.ip)} บาท`:'ค่าประกันจ่ายครบแล้ว'}</small></span></button></div>`:''}
-    <div class="nb-tools"><div class="ios-row">
+    <div class="nb-tools"><div class="ios-row${rcOpt().show_slip_button?' ss-slip-enabled':''}">
       <button class="ios-btn secondary" id="nb-back">‹ ย้อนกลับ</button>
-      <button class="ios-btn success" data-print="แบบม้วน">🖨️ <span>พิมพ์ใบเสร็จ<small>แบบม้วน</small></span></button>
+      <button class="ios-btn success" data-print="แบบม้วน" ${rcOpt().show_slip_button?'':'hidden'}>🖨️ <span>พิมพ์ใบเสร็จ<small>แบบม้วน</small></span></button>
       <button class="ios-btn success" data-print="แบบ A4">🖨️ <span>พิมพ์ใบเสร็จ<small>แบบ A4</small></span></button>
     </div></div>
   </div></div>
@@ -5762,7 +5762,10 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">🧾 รูปแบบใบเสร็จ</div><div class="st-rc">
     <div class="st-rco">
       <div class="field"><span>ใบเสร็จ A4</span><div class="st-tog" data-rc="a4"><button type="button" class="tog" data-v="half">ครึ่ง A4 (ลูกค้า / ร้าน)</button><button type="button" class="tog" data-v="full">เต็มหน้า A4</button></div><small class="sub">ครึ่ง A4: ครึ่งบนให้ลูกค้า ครึ่งล่างร้านเก็บไว้ มีเส้นปะให้ฉีก</small></div>
-      <div class="field"><span>ใบเสร็จแบบม้วน</span><div class="st-tog" data-rc="slip"><button type="button" class="tog" data-v="std">มาตรฐาน</button><button type="button" class="tog" data-v="compact">กระชับ (ไม่มีโลโก้/QR)</button></div></div>
+      <div class="field"><span>การแสดงปุ่มพิมพ์ใบเสร็จแบบม้วน</span>
+         <label class="ss-slip-setting"><input type="checkbox" id="st-show-slip" role="switch" aria-label="แสดงปุ่มพิมพ์ใบเสร็จแบบม้วน"><span class="ss-slip-switch" aria-hidden="true"></span><span class="ss-slip-caption"><b>แสดงปุ่มพิมพ์แบบม้วนในหน้าบิล</b><small>ปิดเป็นค่าเริ่มต้น เพื่อให้ปุ่มพิมพ์ A4 เด่นและกดสะดวกขึ้น · เปิดได้ทุกเมื่อ</small></span></label>
+       </div>
+       <div class="field"><span>ใบเสร็จแบบม้วน (ตั้งค่ารูปแบบ)</span><div class="st-tog" data-rc="slip"><button type="button" class="tog" data-v="std">มาตรฐาน</button><button type="button" class="tog" data-v="compact">กระชับ (ไม่มีโลโก้/QR)</button></div></div>
       <div class="field"><span>แสดงในใบเสร็จ</span><div class="st-tog st-rcflags">${[['logo','โลโก้ร้าน'],['pp','QR พร้อมเพย์ (เมื่อมียอดค้าง)'],['line','QR ผูก LINE'],['sign','ช่องเซ็นชื่อ'],['shopQr','QR ในสำเนาร้านด้วย']].map(([k,l])=>`<button type="button" class="tog" data-f="${k}">${l}</button>`).join('')}</div></div>
       <label class="field"><span>เลขประจำตัวผู้เสียภาษี <em class="sub">(ถ้ามี)</em></span><input id="rc-tax" inputmode="numeric" maxlength="17" placeholder="เว้นว่างถ้าไม่มี"></label>
       <label class="field"><span>ข้อความท้ายใบเสร็จ</span><input id="rc-foot" maxlength="120" placeholder="เช่น ขอบคุณที่ใช้บริการ"></label></div>
@@ -5828,9 +5831,9 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
       requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')))};// ตัวอย่างใบเสร็จต้องคำนวณขนาดใหม่หลังการ์ดแสดง
     stNavBind(lay,show);stShow=show;show(stSec)}
   // รูปแบบใบเสร็จ + ตัวอย่างสด
-  const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';
+  const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';$('#st-show-slip').checked=!!RC.show_slip_button;
   const rcRead=()=>{const o={};document.querySelectorAll('[data-rc]').forEach(g=>{const on=g.querySelector('.on');o[g.dataset.rc]=on?on.dataset.v:RC_DEF[g.dataset.rc]});
-    document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>o[b.dataset.f]=b.classList.contains('on')?1:0);o.taxid=$('#rc-tax').value.trim();o.foot=$('#rc-foot').value.trim();return o};
+    document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>o[b.dataset.f]=b.classList.contains('on')?1:0);o.show_slip_button=$('#st-show-slip').checked?1:0;o.taxid=$('#rc-tax').value.trim();o.foot=$('#rc-foot').value.trim();return o};
 
   document.querySelectorAll('[data-rc]').forEach(g=>{g.querySelectorAll('.tog').forEach(b=>{b.classList.toggle('on',b.dataset.v===RC[g.dataset.rc]);b.onclick=()=>{g.querySelectorAll('.tog').forEach(x=>x.classList.toggle('on',x===b));rcPv()}})});
   document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>{b.classList.toggle('on',!!RC[b.dataset.f]);b.onclick=()=>{b.classList.toggle('on');rcPv()}});
@@ -6053,7 +6056,7 @@ R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date
 /* ---------- QR ผูก LINE บนใบเสร็จ ---------- */
 const lineOaUrl=code=>{const oa=SET.line_oa.trim();return oa?`https://line.me/R/oaMessage/${encodeURIComponent(oa.startsWith('@')?oa:'@'+oa)}/?${encodeURIComponent('รหัส '+code)}`:''};
 /* ---------- ใบเสร็จ: รูปแบบตั้งได้ในหน้าตั้งค่า (A4 แบ่งครึ่ง ลูกค้า/ร้าน · เต็มหน้า · แบบม้วน) ---------- */
-const RC_DEF={a4:'half',slip:'std',logo:1,pp:1,line:1,sign:1,shopQr:0,taxid:'',foot:'ขอบคุณที่ใช้บริการ'};
+const RC_DEF={a4:'half',slip:'std',logo:1,pp:1,line:1,sign:1,shopQr:0,taxid:'',foot:'ขอบคุณที่ใช้บริการ',show_slip_button:0};
 const rcOpt=()=>Object.assign({},RC_DEF,SET.rc||{});
 // จำนวนเงินเป็นตัวหนังสือ เช่น 2545.21 -> สองพันห้าร้อยสี่สิบห้าบาทยี่สิบเอ็ดสตางค์
 function bahtText(n){const D=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'],P=['','สิบ','ร้อย','พัน','หมื่น','แสน'];
@@ -6162,7 +6165,7 @@ async function receiptDlg(b,kind,after){if(b.void){alert('บิลนี้ถ�
     ${a.why.length?`<div class="rc-why non-printable">ℹ️ ${a.why.map(esc).join('<br>ℹ️ ')}</div>`:''}
     ${a4?`<div class="rcx-wrap" id="rc-wrap">${html}</div>`:html}
     <div class="row non-printable" style="gap:8px;flex-wrap:wrap">${a.debt>0?`<button class="btn line" id="rc-pp">📱 QR พร้อมเพย์ ${money(a.debt)}</button>`:''}<button class="btn" id="rc-print" style="flex:1">🖨️ พิมพ์${a4?' (กระดาษ A4)':''}</button></div>
-    ${after?`<div class="row non-printable" style="gap:8px;flex-wrap:wrap"><button class="btn line" id="rc-kind" style="flex:1">${a4?'🧾 ดูแบบม้วน':'📄 ดูแบบ A4'}</button><button class="btn line" id="to-car" style="flex:1">เปิดข้อมูลรถคันนี้</button><button class="btn ghost" id="new-bill" style="flex:1">เปิดบิลใหม่อีกใบ</button></div>`:''}`;
+    ${after?`<div class="row non-printable" style="gap:8px;flex-wrap:wrap"><button class="btn line" id="rc-kind" style="flex:1" ${o.show_slip_button?'':'hidden'}>${a4?'🧾 ดูแบบม้วน':'📄 ดูแบบ A4'}</button><button class="btn line" id="to-car" style="flex:1">เปิดข้อมูลรถคันนี้</button><button class="btn ghost" id="new-bill" style="flex:1">เปิดบิลใหม่อีกใบ</button></div>`:''}`;
   const x=()=>{$('#dlg').hidden=true;pn.classList.remove('wide');window.removeEventListener('resize',fit)},fit=()=>rcFit($('#rc-wrap'));
   $('#x').onclick=after?()=>{x();if(cur==='add')newBillForm()}:x;if(a4){fit();window.addEventListener('resize',fit)}
   if($('#rc-pp'))$('#rc-pp').onclick=()=>qrDlg(a.debt,b.plate);
@@ -7109,3 +7112,62 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAM_DLT_CLICKABLE_DROPDOWN_V1 -->
+
+
+<!-- SIAMSERVICE_SLIP_PRINT_VISIBILITY_V1: display-only, no receipt print rule changes -->
+<style id="siamservice-slip-visibility-v1">
+@media screen {
+  #view .nb-tools .ios-row {
+    grid-template-columns: minmax(0,.9fr) minmax(0,1.7fr);
+    align-items:stretch;
+  }
+  #view .nb-tools .ios-row.ss-slip-enabled {grid-template-columns:repeat(3,minmax(0,1fr));}
+  #view .nb-tools .ios-row [data-print="แบบม้วน"][hidden],
+  #dlg #rc-kind[hidden] {display:none!important;}
+  #view .nb-tools .ios-row .ios-btn[data-print="แบบ A4"]:not(:disabled) {
+    background:#1d63ed!important;color:#fff!important;
+    border:1.5px solid #1d63ed!important;
+    box-shadow:0 5px 15px rgba(29,99,237,.20);
+    font-size:15px;
+  }
+  #view .nb-tools .ios-row .ios-btn[data-print="แบบ A4"]:not(:disabled):hover {
+    background:#154fcb!important;border-color:#154fcb!important;
+  }
+  #view .nb-tools .ios-row .ios-btn[data-print="แบบม้วน"]:not(:disabled) {
+    background:#eaf2ff!important;color:#0b2766!important;
+    border:1.5px solid #96b9ff!important;
+    box-shadow:0 2px 7px rgba(29,99,237,.08);
+  }
+  #view .nb-tools .ios-row .ios-btn[data-print="แบบม้วน"]:not(:disabled):hover {
+    background:#dbeaff!important;
+  }
+  #view .st .ss-slip-setting{
+    display:flex;align-items:center;gap:12px;min-width:0;
+    padding:14px;border-radius:12px;background:#f7faff;
+    border:1px solid #d8e6fa;cursor:pointer;
+  }
+  #view .st .ss-slip-setting input{
+    position:absolute;opacity:0;width:1px;height:1px;
+  }
+  #view .st .ss-slip-switch{
+    position:relative;width:47px;height:27px;min-width:47px;
+    border-radius:99px;background:#b7c5d8;transition:background .15s;
+  }
+  #view .st .ss-slip-switch:after{
+    content:"";position:absolute;width:21px;height:21px;top:3px;left:3px;
+    background:#fff;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,.16);
+    transition:transform .15s;
+  }
+  #view .st .ss-slip-setting input:checked + .ss-slip-switch {background:#1d63ed;}
+  #view .st .ss-slip-setting input:checked + .ss-slip-switch:after {transform:translateX(20px);}
+  #view .st .ss-slip-setting input:focus-visible + .ss-slip-switch {outline:3px solid #f4bc46;outline-offset:3px;}
+  #view .st .ss-slip-caption {display:flex;flex-direction:column;gap:3px;min-width:0;color:#0b2766;}
+  #view .st .ss-slip-caption b {font-weight:720;font-size:14px;}
+  #view .st .ss-slip-caption small {color:#526782;font-size:12.5px;line-height:1.45;}
+}
+@media screen and (max-width:700px){
+  #view .nb-tools .ios-row,
+  #view .nb-tools .ios-row.ss-slip-enabled {grid-template-columns:minmax(0,1fr);}
+}
+</style>
+<!-- /SIAMSERVICE_SLIP_PRINT_VISIBILITY_V1 -->
