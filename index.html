@@ -6298,16 +6298,120 @@ async function dltSet(list,patch){
   if(LIVE)await DB.saveDlt(staged);
   staged.forEach((value,i)=>{list[i].dlt=value.dlt});
 }
+
+/* SIAM_DLT_CLICKABLE_DROPDOWN_V1 -- UI-only enhancement.
+ * The existing select #dj-st is retained and read by the original save handler.
+ * When enhancement fails, the native select remains visible as a fallback.
+ */
+function siamEnhanceDltStage(ov){
+  const sel=ov.querySelector('#dj-st');
+  const host=sel&&sel.closest('.dj-stage-host');
+  if(!sel||!host)return;
+  try{
+    const values=[...sel.options].map(o=>({value:o.value,label:o.textContent}));
+    const trigger=document.createElement('button');
+    trigger.type='button';trigger.className='dj-stage-trigger';
+    trigger.setAttribute('aria-label','เลือกสถานะงานขนส่ง');
+    trigger.setAttribute('aria-expanded','false');
+    trigger.setAttribute('aria-controls','dj-stage-options');
+    const label=document.createElement('span');label.className='dj-stage-value';
+    const arrow=document.createElement('span');arrow.className='dj-stage-arrow';arrow.setAttribute('aria-hidden','true');
+    trigger.append(label,arrow);
+    const options=document.createElement('div');
+    options.id='dj-stage-options';options.className='dj-stage-options';
+    options.setAttribute('role','listbox');options.setAttribute('aria-label','สถานะงานขนส่ง');
+    options.hidden=true;
+    const buttons=values.map((item,index)=>{
+      const btn=document.createElement('button');
+      btn.type='button';btn.className='dj-stage-option';
+      btn.setAttribute('role','option');
+      btn.dataset.value=item.value;
+      btn.dataset.index=String(index);
+      btn.textContent=item.label;
+      options.append(btn);
+      return btn;
+    });
+    const sync=()=>{
+      const selected=values.find(o=>o.value===sel.value);
+      label.textContent=selected?selected.label:'เลือกสถานะ';
+      buttons.forEach(btn=>{
+        const active=btn.dataset.value===sel.value;
+        btn.setAttribute('aria-selected',String(active));
+        btn.classList.toggle('chosen',active);
+      });
+    };
+    const closeList=(focusTrigger=false)=>{
+      options.hidden=true;trigger.setAttribute('aria-expanded','false');
+      host.classList.remove('opened');
+      if(focusTrigger)trigger.focus();
+    };
+    const openList=(focusOption=false)=>{
+      if(sel.disabled)return;
+      options.hidden=false;trigger.setAttribute('aria-expanded','true');
+      host.classList.add('opened');
+      sync();
+      if(focusOption){(buttons.find(b=>b.dataset.value===sel.value)||buttons[0])?.focus();}
+    };
+    const choose=btn=>{
+      if(!btn||sel.disabled)return;
+      sel.value=btn.dataset.value;
+      sel.dispatchEvent(new Event('input',{bubbles:true}));
+      sel.dispatchEvent(new Event('change',{bubbles:true}));
+      sync();closeList(true);
+    };
+    trigger.addEventListener('click',()=>{
+      options.hidden?openList(false):closeList(false);
+    });
+    trigger.addEventListener('keydown',e=>{
+      if(['ArrowDown','ArrowUp','Enter',' '].includes(e.key)){
+        e.preventDefault();openList(true);
+      }else if(e.key==='Escape'){closeList(false)}
+    });
+    options.addEventListener('click',e=>{
+      const btn=e.target.closest('.dj-stage-option');
+      if(btn&&options.contains(btn))choose(btn);
+    });
+    options.addEventListener('keydown',e=>{
+      const current=buttons.indexOf(document.activeElement);
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+        e.preventDefault();const step=e.key==='ArrowDown'?1:-1;
+        const next=(Math.max(0,current)+step+buttons.length)%buttons.length;
+        buttons[next]?.focus();
+      }else if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();choose(document.activeElement.closest('.dj-stage-option'));
+      }else if(e.key==='Escape'){
+        e.preventDefault();closeList(true);
+      }else if(e.key==='Tab')closeList(false);
+    });
+    ov.addEventListener('pointerdown',e=>{
+      if(!host.contains(e.target))closeList(false);
+    });
+    sel.addEventListener('change',sync);
+    host.append(trigger,options);
+    sync();
+    host.classList.add('enhanced');
+  }catch(err){
+    // Safe failure: native select remains available.
+    host.classList.remove('enhanced');
+    console.warn('DLT dropdown enhancement unavailable',err);
+  }
+}
+
 function dltDlg(list,after){const one=list.length===1?list[0]:null,j=one?dltOf(one):{st:dltOf(list[0]).st,cert:'',rcpt:'',note:''};
   const ov=document.createElement('div');ov.className='nb-overlay show';
   ov.innerHTML=`<div class="nb-modal dj-modal"><h3>🚚 อัปเดตงานขนส่ง</h3><p class="sub">${one?esc(dltPlate(one))+' · '+esc(one.name)+' · '+esc(dltKind(one)):list.length+' คัน'}</p>
-    <label class="field"><span>สถานะ</span><select id="dj-st">${Object.entries(DLT_ST).map(([k,[l]])=>`<option value="${k}" ${k===j.st?'selected':''}>${l}</option>`).join('')}</select></label>
+    <div class="field"><span>สถานะ</span><div class="dj-stage-host"><select id="dj-st">${Object.entries(DLT_ST).map(([k,[l]])=>`<option value="${k}" ${k===j.st?'selected':''}>${l}</option>`).join('')}</select></div></div>
     ${one?`<label class="field"><span>เลขใบรับรองการตรวจสภาพ</span><input id="dj-cert" value="${esc(j.cert)}" placeholder="ถ้ามี"></label>
     <label class="field"><span>เลขใบเสร็จกรมการขนส่ง</span><input id="dj-rcpt" value="${esc(j.rcpt)}" placeholder="ถ้ามี"></label>
     <label class="field"><span>หมายเหตุ</span><input id="dj-note" value="${esc(j.note)}" placeholder="เช่น ขาดสำเนาบัตร รอลูกค้าส่งเพิ่ม"></label>
     <div class="dj-tl">${['submitted','plate','done'].map(k=>`<div><span>${DLT_ST[k][0]}</span><b>${j.at&&j.at[k]?beFull(new Date(j.at[k])):'–'}</b></div>`).join('')}</div>`:''}
     <div class="row" style="gap:8px;margin-top:6px"><button class="btn line" id="dj-x" style="flex:1">ยกเลิก</button><button class="btn" id="dj-ok" style="flex:1">บันทึก</button></div></div>`;
-  document.body.appendChild(ov);const close=()=>ov.remove();
+  document.body.appendChild(ov);
+  // SIAM_DLT_CLICKABLE_DROPDOWN_V1: Native select remains the source of truth.
+  // Build a click-operated dropdown rather than relying on the OS native popup.
+  // No changes to #dj-st, DLT_ST, dltSet or the existing save handler.
+  siamEnhanceDltStage(ov);
+  const close=()=>ov.remove();
   ov.onclick=e=>{if(e.target===ov)close()};ov.querySelector('#dj-x').onclick=close;
   ov.querySelector('#dj-ok').onclick=async e=>{e.target.disabled=true;const patch={st:ov.querySelector('#dj-st').value};
     if(one)Object.assign(patch,{cert:ov.querySelector('#dj-cert').value.trim(),rcpt:ov.querySelector('#dj-rcpt').value.trim(),note:ov.querySelector('#dj-note').value.trim()});
@@ -6961,3 +7065,47 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAM_DLT_NATIVE_SELECT_V2 -->
+
+<!-- SIAM_DLT_CLICKABLE_DROPDOWN_V1: screen-only, keeps A4 receipt CSS unchanged -->
+<style id="siam-dlt-clickable-dropdown-v1">
+@media screen {
+  .dj-modal .dj-stage-host{position:relative;min-width:0;width:100%;}
+  .dj-modal .dj-stage-host:not(.enhanced) .dj-stage-trigger,
+  .dj-modal .dj-stage-host:not(.enhanced) .dj-stage-options{display:none!important;}
+  .dj-modal .dj-stage-host.enhanced #dj-st{display:none!important;}
+  .dj-modal .dj-stage-trigger{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    width:100%;min-height:46px;padding:10px 14px;
+    border-radius:10px;border:1.5px solid #bccde4;
+    background:#fff;color:#0b2766;font:600 14px/1.5 inherit;
+    font-family:inherit;text-align:left;cursor:pointer;
+    box-sizing:border-box;
+  }
+  .dj-modal .dj-stage-trigger:hover{border-color:#1d63ed;background:#f8fbff;}
+  .dj-modal .dj-stage-trigger:focus-visible{
+    outline:3px solid rgba(29,99,237,.25);outline-offset:2px;border-color:#1d63ed;
+  }
+  .dj-modal .dj-stage-arrow{display:block;flex:0 0 auto;width:9px;height:9px;
+    border-right:2px solid #526a8a;border-bottom:2px solid #526a8a;
+    transform:rotate(45deg) translate(-2px,-2px);transition:transform .12s;}
+  .dj-modal .dj-stage-host.opened .dj-stage-arrow{transform:rotate(225deg) translate(-2px,-1px);}
+  .dj-modal .dj-stage-options{
+    position:absolute;top:calc(100% + 5px);left:0;right:0;z-index:300;
+    display:grid;gap:3px;max-height:220px;overflow-y:auto;
+    padding:6px;border-radius:10px;border:1px solid #bcd0ea;
+    background:#fff;box-shadow:0 12px 30px rgba(11,39,102,.20);
+  }
+  .dj-modal .dj-stage-options[hidden]{display:none!important;}
+  .dj-modal .dj-stage-option{
+    display:block;width:100%;min-height:42px;border:0;border-radius:7px;
+    padding:10px 12px;background:#fff;color:#173457;
+    font:500 14px/1.4 inherit;font-family:inherit;
+    cursor:pointer;text-align:left;
+  }
+  .dj-modal .dj-stage-option:hover,.dj-modal .dj-stage-option:focus-visible{
+    background:#eaf3ff;color:#0b2766;outline:0;
+  }
+  .dj-modal .dj-stage-option.chosen{background:#eaf1ff;color:#145ad1;font-weight:700;}
+}
+</style>
+<!-- /SIAM_DLT_CLICKABLE_DROPDOWN_V1 -->
