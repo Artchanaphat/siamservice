@@ -2039,6 +2039,16 @@ body{margin:0}
 .tsr-all{display:block;width:100%;margin-top:4px;border:0;border-top:1px solid #eef2f8;background:none;padding:9px 10px;font:inherit;font-size:13px;font-weight:600;color:#1d63ed;text-align:left;cursor:pointer;border-radius:0 0 9px 9px}
 .tsr-all:hover{background:#f5f8ff}
 @media print{.tsr-pop{display:none!important}}
+
+/* v60c รายการของช่องเลือก: เปิดลงด้านล่างใต้ช่อง */
+.sel-pop{position:fixed;z-index:80;background:#fff;border:1px solid #cfdcf1;border-radius:10px;box-shadow:0 12px 32px rgba(8,25,71,.18);padding:4px;overflow:auto;max-width:min(420px,calc(100vw - 16px))}
+.sel-it{display:block;width:100%;text-align:left;background:none;border:0;border-radius:7px;padding:7px 12px;font:inherit;font-size:14px;color:#0f2a6b;cursor:pointer;white-space:nowrap}
+.sel-it:hover,.sel-it.hi{background:#eef4ff}
+.sel-it.on{background:#1d63ed;color:#fff;font-weight:600}
+.sel-it.on.hi,.sel-it.on:hover{background:#1857d6}
+.sel-it:disabled{color:#a3adbf;cursor:default;background:none}
+.sel-gr{padding:6px 12px 3px;font-size:12px;font-weight:600;color:#7887a2}
+@media print{.sel-pop{display:none!important}}
 </style>
 
 <script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
@@ -2296,6 +2306,33 @@ if(/github\.io$/.test(location.hostname)&&!/[?&]demo/.test(location.search))docu
 // โหมดทดลองมีเฉพาะหน้าต้นแบบ/ไฟล์ทดสอบ เว็บร้านจริงไม่แสดง
 if(location.protocol!=='file:'&&!/claude/i.test(location.hostname)){document.querySelectorAll('.demo,.divider').forEach(e=>e.remove())}
 document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hidden=true;enterApp(USERS[b.dataset.demo])});
+// ช่องเลือก (select) บนคอมพิวเตอร์: เปิดรายการลงด้านล่างใต้ช่องเสมอ (มือถือใช้ตัวเลือกของเครื่องตามเดิม)
+(()=>{if(!matchMedia('(pointer:fine)').matches)return;
+  const pop=document.createElement('div');pop.className='sel-pop';pop.setAttribute('role','listbox');pop.hidden=true;document.body.appendChild(pop);
+  let S=null,hi=-1,opts=[];
+  const close=()=>{pop.hidden=true;S=null;hi=-1};
+  const mark=()=>{const bs=pop.querySelectorAll('.sel-it');bs.forEach((b,k)=>b.classList.toggle('hi',k===hi));if(bs[hi])bs[hi].scrollIntoView({block:'nearest'})};
+  const choose=k=>{const s=S,o=opts[k];close();if(!s||!o||o.disabled)return;s.focus();if(s.value!==o.value){s.value=o.value;s.dispatchEvent(new Event('input',{bubbles:true}));s.dispatchEvent(new Event('change',{bubbles:true}))}};
+  const open=s=>{S=s;opts=[...s.options].filter(o=>!o.hidden);
+    let h='',g=null;opts.forEach((o,k)=>{const og=o.parentElement.tagName==='OPTGROUP'?o.parentElement:null;if(og&&og!==g){g=og;h+=`<div class="sel-gr">${esc(og.label)}</div>`}
+      h+=`<button type="button" class="sel-it${o.selected?' on':''}" data-k="${k}"${o.disabled?' disabled':''}>${esc(o.textContent)}</button>`});
+    pop.innerHTML=h;hi=opts.findIndex(o=>o.selected);
+    const r=s.getBoundingClientRect();pop.style.minWidth=r.width+'px';pop.style.left=Math.max(8,Math.min(r.left,innerWidth-Math.max(r.width,120)-8))+'px';pop.hidden=false;
+    const below=innerHeight-r.bottom-12,above=r.top-12,want=Math.min(pop.scrollHeight,300);
+    if(below>=Math.min(want,200)||below>=above){pop.style.top=(r.bottom+4)+'px';pop.style.bottom='';pop.style.maxHeight=Math.max(120,Math.min(300,below))+'px'}
+    else{pop.style.top='';pop.style.bottom=(innerHeight-r.top+4)+'px';pop.style.maxHeight=Math.min(300,above)+'px'}
+    pop.scrollTop=0;mark()};
+  document.addEventListener('mousedown',e=>{if(pop.contains(e.target))return;const s=e.target.closest('select');
+    if(!s||s.multiple||s.size>1||s.disabled||e.button!==0){if(!pop.hidden)close();return}
+    e.preventDefault();if(S===s){close();return}s.focus();open(s)},true);
+  pop.addEventListener('mousedown',e=>{e.preventDefault();const b=e.target.closest('.sel-it');if(b&&!b.disabled)choose(+b.dataset.k)});
+  document.addEventListener('keydown',e=>{if(pop.hidden)return;
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();const s=S;close();if(s)s.focus()}
+    else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();e.stopPropagation();const n=opts.length;let k=hi;do{k=(k+(e.key==='ArrowDown'?1:-1)+n)%n}while(opts[k].disabled&&k!==hi);hi=k;mark()}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();e.stopPropagation();choose(hi)}
+    else if(e.key==='Tab')close()},true);
+  addEventListener('scroll',e=>{if(!pop.hidden&&!pop.contains(e.target))close()},true);addEventListener('resize',()=>{if(!pop.hidden)close()});
+  document.addEventListener('focusin',e=>{if(!pop.hidden&&e.target!==S&&!pop.contains(e.target))close()})})();
 // ช่องค้นหาด้านบน: พิมพ์แล้วแสดงรายการใต้ช่อง คลิกรายการจึงเปิดข้อมูลรถ (จอเล็ก กดไอคอนแล้วไปหน้าค้นหา)
 (()=>{const tq=$('#tq'),lb=document.querySelector('.tsrch');if(!tq||!lb)return;
   const box=document.createElement('div');box.className='tsr-pop';box.id='tsr-pop';box.setAttribute('role','listbox');box.hidden=true;document.body.appendChild(box);
