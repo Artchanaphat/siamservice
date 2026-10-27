@@ -1942,6 +1942,31 @@ body{margin:0}
 }
 </style>
 <!-- /SIAMSERVICE_REFERENCE_DASHBOARD_V1 -->
+<!-- SIAMSERVICE_STAFF_AVATAR_V1: screen-only; no receipt CSS -->
+<style id="siam-staff-avatar-style">
+@media screen {
+  .sa-pair {display:flex;align-items:center;gap:10px;min-width:0}
+  .sa-pair-text {min-width:0;display:flex;flex-direction:column;gap:5px}
+  .sa-thumb {width:45px!important;height:45px!important;flex:none;position:relative;overflow:hidden;border:2px solid #dbe6f9!important;box-shadow:0 1px 5px #122b5219}
+  .sa-actions {display:flex;gap:5px;flex-wrap:wrap}
+  .sa-actions button {white-space:nowrap;border:1px solid #d5dff0;background:#f7faff;border-radius:7px;color:#14376f;font-size:11px;padding:4px 7px;cursor:pointer}
+  .sa-actions button:hover {background:#e8f0ff;border-color:#7da4ee}
+  .sa-actions button:disabled {opacity:.5;cursor:not-allowed}
+  .sa-actions .sa-remove {color:#a52a33;background:#fff8f8;border-color:#f0d2d2}
+  .sa-avatar-img {display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit;z-index:1}
+  .pfav,.pfbig {position:relative;overflow:hidden}
+  .sa-panel {max-width:440px;width:100%;display:flex;flex-direction:column;gap:13px;padding:8px 2px}
+  .sa-panel h2 {font-size:19px;margin:0;color:#0b2766}
+  .sa-panel p {margin:0;color:#64748b;font-size:13px;line-height:1.6}
+  .sa-preview {width:138px;height:138px;border-radius:50%;margin:8px auto;object-fit:cover;border:4px solid #dce8ff;box-shadow:0 6px 24px #193c7020}
+  .sa-panel-actions {display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+  .sa-panel-actions button {min-height:38px}
+  .sa-panel-error {font-size:12px;color:#b91c1c;overflow-wrap:anywhere}
+  @media(max-width:760px) {.sa-pair{gap:8px}.sa-thumb{width:40px!important;height:40px!important}.sa-actions{gap:4px}}
+}
+</style>
+<!-- /SIAMSERVICE_STAFF_AVATAR_V1 -->
+
 <!-- SIAMSERVICE_V6_CLIPBOARD_ADDON_V1: presentation only; receipts unchanged -->
 <style id="siamservice-v6-clipboard-style">
 @media screen {
@@ -2014,6 +2039,8 @@ body{margin:0}
       <button class="pfbtn" id="pfbtn" aria-haspopup="true" aria-expanded="false"><span class="avatar lg pfav"></span><span class="pfname uname"></span><svg class="pfcar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="pfmenu" id="pfmenu" hidden role="menu">
         <div class="pfhead"><span class="avatar lg pfbig"></span><div><small>เข้าสู่ระบบในฐานะ</small><b><span class="uname"></span> · <span class="pfrole"></span></b><em class="pfbr"></em></div></div>
+        <button role="menuitem" data-sa-self hidden>📷 เปลี่ยนรูปโปรไฟล์</button>
+        <button role="menuitem" data-sa-self-remove hidden>🗑️ ลบรูปโปรไฟล์</button>
         <button role="menuitem" data-chpw hidden>🔑 เปลี่ยนรหัสผ่าน</button>
         <button role="menuitem" data-go="settings" data-owner-any hidden>⚙️ ตั้งค่าระบบ</button>
         <button role="menuitem" data-go="audit" data-owner-any hidden>📜 ประวัติการใช้งาน</button>
@@ -2207,6 +2234,7 @@ function enterApp(u,resumed){user=u;document.querySelectorAll('.uname').forEach(
   document.querySelectorAll('.urole').forEach(n=>n.textContent=(ROLE_TH[u.role]||'พนักงาน')+(LIVE?'':' · โหมดทดลอง'));DB.branchUI();document.querySelectorAll('[data-chpw]').forEach(b=>b.hidden=!LIVE);document.querySelectorAll('[data-owner]').forEach(b=>b.hidden=!(LIVE&&u.role==='owner'));document.querySelectorAll('[data-owner-any]').forEach(b=>b.hidden=u.role!=='owner');
   document.querySelectorAll('.pfrole').forEach(n=>n.textContent=ROLE_TH[u.role]||'พนักงาน');document.querySelectorAll('.pfbr').forEach(n=>n.textContent=LIVE?(DB.branch?(u.role==='owner'?'ดูข้อมูล: ':'')+DB.branch.name:''):'โหมดทดลอง (ไม่บันทึกจริง)');
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;tClock();
+  StaffAvatar.refreshCurrent(u);
   let pg='home';if(resumed)try{const k=sessionStorage.getItem('siam-page'),ss=sessionStorage.getItem('siam-stsec');if(PAGE_KEEP.includes(k))pg=k;if(ss)stSec=ss}catch(e){}
   go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
@@ -4672,7 +4700,7 @@ const DB=(()=>{
     let saved=null;try{saved=+localStorage.getItem('siam-branch')}catch(e){}
     branch=st.role==='owner'?(branches.find(b=>b.id===saved)||branches[0]):branches.find(b=>b.id===st.branch_id);
     if(!branch)throw new Error('ยังไม่มีสาขาในระบบ');
-    LIVE=true;me={name:st.full_name||st.username,role:st.role,uid,username:st.username};return me}
+    LIVE=true;me={name:st.full_name||st.username,role:st.role,uid,username:st.username,avatarPath:st.avatar_path||null};return me}
   async function load(){
     const c=await client();
     const since=new Date(TODAY.getTime()-400*DAY).toISOString();
@@ -4858,6 +4886,44 @@ const DB=(()=>{
     try{if(id)chk(await c.from('branches').update(o).eq('id',id));else chk(await c.from('branches').insert(o))}
     catch(e){if(/promptpay/i.test(e.message))throw new Error('ยังไม่ได้รัน 05-features.sql ใน Supabase (ช่องพร้อมเพย์)');throw e}
     branches=chk(await c.from('branches').select('*').eq('active',true).order('id'));branch=branches.find(b=>b.id===branch.id)||branches[0];branchUI()}
+  // ----- รูปพนักงาน: storage ส่วนตัว, ไม่แก้ auth หรือข้อมูลการเงิน -----
+  async function avatarUrl(path){
+    if(!path)return null;
+    const c=await client(),r=await c.storage.from('staff-avatars').createSignedUrl(path,3600);
+    if(r.error)throw new Error(r.error.message);
+    return r.data.signedUrl;
+  }
+  async function avatarUrls(paths){
+    const unique=[...new Set(paths.filter(Boolean))];if(!unique.length)return {};
+    const c=await client(),r=await c.storage.from('staff-avatars').createSignedUrls(unique,3600);
+    if(r.error)throw new Error(r.error.message);
+    const out={};(r.data||[]).forEach((v,i)=>{if(!v.error&&v.signedUrl)out[unique[i]]=v.signedUrl});
+    return out;
+  }
+  async function setStaffAvatar(uid,blob){
+    const c=await client(),bucket=c.storage.from('staff-avatars');
+    let path=null;
+    if(blob){
+      if(!['image/webp','image/png'].includes(blob.type)||blob.size>1048576)throw new Error('รูปภาพไม่ถูกต้องหรือใหญ่เกิน 1 MB');
+      const ext=blob.type==='image/png'?'png':'webp';
+      path=uid+'/'+crypto.randomUUID()+'.'+ext;
+      const upload=await bucket.upload(path,blob,{contentType:blob.type,cacheControl:'3600',upsert:false});
+      if(upload.error)throw new Error('อัปโหลดรูปไม่สำเร็จ: '+upload.error.message+' (ตรวจสอบ SQL Migration และ Storage Policy)');
+    }
+    let previous=null;
+    try{
+      const result=await c.rpc('set_staff_avatar_v1',{p_target_user:uid,p_avatar_path:path});
+      if(result.error)throw new Error(result.error.message);
+      previous=result.data;
+    }catch(err){if(path)try{await bucket.remove([path])}catch(_){};throw err}
+    if(me&&me.uid===uid)me.avatarPath=path;
+    if(previous&&previous!==path){
+      try{const removed=await bucket.remove([previous]);
+        if(removed.error)console.warn('Old staff avatar could not be deleted:',removed.error.message);
+      }catch(cleanupErr){console.warn('Old staff avatar cleanup failed:',cleanupErr.message)}
+    }
+    return path;
+  }
   // ----- ปิดยอด / คิวตรวจ / ตั้งค่า (ต้องรัน 05-features.sql) -----
   const need05=err=>{if(/cash_closes|insp_queue|app_settings|does not exist|schema cache/i.test(err.message))throw new Error('ยังไม่ได้รัน 05-features.sql ใน Supabase');throw err};
   async function listCloses(day){const c=await client();try{const r=chk(await c.from('cash_closes').select('*').eq('branch_id',branch.id).eq('close_date',day));
@@ -4905,8 +4971,114 @@ const DB=(()=>{
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
   return{addFile,listFiles,delFile,smsSend:items=>rpc11('sms_send',{p_items:items}),smsCredit:()=>rpc11('sms_credit'),smsStatus:()=>rpc11('sms_secret_status'),setSmsSecrets:(k,x)=>rpc11('set_sms_secrets',{p_key:k,p_secret:x}),smsRecent:()=>rpc11('sms_recent'),
-    login,load,newBill,pay,verifyPay,rejectPay,clearFiles,carBills,resync,reqAction,decide,deliver,reloadBill,exportAll,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+    avatarUrl,avatarUrls,setStaffAvatar,login,load,newBill,pay,verifyPay,rejectPay,clearFiles,carBills,resync,reqAction,decide,deliver,reloadBill,exportAll,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
+/* SIAMSERVICE_STAFF_AVATAR_V1: staff photo add-on. No legacy functions renamed. */
+const StaffAvatar=(()=>{
+  let topRequest=0,staffRequest=0;
+  const fallback=()=>{const logo=document.querySelector('.sbrand .avatar');if(!logo)return;
+    const bg=getComputedStyle(logo).backgroundImage;
+    const top=document.querySelector('.pfav');if(top&&bg&&bg!=='none')top.style.setProperty('background-image',bg,'important');
+  };
+  const paint=(holder,url)=>{if(!holder)return;
+    holder.querySelectorAll('.sa-avatar-img').forEach(e=>e.remove());
+    if(!url)return;
+    const img=document.createElement('img');img.className='sa-avatar-img';img.alt='รูปโปรไฟล์พนักงาน';img.loading='lazy';img.referrerPolicy='no-referrer';img.src=url;
+    img.onerror=()=>{img.remove();console.warn('Staff avatar image failed to load')};holder.append(img);
+  };
+  const buttons=()=>{
+    const set=document.querySelector('[data-sa-self]'),remove=document.querySelector('[data-sa-self-remove]');
+    if(set)set.hidden=!LIVE||!user;
+    if(remove)remove.hidden=!LIVE||!user||!user.avatarPath;
+  };
+  async function refreshCurrent(u=user){
+    const request=++topRequest;fallback();paint(document.querySelector('.pfav'),null);paint(document.querySelector('.pfbig'),null);
+    buttons();if(!LIVE||!u||!u.uid||!u.avatarPath)return;
+    try{const signed=await DB.avatarUrl(u.avatarPath);
+      if(request!==topRequest||!user||user.uid!==u.uid)return;
+      paint(document.querySelector('.pfav'),signed);paint(document.querySelector('.pfbig'),signed)
+    }catch(err){console.warn('Cannot display current staff avatar:',err.message)}
+  }
+  async function decorateStaff(records){
+    const request=++staffRequest,view=document.getElementById('view');
+    if(!LIVE||!records.length)return;
+    try{const urls=await DB.avatarUrls(records.map(r=>r.avatar_path));
+      if(request!==staffRequest||cur!=='staff'||document.getElementById('view')!==view)return;
+      records.forEach(r=>{
+        const holder=[...view.querySelectorAll('[data-sa-avatar]')].find(x=>x.dataset.saAvatar===String(r.user_id));
+        paint(holder,urls[r.avatar_path]||null);
+      });
+    }catch(err){console.warn('Cannot display staff avatar thumbnails:',err.message)}
+  }
+  function convertImage(file){
+    return new Promise((resolve,reject)=>{
+      if(!file||!['image/jpeg','image/png','image/webp'].includes(file.type))return reject(new Error('รองรับเฉพาะ JPG, PNG และ WebP'));
+      if(file.size>5*1024*1024)return reject(new Error('ไฟล์ต้นฉบับต้องไม่เกิน 5 MB'));
+      const url=URL.createObjectURL(file),img=new Image();
+      img.onload=()=>{
+        try{
+          if(img.width<48||img.height<48)throw new Error('รูปมีความละเอียดต่ำเกินไป');
+          const canvas=document.createElement('canvas');canvas.width=320;canvas.height=320;
+          const ctx=canvas.getContext('2d');if(!ctx)throw new Error('เบราว์เซอร์ไม่รองรับการปรับขนาดรูป');
+          const size=Math.min(img.width,img.height),sx=(img.width-size)/2,sy=(img.height-size)/2;
+          ctx.drawImage(img,sx,sy,size,size,0,0,320,320);
+          canvas.toBlob(blob=>{
+            URL.revokeObjectURL(url);
+            if(!blob)return reject(new Error('ไม่สามารถประมวลผลรูปได้'));
+            if(blob.size>1048576)return reject(new Error('รูปที่แปลงแล้วใหญ่เกิน 1 MB'));
+            resolve(blob);
+          },'image/webp',0.82);
+        }catch(e){URL.revokeObjectURL(url);reject(e)}
+      };
+      img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('เปิดไฟล์รูปไม่ได้'))};img.src=url;
+    });
+  }
+  const closeDialog=()=>{document.querySelector('#dlg').hidden=true};
+  function choose(uid,label){
+    if(!LIVE||!user)return alert('กรุณาเข้าสู่ระบบจริงก่อน');
+    const input=document.createElement('input');input.type='file';input.accept='image/jpeg,image/png,image/webp';
+    input.onchange=async()=>{if(!input.files||!input.files[0])return;
+      let blob;try{blob=await convertImage(input.files[0])}catch(err){alert(err.message);return}
+      const previewUrl=URL.createObjectURL(blob),panel=document.getElementById('panel');
+      panel.innerHTML='<div class="sa-panel"><h2>ตรวจสอบรูปโปรไฟล์</h2><p class="sa-caption"></p><img class="sa-preview" alt="ตัวอย่างรูปก่อนบันทึก"><p>รูปจะถูกครอบเป็นสี่เหลี่ยมจัตุรัส และแสดงเป็นวงกลม อัปโหลดได้เฉพาะไฟล์รูปที่แปลงแล้วไม่เกิน 1 MB</p><p class="sa-panel-error" hidden></p><div class="sa-panel-actions"><button type="button" class="btn line" data-sa-cancel>ยกเลิก</button><button type="button" class="btn" data-sa-save>บันทึกรูปนี้</button></div></div>';
+      const root=panel.querySelector('.sa-panel');root.querySelector('.sa-caption').textContent='บัญชี: '+label;
+      root.querySelector('.sa-preview').src=previewUrl;document.getElementById('dlg').hidden=false;
+      const discard=()=>{URL.revokeObjectURL(previewUrl);closeDialog()};
+      root.querySelector('[data-sa-cancel]').onclick=discard;
+      root.querySelector('[data-sa-save]').onclick=async()=>{
+        const btn=root.querySelector('[data-sa-save]'),er=root.querySelector('.sa-panel-error');btn.disabled=true;btn.textContent='กำลังบันทึก...';er.hidden=true;
+        try{await DB.setStaffAvatar(uid,blob);discard();toast('บันทึกรูปโปรไฟล์เรียบร้อย');
+          if(user&&user.uid===uid){user.avatarPath=DB.me.avatarPath;refreshCurrent(user)}
+          if(cur==='staff')R.staff();
+        }catch(e){er.textContent='บันทึกไม่สำเร็จ: '+e.message;er.hidden=false;btn.disabled=false;btn.textContent='บันทึกรูปนี้'}
+      };
+    };
+    input.click();
+  }
+  async function remove(uid,label){
+    if(!LIVE||!user||!confirm('ลบรูปโปรไฟล์ของ '+label+' และกลับไปใช้โลโก้สยามเซอร์วิสใช่ไหม?'))return;
+    try{await DB.setStaffAvatar(uid,null);toast('ลบรูปโปรไฟล์แล้ว');
+      if(user.uid===uid){user.avatarPath=null;refreshCurrent(user)}
+      if(cur==='staff')R.staff();
+    }catch(err){alert('ลบรูปไม่สำเร็จ: '+err.message)}
+  }
+  function connectStaffRows(){
+    document.querySelectorAll('[data-sa-pick]').forEach(b=>b.onclick=()=>{
+      const row=b.closest('[data-u]'),label=row?.querySelector('b')?.textContent||'พนักงาน';choose(b.dataset.saPick,label);
+    });
+    document.querySelectorAll('[data-sa-remove]').forEach(b=>b.onclick=()=>{
+      const row=b.closest('[data-u]'),label=row?.querySelector('b')?.textContent||'พนักงาน';remove(b.dataset.saRemove,label);
+    });
+  }
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-sa-self]')&&LIVE&&user){choose(user.uid,user.name);return}
+    if(e.target.closest('[data-sa-self-remove]')&&LIVE&&user){remove(user.uid,user.name);return}
+    if(e.target.closest('#pfbtn')&&LIVE&&user)refreshCurrent(user);
+  });
+  return {refreshCurrent,decorateStaff,connectStaffRows};
+})();
+/* /SIAMSERVICE_STAFF_AVATAR_V1 */
+
 /* เมนูโปรไฟล์มุมขวาบน */
 document.addEventListener('click',e=>{const m=$('#pfmenu'),b=$('#pfbtn');if(!m)return;
   if(e.target.closest('#pfbtn')){const o=m.hidden;m.hidden=!o;b.setAttribute('aria-expanded',o);return}
@@ -5923,7 +6095,7 @@ R.staff=async()=>{
     <div class="err" id="sf-err" hidden></div><div id="sf-done"></div>
     <p class="note">ลูกน้องเข้าระบบด้วยชื่อผู้ใช้และรหัสนี้ แล้วเปลี่ยนรหัสเองได้ที่เมนูมุมขวาบน · หัวหน้าสาขาแก้ไขบิลได้ พนักงานเปิดบิล/รับเงินได้แต่แก้บิลไม่ได้</p></div>
   <div class="card stf-card"><div class="sech teal">👥 รายชื่อพนักงาน</div><div class="tablewrap"><table class="stf-tbl"><colgroup><col><col style="width:16%"><col style="width:18%"><col style="width:18%"><col style="width:13%"><col style="width:130px"></colgroup><thead><tr><th>ชื่อ</th><th>ชื่อผู้ใช้</th><th>ตำแหน่ง</th><th>สาขา</th><th>สถานะ</th><th></th></tr></thead><tbody>
-    ${staff.map(x=>{const self=x.user_id===me;return `<tr data-u="${x.user_id}" class="${x.active?'':'off'}"><td><b>${esc(x.full_name||x.username)}</b>${self?' <span class="pill brand">คุณ</span>':''}</td><td class="num" data-l="ชื่อผู้ใช้">${esc(x.username)}</td>
+    ${staff.map(x=>{const self=x.user_id===me;return `<tr data-u="${x.user_id}" class="${x.active?'':'off'}"><td><span class="sa-pair"><span class="avatar lg sa-thumb" data-sa-avatar="${esc(x.user_id)}" aria-hidden="true"></span><span class="sa-pair-text"><span><b>${esc(x.full_name||x.username)}</b>${self?' <span class="pill brand">คุณ</span>':''}</span><span class="sa-actions"><button type="button" data-sa-pick="${esc(x.user_id)}" ${x.active?'':'disabled title="บัญชีปิดอยู่"'}>📷 ${x.avatar_path?'เปลี่ยนรูป':'เพิ่มรูป'}</button>${x.avatar_path?`<button type="button" class="sa-remove" data-sa-remove="${esc(x.user_id)}" ${x.active?'':'disabled title="บัญชีปิดอยู่"'}>ลบรูป</button>`:''}</span></span></span></td><td class="num" data-l="ชื่อผู้ใช้">${esc(x.username)}</td>
       <td data-l="ตำแหน่ง"><select data-f="role" ${self?'disabled':''}>${ROLE_OPT.map(([k,l])=>`<option value="${k}" ${k===x.role?'selected':''}>${l}</option>`).join('')}</select></td>
       <td data-l="สาขา">${x.role==='owner'?'<span class="sub">ทุกสาขา</span>':`<select data-f="branch_id">${bOpt(x.branch_id,true)}</select>`}</td>
       <td data-l="สถานะ"><label class="sw"><input type="checkbox" data-f="active" ${x.active?'checked':''} ${self?'disabled':''}><span>${x.active?'ใช้งาน':'ปิดบัญชี'}</span></label></td>
@@ -5933,6 +6105,7 @@ R.staff=async()=>{
       <td data-l="สถานะ"><label class="sw"><input type="checkbox" data-bf="active" ${b.active?'checked':''}><span>${b.active?'เปิด':'ปิด'}</span></label></td><td><button class="btn line" data-bsave>บันทึก</button></td></tr>`).join('')}
     <tr class="stf-new"><td data-l="รหัสสาขาใหม่"><input id="nb-code" placeholder="C" maxlength="3" style="text-transform:uppercase"></td><td data-l="ชื่อสาขา"><input id="nb-name" placeholder="ชื่อสาขาใหม่"></td><td data-l="ที่อยู่"><input id="nb-addr" placeholder="ที่อยู่สาขา"></td><td data-l="เบอร์โทร"><input id="nb-tel" placeholder="เบอร์โทร"></td><td></td><td></td><td><button class="btn" id="nb-add">เพิ่มสาขา</button></td></tr>
     </tbody></table></div><p class="note">รหัสสาขาใช้ขึ้นต้นเลขบิล เช่น สาขา A ได้บิล A-690001 · ปิดสาขาแล้วจะไม่แสดงให้เลือก แต่ข้อมูลเดิมยังอยู่ · พร้อมเพย์ใส่เบอร์มือถือหรือเลขบัตรประชาชน/เลขผู้เสียภาษีของบัญชีที่รับเงิน ใช้สร้าง QR ในใบเสร็จ</p></div></div>`;
+  StaffAvatar.connectStaffRows();StaffAvatar.decorateStaff(staff);
   const syncRole=()=>{$('#sf-brw').style.visibility=$('#sf-role').value==='owner'?'hidden':''};$('#sf-role').onchange=syncRole;syncRole();
   $('#sf-gen').onclick=()=>{$('#sf-pw').value=genPw()};
   $('#sf').onsubmit=async e=>{e.preventDefault();const er=$('#sf-err');er.hidden=true;
