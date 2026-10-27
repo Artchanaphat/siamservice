@@ -5890,7 +5890,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     ${[['sms_tpl_reg','ข้อความแจ้งเตือนภาษีรถ','reg'],['sms_tpl_ins','ข้อความแจ้งเตือนประกันภาคสมัครใจ','ins']].map(([k,l,t])=>`<div class="field st-tpl" data-tpl="${k}" data-kind="${t}"><span>${l}</span><textarea maxlength="300">${esc(SET[k]||SET_DEF[k])}</textarea>
       <div class="st-vars">${SMS_VARS.map(v=>`<button type="button" data-var="${v}">＋ ${v.slice(1,-1)}</button>`).join('')}</div><div class="st-tplpv"></div></div>`).join('')}
     <div class="st-grid st-keys"><label class="field"><span>ส่งทดสอบไปที่เบอร์</span><div class="st-num"><input id="sk-to" inputmode="tel" maxlength="12" autocomplete="off" placeholder="เบอร์มือถือ 10 หลัก"><button type="button" class="btn line" id="sk-test">📤 ส่งทดสอบ</button></div><small class="sub">ใช้ 1–2 เครดิต · ใช้ชื่อผู้ส่งและข้อความที่บันทึกไว้แล้ว</small></label></div></div></div>
-  <div class="st-bar"><button class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
+  <div class="st-bar"><button type="button" class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button type="button" class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
   const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='',badEl=null;const B=(m,el)=>{if(!bad){bad=m;badEl=el}};
     document.querySelectorAll('[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))B(i.closest('label').querySelector('span').textContent,i);else o[i.dataset.k]=v});
     const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))B('ปีจดทะเบียนเก่าสุด',$('#st-year'));else o.reg_min_year=y;
@@ -5901,11 +5901,25 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     o.sms_force=($('#st-force .on')||{dataset:{v:'standard'}}).dataset.v;o.sms_days=+(($('#st-sdays .on')||{dataset:{d:30}}).dataset.d);
     document.querySelectorAll('[data-tpl]').forEach(f=>{const v=f.querySelector('textarea').value.trim();if(!v)B('ข้อความ SMS ว่าง',f);o[f.dataset.tpl]=v});
     if(bad){const c=badEl&&badEl.closest('[data-stsec]');if(c&&stShow)stShow(c.dataset.stsec);alert('ตรวจข้อมูลอีกครั้ง: '+bad);return null}return o};
-  $('#st-save').onclick=async e=>{const o=read();if(!o)return;e.target.disabled=true;
-    try{if(LIVE)await DB.saveSettings(o);SET=o}catch(err){e.target.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message);return}
-    const d=$('#st-dtime').value,rm=$('#st-rtime').value;
-    if(LIVE&&sch&&(d!==sch.daily||rm!==sch.remind)){try{await DB.setLineSchedule(d!==sch.daily?d:'',rm!==sch.remind?rm:'')}catch(err){alert('บันทึกการตั้งค่าแล้ว แต่ตั้งเวลาส่ง LINE ไม่สำเร็จ: '+err.message)}}
-    toast('บันทึกการตั้งค่าแล้ว');R.settings()};
+  // SIAM_SETTINGS_SAVE_GUARD_V1: Never silently fail if an optional settings control is missing.
+  $('#st-save').onclick=async e=>{
+    const btn=e.currentTarget;if(btn.disabled)return;
+    let o;try{o=read()}catch(err){console.error('[settings] read failed',err);alert('ไม่สามารถอ่านข้อมูลการตั้งค่าได้: '+(err.message||'โปรดตรวจไฟล์ HTML/JavaScript ให้ตรงกัน'));return}
+    if(!o)return;
+    const label=btn.textContent;btn.disabled=true;btn.textContent='กำลังบันทึก...';
+    try{
+      if(LIVE)await DB.saveSettings(o);
+      SET=o;
+      const d=$('#st-dtime').value,rm=$('#st-rtime').value;
+      if(LIVE&&sch&&(d!==sch.daily||rm!==sch.remind)){
+        try{await DB.setLineSchedule(d!==sch.daily?d:'',rm!==sch.remind?rm:'')}
+        catch(err){alert('บันทึกการตั้งค่าแล้ว แต่ตั้งเวลาส่ง LINE ไม่สำเร็จ: '+err.message)}
+      }
+      toast('บันทึกการตั้งค่าแล้ว');R.settings();
+    }catch(err){console.error('[settings] save failed',err);alert('บันทึกไม่สำเร็จ: '+(err.message||'กรุณาลองใหม่อีกครั้ง'))}
+    finally{if(btn.isConnected){btn.disabled=false;btn.textContent=label}}
+  };
+  // /SIAM_SETTINGS_SAVE_GUARD_V1
   let sch=null;const dNote=()=>{const v=$('#st-dtime').value;$('#st-dnote').textContent=v<'12:00'?'ส่งก่อนเที่ยง = ส่งสรุปของเมื่อวาน':'ส่งสรุปของวันนี้'};
   const tSel=(id,v)=>{const el=$(id);if(v&&![...el.options].some(o=>o.value===v))el.add(new Option(v+' น.',v),0);if(v)el.value=v};
   $('#st-dtime').onchange=dNote;dNote();
@@ -5921,9 +5935,9 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
       requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')))};// ตัวอย่างใบเสร็จต้องคำนวณขนาดใหม่หลังการ์ดแสดง
     stNavBind(lay,show);stShow=show;show(stSec)}
   // รูปแบบใบเสร็จ + ตัวอย่างสด
-  const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';$('#st-show-slip').checked=!!RC.show_slip_button;
+  const RC=rcOpt();let pv='a4';$('#rc-tax').value=RC.taxid||'';$('#rc-foot').value=RC.foot||'';if($('#st-show-slip'))$('#st-show-slip').checked=!!RC.show_slip_button;
   const rcRead=()=>{const o={};document.querySelectorAll('[data-rc]').forEach(g=>{const on=g.querySelector('.on');o[g.dataset.rc]=on?on.dataset.v:RC_DEF[g.dataset.rc]});
-    document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>o[b.dataset.f]=b.classList.contains('on')?1:0);o.show_slip_button=$('#st-show-slip').checked?1:0;o.taxid=$('#rc-tax').value.trim();o.foot=$('#rc-foot').value.trim();return o};
+    document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>o[b.dataset.f]=b.classList.contains('on')?1:0);o.show_slip_button=$('#st-show-slip')?($('#st-show-slip').checked?1:0):(RC.show_slip_button?1:0);o.taxid=$('#rc-tax').value.trim();o.foot=$('#rc-foot').value.trim();return o};
 
   document.querySelectorAll('[data-rc]').forEach(g=>{g.querySelectorAll('.tog').forEach(b=>{b.classList.toggle('on',b.dataset.v===RC[g.dataset.rc]);b.onclick=()=>{g.querySelectorAll('.tog').forEach(x=>x.classList.toggle('on',x===b));rcPv()}})});
   document.querySelectorAll('.st-rcflags [data-f]').forEach(b=>{b.classList.toggle('on',!!RC[b.dataset.f]);b.onclick=()=>{b.classList.toggle('on');rcPv()}});
