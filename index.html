@@ -2434,7 +2434,7 @@ const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม�
 const SIC={track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/><path d="M4 6h16M4 18h10"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
   tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
-const SNAV=[['home'],['add'],['queue'],['track'],['cust'],['dlt'],['docs'],['g','money','การเงิน',['income','close','inst','expense','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
+const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
 const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
 const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
 let sOpen=new Set();
@@ -2820,7 +2820,7 @@ function moneyPage(cfg){
     const q=st.q.trim().toLowerCase();
     const rows=(st.tab==='debt'?debt:st.tab==='done'?done:per).filter(r=>!q||(r.b.plate+' '+r.b.name).toLowerCase().includes(q)).sort((a,z)=>z.b.d-a.b.d||(z.b.t>a.b.t?1:-1));
     lastRows=rows;lastPer=per;$('#sm-count').textContent=`แสดง ${rows.length} รายการ`;
-    $('#sm-tbl').innerHTML=rows.length?`<table class="sm-tbl"><thead><tr><th>#</th>${cfg.head.map(h=>`<th>${h}</th>`).join('')}<th class="c">สถานะ</th><th></th></tr></thead><tbody>${rows.map((r,n)=>{const op=st.open.has(r.b.id);return `<tr class="sm-r${op?' open':''}" data-b="${r.b.id}"><td class="sm-n">${n+1}</td>${cfg.row(r)}<td class="c" data-l="สถานะ">${r.b.void?'<span class="st-void">ยกเลิก</span>':r.amt-r.paid>0.004?`<span class="st-debt">ค้างชำระ</span>${r.paid===0?'<div class="sm-never">(ยังไม่เคยรับเงิน)</div>':''}`:`<span class="st-ok">${cfg.okLabel}</span>`}</td><td class="chev">›</td></tr><tr class="sm-x"${op?'':' hidden'}><td colspan="${cfg.head.length+3}">${cfg.exp(r)}</td></tr>`}).join('')}</tbody></table>`:`<div class="empty-state"><div class="es-icon">📭</div><p>ไม่พบข้อมูลในช่วงที่เลือก</p></div>`;
+    $('#sm-tbl').innerHTML=rows.length?`<table class="sm-tbl"><thead><tr><th>#</th>${cfg.head.map(h=>`<th>${h}</th>`).join('')}<th class="c">สถานะ</th><th></th></tr></thead><tbody>${rows.map((r,n)=>{const op=st.open.has(r.b.id);return `<tr class="sm-r${op?' open':''}" data-b="${r.b.id}"><td class="sm-n">${n+1}</td>${cfg.row(r)}<td class="c" data-l="สถานะ">${r.b.void?'<span class="st-void">ยกเลิก</span>':r.amt-r.paid>0.004?`<span class="st-debt">ค้างชำระ</span>${r.paid===0?'<div class="sm-never">(ยังไม่เคยรับเงิน)</div>':''}`:waitAmt(r.b)>0?`<span class="st-ok" style="background:#fffbeb;color:#92400e">⏳ โอนรอตรวจ</span>`:`<span class="st-ok">${cfg.okLabel}</span>`}</td><td class="chev">›</td></tr><tr class="sm-x"${op?'':' hidden'}><td colspan="${cfg.head.length+3}">${cfg.exp(r)}</td></tr>`}).join('')}</tbody></table>`:`<div class="empty-state"><div class="es-icon">📭</div><p>ไม่พบข้อมูลในช่วงที่เลือก</p></div>`;
     document.querySelectorAll('.sm-r').forEach(tr=>tr.onclick=e=>{if(e.target.closest('a,button'))return;const id=+tr.dataset.b;st.open.has(id)?st.open.delete(id):st.open.add(id);tr.classList.toggle('open');tr.nextElementSibling.hidden=!tr.nextElementSibling.hidden});
     maybeLoadArchive();
   };
@@ -3028,7 +3028,7 @@ const stepsHTML=S=>`<ol class="jt">${S.map((s,i)=>`<li class="jt-${s.st}"><i>${s
 function jobHTML(b){const S=jobSteps(b),last=S[4],can=last.dlv&&last.st!=='done'&&!b.void;
   return `<div class="jt-card non-printable"><div class="jt-top"><b>สถานะงาน</b>${jobDone(b)?'<span class="ui-pill ok">งานเสร็จสมบูรณ์</span>':''}<span class="sp"></span>${can?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 ส่งมอบเอกสารให้ลูกค้าแล้ว</button>`:''}${last.dlv&&last.st==='done'&&user&&(user.role==='owner'||user.role==='head')?`<button type="button" class="btn sm line" data-dlv-undo="${b.id}">ยกเลิกสถานะส่งมอบ</button>`:''}</div>${stepsHTML(S)}</div>`}
 document.addEventListener('click',async e=>{const x=e.target.closest('[data-dlv],[data-dlv-undo]');if(!x)return;e.stopPropagation();const undo=!!x.dataset.dlvUndo,b=getBill(+(x.dataset.dlv||x.dataset.dlvUndo));if(!b)return;
-  const debt=b.amt-b.paid>0.004;if(!undo&&!confirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!confirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
+  const debt=b.amt-b.paid>0.004;if(!undo&&!confirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท ยังไม่ยืนยันว่าเงินเข้าบัญชี\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!confirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
   x.disabled=true;try{const r=await DB.deliver(b,undo);b.dlv={at:(r&&r.delivered_at)||'',by:(r&&r.delivered_by)||''};toast(undo?'ยกเลิกสถานะส่งมอบแล้ว':'บันทึกส่งมอบเอกสารแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}},true);
 let trackF='today',trackD=null;
 R.track=()=>{const day=trackD||iso(TODAY),isT=day===iso(TODAY),since=iso(plus(-30));
@@ -6348,6 +6348,9 @@ async function receiptDlg(b,kind,after){if(b.void){alert('บิลนี้ถ�
   // after = เปิดจากหน้าเปิดบิลหลังบันทึก: แสดงยอดทอน + ปุ่มไปต่อ
   pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">${after?'✅ บันทึกบิลแล้ว · ':''}ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
     ${after?`<div class="rc-done non-printable"><span>เลขที่ <b>${esc(rcNo(b))}</b></span><span>ยอดรวม <b>${money(b.amt)}</b> บาท</span>${after.paid?`<span>รับเงิน <b>${money(after.paid)}</b> บาท</span><span class="chg">เงินทอน <b>${money(after.chg)}</b> บาท</span>`:''}</div>`:''}
+    ${after?(()=>{try{const S=jobSteps(b),n=S.find(s=>s.st==='now'||s.st==='wait'||s.st==='bad'),
+      m=!n?'✓ งานเสร็จสมบูรณ์ ไม่มีขั้นตอนค้าง':n.st==='bad'?'ตรวจสภาพไม่ผ่าน ดูรายละเอียดที่หน้าคิวตรวจสภาพ':n.l==='ตรวจสภาพ'?'ต่อไป: ตรวจสภาพรถ ('+n.sub+') ที่หน้าคิวตรวจสภาพ':n.l==='ชำระเงิน'?(/^ค้าง/.test(n.sub)?'ต่อไป: รับเงินคงเหลือ '+n.sub.replace(/^ค้าง\s*/,'')+' บาท':'ต่อไป: ตรวจเงินโอนกับแอปธนาคาร แล้วกดยืนยัน'):'ต่อไป: '+n.l+' ('+n.sub+')';
+      return '<div class="rc-next non-printable" style="margin:8px 0;padding:10px 12px;border:1px solid #bae6fd;background:#f0f9ff;border-radius:10px"><div style="font-weight:700;margin-bottom:6px">'+esc(m)+'</div>'+stepsHTML(S)+'</div>'}catch(_){return''}})():''}
     <div data-trb="${b.id}">${trPendHTML(b)}${trRejHTML(b)}</div>
     ${a.why.length?`<div class="rc-why non-printable">ℹ️ ${a.why.map(esc).join('<br>ℹ️ ')}</div>`:''}
     ${a4?`<div class="rcx-wrap" id="rc-wrap">${html}</div>`:html}
