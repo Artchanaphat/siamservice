@@ -2439,7 +2439,7 @@ const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',a
 const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
 let sOpen=new Set();
 function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='owner'?'settings':cur),own=user&&user.role==='owner';
-  const badge=k=>{const n=k==='dlt'?dltJobs().filter(b=>dltOf(b).st==='received').length:k==='bell'?dueList(7).length:k==='queue'?QUEUE.filter(q=>q.st==='wait'&&iso(new Date(q.at.created))===iso(TODAY)).length:0;return n?`<span class="sn-n">${n}</span>`:''};
+  const badge=k=>{const n=k==='dlt'?dltJobs().filter(b=>dltOf(b).st==='received').length:k==='bell'?dueList(7).length:k==='queue'?QUEUE.filter(q=>q.st==='wait'&&iso(new Date(q.at.created))===iso(TODAY)).length:k==='close'?intake.flatMap(b=>trWait(b)).length:0;return n?`<span class="sn-n">${n}</span>`:''};
   const item=k=>k==='settings'&&!own||k==='backup'&&own?'':`<button type="button" class="sn-i${k===on?' on':''}" data-go="${k}" ${k===on?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${sIcon(k)}</svg><span>${SLBL[k]}</span>${badge(k)}</button>`;
   $('#snav').innerHTML=SNAV.map(x=>{if(x[0]!=='g')return item(x[0]);const [,g,l,ks]=x,open=sOpen.has(g)||ks.includes(on);
     return `<div class="sn-g${open?' open':''}"><button type="button" class="sn-i sn-gh" data-sg="${g}" aria-expanded="${open}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${SIC[g]}</svg><span>${l}</span><svg class="sn-car" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></button><div class="sn-sub">${ks.map(item).join('')}</div></div>`}).join('');
@@ -2449,7 +2449,7 @@ function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='own
     <button type="button" class="ss-r" data-go="income"><span>รถเข้า (เปิดบิล)</span><b>${td.length}</b><small>คัน</small></button>
     <button type="button" class="ss-r" data-go="income"><span>รับชำระวันนี้</span><b>${money(paidOn(iso(TODAY))).replace(/\.00$/,'')}</b><small>บาท</small></button>
     <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>ค้างชำระ</span><b>${debt}</b><small>บิล</small></button>
-    <button type="button" class="ss-r" data-go="dlt"><span>รอยื่นขนส่ง</span><b>${wait}</b><small>คัน</small></button>`;
+    <button type="button" class="ss-r" data-go="dlt"><span>รอยื่นขนส่ง</span><b>${wait}</b><small>คัน</small></button>${(n=>n?`<button type="button" class="ss-r bad" data-go="close"><span>โอนรอตรวจ</span><b>${n}</b><small>รายการ</small></button>`:'')(intake.flatMap(b=>trWait(b)).length)}`;
   tAlerts()}
 // เงินที่รับจริงในวันนั้น (ทุกบิล รวมบิลเก่าที่มาจ่ายเพิ่ม) ใช้เกณฑ์เดียวกับหน้าปิดยอด
 // เงินโอนที่ยังรอตรวจสอบไม่นับเป็นเงินรับจริง (แยกไว้ใน waitOn)
@@ -3181,14 +3181,17 @@ R.news=()=>{
   document.querySelectorAll('[data-news]').forEach(a=>a.onclick=e=>{e.preventDefault();const n=NEWS.find(x=>x.id===+a.dataset.news);n.read=true;a.classList.add('read');renderNav();toast('ตัวอย่าง: ระบบจริงจะเปิดโพสต์ใน '+(n.src==='line'?'LINE':'Facebook')+' แท็บใหม่')});
 };
 
-let q='',cTab='tax',cMonth=0,cSort='latest';
+let q='',cTab='tax',cMonth=0,cYear=0,cSort='latest';
 const CT=[['tax','ทะเบียนรถ','tab-reg','<path d="M5 11l1.5-4h11L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/>'],['prb','พรบ. ภาคบังคับ','tab-prb','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกัน ภาคสมัครใจ','tab-ins','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','tab-k','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
 const expPill=d=>{if(!d)return'<span class="xp none">–</span>';const n=daysTo(d);return `<span class="xp ${n<0?'bad':n<=30?'warn':'ok'}">${fmt(d)}</span>`};
 R.cust=()=>{
   const tl=CT.find(t=>t[0]===cTab)[1];
+  const cYrs=[...new Set(cars.map(c=>c[cTab]).filter(Boolean).map(x=>x.getFullYear()))].sort((a,z)=>a-z);
+  if(cYear&&!cYrs.includes(cYear))cYear=0;
   $('#view').innerHTML=`
   <div class="ltop"><span class="ui-ic">👥</span><h1>รายการ ${tl}</h1><button class="btn-add success" data-go="add">＋ เปิดบิลใหม่</button><button class="btn line" id="c-print">🖨️ พิมพ์เอกสาร A4</button></div>
   <div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span></button>`).join('')}</div>
+  ${cYrs.length>1?`<div class="months"><span class="sub">ปีที่หมดอายุ</span><button class="mchip ${!cYear?'on':''}" data-yr="0">ทุกปี</button>${cYrs.map(y=>`<button class="mchip ${cYear===y?'on':''}" data-yr="${y}">${y+543}</button>`).join('')}</div>`:''}
   <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือนที่หมดอายุ</span><button class="mchip ${cMonth===0?'on':''}" data-mo="0">ทุกเดือน</button>${TH_MF.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
   <div class="sortbar">
     <button class="sort-btn ${cSort==='latest'?'on':''}" data-so="latest">🕑 อัปเดตล่าสุด</button>
@@ -3205,6 +3208,7 @@ R.cust=()=>{
     const d=c=>c[cTab];
     list=list.filter(c=>d(c));
     if(cMonth)list=list.filter(c=>d(c)&&d(c).getMonth()+1===cMonth);
+    if(cYear)list=list.filter(c=>d(c)&&d(c).getFullYear()===cYear);
     if(cSort==='soon')list=list.filter(c=>d(c)&&daysTo(d(c))>=0&&daysTo(d(c))<=30).sort((a,b)=>d(a)-d(b));
     else if(cSort==='expired')list=list.filter(c=>d(c)&&daysTo(d(c))<0).sort((a,b)=>d(a)-d(b));
     else list=list.slice().sort((a,b)=>b.created-a.created);
@@ -3216,7 +3220,8 @@ R.cust=()=>{
   document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{cTab=b.dataset.ct;R.cust()});
   document.querySelectorAll('[data-mo]').forEach(b=>b.onclick=()=>{cMonth=cMonth===+b.dataset.mo?0:+b.dataset.mo;R.cust()});
   document.querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>{cSort=b.dataset.so;R.cust()});
-  $('#c-clear').onclick=()=>{q='';cMonth=0;cSort='latest';R.cust()};
+  document.querySelectorAll('[data-yr]').forEach(b=>b.onclick=()=>{cYear=cYear===+b.dataset.yr?0:+b.dataset.yr;R.cust()});
+  $('#c-clear').onclick=()=>{q='';cMonth=0;cYear=0;cSort='latest';R.cust()};
   $('#c-print').onclick=()=>toast('ต้นแบบนี้ยังสั่งพิมพ์ไม่ได้ ตัวจริงจะพิมพ์รายการเป็น A4');
   $('#q').oninput=e=>{q=e.target.value;draw()};draw();
 };
