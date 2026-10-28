@@ -7450,12 +7450,12 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 <!-- SIAM_ADD_INSPECT_ONLY_V1: screen UI only; no rc-/rcx-/print or calculation changes -->
 <style id="siamservice-add-inspect-only-v1">
 @media screen {
-  #bill #svc{display:flex;flex-wrap:wrap;justify-content:stretch;gap:10px}
-  #bill #svc>.chip{flex:1 1 135px;min-width:0;justify-content:center;white-space:normal;text-align:center;padding:9px 10px;font-size:14px;line-height:1.35}
+  #bill #svc{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+  #bill #svc>.chip{flex:0 1 auto;min-width:0;justify-content:center;white-space:nowrap;text-align:center;padding:8px 14px;font-size:14px;line-height:1.3}
 }
 @media screen and (max-width:760px){
   #bill #svc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
-  #bill #svc>.chip{font-size:13px;padding:10px 8px}
+  #bill #svc>.chip{flex:none;white-space:normal;font-size:13px;padding:10px 8px}
   #bill #svc>.chip:last-child:nth-child(odd){grid-column:1/-1}
 }
 </style>
