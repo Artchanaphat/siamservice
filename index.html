@@ -315,8 +315,8 @@ tbody tr:nth-child(even) td{background:#fff}
   #bill .field>span{flex:none;text-align:left;font-weight:600;color:#444}
   #bill .field>input,#bill .field>select,#bill .field>.row,#bill .field>.dsel{max-width:none;flex:none}
   #bill [data-sec] .sech{margin-left:0;max-width:none}
-  #svc{display:grid;grid-template-columns:1fr 1fr}
-  [data-svc]{justify-content:center;font-size:13px;padding:10px 8px}
+  #svc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  [data-svc],#svc-insp{justify-content:center;font-size:13px;padding:10px 8px;min-width:0;white-space:normal;text-align:center}
   .actions .xbtn{flex:1 1 45%}
   .paybar{gap:8px 16px}
 }
@@ -4515,7 +4515,7 @@ R.add=(E)=>{if(!E)billKey=null;
       </div>
     </div>
 
-    <div class="chips" id="svc" role="group" aria-label="บริการในบิลนี้">${SVC.map(([k,l])=>`<button type="button" class="chip" data-svc="${k}" aria-pressed="${svcView===k}"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="vertical-align:-3px;margin-right:5px">${SVCI[k]}</svg>${l}</button>`).join('')}</div>
+    <div class="chips" id="svc" role="group" aria-label="บริการในบิลนี้">${SVC.map(([k,l],si)=>`<button type="button" class="chip" data-svc="${k}" aria-pressed="${svcView===k}"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="vertical-align:-3px;margin-right:5px">${SVCI[k]}</svg>${l}</button>`+(si===0&&!E?`<button type="button" class="chip" id="svc-insp" aria-pressed="false" title="รถมาตรวจสภาพอย่างเดียว ไม่คิดภาษี พ.ร.บ. และค่าฝากต่อภาษี"><svg width="16" height="16" viewBox="0 0 18 18" fill="none" aria-hidden="true" style="vertical-align:-3px;margin-right:5px"><circle cx="8" cy="8" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l4 4M6 8l1.5 1.5L10.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>ตรวจสภาพอย่างเดียว</button>`:'')).join('')}</div>
 
     <div class="card sec" data-sec="tax">
       <p class="note tro-must" id="b-tro" hidden><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e53e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> ต้องนำรถไปตรวจสภาพ ณ สถานตรวจสภาพรถเอกชน (ตรอ.) ก่อนยื่นชำระภาษี</p>
@@ -4628,8 +4628,9 @@ R.add=(E)=>{if(!E)billKey=null;
 
   // service sections
   // แท็บแบบ easyth: เปิดดูทีละแท็บ ยอดรวมคิดจากทุกช่องที่กรอก ไม่ว่าจะอยู่แท็บไหน
-  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView));recalc()};
-  document.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{svcView=b.dataset.svc;syncSvc()});
+  let inspOnly=false;  // โหมด "ตรวจสภาพอย่างเดียว": ไม่คิดภาษี/พ.ร.บ./ค่าฝากต่อภาษี
+  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView&&!(inspOnly&&b.dataset.svc==='tax')));const ib=$('#svc-insp');if(ib)ib.setAttribute('aria-pressed',inspOnly);recalc()};
+  document.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{if(inspOnly&&b.dataset.svc==='tax'){setInspOnly(false);return}svcView=b.dataset.svc;syncSvc()});
   const fnote=()=>{const k=$('#b-img').files.length,p=$('#b-pdf').files.length;$('#b-files-note').textContent=(k?`รูป ${k} ไฟล์ `:'')+(p?`PDF ${p} ไฟล์`:'')};
   $('#b-img').onchange=fnote;$('#b-pdf').onchange=fnote;
 
@@ -4671,6 +4672,11 @@ R.add=(E)=>{if(!E)billKey=null;
     let ageIn=1,trueAge=0;
     if(reg){trueAge=TODAY.getFullYear()-reg.getFullYear();if(TODAY.getMonth()<reg.getMonth()||(TODAY.getMonth()===reg.getMonth()&&TODAY.getDate()<reg.getDate()))trueAge--;trueAge=Math.max(0,trueAge);ageIn=Math.max(1,TODAY.getFullYear()-reg.getFullYear()+1)}
     const car7=reg&&trueAge>7?(kg>2000?SET.insp_heavy:SET.insp_car):0,moto5=reg&&trueAge>5?SET.insp_moto:0;
+    if(inspOnly){  // ตรวจสภาพอย่างเดียว: เหลือแต่ค่าตรวจสภาพ (รถอายุเกินเกณฑ์ใช้ค่าตามอายุ ไม่เข้าเกณฑ์ใช้ค่ามาตรฐานของประเภทรถ) พิมพ์แก้เองได้
+      const isM=/moto/.test(ty),auto=isM?moto5:car7,base=isM?SET.insp_moto:kg>2000?SET.insp_heavy:SET.insp_car;
+      ['b-tax','b-prb','b-prbfee','b-fee'].forEach(id=>setM(id,0));
+      if($('#b-insp').dataset.user!=='1')setM('b-insp',ty?(auto||base):0);
+      $('#b-tro').hidden=true;$('#b-auto-note').textContent=ty?'ตรวจสภาพอย่างเดียว: ไม่คิดภาษี พ.ร.บ. และค่าฝากต่อภาษี (แก้ค่าตรวจสภาพเองได้)':'ตรวจสภาพอย่างเดียว: เลือกประเภทรถ แล้วระบบจะใส่ค่าตรวจสภาพมาตรฐานให้';calcLate();return}
     let tax=0,insp=0,prb=0,note='';
     if(ty==='sedan'){tax=carTax(cc);const pct=reg&&ageIn>=6?(ageIn>=10?50:(ageIn-5)*10):0;tax*=1-pct/100;insp=car7;prb=645.21;note=`รถปีที่ ${ageIn}${pct?` ลด ${pct}%`:''}`}
     else if(ty==='van'){tax=kg>0?vanTax(kg):0;insp=car7;prb=1182.35;note='รย.2 คิดตามน้ำหนัก'}
@@ -4691,8 +4697,16 @@ R.add=(E)=>{if(!E)billKey=null;
     let late=0,mo=0;if(exp&&TODAY>exp&&n('b-tax')){mo=Math.ceil(Math.round((TODAY-exp)/DAY)/30);late=n('b-tax')*.01*mo}
     setM('b-late',late);const nt=$('#b-auto-note');nt.textContent=nt.textContent.replace(/ · ค้าง \d+ เดือน$/,'')+(mo?` · ค้าง ${mo} เดือน`:'');recalc();
   };
-  $('#b-auto').onclick=()=>{delete $('#b-tax').dataset.user;delete $('#b-prb').dataset.user;autoCalc()};
+  // เปิด/ปิดโหมดตรวจสภาพอย่างเดียว (quiet = ปิดเพราะพนักงานพิมพ์ภาษี/พ.ร.บ. เอง ไม่ต้องคำนวณทับ)
+  const setInspOnly=(on,quiet)=>{inspOnly=on;if(on)svcView='tax';
+    if(!quiet){if(!on){['b-tax','b-prb','b-prbfee','b-insp'].forEach(id=>delete $('#'+id).dataset.user);svcView='tax'}autoCalc()}
+    else $('#b-auto-note').textContent='ปิดโหมดตรวจสภาพอย่างเดียวแล้ว';
+    syncSvc()};
+  $('#b-auto').onclick=()=>{if(inspOnly){setInspOnly(false);return}delete $('#b-tax').dataset.user;delete $('#b-prb').dataset.user;autoCalc()};
+  if($('#svc-insp'))$('#svc-insp').onclick=()=>setInspOnly(!inspOnly);
   if(!E){
+    $('#b-insp').addEventListener('input',function(){this.dataset.user='1'});
+    ['b-tax','b-prb','b-prbfee','b-fee'].forEach(id=>$('#'+id).addEventListener('input',()=>{if(inspOnly&&n(id)>0)setInspOnly(false,true)}));
     $('#b-reg').addEventListener('change',autoCalc);$('#b-body').addEventListener('change',autoCalc);
     $('#b-type').addEventListener('change',()=>{delete $('#b-tax').dataset.user;autoCalc()});
     ['b-cc','b-kg'].forEach(id=>$('#'+id).addEventListener('input',autoCalc));
@@ -4757,7 +4771,7 @@ R.add=(E)=>{if(!E)billKey=null;
     const prbE=n('b-prb')>0&&v('b-prb-e')?new Date(v('b-prb-e')+'T00:00'):(c&&c.prb)||null;
     if(!c){c={id:++seq,plate,prov:$('#b-city').value,history:[],note:''};cars.unshift(c)}c.created=new Date();
     Object.assign(c,{name,tel:v('c-tel'),note:v('c-short'),ctype:typ,type:ctLabel(typ),model:$('#b-brand').value+' '+v('b-model'),cc:n('b-cc'),tax,prb:prbE,ins:svcOn.has('ins')&&v('b-ins-e')?new Date(v('b-ins-e')+'T00:00'):c.ins||null,insCo:svcOn.has('ins')?v('b-ins-co')+' '+$('#b-ins-type').value:c.insCo||''});
-    const what=[...svcOn].map(k=>SVC.find(s=>s[0]===k)[1]).join(' + ');
+    let what=[...svcOn].map(k=>k==='tax'&&inspOnly?'ตรวจสภาพ':SVC.find(s=>s[0]===k)[1]).join(' + ');if(what==='ตรวจสภาพ')what='ตรวจสภาพอย่างเดียว';
     c.history.unshift({d:TODAY,what,amt:tot});
     const now=new Date();const insL=lines.find(l=>l[0]==='ประกันภาคสมัครใจ');intake.push(mkBill({carId:c.id,plate,name,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),items:lines.filter(l=>l[0]!=='ส่วนลด').map(l=>l===insL?['ประกันภาคสมัครใจ',n('b-ins')||l[1]]:l),doc:(document.querySelector('[name=b-doc]:checked')||{}).value||'สำเนา',prefix:$('#c-pre').value,note:v('c-short'),rnote:v('c-note'),disc:n('b-dis')&&svcOn.has('tax')?n('b-dis'):0,ins:insL?(n('b-ins')||insL[1]):0,pays:pr.pays.map(x=>({...x,by:user.name}))}));
     const bill=intake[intake.length-1],paid=pr.got,chg=pr.chg;
