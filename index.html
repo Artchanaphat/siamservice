@@ -3062,7 +3062,7 @@ async function openCar(id){const c=cars.find(x=>x.id===id);if(!c)return;
 function copyToAdd(b){go('add');const p=b.plate.split(' ');$('#x-cha').value=p[0]||'';$('#x-num').value=p[1]||'';const city=$('#x-city');if([...city.options].some(o=>o.value===b.prov||o.text===b.prov))city.value=b.prov;city._ss&&city._ss();$('#x-go').click();const cp=$('#x-copy');if(cp)cp.click();toast('เปิดบิลใหม่ พร้อมคัดลอกข้อมูลรถคันนี้แล้ว')}
 const ACC=(title,color,icon,body,acc=true)=>`<div class="card${acc?' acc open':''}"><div class="card-head${acc?' acc-head':''}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="${color}" stroke-width="1.4">${icon}</svg>${title}${acc?'<div class="acc-icon"></div>':''}</div><div class="${acc?'acc-body':''}"><div class="card-body">${body}</div></div></div>`;
 const RW=(l,v,cls='')=>`<div class="row"><div class="lbl">${l}</div><div class="val ${cls}">${v}</div></div>`;
-const beFull=d=>`${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()+543}`;
+const beFull=d=>`${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
 R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const c=cars.find(x=>x.id===b.carId)||{},s=split(b),debt=s.debt>0.004;
   const V=c.raw||{},CU=V.customers||{},kind=V.body||(/บรรทุก/.test(b.type)?'บรรทุกส่วนบุคคล':/จักรยานยนต์/.test(b.type)?'จักรยานยนต์':'นั่งส่วนบุคคล');
@@ -3131,7 +3131,7 @@ document.addEventListener('click',e=>{const s=e.target.closest('[data-showbill]'
 const TH_MF=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
 let psM=TODAY.getMonth(),psY=TODAY.getFullYear(),psDay=null;
 const dkey=d=>iso(new Date(d.getFullYear(),d.getMonth(),d.getDate()+0)).slice(0,10);
-const fullBE=d=>`${d.getDate()} ${TH_M[d.getMonth()]} ${d.getFullYear()+543}`;
+const fullBE=d=>`${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
 R.docs=()=>{
   if(psDay)return R.docsDay();
   const days={};intake.forEach(b=>{const d=b.d;if(d.getMonth()!==psM||d.getFullYear()!==psY)return;const k=d.toDateString();(days[k]=days[k]||{d,list:[]}).list.push(b)});
@@ -3188,7 +3188,7 @@ R.cust=()=>{
   $('#view').innerHTML=`
   <div class="ltop"><span class="ui-ic">👥</span><h1>รายการ ${tl}</h1><button class="btn-add success" data-go="add">＋ เปิดบิลใหม่</button><button class="btn line" id="c-print">🖨️ พิมพ์เอกสาร A4</button></div>
   <div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span></button>`).join('')}</div>
-  <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือน</span>${TH_M.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
+  <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือน</span>${TH_MF.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
   <div class="sortbar">
     <button class="sort-btn ${cSort==='latest'?'on':''}" data-so="latest">🕑 อัปเดตล่าสุด</button>
     <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon">⏰ ใกล้หมดอายุ <span class="sort-hint">(30 วัน)</span></button>
@@ -4483,7 +4483,7 @@ R.add=(E)=>{if(!E)billKey=null;
   const MI=(id,w=84)=>`<input id="${id}" class="money" inputmode="decimal" placeholder="บาท" style="width:${w}px">`;
   const D=(id,label,val='')=>{const [y,m,d]=val?val.split('-').map(Number):[0,0,0];
     const o=(n,from,to,cur,fmtf)=>{let h=`<option value="">${n}</option>`;for(let i=from;i<=to;i++)h+=`<option value="${i}" ${i===cur?'selected':''}>${fmtf(i)}</option>`;return h};
-    return `<label class="field"><span>${label}</span><div class="dsel"><input type="hidden" id="${id}" value="${val}"><select data-d="${id}" class="dsel-d">${o('วัน',1,31,d,i=>String(i).padStart(2,'0'))}</select>-<select data-m="${id}" class="dsel-m">${o('เดือน',1,12,m,i=>TH_M[i-1])}</select>-<select data-y="${id}" class="dsel-y">${(()=>{let h='<option value="">ปี</option>';const cy=TODAY.getFullYear(),pol=!['b-reg','b-taxexp','b-pick'].includes(id);for(let i=pol?cy-15:id==='b-reg'?Math.min(cy,+SET.reg_min_year||1947):1947,to=id==='b-reg'?cy:id==='b-taxexp'||id==='b-pick'?cy+1:cy+15;i<=to;i++)h+=`<option value="${i}" ${i===y?'selected':''}>${i+543}</option>`;return h})()}</select></div></label>`};
+    return `<label class="field"><span>${label}</span><div class="dsel"><input type="hidden" id="${id}" value="${val}"><select data-d="${id}" class="dsel-d">${o('วัน',1,31,d,i=>String(i).padStart(2,'0'))}</select>-<select data-m="${id}" class="dsel-m">${o('เดือน',1,12,m,i=>TH_MF[i-1])}</select>-<select data-y="${id}" class="dsel-y">${(()=>{let h='<option value="">ปี</option>';const cy=TODAY.getFullYear(),pol=!['b-reg','b-taxexp','b-pick'].includes(id);for(let i=pol?cy-15:id==='b-reg'?Math.min(cy,+SET.reg_min_year||1947):1947,to=id==='b-reg'?cy:id==='b-taxexp'||id==='b-pick'?cy+1:cy+15;i<=to;i++)h+=`<option value="${i}" ${i===y?'selected':''}>${i+543}</option>`;return h})()}</select></div></label>`};
   $('#view').innerHTML=`
 
   <div class="card sec check-card">
@@ -6071,7 +6071,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
 /* ---------- รายจ่ายร้าน + กำไรรายเดือน ---------- */
 const ymOf=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
 const ymTH=ym=>{const [y,m]=ym.split('-').map(Number);return TH_M[m-1]+' '+String(y+543).slice(2)};
-const ymFull=ym=>{const [y,m]=ym.split('-').map(Number);return TH_M[m-1]+' '+(y+543)};
+const ymFull=ym=>{const [y,m]=ym.split('-').map(Number);return TH_MF[m-1]+' '+(y+543)};
 const isPass=n=>SET.passthru.includes(n);
 // รายรับตามบิลของเดือน แยกเป็นเงินนำส่ง (ภาษี พ.ร.บ. ประกัน) กับรายได้ของร้าน
 function billSplit(bills){let total=0,pass=0;const by={};
