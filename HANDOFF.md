@@ -1,6 +1,6 @@
 # HANDOFF: ระบบหลังร้าน ตรอ.สยามเซอร์วิส
 
-อัปเดต 28 ต.ค. 2569 · เวอร์ชันล่าสุด **v75** (commit 17c7a56)
+อัปเดต 28 ต.ค. 2569 · เวอร์ชันล่าสุด **v79** (commit 0736008)
 
 > ไฟล์นี้ไม่มี secret ใดๆ (ไม่มี service_role key, รหัสผ่าน, LINE token/secret, SMS API key) บอกแค่ว่าแต่ละอย่างเก็บไว้ที่ไหน
 
@@ -47,6 +47,30 @@
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
 
+### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/01-schema.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/02-app.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/03-staff.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/04-dlt.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/05-features.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/06-line-daily.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/07-expense-line.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/08-line-settings.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/09-line-myid.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/10-line-schedule.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/11-files-sms.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/12-car-type-check.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/12-car-type-fix.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/13-transfer-verify.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/14-safe-bills.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/15-void-refund.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/16-backup.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar-check.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar-rollback.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/supabase/functions/line-webhook/index.ts
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/index.html (แอปทั้งหมด ~1.15 MB)
+
 ## 4. โครงสร้างโค้ด
 - `index.html` (~1.15 MB) = **แอปทั้งหมดในไฟล์เดียว** (HTML + CSS + JS) ใช้ supabase-js จาก jsdelivr · บรรทัด 1 มี `<meta charset>` แต่ไม่มี doctype (quirks mode ห้ามเพิ่ม doctype โดยไม่ทดสอบ layout/ใบเสร็จใหม่)
   - `<style>` หลักแรกสุด (บรรทัด ~8) แล้วตามด้วยชั้น CSS ที่ GPT ทำ (มี id เช่น `siamservice-ux-unify-v2`, `siamservice-pay-drawer-v1` ฯลฯ)
@@ -72,13 +96,18 @@
 - v60–v66 ชั้น CSS จาก GPT, ค้นหาบนแถบบน, รูปพนักงาน (v61), ตัวเลือกสาขาบนแถบบน
 - v67–v70 กัน Chrome เติมรหัสอัตโนมัติ, หน้าอัปเดตงานขนส่ง, ใบเสร็จ A4 เป็นปุ่มหลัก (สลิปม้วนซ่อนถ้าไม่เปิดในตั้งค่า)
 - v71 แผง "รับชำระยอดค้าง" · v72 ตัวกรองรายได้/ผ่อน · v73–v74 แก้บันทึกตั้งค่า
-- **v75** รายงานการเงินนับเฉพาะเงินโอนที่ตรวจแล้ว, "ทั้งหมด" โหลดบิลเก่าเมื่อเลือก
+- v75 รายงานการเงินนับเฉพาะเงินโอนที่ตรวจแล้ว, "ทั้งหมด" โหลดบิลเก่าเมื่อเลือก
+- v76 ชื่อเดือนไทยเต็ม (วันที่ในใบเสร็จ, ชิปเดือน, ตัวเลือกวันที่, รายงาน)
+- v77 เปิดบิลโหมด "ตรวจสภาพอย่างเดียว" (ไม่คิดภาษี/พ.ร.บ./ฝากต่อภาษี)
+- v78 หน้าจอแสดง 90% บนจอกว้าง, โหมดตรวจอย่างเดียวซ่อนช่องภาษี/พ.ร.บ.
+- **v79** แถวชิปบริการอยู่กลาง ไม่ขึ้นบรรทัดใหม่
 
-## 7. งานที่ยังค้าง
-- ตั้งค่า SMS ThaiBulkSMS (API key + ชื่อผู้ส่ง) ที่หน้าตั้งค่า
-- สรุป LINE ประจำวัน (`daily_summary_text` จาก SQL 06) ยังนับเงินโอนที่รอตรวจ และยังไม่หักคืนเงิน ต้องทำ SQL ใหม่ (18)
-- ปิด GitHub Pages เดิม (Settings › Pages › Branch: None) อาร์ทต้องกดเอง
-- ตรวจหน้า "ตรวจสอบระบบ" บนเว็บ pages.dev
-- ตัดสินใจ Supabase Pro (~900 บาท/เดือน) เพื่อ backup รายวัน (Free ไม่มี backup อัตโนมัติ ตอนนี้ใช้ปุ่มสำรอง JSON)
+## 7. สถานะงานค้าง (28 ต.ค. 2569)
+อาร์ทแจ้งว่าทำเสร็จแล้ว:
+- ตั้งค่า SMS ThaiBulkSMS, ปิด GitHub Pages เดิม, ตรวจหน้า "ตรวจสอบระบบ" บน pages.dev, เรื่อง backup
+
+ยังค้างจริง (ตรวจจาก repo):
+- **SQL 18 ยังไม่มีใน repo**: สรุป LINE ประจำวัน (`daily_summary_text` ใน 06-line-daily.sql) ยังนับเงินโอนสถานะ pending และยังไม่หักคืนเงิน (refund จาก 15-void-refund.sql) ต้องเขียน `db/18-...sql` ใหม่ให้นับเฉพาะ verified และหักคืนเงิน ให้สอดคล้องกับรายงานการเงินในแอป v75
+- ปิดยอดประจำวัน (`R.close` ใน index.html) ยังปิดได้แม้มีเงินโอนรอตรวจ
 - ไม่มี doctype (quirks mode) แก้ได้แต่ต้องทดสอบทั้งระบบ
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4
