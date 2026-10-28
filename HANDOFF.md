@@ -46,6 +46,7 @@
 | 15-void-refund | `bill_requests` ยกเลิก/คืนเงินต้องอนุมัติ (`request_bill_action`, `decide_bill_action`) หัวหน้าอนุมัติคำขอตัวเองไม่ได้ |
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
+| 18-line-daily-fix | **ยังไม่ได้รัน (รอ อาร์ท)** แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
 
 ### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/01-schema.sql
@@ -68,6 +69,7 @@
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar-check.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar-rollback.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/18-line-daily-fix.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/supabase/functions/line-webhook/index.ts
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/index.html (แอปทั้งหมด ~1.15 MB)
 
@@ -107,7 +109,7 @@
 - ตั้งค่า SMS ThaiBulkSMS, ปิด GitHub Pages เดิม, ตรวจหน้า "ตรวจสอบระบบ" บน pages.dev, เรื่อง backup
 
 ยังค้างจริง (ตรวจจาก repo):
-- **SQL 18 ยังไม่มีใน repo**: สรุป LINE ประจำวัน (`daily_summary_text` ใน 06-line-daily.sql) ยังนับเงินโอนสถานะ pending และยังไม่หักคืนเงิน (refund จาก 15-void-refund.sql) ต้องเขียน `db/18-...sql` ใหม่ให้นับเฉพาะ verified และหักคืนเงิน ให้สอดคล้องกับรายงานการเงินในแอป v75
+- **SQL 18 (`db/18-line-daily-fix.sql`) อยู่ใน repo แล้ว รอ อาร์ท รันใน Supabase**: แก้สรุป LINE ประจำวันให้นับเฉพาะเงิน verified และหักคืนเงิน ตรงกับหน้าปิดยอด v75 (ทดสอบบน Postgres 16 ที่โหลด 01–17 แล้ว ผลถูกต้อง)
 - ปิดยอดประจำวัน (`R.close` ใน index.html) ยังปิดได้แม้มีเงินโอนรอตรวจ
 - ไม่มี doctype (quirks mode) แก้ได้แต่ต้องทดสอบทั้งระบบ
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4
