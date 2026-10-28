@@ -2312,6 +2312,7 @@ body{margin:0}
 
 <script>
 const $=s=>document.querySelector(s);
+const UZ=()=>parseFloat(getComputedStyle(document.documentElement).zoom)||1;  // SIAM_UI_SCALE_V1
 const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
 let LIVE=false; // true = ใช้ฐานข้อมูลจริง (Supabase)
 const DAY=864e5;
@@ -2521,10 +2522,10 @@ document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hi
     let h='',g=null;opts.forEach((o,k)=>{const og=o.parentElement.tagName==='OPTGROUP'?o.parentElement:null;if(og&&og!==g){g=og;h+=`<div class="sel-gr">${esc(og.label)}</div>`}
       h+=`<button type="button" class="sel-it${o.selected?' on':''}" data-k="${k}"${o.disabled?' disabled':''}>${esc(o.textContent)}</button>`});
     pop.innerHTML=h;hi=opts.findIndex(o=>o.selected);
-    const r=s.getBoundingClientRect();pop.style.minWidth=r.width+'px';pop.style.left=Math.max(8,Math.min(r.left,innerWidth-Math.max(r.width,120)-8))+'px';pop.hidden=false;
+    const z=UZ(),r=s.getBoundingClientRect();pop.style.minWidth=r.width/z+'px';pop.style.left=Math.max(8,Math.min(r.left,innerWidth-Math.max(r.width,120)-8))/z+'px';pop.hidden=false;
     const below=innerHeight-r.bottom-12,above=r.top-12,want=Math.min(pop.scrollHeight,300);
-    if(below>=Math.min(want,200)||below>=above){pop.style.top=(r.bottom+4)+'px';pop.style.bottom='';pop.style.maxHeight=Math.max(120,Math.min(300,below))+'px'}
-    else{pop.style.top='';pop.style.bottom=(innerHeight-r.top+4)+'px';pop.style.maxHeight=Math.min(300,above)+'px'}
+    if(below>=Math.min(want,200)||below>=above){pop.style.top=(r.bottom+4)/z+'px';pop.style.bottom='';pop.style.maxHeight=Math.max(120,Math.min(300,below))/z+'px'}
+    else{pop.style.top='';pop.style.bottom=(innerHeight-r.top+4)/z+'px';pop.style.maxHeight=Math.min(300,above)/z+'px'}
     pop.scrollTop=0;mark()};
   document.addEventListener('mousedown',e=>{if(pop.contains(e.target))return;const s=e.target.closest('select');
     if(!s||s.multiple||s.size>1||s.disabled||e.button!==0){if(!pop.hidden)close();return}
@@ -2541,7 +2542,7 @@ document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hi
 (()=>{const tq=$('#tq'),lb=document.querySelector('.tsrch');if(!tq||!lb)return;
   const box=document.createElement('div');box.className='tsr-pop';box.id='tsr-pop';box.setAttribute('role','listbox');box.hidden=true;document.body.appendChild(box);
   let hits=[],sel=-1;const norm=x=>String(x||'').replace(/[\s-]/g,'').toLowerCase();
-  const place=()=>{const r=lb.getBoundingClientRect();box.style.left=r.left+'px';box.style.top=(r.bottom+6)+'px';box.style.width=Math.max(r.width,320)+'px'};
+  const place=()=>{const z=UZ(),r=lb.getBoundingClientRect();box.style.left=r.left/z+'px';box.style.top=(r.bottom+6)/z+'px';box.style.width=Math.max(r.width,320*z)/z+'px'};
   const close=()=>{box.hidden=true;sel=-1};
   const pick=k=>{const c=hits[k];if(!c)return;close();tq.value='';tq.blur();openCar(c.id)};
   const all=()=>{q=tq.value;close();tq.blur();go('cust')};
@@ -4629,7 +4630,13 @@ R.add=(E)=>{if(!E)billKey=null;
   // service sections
   // แท็บแบบ easyth: เปิดดูทีละแท็บ ยอดรวมคิดจากทุกช่องที่กรอก ไม่ว่าจะอยู่แท็บไหน
   let inspOnly=false;  // โหมด "ตรวจสภาพอย่างเดียว": ไม่คิดภาษี/พ.ร.บ./ค่าฝากต่อภาษี
-  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView&&!(inspOnly&&b.dataset.svc==='tax')));const ib=$('#svc-insp');if(ib)ib.setAttribute('aria-pressed',inspOnly);recalc()};
+  // SIAM_ADD_INSPECT_ONLY_V1: ตรวจสภาพอย่างเดียว ซ่อนช่องภาษี/ค่าปรับ/ค่าฝากต่อภาษี/วันหมดอายุภาษี/ปุ่มคำนวณ/บล็อก พ.ร.บ. (ซ่อนที่หน้าจอเท่านั้น ค่าในช่องยังอยู่ และ autoCalc ตั้งเป็น 0 ให้อยู่แล้ว)
+  const inspView=()=>{const on=inspOnly;
+    ['b-tax','b-late','b-fee','b-taxexp'].forEach(id=>{const e=$('#'+id),f=e&&e.closest('.field');if(f)f.hidden=on});
+    const ab=$('#b-auto');if(ab)ab.hidden=on;
+    const sub=document.querySelector('[data-sec="tax"] .sech.sub-inline');
+    if(sub){sub.hidden=on;if(sub.nextElementSibling)sub.nextElementSibling.hidden=on}};
+  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView&&!(inspOnly&&b.dataset.svc==='tax')));const ib=$('#svc-insp');if(ib)ib.setAttribute('aria-pressed',inspOnly);inspView();recalc()};
   document.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{if(inspOnly&&b.dataset.svc==='tax'){setInspOnly(false);return}svcView=b.dataset.svc;syncSvc()});
   const fnote=()=>{const k=$('#b-img').files.length,p=$('#b-pdf').files.length;$('#b-files-note').textContent=(k?`รูป ${k} ไฟล์ `:'')+(p?`PDF ${p} ไฟล์`:'')};
   $('#b-img').onchange=fnote;$('#b-pdf').onchange=fnote;
@@ -6223,8 +6230,8 @@ R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date
   const tip=$('#db-tip'),box=$('#db-chart');
   box.querySelectorAll('.hit').forEach(h=>{const show=()=>{const ym=months[+h.dataset.i];box.querySelectorAll('.hit').forEach(x=>x.classList.toggle('on',x===h));
       tip.innerHTML=`<b>${ymFull(ym)}</b>${brs.map((b,j)=>`<div><i style="background:${SERIES[j]}"></i>${esc(b.name)}<span>${mu==='คัน'?val(get(b.id,ym),mk).toLocaleString()+' คัน':money(val(get(b.id,ym),mk))}</span></div>`).join('')}`;
-      tip.hidden=false;const bx=box.getBoundingClientRect(),hx=h.getBoundingClientRect(),cx=hx.left-bx.left+hx.width/2;
-      tip.style.left=Math.min(Math.max(cx-tip.offsetWidth/2,0),bx.width-tip.offsetWidth)+'px';tip.style.top=(box.offsetTop+4)+'px'};
+      tip.hidden=false;const bx=box.getBoundingClientRect(),hx=h.getBoundingClientRect(),cx=(hx.left-bx.left+hx.width/2)/UZ();
+      tip.style.left=Math.min(Math.max(cx-tip.offsetWidth/2,0),bx.width/UZ()-tip.offsetWidth)+'px';tip.style.top=(box.offsetTop+4)+'px'};
     h.addEventListener('mouseenter',show);h.addEventListener('click',show)});
   box.addEventListener('mouseleave',()=>{tip.hidden=true;box.querySelectorAll('.hit').forEach(x=>x.classList.remove('on'))});
   document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dashMetric=b.dataset.dm;R.dash()});
@@ -7424,6 +7431,35 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 }
 </style>
 <!-- /SIAMSERVICE_PAY_DRAWER_V1 -->
+
+<!-- SIAM_UI_SCALE_V1: ขนาดหน้าจอ 90% เหมือนซูมเบราว์เซอร์ 90% เฉพาะบนจอ (screen) ไม่กระทบการพิมพ์/ใบเสร็จ rc-/rcx- · ปรับเลขเดียวที่ --uz (1 = ขนาดเดิม) -->
+<style id="siamservice-ui-scale-v1">
+@media screen and (min-width:900px){
+  html{--uz:.9;zoom:var(--uz)}
+  .login,.shell{min-height:calc(100vh/var(--uz));min-height:calc(100dvh/var(--uz))}
+  .side{height:calc(100vh/var(--uz))}
+  .bf-side{max-height:calc(100vh/var(--uz) - 110px)}
+  #view .st .st-nav{max-height:calc(100vh/var(--uz) - 115px)}
+  .tsr-pop{max-height:min(420px,calc(70vh/var(--uz)))}
+  .sv6-panel,.nb-overlay .dj-modal{max-height:calc(100dvh/var(--uz) - 32px)}
+}
+</style>
+<!-- /SIAM_UI_SCALE_V1 -->
+
+
+<!-- SIAM_ADD_INSPECT_ONLY_V1: screen UI only; no rc-/rcx-/print or calculation changes -->
+<style id="siamservice-add-inspect-only-v1">
+@media screen {
+  #bill #svc{display:flex;flex-wrap:wrap;justify-content:stretch;gap:10px}
+  #bill #svc>.chip{flex:1 1 135px;min-width:0;justify-content:center;white-space:normal;text-align:center;padding:9px 10px;font-size:14px;line-height:1.35}
+}
+@media screen and (max-width:760px){
+  #bill #svc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  #bill #svc>.chip{font-size:13px;padding:10px 8px}
+  #bill #svc>.chip:last-child:nth-child(odd){grid-column:1/-1}
+}
+</style>
+<!-- /SIAM_ADD_INSPECT_ONLY_V1 -->
 
 <!-- SIAM_INCOME_FILTER_V2: screen UI only; no rc-/rcx-/print changes -->
 <style>
