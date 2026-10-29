@@ -6451,7 +6451,7 @@ function lsAttach(){const C=LS_CFG[cur];if(!C)return;const v=$('#view');
   C.forEach((c,ix)=>{let host,items;
     if(c.card){const h=[...v.querySelectorAll('.ui-card-h h2')].find(h=>h.textContent.trim()===c.card);if(!h)return;const card=h.closest('.ui-card');host=card.querySelector('.ui-card-h');items=[...card.querySelectorAll('tbody tr')]}
     else{const a=v.querySelector(c.at);if(!a)return;host=a;items=[...v.querySelectorAll(c.items)]}
-    if(!host||host.dataset.lsr||items.length<2)return;host.dataset.lsr='1';
+    if(!host||host.dataset.lsr)return;host.dataset.lsr='1';
     const key=cur+ix,w=document.createElement('div');w.className='lsr non-printable';
     w.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.1-4.1"/></svg><input type="search" autocomplete="off" aria-label="${esc(c.ph)}" placeholder="${esc(c.ph)}"><span class="lsr-n"></span>`;
     if(c.card){host.append(w);if(host.closest('summary'))w.addEventListener('click',e=>e.preventDefault())}else host.before(w);
