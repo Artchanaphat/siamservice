@@ -2251,7 +2251,13 @@ body{margin:0}
 .tsr-row{display:flex;flex-direction:column;border-bottom:1px solid #eef2f7}.tsr-row .tsr-it{border-bottom:0}
 .tsr-act{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}
 .tsr-act button{font:inherit;font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid #c9d6ea;background:#f5f8fc;color:#1d3f7a;cursor:pointer}
-.tsr-act button:hover{background:#e3edfb;border-color:#8fb0e3}.pk-row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left}.pk-row small{display:block;color:#5b6b85}.pk-amt{color:#b42318;white-space:nowrap}
+.tsr-act button:hover{background:#e3edfb;border-color:#8fb0e3}.hw{background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:12px 14px;margin:0 0 14px}.hw-h{display:flex;gap:8px;align-items:baseline;margin-bottom:8px}.hw-h b{color:#0b2766}.hw-h small{color:#5b6b85}
+.hw-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.hw-t{display:flex;gap:10px;align-items:center;text-align:left;font:inherit;background:#f5f8fc;border:1px solid #e3e9f2;border-radius:12px;padding:10px 12px;cursor:pointer;color:#33435e}
+.hw-t:hover{border-color:#8fb0e3;background:#eef4fd}.hw-ic{font-size:22px}.hw-l{display:block;font-size:12.5px}.hw-t b{display:block;font-size:20px;color:#0b2766;line-height:1.2}.hw-t small{font-size:12px;color:#5b6b85}
+.hw-t.warn{background:#fff6ec;border-color:#f6d2b0}.hw-t.warn b{color:#c2410c}.hw-t.bad{background:#fdeeee;border-color:#f3c1c1}.hw-t.bad b{color:#b42318}.hw-t.now b{color:#1d4ed8}
+@media (max-width:900px){.hw-g{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pk-row{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left}.pk-row small{display:block;color:#5b6b85}.pk-amt{color:#b42318;white-space:nowrap}
 .tsr-act button.bad{background:#fdeeee;border-color:#f3c1c1;color:#b42318}
 .bs-next{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px dashed #dbe3ef;padding-top:10px;font-size:13px;color:#33435e}
 .bs-n{padding:3px 10px;border-radius:999px;background:#eef3fb;color:#1d4ed8;font-weight:600}.bs-n.warn{background:#fff6ec;color:#c2410c}.bs-n.bad{background:#fdeeee;color:#b42318}.bs-n.ok{background:#e8f6ec;color:#1b7f3b}.bs-n.skip{background:#f1f3f6;color:#5b6b85}
@@ -3052,8 +3058,17 @@ R.home=()=>{
   const kpi=(cls,ic,l,v,unit,sub,go)=>`<button type="button" class="hk ${cls}" ${go?`data-go="${go}"`:''}><span class="hk-ic">${I(IC[ic])}</span><span class="hk-t"><span class="hk-l">${l}</span><span class="hk-v"><b>${v}</b><small>${unit}</small></span>${sub}</span><span class="hk-bg">${I(IC[ic])}</span></button>`;
   const qtot=qT.length,qprog=qtot?Math.round((qc('pass')+qc('fail'))/qtot*100):0;
   $('#view').innerHTML=`<div class="hd">
-  ${(()=>{const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p})));if(!w.length)return'';const days=[...new Set(w.map(x=>iso(x.p.d)))].sort();
-    return `<div class="ui-note warn home-trw">⏳ <span><b>เงินโอนรอตรวจสอบ ${w.length} รายการ · ${money(w.reduce((t,x)=>t+x.p.amt,0))} บาท</b> ตรวจกับแอปธนาคารแล้วกดยืนยัน</span><span class="sp"></span><button class="btn sm" id="home-trw" data-day="${days[0]}">ตรวจสอบ</button></div>`})()}
+  ${(()=>{// งานค้างทั้งหมดในที่เดียว: กดแล้วเปิดรายการที่กรองไว้
+    const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p}))),days=[...new Set(w.map(x=>iso(x.p.d)))].sort(),since=iso(plus(-30));
+    const open=intake.filter(b=>iso(b.d)>=since&&!jobDone(b)).length,pick=dltJobs().filter(b=>dltOf(b).st==='plate').length;
+    const owe=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&b.amt-b.paid>0.004).map(b=>[b.id,b])).values()],oweSum=owe.reduce((t,b)=>t+b.amt-b.paid,0);
+    const T=(k,ic,l,n,sub,cls)=>`<button type="button" class="hw-t${n?' '+cls:''}" data-hw="${k}"><span class="hw-ic">${ic}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`;
+    return `<section class="hw" aria-label="งานค้าง"><div class="hw-h"><b>งานค้างที่ต้องทำต่อ</b><small>กดเพื่อเปิดรายการ</small></div><div class="hw-g">
+      ${T('tr','⏳','โอนรอตรวจสอบ',w.length,w.length?money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท':'ไม่มีรายการ','warn')}
+      ${T('open','🧾','งานยังไม่เสร็จ (30 วัน)',open,'ดูขั้นตอนที่ค้าง','now')}
+      ${T('pick','📦','เอกสารรอลูกค้ารับ',pick,'งานขนส่งได้ป้าย/เล่มแล้ว','now')}
+      ${T('debt','💵','บิลค้างชำระ',owe.length,owe.length?money(oweSum)+' บาท':'ไม่มีรายการ','bad')}
+    </div></section>`;})()}
   <div class="hk-row">
     ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
     ${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
@@ -3136,7 +3151,11 @@ R.home=()=>{
     document.querySelectorAll('[data-hide]').forEach(b=>b.onclick=e=>{e.stopPropagation();hidden.add(b.dataset.hide);R.home();toast('ซ่อนรายการแล้ว')});
   };
   document.querySelectorAll('[data-ek]').forEach(b=>b.onclick=()=>{expKind=b.dataset.ek;R.home()});
-  if($('#home-trw'))$('#home-trw').onclick=e=>{closeDate=e.target.dataset.day;closeEdit=false;go('close')};
+  document.querySelectorAll('[data-hw]').forEach(x=>x.onclick=()=>{const k=x.dataset.hw;
+    if(k==='tr'){const d=[...new Set(intake.flatMap(b=>trWait(b).map(y=>iso(y.p.d))))].sort()[0];closeDate=d||iso(TODAY);closeEdit=false;go('close')}
+    else if(k==='open'){trackF='open';go('track')}
+    else if(k==='pick'){dltF='plate';dltQ='';go('dlt')}
+    else if(k==='debt'){incDebtNext=true;go('income')}});
   $('#eq').oninput=e=>{expQ=e.target.value;draw()};
   draw();
   // คิวตรวจในฐานข้อมูลจริง: โหลดครั้งแรกแล้ววาดใหม่ (ไม่วนโหลด)
