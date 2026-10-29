@@ -2391,6 +2391,11 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 .ov-tbl .ov-sec th{background:#f1f5f9;font-size:12.5px;color:#475569;font-weight:600;padding:6px 12px}.ov-tbl .ov-strong th,.ov-tbl .ov-strong td{font-weight:700;color:#0f172a}.ov-tbl .warn{color:#c2410c}
 .ov-tbl td.ov-go{cursor:pointer}.ov-tbl td.ov-go:hover{background:#eef4ff;color:#1d4ed8}.ov-det{padding:8px 16px 14px}.ov-det summary{cursor:pointer;color:#1d4ed8;font-size:14px;margin-bottom:8px}
 @media (max-width:600px){.ov-tbl{font-size:12px;table-layout:fixed}.ov-tbl thead th,.ov-tbl .r{white-space:normal;overflow-wrap:anywhere}.ov-tbl thead th:first-child{width:33%}.ov-tbl .ui-pill{white-space:normal}.ov-tbl th,.ov-tbl td{padding:7px 6px}.ov-tbl tbody th small{font-size:11px}.ov-tbl .ov-prev{display:none}.ov-t{min-width:0;flex-basis:100%}}
+.ov-bcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:4px 0 16px}.ov-bc{background:#fff;border:1px solid #e5e9f0;border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}.ov-bc-all{background:#f8fafc}
+.ov-bc-h{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:8px;border-bottom:1px solid #eef1f4;margin-bottom:4px;font-size:16px}
+.ov-bc-r{display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:10px;padding:7px 6px;border-radius:8px}.ov-bc-r>span{color:#64748b;font-size:13.5px}.ov-bc-r>b{text-align:right;font-size:17px}.ov-bc-r>small{grid-column:1/-1;text-align:right;font-size:12px;color:#94a3b8}
+.ov-bc-r.ov-go{cursor:pointer}.ov-bc-r.ov-go:hover{background:#eef4ff}.ov-bc .warn{color:#c2410c}.ov-bc .bad{color:#dc2626}
+.ov-more{margin-top:4px}.ov-more>summary{cursor:pointer;list-style:none;background:#fff;border:1px solid #e5e9f0;border-radius:12px;padding:12px 16px;font-weight:600;color:#1d4ed8;margin-bottom:12px}.ov-more>summary::-webkit-details-marker{display:none}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -7385,7 +7390,7 @@ async function accReport(ym){let list=LIVE?await DB.listExpenses(ym):EXPENSES.fi
         {name:'ค่าคอมประกัน',cols:[12,12,12,18,24,14,8,12],rows:[['วันที่','เลขที่บิล','ทะเบียน','ประเภท','บริษัท','เบี้ยรวม','%','ค่าคอม']].concat(cm.map(r=>[iso(r.b.d),rcNo(r.b),r.b.plate,r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ',r.co,r.gross,r.rate,r.comm]))}]);
       toast('ดาวน์โหลดรายงานส่งนักบัญชีแล้ว')}
 /* ---------- ภาพรวมเจ้าของ: ทุกสาขาในหน้าเดียว (เฉพาะเจ้าของร้าน) ---------- */
-let ovDay=null,ovData=null;
+let ovDay=null,ovData=null,ovMore=false;
 // โหมดทดลอง: สาขา 1 จากข้อมูลในเครื่อง สาขา 2 เป็นตัวเลขตัวอย่าง
 function demoOverview(day){const t=(b,k)=>b.reduce((s,x)=>s+(+x[k]||0),0),dd=new Date(day+'T00:00'),bills=[...intake,...oldBills].filter(b=>iso(b.d)===day&&!b.void);
   const pays=[];[...intake,...oldBills].forEach(b=>(b.pays||[]).forEach(p=>{if(p.d&&iso(p.d)===day)pays.push({b,p})}));const ok=pays.filter(x=>!x.p.wait);
@@ -7438,16 +7443,21 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
   $('#view').innerHTML=`<div class="ui ov2">
   <div class="ui-head"><span class="ui-ic">👑</span><div class="ui-tt"><h1>ภาพรวมเจ้าของ</h1><div class="ui-sub">ทุกสาขา · ${isToday?'วันนี้ ':''}${beFull(dd)}${LIVE?'':' · โหมดทดลอง สาขา 2 เป็นตัวเลขตัวอย่าง'}</div></div>
     <div class="ui-tools non-printable"><div class="ex-mnav"><button class="btn line" id="ov-prev" aria-label="วันก่อน">‹</button><input type="date" id="ov-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่"><button class="btn line" id="ov-next" aria-label="วันถัดไป"${isToday?' disabled':''}>›</button></div>${isToday?'':'<button class="btn line" id="ov-today">วันนี้</button>'}<button class="btn line" id="ov-re" title="โหลดตัวเลขล่าสุด">⟳ อัปเดต</button><button class="btn line" id="ov-print">🖨️ พิมพ์</button></div></div>
-  <div class="ui-kpis">
-    <div class="ui-kpi" data-t="navy"><span class="k-ic">Σ</span><div><div class="k-l">รับเงินจริง${isToday?'วันนี้':''} ทุกสาขา</div><div class="k-v">${M(sumB(recv))}</div><div class="k-s">สด ${M(sumB(b=>b.today.cash))} · โอน ${M(sumB(b=>b.today.tr))}${sumB(b=>b.today.pend_n)?` · รอตรวจ ${M(sumB(b=>b.today.pend_sum))}`:''}</div></div></div>
-    <div class="ui-kpi" data-t="blue"><span class="k-ic">🚗</span><div><div class="k-l">รถเข้า${isToday?'วันนี้':''}</div><div class="k-v">${cnt(sumB(b=>n(b.today.car)+n(b.today.moto)))} คัน</div><div class="k-s">บิล ${cnt(sumB(b=>b.today.bills))} ใบ · ${M(sumB(b=>b.today.bill_sum))} บาท</div></div></div>
-    <div class="ui-kpi" data-t="${sumB(prof)+comm<0?'red':'green'}"><span class="k-ic">📈</span><div><div class="k-l">กำไรเดือนนี้ (ถึงวันที่เลือก)</div><div class="k-v">${M(sumB(prof)+comm)}</div><div class="k-s">${pct(sumB(prof),sumB(pprof))||'ไม่มีข้อมูลเดือนก่อน'}${pct(sumB(prof),sumB(pprof))?' จากช่วงเดียวกันเดือนก่อน':''}</div></div></div>
-    <div class="ui-kpi" data-t="${T.length?'orange':'green'}"><span class="k-ic">${T.length?'🔔':'✅'}</span><div><div class="k-l">เรื่องที่ต้องจัดการ</div><div class="k-v">${T.length} เรื่อง</div><div class="k-s">${T.length?'ดูรายการด้านล่าง':'ไม่มีเรื่องค้าง'}</div></div></div></div>
+  <div class="ov-bcs">${[...B,...(B.length>1?[null]:[])].map(b=>{const all=!b,F=f=>all?sumB(f):n(f(b)),go=pg=>all?'':` data-ovgo="${b.id}|${pg}"`;
+      const nT=all?T.length:T.filter(t=>t.b===b).length,pr=F(prof)+(all?comm:0),pp=F(pprof),cl=all?null:b.close;
+      const clTxt=all?(()=>{const k=B.filter(x=>n(x.close.counted_n)),t=k.reduce((s2,x)=>s2+n(x.close.diff),0);return B.some(x=>n(x.close.staff_n)&&!n(x.close.close_n))?'<span class="ui-pill warn">ยังปิดไม่ครบ</span>':k.length?diffPill(t):'–'})():diffTxt(b);
+      return `<div class="ov-bc${all?' ov-bc-all':''}"><div class="ov-bc-h"><b>${all?'รวมทุกสาขา':esc(b.name)}</b>${nT?`<span class="ui-pill warn">ต้องจัดการ ${nT}</span>`:'<span class="ui-pill ok">✓ ปกติ</span>'}</div>
+        <div class="ov-bc-r${all?'':' ov-go'}"${go('close')}><span>รับเงิน${isToday?'วันนี้':''}</span><b>${M(F(recv))}</b><small>สด ${M(F(x=>x.today.cash))} · โอน ${M(F(x=>x.today.tr))}${F(x=>x.today.pend_n)?` · <span class="warn">รอตรวจ ${M(F(x=>x.today.pend_sum))}</span>`:''}</small></div>
+        <div class="ov-bc-r${all?'':' ov-go'}"${go('income')}><span>รถเข้า</span><b>${cnt(F(x=>n(x.today.car)+n(x.today.moto)))} คัน</b><small>บิล ${cnt(F(x=>x.today.bills))} ใบ · ${M(F(x=>x.today.bill_sum))} บาท</small></div>
+        <div class="ov-bc-r${all?'':' ov-go'}"${go('close')}><span>ปิดยอดเงินสด</span><b>${clTxt}</b>${!all&&n(cl.close_n)?`<small>${esc(cl.by||'')}${cl.at?' '+hm(new Date(cl.at))+' น.':''}</small>`:''}</div>
+        <div class="ov-bc-r${all?'':' ov-go'}"${go('dash')}><span>กำไรเดือนนี้</span><b class="${pr<0?'bad':''}">${M(pr)}</b><small>${pct(pr,pp)?pct(pr,pp)+' จากช่วงเดียวกันเดือนก่อน':'&nbsp;'}</small></div>
+        <div class="ov-bc-r${all?'':' ov-go'}"${go('income')}><span>ค้างชำระ</span><b class="${F(x=>x.follow.debt)>0.004?'warn':''}">${M(F(x=>x.follow.debt))}</b><small>${cnt(F(x=>x.follow.debt_n))} บิล${F(x=>x.follow.dlt_late)?` · <span class="bad">งานขนส่งเกินกำหนด ${cnt(F(x=>x.follow.dlt_late))}</span>`:''}</small></div></div>`}).join('')}</div>
 
-  <div class="ui-card ov-todo"><div class="ui-card-h"><h2>1. ต้องจัดการตอนนี้</h2><span class="sub">${T.length?'กดอนุมัติหรือตรวจได้ในหน้านี้เลย':'ทุกสาขาไม่มีเรื่องค้าง'}</span></div>
-    ${T.length?`<div class="ov-list">${T.map((t,i)=>`<div class="ov-it ov-i-${t.k}">${t.html}</div>`).join('')}</div>`:'<div class="ui-empty"><span class="e-ic">✅</span>ไม่มีเงินโอนรอตรวจ คำขออนุมัติ หรือยอดที่ยังไม่ปิด</div>'}</div>
+  ${T.length?`<div class="ui-card ov-todo"><div class="ui-card-h"><h2>🔔 ต้องจัดการ ${T.length} เรื่อง</h2><span class="sub">กดอนุมัติหรือตรวจได้ในหน้านี้เลย</span></div>
+    <div class="ov-list">${T.map(t=>`<div class="ov-it ov-i-${t.k}">${t.html}</div>`).join('')}</div></div>`:''}
 
-  <div class="ui-card"><div class="ui-card-h"><h2>2. ${isToday?'วันนี้':beFull(dd)}</h2><span class="sub">กดตัวเลขของสาขาเพื่อเปิดหน้ารายละเอียดของสาขานั้น</span></div>
+  <details class="ov-more"${ovMore?' open':''}><summary>📋 ดูรายละเอียดทั้งหมด (วันนี้ · เดือนนี้ · ยอดที่ต้องตามเก็บ)</summary>
+  <div class="ui-card"><div class="ui-card-h"><h2>${isToday?'วันนี้':beFull(dd)}</h2><span class="sub">กดตัวเลขของสาขาเพื่อเปิดหน้ารายละเอียดของสาขานั้น</span></div>
     <div class="ov-wrap"><table class="ov-tbl">${head()}<tbody>
     <tr class="ov-sec"><th colspan="${B.length+2}">รถและบิล</th></tr>
     ${row('รถเข้า',b=>n(b.today.car)+n(b.today.moto),v=>cnt(v)+' คัน','track',{sub:B.map(b=>`${esc(b.code||'')} รถยนต์ ${cnt(b.today.car)} / จยย. ${cnt(b.today.moto)}`).join(' · ')})}
@@ -7477,7 +7487,7 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
     ${B.some(b=>(b.close.rows||[]).length)?`<details class="ov-det"><summary>ดูเงินสดแยกตามพนักงาน</summary><table class="ui-tbl stack"><thead><tr><th>สาขา</th><th>พนักงาน</th><th class="r">เงินทอนตั้งต้น</th><th class="r">เงินสดรับ</th><th class="r">จ่ายออก</th><th class="r">นับได้</th><th class="r">ผลต่าง</th></tr></thead><tbody>
       ${B.flatMap(b=>(b.close.rows||[]).map(r=>`<tr><td data-l="สาขา">${esc(b.name)}</td><td data-l="พนักงาน"><b>${esc(r.staff)}</b></td><td class="r" data-l="เงินทอนตั้งต้น">${M(r.float)}</td><td class="r" data-l="เงินสดรับ">${M(r.cash)}</td><td class="r" data-l="จ่ายออก">${n(r.out)?'−'+M(r.out):'–'}</td><td class="r" data-l="นับได้">${r.counted==null?'–':M(r.counted)}</td><td class="r" data-l="ผลต่าง">${r.diff==null?'–':diffPill(n(r.diff))}</td></tr>`)).join('')}</tbody></table></details>`:''}</div>
 
-  <div class="ui-card"><div class="ui-card-h"><h2>3. เดือน${ymFull(day.slice(0,7))} (1–${dd.getDate()})</h2><span class="sub">เทียบช่วงเดียวกันเดือนก่อน (${prevLbl})</span></div>
+  <div class="ui-card"><div class="ui-card-h"><h2>เดือน${ymFull(day.slice(0,7))} (1–${dd.getDate()})</h2><span class="sub">เทียบช่วงเดียวกันเดือนก่อน (${prevLbl})</span></div>
     <div class="ov-wrap"><table class="ov-tbl">${head('<th class="r ov-prev">เดือนก่อน</th>')}<tbody>
     ${row('รถเข้า',b=>b.mtd.cars,v=>cnt(v)+' คัน','dash',{prev:`${cnt(sumB(b=>b.prev.cars))} ${pct(sumB(b=>b.mtd.cars),sumB(b=>b.prev.cars))}`})}
     ${row('ยอดตามบิล',b=>b.mtd.total,M,'income',{prev:`${M(sumB(b=>b.prev.total))} ${pct(sumB(b=>b.mtd.total),sumB(b=>b.prev.total))}`})}
@@ -7491,7 +7501,7 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
     ${row('เงินนำส่งที่ยังไม่ส่ง',remitLeft,v=>n(v)>0.004?`<span class="warn">${M(v)}</span>`:M(v),'remit',{sub:'เงินนำส่งตามบิลเดือนนี้ − นำส่งแล้ว',hasPrev:1})}
     </tbody></table></div></div>
 
-  <div class="ui-card"><div class="ui-card-h"><h2>4. ยอดที่ต้องตามเก็บ</h2><span class="sub">ยอดปัจจุบัน ไม่ขึ้นกับวันที่เลือก</span></div>
+  <div class="ui-card"><div class="ui-card-h"><h2>ยอดที่ต้องตามเก็บ</h2><span class="sub">ยอดปัจจุบัน ไม่ขึ้นกับวันที่เลือก</span></div>
     <div class="ov-wrap"><table class="ov-tbl">${head()}<tbody>
     ${row('ยอดค้างชำระ',b=>b.follow.debt,v=>n(v)>0.004?`<span class="warn">${M(v)}</span>`:'–','income',{sub:B.map(b=>`${esc(b.code||'')} ${cnt(b.follow.debt_n)} บิล`).join(' · ')})}
     ${row('ค้างเกิน 30 วัน',b=>b.follow.debt_old,v=>n(v)>0.004?`<span class="bad">${M(v)}</span>`:'–','income')}
@@ -7499,16 +7509,18 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
     ${row('ได้ป้าย/เล่มแล้ว รอลูกค้ารับ',b=>b.follow.dlt_wait,v=>n(v)?cnt(v)+' คัน':'–','dlt')}
     ${row('เงินเบิกล่วงหน้ายังไม่หักค่าแรง',b=>b.follow.adv,v=>n(v)?M(v):'–','expense',{sub:advAll?B.filter(b=>n(b.follow.adv_n)).map(b=>`${esc(b.code||'')} ${cnt(b.follow.adv_n)} คน`).join(' · '):''})}
     </tbody></table></div></div>
-  <p class="note">ตัวเลขคิดแบบเดียวกับสรุป LINE ประจำวันและหน้าสรุปรายเดือน · เงินที่รับนับเฉพาะที่ยืนยันแล้ว · เงินนำส่งตามบิล = ภาษี ค่าปรับ พ.ร.บ. ประกัน ในบิลของเดือนนี้</p></div>`;
+  </details>
+  <p class="note">กดตัวเลขในการ์ดของสาขาเพื่อเปิดหน้ารายละเอียดของสาขานั้น · ตัวเลขคิดแบบเดียวกับสรุป LINE ประจำวันและหน้าสรุปรายเดือน · เงินที่รับนับเฉพาะที่ยืนยันแล้ว · เงินนำส่งตามบิล = ภาษี ค่าปรับ พ.ร.บ. ประกัน ในบิลของเดือนนี้</p></div>`;
   // เลือกวัน
   const setDay=v=>{ovDay=v;R.owner()},mv=k=>iso(new Date(dd.getFullYear(),dd.getMonth(),dd.getDate()+k));
   $('#ov-d').onchange=e=>{if(e.target.value)setDay(e.target.value)};$('#ov-prev').onclick=()=>setDay(mv(-1));$('#ov-next').onclick=()=>{if(!isToday)setDay(mv(1))};
   if($('#ov-today'))$('#ov-today').onclick=()=>setDay(iso(TODAY));$('#ov-re').onclick=()=>{ovData=null;R.owner()};
-  $('#ov-print').onclick=()=>{const v=$('#view .ov2').cloneNode(true);v.querySelectorAll('.non-printable,.ov-btns,button').forEach(x=>x.remove());v.querySelectorAll('details').forEach(x=>x.open=true);
+  $('#ov-print').onclick=()=>{const v=$('#view .ov2').cloneNode(true);v.querySelectorAll('.ov-bcs').forEach(x=>x.remove());v.querySelectorAll('.non-printable,.ov-btns,button').forEach(x=>x.remove());v.querySelectorAll('details').forEach(x=>x.open=true);
     printReport({title:'ภาพรวมทุกสาขา',sub:beFull(dd),land:true,body:[...v.querySelectorAll('.ui-card')].map(c=>{const h=c.querySelector('h2'),t=c.querySelectorAll('table');
       return `<h3 class="pr-s">${h?h.textContent:''}</h3>`+([...t].map(x=>{x.className='pr';return x.outerHTML}).join('')||[...c.querySelectorAll('.ov-it')].map(x=>`<p>${x.textContent.replace(/\s+/g,' ')}</p>`).join('')||'<p>ไม่มีรายการ</p>')}).join('')})};
+  $('#view .ov-more').ontoggle=e=>{ovMore=e.target.open};
   // กดตัวเลข: เปลี่ยนเป็นสาขานั้นแล้วเปิดหน้าที่เกี่ยวข้อง
-  document.querySelectorAll('[data-ovgo]').forEach(td=>td.onclick=async()=>{const [bid,pg]=td.dataset.ovgo.split('|');
+  document.querySelectorAll('#view [data-ovgo]').forEach(td=>td.onclick=async()=>{const [bid,pg]=td.dataset.ovgo.split('|');
     try{if(LIVE&&DB.branch&&DB.branch.id!==+bid){toast('กำลังเปิดข้อมูลสาขา...');await DB.switchBranch(+bid)}if(pg==='close')closeDate=day;go(pg)}catch(err){alert('เปิดสาขาไม่สำเร็จ: '+err.message)}});
   const after=async(bid,msg)=>{toast(msg);ovData=null;await R.owner();if(LIVE&&DB.branch&&DB.branch.id===+bid)DB.resync()};
   const live=()=>{if(!LIVE){alert('โหมดทดลอง: ปุ่มนี้ทำงานเมื่อเข้าสู่ระบบจริง');return false}return true};
