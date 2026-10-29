@@ -5946,6 +5946,9 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
   $('#view').innerHTML=`<div class="ui cl2">
   <div class="ui-head"><span class="ui-ic">🧮</span><div class="ui-tt"><h1>ปิดยอดเงินประจำวัน</h1><div class="ui-sub">${esc(shop().title)} · วันที่ ${beFull(dd)}</div></div>
     <div class="ui-tools non-printable"><input type="date" id="cl-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่">${day!==iso(TODAY)?'<button class="btn line" id="cl-today">วันนี้</button>':''}<button class="btn line" id="cl-print">🖨️ พิมพ์สรุป</button></div></div>
+  ${(()=>{// เงินโอนรอตรวจของวันอื่น (ตัวเลขแจ้งเตือนที่เมนูนับทุกวัน) ให้กดไปวันนั้นได้
+    const o={};intake.forEach(b=>trWait(b).forEach(x=>{const d=iso(x.p.d);if(d!==day){const r=o[d]||(o[d]={n:0,amt:0});r.n++;r.amt+=x.p.amt}}));const ds=Object.keys(o).sort();if(!ds.length)return'';
+    return `<div class="ui-note warn non-printable">⏳ <span><b>มีเงินโอนรอตรวจสอบของวันอื่น</b> ต้องยืนยันหรือปฏิเสธก่อนปิดยอดวันนั้น</span><span class="sp"></span>${ds.map(d=>`<button class="btn sm" data-cld="${d}">${beFull(new Date(d+'T00:00'))} · ${o[d].n} รายการ ${money(o[d].amt)} บาท</button>`).join(' ')}</div>`})()}
   ${done?`<div class="ui-note ok">✅ <span><b>ปิดยอดแล้ว</b> โดย ${esc(first.by||'-')} เวลา ${esc(first.at||'-')} น.${locked?' · ข้อมูลถูกล็อกไว้':' · กำลังแก้ไขยอดปิด'}</span><span class="sp"></span>${locked&&canEdit?'<button class="btn line" id="cl-unlock">✏️ แก้ไขยอดปิด</button>':''}${!locked?'<button class="btn line" id="cl-cancel">ยกเลิกการแก้ไข</button>':''}</div>`
     :rows.length?`<div class="ui-note warn">⏳ <span><b>ยังไม่ได้ปิดยอดวันนี้</b> · นับเงินสดในลิ้นชักของพนักงานแต่ละคน กรอกในช่อง "เงินสดที่นับได้" แล้วกดบันทึกปิดยอด</span></div>`:''}
   ${changed?`<div class="ui-note warn">⚠️ <span><b>${lateVer.length&&!otherChg?'ยืนยันเงินโอนหลังปิดยอด':'ยอดเปลี่ยนหลังปิดยอด'}</b> ${lateVer.length?`มีเงินโอนที่รอตรวจตอนปิดยอดและเพิ่งยืนยัน ${lateVer.length} รายการ (${money(lateSum)} บาท) `:''}${otherChg||!lateVer.length?'มีรายการรับเงินหรือคืนเงินเพิ่มหลังปิดยอด ':''}ยอดในระบบไม่ตรงกับตอนปิดยอด${canEdit?' กด "แก้ไขยอดปิด" เพื่อปิดยอดใหม่':' แจ้งเจ้าของร้านหรือหัวหน้าสาขา'}</span></div>`:''}
@@ -5971,6 +5974,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
     if($('#cl-cnt-sum')){$('#cl-cnt-sum').textContent=any?money(cs):'';$('#cl-diff-sum').innerHTML=any?diffPill(ds):''}};
   document.querySelectorAll('.cl-cnt').forEach(i=>i.oninput=calc);calc();
   $('#cl-d').onchange=e=>{if(e.target.value){closeDate=e.target.value;closeEdit=false;R.close()}};
+  document.querySelectorAll('[data-cld]').forEach(x=>x.onclick=()=>{closeDate=x.dataset.cld;closeEdit=false;R.close()});
   if($('#cl-today'))$('#cl-today').onclick=()=>{closeDate=iso(TODAY);closeEdit=false;R.close()};
   if($('#cl-unlock'))$('#cl-unlock').onclick=()=>{if(confirm('ต้องการแก้ไขยอดที่ปิดไปแล้วใช่ไหม? ระบบจะบันทึกชื่อผู้แก้ไขและเวลาใหม่')){closeEdit=true;R.close()}};
   if($('#cl-cancel'))$('#cl-cancel').onclick=()=>{closeEdit=false;R.close()};
