@@ -47,6 +47,7 @@
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
 | 18-line-daily-fix | **ยังไม่ได้รัน (รอ อาร์ท)** แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
+| 19-close-pending-guard | **ยังไม่ได้รัน (รอ อาร์ท)** trigger บน `cash_closes`: staff บันทึกปิดยอดไม่ได้ถ้าวันนั้นมีเงินโอนรอตรวจ (owner/head ได้) ย้อนกลับ = drop trigger `cash_closes_pending_guard` |
 
 ### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/01-schema.sql
@@ -70,6 +71,7 @@
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar-rollback.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/18-line-daily-fix.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/19-close-pending-guard.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/supabase/functions/line-webhook/index.ts
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/index.html (แอปทั้งหมด ~1.15 MB)
 
@@ -110,7 +112,6 @@
 
 ยังค้างจริง (ตรวจจาก repo):
 - **SQL 18 (`db/18-line-daily-fix.sql`) อยู่ใน repo แล้ว รอ อาร์ท รันใน Supabase**: แก้สรุป LINE ประจำวันให้นับเฉพาะเงิน verified และหักคืนเงิน ตรงกับหน้าปิดยอด v75 (ทดสอบบน Postgres 16 ที่โหลด 01–17 แล้ว ผลถูกต้อง)
-- ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน (บังคับที่หน้าเว็บเท่านั้น ยังไม่มีเช็คฝั่ง DB)
-- tooltip กราฟหน้าแดชบอร์ดเยื้องซ้าย ~15px เมื่อจอ ≥900px (ผลจากซูม 90% ของ v78) เล็กน้อย
+- ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน และเช็คฝั่ง DB ด้วย SQL 19 (รอรัน)
 - ไม่มี doctype (quirks mode) แก้ได้แต่ต้องทดสอบทั้งระบบ
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4

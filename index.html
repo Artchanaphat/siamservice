@@ -6241,7 +6241,7 @@ R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date
   box.querySelectorAll('.hit').forEach(h=>{const show=()=>{const ym=months[+h.dataset.i];box.querySelectorAll('.hit').forEach(x=>x.classList.toggle('on',x===h));
       tip.innerHTML=`<b>${ymFull(ym)}</b>${brs.map((b,j)=>`<div><i style="background:${SERIES[j]}"></i>${esc(b.name)}<span>${mu==='คัน'?val(get(b.id,ym),mk).toLocaleString()+' คัน':money(val(get(b.id,ym),mk))}</span></div>`).join('')}`;
       tip.hidden=false;const bx=box.getBoundingClientRect(),hx=h.getBoundingClientRect(),cx=(hx.left-bx.left+hx.width/2)/UZ();
-      tip.style.left=Math.min(Math.max(cx-tip.offsetWidth/2,0),bx.width/UZ()-tip.offsetWidth)+'px';tip.style.top=(box.offsetTop+4)+'px'};
+      tip.style.left=(box.offsetLeft+Math.min(Math.max(cx-tip.offsetWidth/2,0),bx.width/UZ()-tip.offsetWidth))+'px';tip.style.top=(box.offsetTop+4)+'px'};
     h.addEventListener('mouseenter',show);h.addEventListener('click',show)});
   box.addEventListener('mouseleave',()=>{tip.hidden=true;box.querySelectorAll('.hit').forEach(x=>x.classList.remove('on'))});
   document.querySelectorAll('[data-dm]').forEach(b=>b.onclick=()=>{dashMetric=b.dataset.dm;R.dash()});
