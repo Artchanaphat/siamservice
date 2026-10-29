@@ -4459,6 +4459,25 @@ function tumbolAC(inp,amp,prov,zip){
   dd.onmousedown=e=>{e.preventDefault();const it=e.target.closest('.ss-it');if(it)pick(+it.dataset.i)};
   inp.addEventListener('blur',()=>{dd.hidden=true});
 }
+/* พิมพ์ทะเบียน/ชื่อ/เบอร์ แล้วแสดงลูกค้าเดิมที่ตรงกันใต้ช่อง (หน้าเปิดบิล, หน้าคิว)
+   F = {id ช่อง: [ฟิลด์ที่เทียบ plate|name|tel, ...id ช่องที่นำค่ามาต่อกัน]} */
+function carAC(F,onPick,hint){const norm=x=>String(x||'').replace(/[\s-]/g,'').toLowerCase(),val=id=>($('#'+id)||{}).value||'';
+  const box=document.createElement('div');box.className='tsr-pop';box.setAttribute('role','listbox');box.hidden=true;$('#view').append(box);
+  let hits=[],sel=-1,at=null;const close=()=>{box.hidden=true;sel=-1};
+  const mark=()=>box.querySelectorAll('.tsr-it').forEach((b,k)=>b.classList.toggle('on',k===sel));
+  const pick=k=>{const c=hits[k];close();if(c)onPick(c)};
+  const draw=inp=>{const [f,...ids]=F[inp.id],s=norm(ids.map(val).join(''));if(s.length<2){close();return}
+    hits=cars.filter(c=>norm(c[f]).includes(s)).slice(0,8);sel=-1;if(!hits.length){close();return}
+    box.innerHTML=`<div class="tsr-none" style="padding:4px 8px">ลูกค้าเดิมที่ตรงกัน · คลิกเพื่อ${hint}</div>`+hits.map((c,k)=>`<button type="button" role="option" class="tsr-it" data-k="${k}"><b>${esc(c.plate)}</b><span class="tsr-pv">${esc(c.prov||'')}</span><span class="tsr-nm">${esc(c.name||'–')}</span><span class="tsr-tel">${esc(c.tel||'')}</span></button>`).join('');
+    const z=UZ(),r=inp.getBoundingClientRect(),w=Math.min(Math.max(r.width,360*z),innerWidth-16);box.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))/z+'px';box.style.top=(r.bottom+4)/z+'px';box.style.width=w/z+'px';at=inp;box.hidden=false};
+  box.addEventListener('mousedown',e=>{e.preventDefault();const b=e.target.closest('[data-k]');if(b)pick(+b.dataset.k)});
+  Object.keys(F).forEach(id=>{const i=$('#'+id);if(!i)return;
+    i.addEventListener('input',()=>draw(i));i.addEventListener('blur',()=>setTimeout(()=>{if(at===i&&document.activeElement!==i)close()},120));
+    i.addEventListener('keydown',e=>{if(box.hidden||at!==i)return;
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();sel=(sel+(e.key==='ArrowDown'?1:-1)+hits.length)%hits.length;mark()}
+      else if(e.key==='Enter'&&sel>=0){e.preventDefault();e.stopImmediatePropagation();pick(sel)}else if(e.key==='Escape')close()},true)});
+  const onScroll=()=>{if(!box.isConnected){removeEventListener('scroll',onScroll,true);return}if(!box.hidden&&at)draw(at)};
+  addEventListener('scroll',onScroll,true)}
 /* ช่องพิมพ์ค้นหาแล้วเลือกจากรายการ (ใช้แทน datalist ของเบราว์เซอร์ ที่แคบและตัดชื่อ) */
 function listAC(inp,list){
   inp.removeAttribute('list');inp.setAttribute('autocomplete','off');
@@ -4656,7 +4675,9 @@ R.add=(E)=>{if(!E)billKey=null;
     const hit=cars.find(c=>c.plate.replace(/\s/g,'')===key&&c.prov===city);
     if(!hit){r.innerHTML=`<span class="pill bad">ไม่มีประวัติ</span><span class="sub">ลูกค้าใหม่ กรอกข้อมูลด้านล่างได้เลย</span>`;$('#b-cha').value=cha;$('#b-num').value=num;$('#b-city').value=city;ssRefresh();return}
     r.innerHTML=`<span class="pill ok">มีประวัติ</span>${plateHTML(hit)}<span>${esc(hit.name)} · ${esc(hit.model)}</span><button type="button" class="btn ghost" id="x-copy">คัดลอกข้อมูลรถคันนี้ลงบิล</button>`;
-    $('#x-copy').onclick=()=>{
+    $('#x-copy').onclick=()=>fillCar(hit);
+  };
+  const fillCar=hit=>{
       // ข้อมูลเต็มจากฐานข้อมูล (raw) มีเฉพาะโหมดใช้งานจริง โหมดทดลองใช้ข้อมูลย่อ
       const R=hit.raw||{},cu=R.customers||{},sv=(id,val)=>{const e=$('#'+id);if(e&&val!=null&&val!=='')e.value=val},
         hasOpt=(id,val)=>[...$('#'+id).options].some(o=>o.value===val);
@@ -4673,8 +4694,10 @@ R.add=(E)=>{if(!E)billKey=null;
       if(cu.prefix&&hasOpt('c-pre',cu.prefix))$('#c-pre').value=cu.prefix;
       sv('c-id',cu.id_card);sv('c-addr',cu.address);sv('c-sub',cu.tumbol);sv('c-dist',cu.amphoe);sv('c-prov',cu.province);sv('c-zip',cu.zipcode);sv('c-short',cu.short_note);
       ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
-    };
   };
+  // พิมพ์ทะเบียน / ชื่อ / เบอร์ในบิลใหม่ แล้วแสดงลูกค้าเดิมที่ตรงกันใต้ช่อง คลิกเพื่อดึงข้อมูลลงบิล
+  if(!E)carAC({'b-cha':['plate','b-cha','b-num'],'b-num':['plate','b-cha','b-num'],'x-cha':['plate','x-cha','x-num'],'x-num':['plate','x-cha','x-num'],
+    'c-name':['name','c-name','c-sur'],'c-sur':['name','c-name','c-sur'],'c-tel':['tel','c-tel']},fillCar,'ดึงข้อมูลลงบิล');
   $('#x-go').onclick=check;['x-cha','x-num'].forEach(id=>$('#'+id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check()}}));
 
   // auto tax + fine
@@ -5864,6 +5887,11 @@ R.queue=async()=>{clearInterval(qTimer);
   const qOf=x=>QUEUE.find(q=>q.id==x.closest('[data-q]').dataset.q);
   const set=async(q,patch)=>{const now=new Date().toISOString();if(patch.st==='check')patch.at={...q.at,started:now};if(patch.st==='pass'||patch.st==='fail')patch.at={...q.at,done:now};if(patch.st==='wait')patch.at={created:q.at.created};
     if(LIVE)await DB.updQueue(q.id,patch);Object.assign(q,patch);R.queue()};
+  carAC({'qa-cha':['plate','qa-cha','qa-num'],'qa-num':['plate','qa-cha','qa-num'],'qa-name':['name','qa-name'],'qa-tel':['tel','qa-tel']},c=>{
+    const m=c.plate.match(/^(\S+)\s*(\d+)$/)||[0,c.plate,''];$('#qa-cha').value=m[1];$('#qa-num').value=m[2];
+    const pv=$('#qa-prov');if([...pv.options].some(o=>o.value===c.prov)){pv.value=c.prov;pv.dispatchEvent(new Event('change',{bubbles:true}))}
+    const t=ctShort(ctOf(c)),ty=$('#qa-type');if(t&&[...ty.options].some(o=>o.value===t))ty.value=t;
+    $('#qa-name').value=c.name||'';$('#qa-tel').value=c.tel||'';if(typeof ssRefresh==='function')ssRefresh()},'ใส่ข้อมูลลงคิว');
   $('#qa').onsubmit=async e=>{e.preventDefault();const cha=$('#qa-cha').value.trim(),num=$('#qa-num').value.trim();if(!cha||!num){alert('กรุณาใส่ทะเบียนรถ');return}
     const q={plate:cha+' '+num,prov:$('#qa-prov').value,ctype:$('#qa-type').value,name:$('#qa-name').value.trim(),tel:$('#qa-tel').value.trim(),st:'wait',note:'',billed:false,at:{created:new Date().toISOString()}};
     try{if(LIVE)q.id=await DB.addQueue(q);else q.id=++qSeq;QUEUE.push(q);toast('เพิ่ม '+q.plate+' เข้าคิวแล้ว');['qa-cha','qa-num','qa-name','qa-tel'].forEach(id=>$('#'+id).value='');R.queue()}catch(err){alert('เพิ่มไม่สำเร็จ: '+err.message)}};
