@@ -1169,6 +1169,7 @@ button.ui-kpi.on{background:#f4f8ff;box-shadow:0 0 0 2px var(--t)}
 .ex-g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ex-cats2{display:flex;flex-wrap:wrap;gap:6px}
 .ex-cats2 .tog{padding:6px 12px;font-size:13.5px}
+.ex-cats2 .ex-addcat{border-style:dashed;color:#1670d6;background:#f5f9ff}
 .ex-save{height:44px;font-size:15px}
 .ex-bars{display:flex;flex-direction:column;gap:12px}
 .ex-bar{display:grid;grid-template-columns:1fr auto;gap:4px 10px}
@@ -6586,10 +6587,10 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     <div class="ui-kpi" data-t="${profit<0?'red':'green'}"><span class="k-ic">${profit<0?'📉':'📈'}</span><div><div class="k-l">${profit<0?'ขาดทุน':'กำไรสุทธิ'}</div><div class="k-v">${money(Math.abs(profit))}</div><div class="k-s">รายได้ร้าน หัก รายจ่าย</div></div></div></div>
   <div class="ex-cols">
     <form class="ui-card" id="ex-f" autocomplete="off"><div class="ui-card-h"><h2>➕ บันทึกรายจ่าย</h2></div><div class="ui-card-b ex-form">
-      <div class="field"><span>1. หมวดรายจ่าย</span><div class="ex-cats2" id="ex-c">${cats.map(c=>`<button type="button" class="tog${c===exCat0(cats)?' on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}</div></div>
-      <label class="field"><span>2. วันที่จ่าย</span><input type="date" id="ex-d" value="${isNow?iso(TODAY):ym+'-01'}" max="${iso(TODAY)}" required></label>
-      <label class="field"><span>3. จำนวนเงิน (บาท)</span><input id="ex-a" inputmode="decimal" placeholder="0.00" required></label>
-      <label class="field"><span>4. หมายเหตุ <em class="sub">(ไม่ใส่ก็ได้)</em></span><input id="ex-n" maxlength="120" placeholder="เช่น ซื้อกระดาษ A4 2 รีม"></label>
+      <div class="field"><span>1. หมวดรายจ่าย</span><div class="ex-cats2" id="ex-c">${cats.map(c=>`<button type="button" class="tog${c===exCat0(cats)?' on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}${user&&user.role==='owner'?'<button type="button" class="tog ex-addcat" id="ex-addcat">＋ เพิ่มหมวด</button>':''}</div></div>
+      <label class="field"><span>2. จำนวนเงิน (บาท)</span><input id="ex-a" inputmode="decimal" placeholder="0.00" required></label>
+      <label class="field"><span>3. หมายเหตุ <em class="sub">(ไม่ใส่ก็ได้)</em></span><input id="ex-n" maxlength="120" placeholder="เช่น ซื้อกระดาษ A4 2 รีม"></label>
+      <label class="field"><span>4. วันที่จ่าย</span><input type="date" id="ex-d" value="${isNow?iso(TODAY):ym+'-01'}" max="${iso(TODAY)}" required></label>
       <button class="btn ex-save" type="submit" id="ex-go">💾 บันทึกรายจ่าย</button></div></form>
     <div class="ui-card"><div class="ui-card-h"><h2>สรุปตามหมวด</h2><span class="sub">${ymFull(ym)}</span></div><div class="ui-card-b">
       ${list.length?`<div class="ex-bars">${Object.entries(byCat).sort((a,z)=>z[1]-a[1]).map(([c,a])=>`<div class="ex-bar"><div class="ex-bar-t"><span>${esc(c)}</span><b>${money(a)}</b></div><div class="ex-bar-b"><i style="width:${Math.max(2,a/catMax*100).toFixed(1)}%"></i></div><small>${(a/exp*100).toFixed(1)}%</small></div>`).join('')}</div>`
@@ -6601,7 +6602,11 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     :'<div class="ui-empty"><span class="e-ic">📭</span>ยังไม่มีรายจ่ายในเดือนนี้ บันทึกได้จากแบบฟอร์มด้านบน</div>'}</div>
   <p class="note">ยังไม่รวมค่าคอมมิชชันประกันที่ได้ภายหลัง · รายการที่นับเป็นเงินนำส่ง และหมวดรายจ่าย แก้ได้ที่ ตั้งค่าระบบ</p></div>`;
   const exLbl=()=>{const a=parseFloat($('#ex-a').value.replace(/,/g,'')),c=($('#ex-c .on')||{dataset:{c:''}}).dataset.c;$('#ex-go').textContent=a>0?`💾 บันทึก ${c} ${money(a)} บาท`:'💾 บันทึกรายจ่าย'};
-  document.querySelectorAll('#ex-c .tog').forEach(b=>b.onclick=()=>{document.querySelectorAll('#ex-c .tog').forEach(x=>x.classList.toggle('on',x===b));try{localStorage.setItem('siam-ex-cat',b.dataset.c)}catch(_){}exLbl()});
+  if($('#ex-addcat'))$('#ex-addcat').onclick=async()=>{const n=(prompt('ชื่อหมวดรายจ่ายใหม่ (เช่น ค่าอาหาร/เครื่องดื่ม)')||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n)return;
+    if(SET.exp_cats.includes(n)){alert('มีหมวดนี้อยู่แล้ว');return}
+    const o=JSON.parse(JSON.stringify(SET));o.exp_cats=[...o.exp_cats.filter(c=>c!=='อื่นๆ'),n,...(o.exp_cats.includes('อื่นๆ')?['อื่นๆ']:[])];
+    try{if(LIVE)await DB.saveSettings(o);SET=o;try{localStorage.setItem('siam-ex-cat',n)}catch(_){}toast('เพิ่มหมวด '+n+' แล้ว');const a=$('#ex-a').value,nt=$('#ex-n').value,d=$('#ex-d').value;R.expense().then(()=>{if($('#ex-a')){$('#ex-a').value=a;$('#ex-n').value=nt;$('#ex-d').value=d;$('#ex-a').dispatchEvent(new Event('input'))}})}catch(err){alert('เพิ่มหมวดไม่สำเร็จ: '+err.message)}};
+  document.querySelectorAll('#ex-c .tog:not(#ex-addcat)').forEach(b=>b.onclick=()=>{document.querySelectorAll('#ex-c .tog:not(#ex-addcat)').forEach(x=>x.classList.toggle('on',x===b));try{localStorage.setItem('siam-ex-cat',b.dataset.c)}catch(_){}exLbl()});
   // พนักงาน: เห็นแค่ฟอร์มกับรายการ ไม่เห็นรายได้/กำไรของร้าน
   if(user&&user.role==='staff'){const k=$('#view .ex2 .ui-kpis'),sc=document.querySelector('#view .ex-cols>.ui-card:nth-child(2)');if(k)k.hidden=true;if(sc)sc.hidden=true;$('#view .ex-cols').style.gridTemplateColumns='minmax(0,720px)'}
   $('#ex-a').addEventListener('input',exLbl);if(isNow&&matchMedia('(pointer:fine)').matches)$('#ex-a').focus();
