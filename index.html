@@ -2275,6 +2275,7 @@ body{margin:0}
 .tk-who{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}.tk-who b{font-size:17px;color:#0b2766;font-weight:700}.tk-who small{font-size:13px;color:#5b6b85}
 #view .tk-c .jt li b{font-size:15px}#view .tk-c .jt li small{font-size:13px}#view .tk-c .jt i{width:30px;height:30px;font-size:14px}
 #view .tk-c .jt li:not(:last-child)::after{top:16px;left:calc(50% + 18px);right:calc(-50% + 18px)}
+.insp-b{display:inline-flex;gap:6px}.insp-l{font-size:13px;color:#33435e;font-weight:600}.btn.ok{background:#1b7f3b;border-color:#1b7f3b;color:#fff}.btn.line.bad{color:#b42318;border-color:#f3c1c1;background:#fff}
 .tk-next{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;border-radius:10px;background:#f5f8fc;font-size:14px;color:#33435e}.tk-next b{color:#0b2766}.tk-next.ok{color:#1b7f3b;background:#eef8f1;justify-content:flex-start}
 .tk-svc{flex:1;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;align-items:center;min-width:0;padding-left:14px;border-left:1px solid #e6ecf4;margin-left:4px}.tk-svc span{background:#f1f5fb;border:1px solid #e1e8f3;color:#33435e;border-radius:999px;padding:4px 11px;font-size:13.5px}
 .tk-amt{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2;margin-left:auto}.tk-amt small{font-size:12.5px;color:#5b6b85}.tk-amt b{font-size:18px;color:#0b2766}.tk-amt em{font-style:normal;font-size:13.5px;color:#b42318;font-weight:700}
@@ -3503,12 +3504,15 @@ function demoDecide(b,r,ok,note){Object.assign(r,{st:ok?'approved':'rejected',db
 /* ---------- v59: ติดตามงานคันเดียว รับรถ → ตรวจสภาพ → เปิดบิล → ชำระเงิน → ส่งมอบเอกสาร ---------- */
 // ขั้นตอนงานของบิล (แสดงเฉพาะขั้นที่บิลนั้นมีจริง) k = recv/insp/bill/pay/dlt/dlv
 // ✓ เฉพาะเมื่อระบบมีข้อมูลยืนยันจริง เช่น ผลตรวจจากคิว, สถานะงานขนส่ง, บันทึกส่งมอบ
+// ผลตรวจสภาพในบิล (SQL 23): บิลตั้งแต่วันที่เปิดใช้ต้องบันทึกผล ส่วนบิลเก่าไม่นับเป็นงานค้าง
+let hasInsp=!LIVE;const INSP_SINCE='2026-10-29';
 const needDlv=b=>!!dltKind(b)||b.items.some(i=>/พ\.?ร\.?บ|ประกัน|ป้าย|เล่ม|โอน|ย้าย/.test(i[0]));
 function jobSteps(b){const q=b.q||QUEUE.find(x=>x.billId===b.id)||null,qs=q?(q.st||q.status):'',qc=q?((q.at&&q.at.created)||q.created_at):'',qd=q?((q.at&&q.at.done)||q.finished_at):'';
   const insp=b.items.some(i=>/ตรวจสภาพ/.test(i[0])),debt=Math.round((b.amt-b.paid)*100)/100,w=trWait(b).length,S=[];
   if(q||useQ())S.push({k:'recv',l:'รับรถ',st:'done',sub:q?'เข้าคิว '+hmOf(qc):b.t||'',q:!!q});
   if(q)S.push({k:'insp',l:'ตรวจสภาพ',st:qs==='pass'?'done':qs==='fail'?'bad':qs==='check'?'now':'wait',sub:qs==='pass'?'ผ่าน'+(qd?' '+hmOf(qd):''):qs==='fail'?'ไม่ผ่าน':qs==='check'?'กำลังตรวจ':'รอตรวจ'});
-  else if(insp)S.push({k:'insp',l:'ตรวจสภาพ',st:'na',sub:'ยังไม่บันทึกผลตรวจ'});
+  else if(insp)S.push(b.insp?{k:'insp',l:'ตรวจสภาพ',st:b.insp==='pass'?'done':'bad',sub:(b.insp==='pass'?'ผ่าน':'ไม่ผ่าน')+(b.inspBy?' · '+b.inspBy:''),rec:true}
+    :{k:'insp',l:'ตรวจสภาพ',st:(LIVE?hasInsp:true)&&!b.void&&iso(b.d)>=INSP_SINCE?'now':'na',sub:'ยังไม่บันทึกผลตรวจ',rec:true});
   S.push({k:'bill',l:'เปิดบิล',st:b.void?'bad':'done',sub:b.void?'ยกเลิกแล้ว':(b.no||'ยังไม่มีเลขที่')});
   S.push(b.void?{k:'pay',l:'ชำระเงิน',st:'skip',sub:'-'}:{k:'pay',l:'ชำระเงิน',st:debt>0.004||w?'now':'done',sub:debt>0.004?'ค้าง '+money(debt):w?'โอนรอตรวจสอบ':'ชำระครบ'});
   const dk=dltKind(b),j=dk?dltOf(b):null;
@@ -3524,7 +3528,7 @@ function tkNext(b){if(b.void)return'';const S=jobSteps(b),debt=b.amt-b.paid,wt=w
   let t='',btn='';
   if(wt>0.004){t=`ตรวจเงินโอน ${money(wt)} บาท`;btn=`<button type="button" class="btn sm" data-tka="tr" data-id="${b.id}">ตรวจเงินโอน</button>`}
   else if(debt>0.004){t=`รับยอดค้าง ${money(debt)} บาท`;btn=`<button type="button" class="btn sm" data-tka="pay" data-id="${b.id}">💵 รับยอดค้าง</button>`}
-  else if(ins.st==='wait'||ins.st==='now'||ins.st==='bad'){t=ins.st==='bad'?'ตรวจไม่ผ่าน · นัดตรวจซ้ำ':'บันทึกผลตรวจสภาพ';btn=useQ()?`<button type="button" class="btn sm" data-go="queue">ไปที่คิว</button>`:''}
+  else if(ins.st==='wait'||ins.st==='now'||ins.st==='bad'){t=ins.st==='bad'?'ตรวจไม่ผ่าน · นัดตรวจซ้ำ':'บันทึกผลตรวจสภาพ';btn=ins.rec?(ins.st==='now'?inspBtns(b):''):useQ()?`<button type="button" class="btn sm" data-go="queue">ไปที่คิว</button>`:''}
   else if(dl.st==='now'){t=j.st==='received'?'ยื่นงานที่ขนส่ง':'รอป้าย/เล่มจากขนส่ง';btn=`<button type="button" class="btn sm" data-tka="dlt" data-st="${j.st}">🚚 ไปงานขนส่ง</button>`}
   else if(dv.st==='now'){t='ส่งมอบเอกสารให้ลูกค้า';btn=dv.dlv?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 บันทึกส่งมอบ</button>`:`<button type="button" class="btn sm" data-tka="dlt" data-st="plate">📦 ส่งมอบที่งานขนส่ง</button>`}
   if(!t)return '<div class="tk-next ok">✓ งานนี้ครบทุกขั้นตอนแล้ว</div>';
@@ -3533,6 +3537,11 @@ document.addEventListener('click',e=>{const x=e.target.closest('[data-tka]');if(
   if(k==='pay'&&b){showBill(b.id);payDlg(b)}
   else if(k==='tr'&&b){const d=trWait(b).map(y=>iso(y.p.d)).sort()[0];closeDate=d||iso(TODAY);closeEdit=false;go('close')}
   else if(k==='dlt'){dltF=x.dataset.st||'received';dltQ='';go('dlt')}});
+const inspBtns=b=>`<span class="insp-b"><button type="button" class="btn sm ok" data-insp="pass" data-id="${b.id}">✓ ผ่าน</button><button type="button" class="btn sm line bad" data-insp="fail" data-id="${b.id}">✗ ไม่ผ่าน</button></span>`;
+document.addEventListener('click',async e=>{const x=e.target.closest('[data-insp]');if(!x)return;e.stopPropagation();const b=getBill(+x.dataset.id);if(!b)return;const r=x.dataset.insp==='clear'?'':x.dataset.insp;
+  if(r==='fail'&&!await uiConfirm(`บันทึกว่า ${b.plate} ตรวจสภาพไม่ผ่าน?`))return;if(!r&&!await uiConfirm('ล้างผลตรวจสภาพของบิลนี้ เพื่อบันทึกใหม่?'))return;
+  x.disabled=true;try{const d=await DB.setInsp(b,r);Object.assign(b,{insp:(d&&d.insp_result)||'',inspBy:(d&&d.insp_by)||'',inspAt:(d&&d.insp_at)||''});
+    toast(r==='pass'?'บันทึกผลตรวจ: ผ่าน':r==='fail'?'บันทึกผลตรวจ: ไม่ผ่าน':'ล้างผลตรวจแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}},true);
 const stepOf=(S,k)=>S.find(x=>x.k===k)||{st:'skip'};
 // "ต้องทำอะไรต่อ" ของบิล: เรียงตามความสำคัญ ใช้สถานะที่มีอยู่ (เงิน / คำขอ / ตรวจสภาพ / เอกสาร / งานขนส่ง / ส่งมอบ)
 function nextSteps(b){if(b.void)return[['skip','บิลถูกยกเลิกแล้ว · ไม่มีงานต่อ']];
@@ -3540,15 +3549,15 @@ function nextSteps(b){if(b.void)return[['skip','บิลถูกยกเล�
   if((b.reqs||[]).some(r=>r.st==='pending'))o.push(['warn','มีคำขอยกเลิก/คืนเงิน รออนุมัติ']);
   if(wt>0.004)o.push(['warn',`โอนรอตรวจ ${money(wt)} บาท · ${debt>0.004?'ตรวจเงินในแอปธนาคารก่อน':'ยอดที่เหลือรอตรวจครบแล้ว ไม่ต้องเก็บเพิ่ม'}`]);
   if(debt>0.004)o.push(['bad',`ค้างชำระ ${money(debt)} บาท · รับยอดค้าง`]);
-  const q=stepOf(S,'insp');if(q.st==='wait')o.push(['now','รอตรวจสภาพ']);else if(q.st==='now')o.push(['now','กำลังตรวจสภาพ']);else if(q.st==='bad')o.push(['bad','ตรวจไม่ผ่าน · นัดตรวจซ้ำ']);
+  const q=stepOf(S,'insp');if(q.st==='wait')o.push(['now','รอตรวจสภาพ']);else if(q.st==='now')o.push(['now',q.rec?'บันทึกผลตรวจสภาพ':'กำลังตรวจสภาพ']);else if(q.st==='bad')o.push(['bad','ตรวจไม่ผ่าน · นัดตรวจซ้ำ']);
   if((b.fpend||[]).length)o.push(['warn','ยังขาดเอกสาร: '+b.fpend.join(', ')]);
   if(dltKind(b)){const st=dltOf(b).st;if(st==='received')o.push(['now','รอยื่นงานที่ขนส่ง']);else if(st==='submitted')o.push(['now','ยื่นขนส่งแล้ว · รอป้าย/เอกสารจากขนส่ง']);else if(st==='plate')o.push(['now','งานเสร็จแล้ว · รอลูกค้ารับเอกสาร'])}
   else if(stepOf(S,'dlv').st==='now')o.push(['now','รอส่งมอบเอกสารให้ลูกค้า']);
   return o.length?o:[['ok','งานเสร็จสมบูรณ์']]}
 const jobDone=b=>b.void||jobSteps(b).every(s=>s.st==='done'||s.st==='skip'||s.st==='na');
 const stepsHTML=S=>`<ol class="jt">${S.map((s,i)=>`<li class="jt-${s.st==='na'?'wait':s.st}"><i>${s.st==='done'?'✓':s.st==='bad'?'✗':s.st==='skip'||s.st==='na'?'–':i+1}</i><b>${s.l}</b><small>${esc(s.sub||'')}</small></li>`).join('')}</ol>`;
-function jobHTML(b){const S=jobSteps(b),last=stepOf(S,'dlv'),can=last.dlv&&last.st!=='done'&&!b.void;
-  return `<div class="jt-card non-printable"><div class="jt-top"><b>สถานะงาน</b>${jobDone(b)?'<span class="ui-pill ok">งานเสร็จสมบูรณ์</span>':''}<span class="sp"></span>${can?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 ส่งมอบเอกสารให้ลูกค้าแล้ว</button>`:''}${last.dlv&&last.st==='done'&&user&&(user.role==='owner'||user.role==='head')?`<button type="button" class="btn sm line" data-dlv-undo="${b.id}">ยกเลิกสถานะส่งมอบ</button>`:''}</div>${stepsHTML(S)}</div>`}
+function jobHTML(b){const S=jobSteps(b),ins=stepOf(S,'insp'),mgr=user&&(user.role==='owner'||user.role==='head'),last=stepOf(S,'dlv'),can=last.dlv&&last.st!=='done'&&!b.void;
+  return `<div class="jt-card non-printable"><div class="jt-top"><b>สถานะงาน</b>${jobDone(b)?'<span class="ui-pill ok">งานเสร็จสมบูรณ์</span>':''}<span class="sp"></span>${ins.rec&&!b.void?(b.insp?(mgr?`<button type="button" class="btn sm line" data-insp="clear" data-id="${b.id}">เปลี่ยนผลตรวจ</button>`:''):`<span class="insp-l">ผลตรวจสภาพ:</span>${inspBtns(b)}`):''}${can?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 ส่งมอบเอกสารให้ลูกค้าแล้ว</button>`:''}${last.dlv&&last.st==='done'&&user&&(user.role==='owner'||user.role==='head')?`<button type="button" class="btn sm line" data-dlv-undo="${b.id}">ยกเลิกสถานะส่งมอบ</button>`:''}</div>${stepsHTML(S)}</div>`}
 document.addEventListener('click',async e=>{const x=e.target.closest('[data-dlv],[data-dlv-undo]');if(!x)return;e.stopPropagation();const undo=!!x.dataset.dlvUndo,b=getBill(+(x.dataset.dlv||x.dataset.dlvUndo));if(!b)return;
   const debt=b.amt-b.paid>0.004;if(!undo&&!await uiConfirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท ยังไม่ยืนยันว่าเงินเข้าบัญชี\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!await uiConfirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
   x.disabled=true;try{const r=await DB.deliver(b,undo);b.dlv={at:(r&&r.delivered_at)||'',by:(r&&r.delivered_by)||''};toast(undo?'ยกเลิกสถานะส่งมอบแล้ว':'บันทึกส่งมอบเอกสารแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}},true);
@@ -5760,13 +5769,13 @@ const DB=(()=>{
       name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:ctLabel(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
       tax:day(v.tax_exp),prb:day(v.prb_exp),ins:day(v.ins_exp),insCo:v.ins_company||'',k:day(v.k_exp),line:!!cu.line_user_id,history:[],created:new Date(v.created_at),raw:v}};
   // แถวบิลจากฐานข้อมูล -> บิลในหน้าเว็บ (เงินที่ถูกปฏิเสธแยกไว้ใน rej ไม่นับเป็นยอดรับ)
-  function rowBill(r){const at=new Date(r.bill_at),s=r.snapshot||{};
+  function rowBill(r){if('insp_result' in r)hasInsp=true;const at=new Date(r.bill_at),s=r.snapshot||{};
       // คืนเงิน = ยอดติดลบ (รายการรับเงินเดิมยังอยู่ครบ)
       const ps=(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at),rf=p.kind==='refund';return{id:p.id,d:dOnly(pt),t:hm(pt),amt:rf?-p.amount:+p.amount,ref:rf,rnote:p.note||'',how:p.method,by:p.by_name,wait:!rf&&p.verified===false&&!p.rejected,vby:p.verified_by||'',vat:p.verified_at||'',rej:!!p.rejected,rr:p.reject_reason||'',rby:p.rejected_by||'',rat:p.rejected_at||''}});
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',rnote:r.note||'',ctype:s.ctype||'',type:s.ctype?ctLabel(s.ctype):(s.type||''),model:s.model||'',cc:s.cc||'',
         doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',prbCo:s.prbCo||'',ctn:s.ctn||'',ctt:s.ctt||'',disc:+r.discount,amt:+r.total,
         pays:ps.filter(p=>!p.rej),rej:ps.filter(p=>p.rej),fpend:Array.isArray(r.files_pending)?r.files_pending:[],st:r.status||'',
-        amt0:+r.total,refund:+r.refund_total||0,void:r.status==='void',vinfo:{reason:r.void_reason||'',by:r.void_by||'',appr:r.void_approved_by||'',at:r.void_at||''},dlv:{at:r.delivered_at||'',by:r.delivered_by||''},
+        amt0:+r.total,refund:+r.refund_total||0,void:r.status==='void',vinfo:{reason:r.void_reason||'',by:r.void_by||'',appr:r.void_approved_by||'',at:r.void_at||''},dlv:{at:r.delivered_at||'',by:r.delivered_by||''},insp:r.insp_result||'',inspBy:r.insp_by||'',inspAt:r.insp_at||'',
         reqs:(r.bill_requests||[]).sort((a,z)=>a.id-z.id).map(x=>({id:x.id,kind:x.kind,amt:+x.amount,how:x.method,why:x.reason,by:x.requested_by,uid:x.requested_uid,at:x.requested_at,st:x.status,dby:x.decided_by||'',dat:x.decided_at||'',note:x.decide_note||''})),
         q:(Array.isArray(r.insp_queue)?r.insp_queue[0]:r.insp_queue)||null,
         edits:(r.bill_edits||[]).sort((a,z)=>new Date(a.edited_at)-new Date(z.edited_at)).map(x=>{const et=new Date(x.edited_at);return{d:dOnly(et),t:hm(et),what:x.what,by:x.by_name}})};
@@ -5885,6 +5894,7 @@ const DB=(()=>{
     add('20','สำรองข้อมูลอัตโนมัติทุกคืน',s22(ss&&ss.s20&&ss.s20cron),'รัน 20-auto-backup.sql'+(ss&&ss.s20&&!ss.s20cron?' (ยังไม่มีงานตั้งเวลา siam-backup-nightly)':''));
     add('21','สรุป LINE อ่านกำหนดงานขนส่งจากตั้งค่า',s22(ss&&ss.s21),'รัน 21-line-daily-v2.sql');
     add('22','ความปลอดภัยบิล/รับเงิน/ปิดยอด แก้บิลธุรกรรมเดียว',!!(ss&&ss.s22),'รัน 22-security-fixes.sql');
+    add('23','บันทึกผลตรวจสภาพในหน้าบิล',await fnOk('set_insp_result',{p_bill:-1,p_result:''}),'รัน 23-insp-result.sql');
     add('Realtime','ซิงก์ข้อมูลทุกเครื่องทันที',rtOK,'รัน 14-safe-bills.sql แล้วรีเฟรชหน้า (ถ้ายังไม่ได้ ระบบจะโหลดใหม่ทุก 3 นาทีแทน)');
     let line={};try{line=(await c.rpc('line_secret_status')).data||{}}catch(_){}
     add('LINE','สรุปประจำวัน/แจ้งเตือนเข้า LINE',line.token&&line.to?'set':false,'ใส่ Channel access token และ User ID ในหน้าตั้งค่า > LINE');
@@ -5907,6 +5917,9 @@ const DB=(()=>{
   const rpc15=async(fn,args)=>{const c=await client(),r=await c.rpc(fn,args);if(r.error){if(new RegExp(fn+'|could not find the function|schema cache','i').test(r.error.message))throw new Error('ยังไม่ได้รัน 15-void-refund.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}return r.data};
   async function reqAction(b,kind,amt,how,why){if(!LIVE)return demoReq(b,kind,amt,how,why);if(!has15)throw new Error('ยังไม่ได้รัน 15-void-refund.sql ใน Supabase');return rpc15('request_bill_action',{p_bill:b.id,p_kind:kind,p_amount:amt||0,p_method:how,p_reason:why})}
   async function decide(b,rq,ok,note){if(!LIVE)return demoDecide(b,rq,ok,note);return rpc15('decide_bill_action',{p_id:rq.id,p_approve:ok,p_note:note||''})}
+  async function setInsp(b,res){if(!LIVE)return{insp_result:res||null,insp_by:user?user.name:'',insp_at:new Date().toISOString()};
+    const c=await client(),r=await c.rpc('set_insp_result',{p_bill:b.id,p_result:res||''});
+    if(r.error){if(/set_insp_result|could not find the function|schema cache/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 23-insp-result.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}return r.data}
   async function deliver(b,undo){if(!LIVE)return{delivered_at:undo?null:new Date().toISOString(),delivered_by:user?user.name:''};if(!has15)throw new Error('ยังไม่ได้รัน 15-void-refund.sql ใน Supabase');return rpc15('mark_delivered',{p_bill:b.id,p_undo:!!undo})}
   async function reloadBill(id){if(!LIVE)return getBill(id);const c=await client(),rows=chk(await c.from('bills').select(BSEL()).eq('id',id));if(rows[0]){const b=rowBill(rows[0]);putBill(b);return b}return null}
   async function clearFiles(b){if(!LIVE)return;const c=await client(),r=await c.rpc('clear_files_pending',{p_bill:b.id});if(r.error){if(/clear_files_pending|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 14-safe-bills.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}}
@@ -6048,7 +6061,7 @@ const DB=(()=>{
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
   return{addFile,listFiles,delFile,smsSend:items=>rpc11('sms_send',{p_items:items}),smsCredit:()=>rpc11('sms_credit'),smsStatus:()=>rpc11('sms_secret_status'),setSmsSecrets:(k,x)=>rpc11('set_sms_secrets',{p_key:k,p_secret:x}),smsRecent:()=>rpc11('sms_recent'),
-    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,carOtherBranches,resync,reqAction,decide,deliver,reloadBill,exportAll,backupList,backupGet,backupNow,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,carOtherBranches,resync,reqAction,decide,deliver,setInsp,reloadBill,exportAll,backupList,backupGet,backupNow,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* SIAMSERVICE_STAFF_AVATAR_V1: staff photo add-on. No legacy functions renamed. */
 const StaffAvatar=(()=>{

@@ -1,0 +1,10 @@
+set role authenticated; set request.jwt.claim.sub='00000000-0000-0000-0000-00000000000c';
+select 'staff set', t_ok($$select set_insp_result((select max(id) from bills where branch_id=1 and status<>'void'),'pass')$$);
+select 'staff change blocked', t_fail($$select set_insp_result((select max(id) from bills where branch_id=1 and status<>'void'),'fail')$$,'เฉพาะเจ้าของ');
+set request.jwt.claim.sub='00000000-0000-0000-0000-00000000000d';
+select 'other branch blocked', t_fail($$select set_insp_result((select max(id) from bills where branch_id=1),'pass')$$,'ไม่พบบิล');
+set request.jwt.claim.sub='00000000-0000-0000-0000-00000000000b';
+select 'head change', t_ok($$select set_insp_result((select max(id) from bills where branch_id=1 and status<>'void'),'fail')$$);
+select 'bad value', t_fail($$select set_insp_result((select max(id) from bills where branch_id=1 and status<>'void'),'x')$$,'ไม่ถูกต้อง');
+select 'void blocked', t_fail($$select set_insp_result((select max(id) from bills where status='void'),'pass')$$,'ยกเลิก');
+reset role; select 'audit', count(*) from bill_edits where what like '%ผลตรวจ%';
