@@ -1,7 +1,7 @@
 -- 21-line-daily-v2.sql : ปรับสรุปประจำวันใน LINE (รันหลัง 18 รันซ้ำได้)
 -- แทนที่เฉพาะฟังก์ชัน daily_summary_text ไม่แตะตาราง cron หรือข้อมูลใดๆ
 --  1) ตรวจสภาพ: นับจากบิลที่มี "ค่าตรวจสภาพ" (ตรงกับจำนวนรถที่ตรวจจริง) และแสดงผลที่ลงในหน้าคิวในวงเล็บ
---  3) กำหนดวันงานขนส่งเกินกำหนด อ่านจาก ตั้งค่าระบบ › กำหนดเวลาและการเตือน (ค่าเริ่มต้น 2 / 7 / 14 วัน)
+--  3) กำหนดวันงานขนส่งเกินกำหนด และรายการที่นับเป็นงานขนส่ง อ่านจาก ตั้งค่าระบบ › กำหนดเวลาและการเตือน (ค่าเริ่มต้น 2 / 7 / 14 วัน)
 --  2) เพิ่มบรรทัด "รับชำระบิลวันก่อน" = เงินที่รับวันนี้ของบิลที่เปิดวันก่อนๆ (รวมอยู่ในยอดรับแล้ว)
 -- ย้อนกลับ: รัน 18-line-daily-fix.sql ซ้ำ
 
@@ -13,11 +13,12 @@ declare
   b record; txt text; n_bill int; s_bill numeric; s_cash numeric; s_tr numeric; s_other numeric; s_debt numeric;
   n_car int; n_moto int;
   n_close int; n_staff int; d_close numeric; s_close numeric; n_late int; n_pass int; n_fail int; n_tax int; n_prb int;
-  n_ref int; s_ref numeric; n_insp int; n_old int; s_old numeric; l_rec int := 2; l_sub int := 7; l_pl int := 14; n_pend int; s_pend numeric; n_pend_all int; s_pend_all numeric;
+  n_ref int; s_ref numeric; n_insp int; n_old int; s_old numeric; l_rec int := 2; l_sub int := 7; l_pl int := 14; v_items jsonb; st jsonb; n_pend int; s_pend numeric; n_pend_all int; s_pend_all numeric;
 begin
-  select coalesce(nullif(value ->> 'dlt_late_received', '')::int, 2), coalesce(nullif(value ->> 'dlt_late_submitted', '')::int, 7),
-         coalesce(nullif(value ->> 'dlt_late_plate', '')::int, 14)
-    into l_rec, l_sub, l_pl from app_settings where key = 'main';
+  select value into st from app_settings where key = 'main';
+  l_rec := nullif(st ->> 'dlt_late_received', '')::int; l_sub := nullif(st ->> 'dlt_late_submitted', '')::int; l_pl := nullif(st ->> 'dlt_late_plate', '')::int;
+  v_items := coalesce(st -> 'dlt_items_tax', '["ค่าภาษีรถ","ค่าฝากต่อภาษี"]'::jsonb)
+          || coalesce(st -> 'dlt_items_tr', '["ค่าโอน","ค่าย้าย","ค่าโอนย้าย","ค่าเปลี่ยนสี","ค่าตรวจสภาพโอน","ค่าเรื่อง"]'::jsonb);
   l_rec := coalesce(l_rec, 2); l_sub := coalesce(l_sub, 7); l_pl := coalesce(l_pl, 14);
   txt := '📊 สรุปประจำวัน ' || to_char(p_day, 'DD/MM/') || (extract(year from p_day)::int + 543);
   for b in select id, name from branches where active order by id loop
@@ -83,7 +84,7 @@ begin
       from bills bi left join dlt_jobs j on j.bill_id = bi.id
      where bi.branch_id = b.id and bi.status <> 'void' and bi.bill_at >= now() - interval '400 days'
        and exists (select 1 from jsonb_array_elements(bi.items) it
-                    where it ->> 0 in ('ค่าภาษีรถ','ค่าฝากต่อภาษี','ค่าโอน','ค่าย้าย','ค่าโอนย้าย','ค่าเปลี่ยนสี','ค่าตรวจสภาพโอน','ค่าเรื่อง'))
+                    where it ->> 0 in (select jsonb_array_elements_text(v_items)))
        and coalesce(j.status, 'received') <> 'done'
        and now() - case coalesce(j.status, 'received')
                      when 'received'  then bi.bill_at
