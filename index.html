@@ -2193,6 +2193,9 @@ body{margin:0}
 .oc-car{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #d6e2f5;background:#f7faff;border-radius:8px;padding:3px 9px;font:inherit;font-size:13px;color:#0f2a6b;cursor:pointer}
 .oc-car span{font-size:12px;color:#5b6b88}
 .oc-car:hover{background:#eaf1ff}
+#view .st .st-item .st-pin{margin-left:auto;border:0;background:none;filter:grayscale(1);opacity:.35;cursor:pointer;font-size:14px;padding:2px 4px}
+#view .st .st-item.pinned .st-pin{filter:none;opacity:1}
+#view .st .st-item.pinned{background:#fffbeb!important;border-color:#fcd34d!important}
 .dj-pay{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
 .dj-pay.debt{background:#fee2e2;color:#b91c1c}
 .dj-pay.ok{background:#dcfce7;color:#166534}
@@ -6540,6 +6543,8 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     document.querySelectorAll('#view .st-main input[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0)||(i.dataset.day!=null&&!(v>=+i.dataset.day&&v<=365&&v%1===0)))B(i.closest('label')?.querySelector('span')?.textContent||'ค่าบริการ',i);else o[i.dataset.k]=v});
     const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))B('ปีจดทะเบียนเก่าสุด',$('#st-year'));else o.reg_min_year=y;
     Object.keys(LS).forEach(k=>{if(!LS[k].length)B('รายการว่าง',document.querySelector(`[data-l="${k}"]`)||$('[data-stsec="lists"]'));o[k]=JSON.parse(JSON.stringify(LS[k]))});
+    // รายการที่ปักหมุดเรียงขึ้นก่อน (ช่องเลือกในบิลใช้ลำดับนี้)
+    o.pins={};PINK.forEach(k=>{const pn=PIN[k],key=x=>(Array.isArray(x)?x[0]:x).toLowerCase();o.pins[k]=o[k].filter(x=>pn.has(key(x))).map(x=>Array.isArray(x)?x[0]:x);o[k]=[...o[k].filter(x=>pn.has(key(x))),...o[k].filter(x=>!pn.has(key(x)))]});
     o.rc=rcRead();o.line_oa=$('#st-oa').value.trim();const dd=[...document.querySelectorAll('#st-days .on')].map(b=>+b.dataset.d);
     if(!dd.length)B('เตือนก่อนหมดอายุ (เลือกอย่างน้อย 1 ข้อ)',$('#st-days'));else o.line_days=dd.sort((a,z)=>z-a);
     o.sms_sender=$('#st-sender').value.trim();if(o.sms_sender&&!/^[A-Za-z0-9 .\-]{1,11}$/.test(o.sms_sender))B('ชื่อผู้ส่ง SMS (ภาษาอังกฤษหรือตัวเลข ไม่เกิน 11 ตัว)',$('#st-sender'));
@@ -6594,13 +6599,16 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     const box=$('#rc-pv');box.innerHTML=pv==='a4'?`<div class="rcx-wrap" id="rc-pvw">${rcA4(b,o,a)}</div>`:`<div class="st-rcslip">${rcSlip(b,o,a)}</div>`;if(pv==='a4')rcFit($('#rc-pvw'))};
   rcPv();const rcRs=()=>{if(!$('#rc-pv'))return window.removeEventListener('resize',rcRs);if($('#rc-pvw'))rcFit($('#rc-pvw'))};window.addEventListener('resize',rcRs);
   const chipKey=x=>(Array.isArray(x)?x[0]:x).toLowerCase();
+  // ปักหมุดรายการที่ใช้บ่อย: ขึ้นบนสุดในตั้งค่าและในช่องเลือกของบิล
+  const PINK=['brands','bodies','prefixes','insurers','exp_cats'],PIN={};PINK.forEach(k=>PIN[k]=new Set(((SET.pins||{})[k]||[]).map(x=>x.toLowerCase())));
   document.querySelectorAll('.st-list[data-l]').forEach(box=>{
     const k=box.dataset.l,ins=k==='insurers',inp=box.querySelector('.st-in'),find=box.querySelector('.st-find'),wrap=box.querySelector('.st-chips'),added=new Set();
     const draw=()=>{
       const q=find.value.trim().toLowerCase();box.querySelector('.st-cnt').textContent=LS[k].length;
-      const rows=LS[k].map((x,i)=>[x,i]).filter(([x])=>!q||chipKey(x).includes(q)||(ins&&(x[1]||'').toLowerCase().includes(q)));
+      const pn=PIN[k],rows=LS[k].map((x,i)=>[x,i]).filter(([x])=>!q||chipKey(x).includes(q)||(ins&&(x[1]||'').toLowerCase().includes(q)));
+      if(pn)rows.sort((a,z)=>pn.has(chipKey(z[0]))-pn.has(chipKey(a[0]))||a[1]-z[1]);
       box.querySelector('.st-showing').textContent=`แสดง ${rows.length} จาก ${LS[k].length} รายการ`;
-      wrap.innerHTML=rows.map(([x,i])=>`<span class="chip st-item${added.has(chipKey(x))?' new':''}"><span class="st-item-label">${ins?esc(x[0])+(x[1]?` <em>${esc(x[1])}</em>`:''):esc(x)}${ins&&x[2]?'<i>กองทุนกลาง</i>':''}</span><button type="button" data-i="${i}" title="ลบรายการนี้" aria-label="ลบ ${esc(ins?x[0]:x)}">ลบ</button></span>`).join('')
+      wrap.innerHTML=rows.map(([x,i])=>`<span class="chip st-item${added.has(chipKey(x))?' new':''}${PIN[k]&&PIN[k].has(chipKey(x))?' pinned':''}"><span class="st-item-label">${ins?esc(x[0])+(x[1]?` <em>${esc(x[1])}</em>`:''):esc(x)}${ins&&x[2]?'<i>กองทุนกลาง</i>':''}</span>${PIN[k]?`<button type="button" class="st-pin" data-pin="${i}" title="${PIN[k].has(chipKey(x))?'เลิกปักหมุด':'ปักหมุด (ขึ้นบนสุดตอนเลือกในบิล)'}">📌</button>`:''}<button type="button" data-i="${i}" title="ลบรายการนี้" aria-label="ลบ ${esc(ins?x[0]:x)}">ลบ</button></span>`).join('')
         ||`<span class="st-none">${q?'ไม่พบรายการที่ค้นหา · พิมพ์ชื่อในช่อง “เพิ่มรายการใหม่” หากต้องการเพิ่ม':'ยังไม่มีรายการ'}</span>`;
     };
     const add=()=>{
@@ -6613,6 +6621,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     find.oninput=()=>{draw();wrap.scrollTop=0};box.querySelector('.st-addb').onclick=add;
     box.querySelectorAll('.st-add input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
     wrap.onclick=async e=>{
+      const pb=e.target.closest('button[data-pin]');if(pb){const ck=chipKey(LS[k][+pb.dataset.pin]);PIN[k].has(ck)?PIN[k].delete(ck):PIN[k].add(ck);draw();toast((PIN[k].has(ck)?'ปักหมุดแล้ว':'เลิกปักหมุดแล้ว')+' กดบันทึกการตั้งค่าเพื่อใช้งาน');return}
       const b=e.target.closest('button[data-i]');if(!b)return;
       const index=+b.dataset.i,row=LS[k][index];if(row===undefined)return;
       const label=ins?row[0]:row;
