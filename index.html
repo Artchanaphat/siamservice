@@ -2273,10 +2273,11 @@ body{margin:0}
 #view .tk-plate b{font-size:19px;font-weight:700;letter-spacing:.5px}
 #view .tk-plate small{display:block;font-size:12px;font-weight:600;margin-top:2px;border-top:1px solid #d1d5db;padding-top:2px}
 .tk-who{display:flex;flex-direction:column;justify-content:center;gap:3px;min-width:0}.tk-who b{font-size:17px;color:#0b2766;font-weight:700}.tk-who small{font-size:13px;color:#5b6b85}
-#view .tk-c .jt li b{font-size:14px}#view .tk-c .jt li small{font-size:12.5px}#view .tk-c .jt i{width:30px;height:30px;font-size:14px}
+#view .tk-c .jt li b{font-size:15px}#view .tk-c .jt li small{font-size:13px}#view .tk-c .jt i{width:30px;height:30px;font-size:14px}
 #view .tk-c .jt li:not(:last-child)::after{top:16px;left:calc(50% + 18px);right:calc(-50% + 18px)}
-.tk-svc{flex:1;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;align-items:center;min-width:0;padding-left:14px;border-left:1px solid #e6ecf4;margin-left:4px}.tk-svc span{background:#f1f5fb;border:1px solid #e1e8f3;color:#33435e;border-radius:999px;padding:3px 10px;font-size:12.5px}
-.tk-amt{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2;margin-left:auto}.tk-amt small{font-size:11.5px;color:#5b6b85}.tk-amt b{font-size:17px;color:#0b2766}.tk-amt em{font-style:normal;font-size:12px;color:#b42318;font-weight:600}
+.tk-next{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;border-radius:10px;background:#f5f8fc;font-size:14px;color:#33435e}.tk-next b{color:#0b2766}.tk-next.ok{color:#1b7f3b;background:#eef8f1;justify-content:flex-start}
+.tk-svc{flex:1;display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;align-items:center;min-width:0;padding-left:14px;border-left:1px solid #e6ecf4;margin-left:4px}.tk-svc span{background:#f1f5fb;border:1px solid #e1e8f3;color:#33435e;border-radius:999px;padding:4px 11px;font-size:13.5px}
+.tk-amt{display:flex;flex-direction:column;align-items:flex-end;line-height:1.2;margin-left:auto}.tk-amt small{font-size:12.5px;color:#5b6b85}.tk-amt b{font-size:18px;color:#0b2766}.tk-amt em{font-style:normal;font-size:13.5px;color:#b42318;font-weight:700}
 #view .tk-h:has(.tk-svc) .sp{display:none}
 @media screen and (max-width:640px){.tk-svc{order:5;flex-basis:100%;justify-content:flex-start;padding-left:0;border-left:0;margin-left:0}#view .tk-plate{min-width:96px;padding:4px 10px 3px}#view .tk-plate b{font-size:17px}.tk-who b{font-size:14.5px}.tk-who small{font-size:12px}
   #view .tk-c .jt li b{font-size:11.5px!important}#view .tk-c .jt li small{font-size:10.5px!important}#view .tk-c .jt i{width:24px;height:24px;font-size:12px}#view .tk-c .jt li:not(:last-child)::after{top:13px;left:calc(50% + 14px);right:calc(-50% + 14px)}}
@@ -3500,31 +3501,53 @@ function demoDecide(b,r,ok,note){Object.assign(r,{st:ok?'approved':'rejected',db
   b.paid=Math.round(b.pays.reduce((t,p)=>t+p.amt,0)*100)/100;return{status:'approved'}}
 
 /* ---------- v59: ติดตามงานคันเดียว รับรถ → ตรวจสภาพ → เปิดบิล → ชำระเงิน → ส่งมอบเอกสาร ---------- */
+// ขั้นตอนงานของบิล (แสดงเฉพาะขั้นที่บิลนั้นมีจริง) k = recv/insp/bill/pay/dlt/dlv
+// ✓ เฉพาะเมื่อระบบมีข้อมูลยืนยันจริง เช่น ผลตรวจจากคิว, สถานะงานขนส่ง, บันทึกส่งมอบ
+const needDlv=b=>!!dltKind(b)||b.items.some(i=>/พ\.?ร\.?บ|ประกัน|ป้าย|เล่ม|โอน|ย้าย/.test(i[0]));
 function jobSteps(b){const q=b.q||QUEUE.find(x=>x.billId===b.id)||null,qs=q?(q.st||q.status):'',qc=q?((q.at&&q.at.created)||q.created_at):'',qd=q?((q.at&&q.at.done)||q.finished_at):'';
   const insp=b.items.some(i=>/ตรวจสภาพ/.test(i[0])),debt=Math.round((b.amt-b.paid)*100)/100,w=trWait(b).length,S=[];
-  S.push({l:'รับรถ',st:'done',sub:q?'เข้าคิว '+hmOf(qc):b.t||'',q:!!q});
-  S.push(q?{l:'ตรวจสภาพ',st:qs==='pass'?'done':qs==='fail'?'bad':qs==='check'?'now':'wait',sub:qs==='pass'?'ผ่าน'+(qd?' '+hmOf(qd):''):qs==='fail'?'ไม่ผ่าน':qs==='check'?'กำลังตรวจ':'รอตรวจ'}
-    :{l:'ตรวจสภาพ',st:insp?'done':'skip',sub:insp?'มีค่าตรวจในบิล':'ไม่มีงานตรวจ'});
-  S.push({l:'เปิดบิล',st:b.void?'bad':'done',sub:b.void?'ยกเลิกแล้ว':(b.no||'ยังไม่มีเลขที่')});
-  S.push(b.void?{l:'ชำระเงิน',st:'skip',sub:'-'}:{l:'ชำระเงิน',st:debt>0.004||w?'now':'done',sub:debt>0.004?'ค้าง '+money(debt):w?'โอนรอตรวจสอบ':'ชำระครบ'});
-  if(b.void)S.push({l:'ส่งมอบเอกสาร',st:'skip',sub:'-'});
-  else if(dltKind(b)){const j=dltOf(b);S.push({l:'ส่งมอบเอกสาร',st:j.st==='done'?'done':'now',sub:j.st==='done'?'ลูกค้ารับแล้ว':DLT_ST[j.st][0]})}
-  else S.push({l:'ส่งมอบเอกสาร',st:b.dlv&&b.dlv.at?'done':'wait',sub:b.dlv&&b.dlv.at?'ส่งมอบแล้ว'+(b.dlv.by?' · '+b.dlv.by:''):'ยังไม่ส่งมอบ',dlv:true});
+  if(q||useQ())S.push({k:'recv',l:'รับรถ',st:'done',sub:q?'เข้าคิว '+hmOf(qc):b.t||'',q:!!q});
+  if(q)S.push({k:'insp',l:'ตรวจสภาพ',st:qs==='pass'?'done':qs==='fail'?'bad':qs==='check'?'now':'wait',sub:qs==='pass'?'ผ่าน'+(qd?' '+hmOf(qd):''):qs==='fail'?'ไม่ผ่าน':qs==='check'?'กำลังตรวจ':'รอตรวจ'});
+  else if(insp)S.push({k:'insp',l:'ตรวจสภาพ',st:'na',sub:'ยังไม่บันทึกผลตรวจ'});
+  S.push({k:'bill',l:'เปิดบิล',st:b.void?'bad':'done',sub:b.void?'ยกเลิกแล้ว':(b.no||'ยังไม่มีเลขที่')});
+  S.push(b.void?{k:'pay',l:'ชำระเงิน',st:'skip',sub:'-'}:{k:'pay',l:'ชำระเงิน',st:debt>0.004||w?'now':'done',sub:debt>0.004?'ค้าง '+money(debt):w?'โอนรอตรวจสอบ':'ชำระครบ'});
+  const dk=dltKind(b),j=dk?dltOf(b):null;
+  if(dk&&!b.void)S.push({k:'dlt',l:'งานขนส่ง',st:j.st==='plate'||j.st==='done'?'done':'now',sub:j.st==='received'?'รอยื่น':j.st==='submitted'?'ยื่นแล้ว รอป้าย/เล่ม':'ได้ป้าย/เล่มแล้ว'});
+  const dd=b.dlv&&b.dlv.at;
+  if(b.void)S.push({k:'dlv',l:'ส่งมอบเอกสาร',st:'skip',sub:'-'});
+  else if(!needDlv(b))S.push({k:'dlv',l:'ส่งมอบเอกสาร',st:'skip',sub:'ไม่ต้องส่งมอบ'});
+  else if(dk)S.push({k:'dlv',l:'ส่งมอบเอกสาร',st:j.st==='done'||dd?'done':j.st==='plate'?'now':'wait',sub:j.st==='done'||dd?'ลูกค้ารับแล้ว':j.st==='plate'?'พร้อมส่งมอบ':'รองานขนส่ง'});
+  else S.push({k:'dlv',l:'ส่งมอบเอกสาร',st:dd?'done':'now',sub:dd?'ส่งมอบแล้ว'+(b.dlv.by?' · '+b.dlv.by:''):'รอส่งมอบ',dlv:true});
   return S}
+// การ์ดติดตามงาน: "ทำต่อ" ข้อแรก + ปุ่มไปทำงานนั้นตรงๆ
+function tkNext(b){if(b.void)return'';const S=jobSteps(b),debt=b.amt-b.paid,wt=waitAmt(b),ins=stepOf(S,'insp'),dl=stepOf(S,'dlt'),dv=stepOf(S,'dlv'),j=dltKind(b)?dltOf(b):null;
+  let t='',btn='';
+  if(wt>0.004){t=`ตรวจเงินโอน ${money(wt)} บาท`;btn=`<button type="button" class="btn sm" data-tka="tr" data-id="${b.id}">ตรวจเงินโอน</button>`}
+  else if(debt>0.004){t=`รับยอดค้าง ${money(debt)} บาท`;btn=`<button type="button" class="btn sm" data-tka="pay" data-id="${b.id}">💵 รับยอดค้าง</button>`}
+  else if(ins.st==='wait'||ins.st==='now'||ins.st==='bad'){t=ins.st==='bad'?'ตรวจไม่ผ่าน · นัดตรวจซ้ำ':'บันทึกผลตรวจสภาพ';btn=useQ()?`<button type="button" class="btn sm" data-go="queue">ไปที่คิว</button>`:''}
+  else if(dl.st==='now'){t=j.st==='received'?'ยื่นงานที่ขนส่ง':'รอป้าย/เล่มจากขนส่ง';btn=`<button type="button" class="btn sm" data-tka="dlt" data-st="${j.st}">🚚 ไปงานขนส่ง</button>`}
+  else if(dv.st==='now'){t='ส่งมอบเอกสารให้ลูกค้า';btn=dv.dlv?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 บันทึกส่งมอบ</button>`:`<button type="button" class="btn sm" data-tka="dlt" data-st="plate">📦 ส่งมอบที่งานขนส่ง</button>`}
+  if(!t)return '<div class="tk-next ok">✓ งานนี้ครบทุกขั้นตอนแล้ว</div>';
+  return `<div class="tk-next"><span>➜ <b>ทำต่อ:</b> ${esc(t)}</span>${btn}</div>`}
+document.addEventListener('click',e=>{const x=e.target.closest('[data-tka]');if(!x)return;const k=x.dataset.tka,b=getBill(+x.dataset.id);
+  if(k==='pay'&&b){showBill(b.id);payDlg(b)}
+  else if(k==='tr'&&b){const d=trWait(b).map(y=>iso(y.p.d)).sort()[0];closeDate=d||iso(TODAY);closeEdit=false;go('close')}
+  else if(k==='dlt'){dltF=x.dataset.st||'received';dltQ='';go('dlt')}});
+const stepOf=(S,k)=>S.find(x=>x.k===k)||{st:'skip'};
 // "ต้องทำอะไรต่อ" ของบิล: เรียงตามความสำคัญ ใช้สถานะที่มีอยู่ (เงิน / คำขอ / ตรวจสภาพ / เอกสาร / งานขนส่ง / ส่งมอบ)
 function nextSteps(b){if(b.void)return[['skip','บิลถูกยกเลิกแล้ว · ไม่มีงานต่อ']];
   const S=jobSteps(b),o=[],debt=Math.round((b.amt-b.paid)*100)/100,wt=trWait(b).reduce((t,x)=>t+x.p.amt,0);
   if((b.reqs||[]).some(r=>r.st==='pending'))o.push(['warn','มีคำขอยกเลิก/คืนเงิน รออนุมัติ']);
   if(wt>0.004)o.push(['warn',`โอนรอตรวจ ${money(wt)} บาท · ${debt>0.004?'ตรวจเงินในแอปธนาคารก่อน':'ยอดที่เหลือรอตรวจครบแล้ว ไม่ต้องเก็บเพิ่ม'}`]);
   if(debt>0.004)o.push(['bad',`ค้างชำระ ${money(debt)} บาท · รับยอดค้าง`]);
-  const q=S[1];if(q.st==='wait')o.push(['now','รอตรวจสภาพ']);else if(q.st==='now')o.push(['now','กำลังตรวจสภาพ']);else if(q.st==='bad')o.push(['bad','ตรวจไม่ผ่าน · นัดตรวจซ้ำ']);
+  const q=stepOf(S,'insp');if(q.st==='wait')o.push(['now','รอตรวจสภาพ']);else if(q.st==='now')o.push(['now','กำลังตรวจสภาพ']);else if(q.st==='bad')o.push(['bad','ตรวจไม่ผ่าน · นัดตรวจซ้ำ']);
   if((b.fpend||[]).length)o.push(['warn','ยังขาดเอกสาร: '+b.fpend.join(', ')]);
   if(dltKind(b)){const st=dltOf(b).st;if(st==='received')o.push(['now','รอยื่นงานที่ขนส่ง']);else if(st==='submitted')o.push(['now','ยื่นขนส่งแล้ว · รอป้าย/เอกสารจากขนส่ง']);else if(st==='plate')o.push(['now','งานเสร็จแล้ว · รอลูกค้ารับเอกสาร'])}
-  else if(S[4].st!=='done')o.push(['now','รอส่งมอบเอกสารให้ลูกค้า']);
+  else if(stepOf(S,'dlv').st==='now')o.push(['now','รอส่งมอบเอกสารให้ลูกค้า']);
   return o.length?o:[['ok','งานเสร็จสมบูรณ์']]}
-const jobDone=b=>b.void||jobSteps(b).every(s=>s.st==='done'||s.st==='skip');
-const stepsHTML=S=>`<ol class="jt">${S.filter(x=>!(x.l==='รับรถ'&&!x.q&&!useQ())&&!(x.l==='ตรวจสภาพ'&&x.st==='skip')).map((s,i)=>`<li class="jt-${s.st}"><i>${s.st==='done'?'✓':s.st==='bad'?'✗':s.st==='skip'?'–':i+1}</i><b>${s.l}</b><small>${esc(s.sub||'')}</small></li>`).join('')}</ol>`;
-function jobHTML(b){const S=jobSteps(b),last=S[4],can=last.dlv&&last.st!=='done'&&!b.void;
+const jobDone=b=>b.void||jobSteps(b).every(s=>s.st==='done'||s.st==='skip'||s.st==='na');
+const stepsHTML=S=>`<ol class="jt">${S.map((s,i)=>`<li class="jt-${s.st==='na'?'wait':s.st}"><i>${s.st==='done'?'✓':s.st==='bad'?'✗':s.st==='skip'||s.st==='na'?'–':i+1}</i><b>${s.l}</b><small>${esc(s.sub||'')}</small></li>`).join('')}</ol>`;
+function jobHTML(b){const S=jobSteps(b),last=stepOf(S,'dlv'),can=last.dlv&&last.st!=='done'&&!b.void;
   return `<div class="jt-card non-printable"><div class="jt-top"><b>สถานะงาน</b>${jobDone(b)?'<span class="ui-pill ok">งานเสร็จสมบูรณ์</span>':''}<span class="sp"></span>${can?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 ส่งมอบเอกสารให้ลูกค้าแล้ว</button>`:''}${last.dlv&&last.st==='done'&&user&&(user.role==='owner'||user.role==='head')?`<button type="button" class="btn sm line" data-dlv-undo="${b.id}">ยกเลิกสถานะส่งมอบ</button>`:''}</div>${stepsHTML(S)}</div>`}
 document.addEventListener('click',async e=>{const x=e.target.closest('[data-dlv],[data-dlv-undo]');if(!x)return;e.stopPropagation();const undo=!!x.dataset.dlvUndo,b=getBill(+(x.dataset.dlv||x.dataset.dlvUndo));if(!b)return;
   const debt=b.amt-b.paid>0.004;if(!undo&&!await uiConfirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท ยังไม่ยืนยันว่าเงินเข้าบัญชี\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!await uiConfirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
@@ -3535,15 +3558,15 @@ R.track=()=>{const day=trackD||iso(TODAY),isT=day===iso(TODAY),since=iso(plus(-3
   const list=(trackF==='open'?open:trackF==='req'?[...new Set(pr.map(x=>x.b))]:trackF==='docm'?dm:intake.filter(b=>iso(b.d)===day)).slice().sort((a,z)=>z.d-a.d||String(z.t).localeCompare(String(a.t)));
   const qOnly=trackF==='today'&&isT&&useQ()?QUEUE.filter(q=>iso(new Date(q.at.created))===day&&!q.billed):[];
   const qS=q=>[{l:'รับรถ',st:'done',sub:'เข้าคิว '+hmOf(q.at.created)},{l:'ตรวจสภาพ',st:q.st==='pass'?'done':q.st==='fail'?'bad':q.st==='check'?'now':'wait',sub:Q_ST[q.st][0]},{l:'เปิดบิล',st:q.st==='pass'?'now':'wait',sub:q.st==='pass'?'รอเปิดบิล':'-'},{l:'ชำระเงิน',st:'wait',sub:'-'},{l:'ส่งมอบเอกสาร',st:'wait',sub:'-'}];
-  const stage=k=>list.filter(b=>{const S=jobSteps(b);return S[k].st==='now'||S[k].st==='wait'}).length;
+  const stage=k=>list.filter(b=>{const x=stepOf(jobSteps(b),k);return x.st==='now'||x.st==='wait'}).length;
   const chip=(k,l,n)=>`<button type="button" class="chip${trackF===k?' on':''}" data-tf="${k}">${l}${n!=null?` <b>${n}</b>`:''}</button>`;
   $('#view').innerHTML=`<div class="ui tk">
-  <div class="ui-head"><span class="ui-ic">🧭</span><div class="ui-tt"><h1>ติดตามงาน</h1><div class="ui-sub">${useQ()?'รับรถ → ':''}ตรวจสภาพ → เปิดบิล → ชำระเงิน → ส่งมอบเอกสาร</div></div>
+  <div class="ui-head"><span class="ui-ic">🧭</span><div class="ui-tt"><h1>ติดตามงาน</h1><div class="ui-sub">${useQ()?'รับรถ → ':''}ตรวจสภาพ → เปิดบิล → ชำระเงิน → งานขนส่ง → ส่งมอบเอกสาร · แสดงเฉพาะขั้นที่บิลนั้นมี</div></div>
     <div class="ui-tools">${trackF==='today'?`<input type="date" id="tk-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่">`:''}</div></div>
   <div class="chips tk-f">${chip('today',isT?'วันนี้':'วันที่เลือก')}${chip('open','งานยังไม่เสร็จ (30 วัน)',open.length)}${chip('req','รออนุมัติยกเลิก/คืนเงิน',pr.length)}${chip('docm','เอกสารแนบไม่ครบ',dm.length)}</div>
-  ${trackF==='today'?`<div class="ui-kpis tk-k"><div class="ui-kpi" data-t="blue"><div><div class="k-l">${useQ()?'รถทั้งหมด':'บิลทั้งหมด'}</div><div class="k-v">${list.length+qOnly.length}</div></div></div>${useQ()?`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอตรวจ/กำลังตรวจ</div><div class="k-v">${qOnly.filter(q=>q.st==='wait'||q.st==='check').length}</div></div></div><div class="ui-kpi" data-t="violet"><div><div class="k-l">รอเปิดบิล</div><div class="k-v">${qOnly.filter(q=>q.st==='pass').length}</div></div></div>`:`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอยื่นขนส่ง</div><div class="k-v">${list.filter(b=>dltKind(b)&&dltOf(b).st==='received').length}</div></div></div>`}<div class="ui-kpi" data-t="green"><div><div class="k-l">รอชำระ</div><div class="k-v">${stage(3)}</div></div></div><div class="ui-kpi" data-t="navy"><div><div class="k-l">รอส่งมอบเอกสาร</div><div class="k-v">${stage(4)}</div></div></div></div>`:''}
+  ${trackF==='today'?`<div class="ui-kpis tk-k"><div class="ui-kpi" data-t="blue"><div><div class="k-l">${useQ()?'รถทั้งหมด':'บิลทั้งหมด'}</div><div class="k-v">${list.length+qOnly.length}</div></div></div>${useQ()?`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอตรวจ/กำลังตรวจ</div><div class="k-v">${qOnly.filter(q=>q.st==='wait'||q.st==='check').length}</div></div></div><div class="ui-kpi" data-t="violet"><div><div class="k-l">รอเปิดบิล</div><div class="k-v">${qOnly.filter(q=>q.st==='pass').length}</div></div></div>`:`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอยื่นขนส่ง</div><div class="k-v">${list.filter(b=>dltKind(b)&&dltOf(b).st==='received').length}</div></div></div>`}<div class="ui-kpi" data-t="green"><div><div class="k-l">รอชำระ</div><div class="k-v">${stage('pay')}</div></div></div><div class="ui-kpi" data-t="navy"><div><div class="k-l">รอส่งมอบเอกสาร</div><div class="k-v">${stage('dlv')}</div></div></div></div>`:''}
   <div class="tk-list">${qOnly.map(q=>`<div class="tk-c"><div class="tk-h"><span class="plate tk-plate"><b>${esc(q.plate)}</b><small>${esc(q.prov)}</small></span><span class="tk-who"><b>${esc(q.name||'–')}</b><small>อยู่ในคิวตรวจสภาพ</small></span><span class="sp"></span><button type="button" class="btn sm line" data-go="queue">ไปที่คิว</button></div>${stepsHTML(qS(q))}</div>`).join('')}
-    ${list.map(b=>{const pend=(b.reqs||[]).find(r=>r.st==='pending');return `<div class="tk-c${b.void?' void':''}"><div class="tk-h"><span class="plate tk-plate"><b>${esc(b.plate)}</b><small>${esc(b.prov)}</small></span><span class="tk-who"><b>${esc(b.name||'–')}</b><small>${b.no?'บิล '+esc(b.no)+' · ':''}${fmt(b.d)} ${esc(b.t||'')}${b.t?' น.':''}</small></span><span class="tk-svc">${b.items.slice(0,4).map(i=>`<span>${esc(String(i[0]).replace(/^ค่า/,''))}</span>`).join('')}${b.items.length>4?`<span>+${b.items.length-4}</span>`:''}</span><span class="tk-amt"><small>ยอดบิล</small><b>${money(b.amt)}</b>${!b.void&&b.amt-b.paid>0.004?`<em>ค้าง ${money(b.amt-b.paid)}</em>`:''}</span>${b.void?'<span class="ui-pill bad">ยกเลิก</span>':''}${pend?`<span class="ui-pill warn">รออนุมัติ${RQ_K[pend.kind]}</span>`:''}${(b.fpend||[]).length?`<span class="ui-pill warn">เอกสารขาด ${b.fpend.length}</span>`:''}<span class="sp"></span><button type="button" class="btn sm" data-showbill="${b.id}">ดูบิล</button></div>${stepsHTML(jobSteps(b))}</div>`}).join('')}
+    ${list.map(b=>{const pend=(b.reqs||[]).find(r=>r.st==='pending');return `<div class="tk-c${b.void?' void':''}"><div class="tk-h"><span class="plate tk-plate"><b>${esc(b.plate)}</b><small>${esc(b.prov)}</small></span><span class="tk-who"><b>${esc(b.name||'–')}</b><small>${b.no?'บิล '+esc(b.no)+' · ':''}${fmt(b.d)} ${esc(b.t||'')}${b.t?' น.':''}</small></span><span class="tk-svc">${b.items.slice(0,4).map(i=>`<span>${esc(String(i[0]).replace(/^ค่า/,''))}</span>`).join('')}${b.items.length>4?`<span>+${b.items.length-4}</span>`:''}</span><span class="tk-amt"><small>ยอดบิล</small><b>${money(b.amt)}</b>${!b.void&&b.amt-b.paid>0.004?`<em>ค้าง ${money(b.amt-b.paid)}</em>`:''}</span>${b.void?'<span class="ui-pill bad">ยกเลิก</span>':''}${pend?`<span class="ui-pill warn">รออนุมัติ${RQ_K[pend.kind]}</span>`:''}${(b.fpend||[]).length?`<span class="ui-pill warn">เอกสารขาด ${b.fpend.length}</span>`:''}<span class="sp"></span><button type="button" class="btn sm line" data-showbill="${b.id}">ดูบิล</button></div>${stepsHTML(jobSteps(b))}${tkNext(b)}</div>`}).join('')}
     ${!list.length&&!qOnly.length?'<div class="ui-card"><div class="ui-empty"><span class="e-ic">🗒️</span>ไม่มีงานในรายการนี้</div></div>':''}</div></div>`;
   document.querySelectorAll('[data-tf]').forEach(x=>x.onclick=()=>{trackF=x.dataset.tf;R.track()});
   if($('#tk-d'))$('#tk-d').onchange=e=>{trackD=e.target.value||null;R.track()}};
