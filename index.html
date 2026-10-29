@@ -1,3 +1,4 @@
+<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>ระบบหลังร้าน สยามเซอร์วิส</title>
@@ -2768,11 +2769,11 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 // ===== แถบเมนูด้านซ้าย + แถบบน =====
-const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',close:'ปิดยอดเงินประจำวัน',inst:'ผ่อนชำระประกัน',expense:'รายจ่าย + กำไร',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
+const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',close:'ปิดยอดเงินประจำวัน',inst:'ผ่อนชำระประกัน',expense:'รายจ่าย + กำไร',comm:'ค่าคอมประกัน',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
 const SIC={track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/><path d="M4 6h16M4 18h10"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
   tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
-const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
+const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','comm','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
 const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
 const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
 let sOpen=new Set();
@@ -2924,6 +2925,7 @@ const MENU=[
   ['income','รายได้ประจำวัน + ยอดค้าง','สรุปเงินรับจริงและรายการค้างชำระ','#fdf3dc','#c27c0e','<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 11h6M9 14h3"/><circle cx="17" cy="18" r="3.2" fill="#ef9a1a" stroke="#ef9a1a"/><path d="M17 16.4v3.2" stroke="#fff"/>'],
   ['close','ปิดยอดเงินประจำวัน','เงินสด / โอน แยกตามพนักงาน','#ecfdf3','#15803d','<rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v5M18 9.5v5"/>'],
   ['expense','รายจ่ายร้าน + กำไร','ค่าแรง ค่าไฟ ค่าเช่า / กำไรรายเดือน','#fdecec','#b42318','<path d="M12 3v18M16 7H10a3 3 0 0 0 0 6h4a3 3 0 0 1 0 6H8"/>'],
+  ['comm','ค่าคอมประกัน','ค่าคอม พ.ร.บ. / ประกัน รายเดือน','#eafaf1','#15803d','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9.5 14.5l5-5M10 10h.01M14 14h.01"/>'],
   ['dash','สรุปรายเดือน (กราฟ)','รถเข้า รายได้ กำไร เทียบสาขา','#eef0ff','#4338ca','<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'],
   ['inst','ผ่อนชำระประกัน','ติดตามงวดผ่อนรายลูกค้า','#e6f1fb','#2f7fd6','<rect x="3" y="6" width="16" height="11" rx="2"/><path d="M3 10h16"/><circle cx="18" cy="17" r="3.4" fill="#2f7fd6" stroke="#2f7fd6"/><path d="M18 15.6V17l1 .8" stroke="#fff"/>'],
   ['bell','ส่ง SMS แจ้งเตือน','เลือกประเภทที่ต้องการส่ง','#fde8e8','#e0474c','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
@@ -2933,7 +2935,7 @@ const MENU=[
 ];
 // จัดกลุ่มเมนูตามลำดับงานจริงของร้าน
 const MGROUPS=[['งานหน้าร้าน','รถเข้า › ตรวจ › เปิดบิล › ยื่นขนส่ง',['queue','add','cust','dlt','calc']],
-  ['การเงิน','รับเงิน › ปิดยอด › รายจ่าย › สรุปผล',['income','close','inst','expense','dash']],
+  ['การเงิน','รับเงิน › ปิดยอด › รายจ่าย › สรุปผล',['income','close','inst','expense','comm','dash']],
   ['ลูกค้าและเอกสาร','แจ้งเตือน เอกสาร และสำรองข้อมูล',['bell','docs','news','backup']]];
 let expKind='tax',expQ='',hidden=new Set();
 const EXPK=[['tax','ทะเบียนรถ','<rect x="3" y="7" width="18" height="10" rx="3"/><path d="M7 17v2M17 17v2M3 12h18"/>'],['prb','พรบ. ภาคบังคับ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกันภาคสมัครใจ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
@@ -5495,7 +5497,7 @@ const DB=(()=>{
       // คืนเงิน = ยอดติดลบ (รายการรับเงินเดิมยังอยู่ครบ)
       const ps=(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at),rf=p.kind==='refund';return{id:p.id,d:dOnly(pt),t:hm(pt),amt:rf?-p.amount:+p.amount,ref:rf,rnote:p.note||'',how:p.method,by:p.by_name,wait:!rf&&p.verified===false&&!p.rejected,vby:p.verified_by||'',vat:p.verified_at||'',rej:!!p.rejected,rr:p.reject_reason||'',rby:p.rejected_by||'',rat:p.rejected_at||''}});
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',rnote:r.note||'',ctype:s.ctype||'',type:s.ctype?ctLabel(s.ctype):(s.type||''),model:s.model||'',cc:s.cc||'',
-        doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',disc:+r.discount,amt:+r.total,
+        doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',prbCo:s.prbCo||'',disc:+r.discount,amt:+r.total,
         pays:ps.filter(p=>!p.rej),rej:ps.filter(p=>p.rej),fpend:Array.isArray(r.files_pending)?r.files_pending:[],st:r.status||'',
         amt0:+r.total,refund:+r.refund_total||0,void:r.status==='void',vinfo:{reason:r.void_reason||'',by:r.void_by||'',appr:r.void_approved_by||'',at:r.void_at||''},dlv:{at:r.delivered_at||'',by:r.delivered_by||''},
         reqs:(r.bill_requests||[]).sort((a,z)=>a.id-z.id).map(x=>({id:x.id,kind:x.kind,amt:+x.amount,how:x.method,why:x.reason,by:x.requested_by,uid:x.requested_uid,at:x.requested_at,st:x.status,dby:x.decided_by||'',dat:x.decided_at||'',note:x.decide_note||''})),
@@ -5564,7 +5566,7 @@ const DB=(()=>{
     const veh={plate:c.plate,province:c.prov,car_type:fv('b-type'),body,brand:fv('b-brand'),model:fv('b-model'),color:fv('b-color'),chassis_no:fv('b-chassis'),engine_no:fv('b-engine'),
       cc:fn('b-cc'),weight_kg:fn('b-kg'),reg_date:fd('b-reg'),tax_exp:isoN(c.tax),prb_exp:isoN(c.prb),ins_exp:isoN(c.ins),ins_company:c.insCo||'',prb_company:fn('b-prb')&&fv('b-prb-co')?fv('b-prb-co'):((c.raw||{}).prb_company||''),k_exp:fn('b-k')&&fd('b-k-e')?fd('b-k-e'):isoN(c.k)};
     const pick=fd('b-pick'),billNote=fv('c-note'),tmpId=b.id;
-    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,ctype:b.ctype||'',type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prefix:cust.prefix,doc:b.doc};
+    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,ctype:b.ctype||'',type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prbCo:fn('b-prb')&&fv('b-prb-co')?fv('b-prb-co'):'',prefix:cust.prefix,doc:b.doc};
     // ลูกค้า + รถ + บิล + เงิน บันทึกในธุรกรรมเดียว (14-safe-bills.sql) กดซ้ำ/ส่งซ้ำด้วยรหัสเดิม = ได้บิลเดิม
     try{const s=await client();
       const r=await s.rpc('create_bill',{p:{client_key:o.key,branch_id:branch.id,cust_id:c.custId||null,cust,veh,queue_id:o.queueId||null,
@@ -5631,7 +5633,7 @@ const DB=(()=>{
     const c=await client(),r=await c.rpc('verify_payment',{p_id:p.id});if(r.error){if(/verify_payment|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 13-transfer-verify.sql ใน Supabase');throw new Error(r.error.message)}return r.data}
   async function edit(E,c,ent,x){if(!LIVE)return;x=x||{};
     try{const s=await client();
-      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prefix:E.prefix||'',doc:E.doc||'สำเนา'};
+      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prbCo:E.prbCo||'',prefix:E.prefix||'',doc:E.doc||'สำเนา'};
       const up=chk(await s.from('bills').update({snapshot:snap,note:E.rnote||''}).eq('id',E.id).select('id'));
       if(!up.length)throw new Error('บัญชีนี้ไม่มีสิทธิ์แก้ไขบิล (เฉพาะเจ้าของร้าน/หัวหน้าสาขา)');
       chk(await s.from('bill_edits').insert({bill_id:E.id,what:ent.what,after:snap,by_name:ent.by||me.name}));
@@ -6483,6 +6485,61 @@ const EXPENSES=[];let expSeq=0,exMonth=null;
 (()=>{const t=new Date(TODAY),d=(m,day)=>{const x=new Date(t.getFullYear(),t.getMonth()-m,day);return iso(x)};
   [[0,5,'ค่าไฟ',1250],[0,5,'ค่าน้ำ',180],[0,12,'ค่าเอกสาร/เครื่องเขียน',350],[1,5,'ค่าไฟ',1190],[1,5,'ค่าน้ำ',165]]
    .forEach(([m,day,c,a])=>{const x=d(m,day);if(x<=iso(TODAY))EXPENSES.push({id:++expSeq,d:x,cat:c,amt:a,note:'',by:'คุณอาร์ท'})})})();
+// รายงานค่าคอมมิชชัน พ.ร.บ. / ประกันภาคสมัครใจ รายเดือน
+// อัตรา % ต่อบริษัทเก็บใน SET.comm = {basis:'net'|'gross', def:[พรบ%,ประกัน%], co:{ชื่อบริษัท:[พรบ%,ประกัน%]}}
+// เบี้ยสุทธิ (โดยประมาณ) = เบี้ยรวม ÷ 1.07428 (อากร 0.4% + VAT 7%)
+let cmMonth=null;
+const commCfg=()=>Object.assign({basis:'net',def:[12,18],co:{}},SET.comm||{});
+function commRows(ym){const cf=commCfg(),out=[];
+  [...intake,...oldBills].filter(b=>!b.void&&ymOf(b.d)===ym).forEach(b=>{const car=cars.find(c=>c.id===b.carId),raw=(car&&car.raw)||{};
+    const it=n=>(b.items||[]).filter(i=>i[0]===n).reduce((t,i)=>t+(+i[1]||0),0);
+    [['prb',it('พ.ร.บ.'),b.prbCo||raw.prb_company||''],['ins',it('ประกันภาคสมัครใจ')||+b.ins||0,b.insCo||'']].forEach(([k,g,co])=>{if(!(g>0))return;
+      const r=(cf.co[co]||cf.def)[k==='prb'?0:1],base=cf.basis==='gross'?g:g/1.07428;
+      out.push({b,k,co:co||'ไม่ระบุบริษัท',gross:g,base,rate:+r||0,comm:Math.round(base*(+r||0))/100})})});
+  return out}
+R.comm=()=>{cmMonth=cmMonth||ymOf(TODAY);const ym=cmMonth,cf=commCfg(),rows=commRows(ym),own=user&&user.role==='owner';
+  const mv=n=>{const [y,m]=ym.split('-').map(Number);return ymOf(new Date(y,m-1+n,1))},isNow=ym===ymOf(TODAY);
+  const by={};rows.forEach(r=>{const x=by[r.co]||(by[r.co]={co:r.co,pn:0,pg:0,pc:0,in:0,ig:0,ic:0});if(r.k==='prb'){x.pn++;x.pg+=r.gross;x.pc+=r.comm}else{x.in++;x.ig+=r.gross;x.ic+=r.comm}});
+  const cos=Object.values(by).sort((a,z)=>(z.pc+z.ic)-(a.pc+a.ic)),S=k=>cos.reduce((t,x)=>t+x[k],0);
+  const rate=(co,i)=>(cf.co[co]||cf.def)[i];
+  $('#view').innerHTML=`<div class="ui cm2">
+  <div class="ui-head"><span class="ui-ic">🛡️</span><div class="ui-tt"><h1>ค่าคอมมิชชันประกัน</h1><div class="ui-sub">${esc(shop().title)} · เดือน ${ymFull(ym)}</div></div>
+    <div class="ui-tools"><div class="ex-mnav"><button class="btn line" id="cm-prev" aria-label="เดือนก่อน">‹</button><input type="month" id="cm-m" value="${ym}" max="${ymOf(TODAY)}"><button class="btn line" id="cm-next" aria-label="เดือนถัดไป"${isNow?' disabled':''}>›</button></div>
+      <button class="btn line" id="cm-print">🖨️ พิมพ์ A4</button></div></div>
+  <div class="ui-kpis">
+    <div class="ui-kpi" data-t="blue"><span class="k-ic">📄</span><div><div class="k-l">พ.ร.บ.</div><div class="k-v">${S('pn')} <small>ฉบับ</small></div><div class="k-s">เบี้ยรวม ${money(S('pg'))}</div></div></div>
+    <div class="ui-kpi" data-t="violet"><span class="k-ic">🛡️</span><div><div class="k-l">ประกันภาคสมัครใจ</div><div class="k-v">${S('in')} <small>ฉบับ</small></div><div class="k-s">เบี้ยรวม ${money(S('ig'))}</div></div></div>
+    <div class="ui-kpi" data-t="green"><span class="k-ic">💰</span><div><div class="k-l">ค่าคอมโดยประมาณ</div><div class="k-v">${money(S('pc')+S('ic'))}</div><div class="k-s">พ.ร.บ. ${money(S('pc'))} · ประกัน ${money(S('ic'))}</div></div></div></div>
+  <div class="ui-card"><div class="ui-card-h"><h2>สรุปตามบริษัทประกัน</h2><span class="sub">คิดจาก${cf.basis==='gross'?'เบี้ยรวม':'เบี้ยสุทธิ (ประมาณ เบี้ยรวม ÷ 1.07428)'}</span></div>
+    ${cos.length?`<table class="ui-tbl stack"><thead><tr><th>บริษัท</th><th class="r">พ.ร.บ.</th><th class="r">เบี้ย พ.ร.บ.</th><th class="r">% พ.ร.บ.</th><th class="r">ประกัน</th><th class="r">เบี้ยประกัน</th><th class="r">% ประกัน</th><th class="r">ค่าคอมรวม</th></tr></thead><tbody>
+    ${cos.map(x=>`<tr><td data-l="บริษัท"><b>${esc(x.co)}</b></td><td class="r" data-l="พ.ร.บ.">${x.pn}</td><td class="r" data-l="เบี้ย พ.ร.บ.">${money(x.pg)}</td><td class="r" data-l="% พ.ร.บ.">${rate(x.co,0)}%</td><td class="r" data-l="ประกัน">${x.in}</td><td class="r" data-l="เบี้ยประกัน">${money(x.ig)}</td><td class="r" data-l="% ประกัน">${rate(x.co,1)}%</td><td class="r" data-l="ค่าคอมรวม"><b>${money(x.pc+x.ic)}</b></td></tr>`).join('')}
+    </tbody><tfoot><tr><td>รวม</td><td class="r" data-l="พ.ร.บ.">${S('pn')}</td><td class="r" data-l="เบี้ย พ.ร.บ.">${money(S('pg'))}</td><td></td><td class="r" data-l="ประกัน">${S('in')}</td><td class="r" data-l="เบี้ยประกัน">${money(S('ig'))}</td><td></td><td class="r" data-l="ค่าคอมรวม">${money(S('pc')+S('ic'))}</td></tr></tfoot></table>`
+    :'<div class="ui-empty"><span class="e-ic">📭</span>เดือนนี้ยังไม่มีบิลที่ขาย พ.ร.บ. หรือประกัน</div>'}</div>
+  ${rows.length?`<div class="ui-card"><div class="ui-card-h"><h2>รายการตามบิล</h2><span class="sub">${rows.length} รายการ</span></div>
+    <table class="ui-tbl stack"><thead><tr><th>วันที่</th><th>เลขที่บิล</th><th>ทะเบียน</th><th>ประเภท</th><th>บริษัท</th><th class="r">เบี้ยรวม</th><th class="r">%</th><th class="r">ค่าคอม</th></tr></thead><tbody>
+    ${rows.sort((a,z)=>a.b.d-z.b.d).map(r=>`<tr><td data-l="วันที่">${beFull(r.b.d)}</td><td data-l="เลขที่บิล">${esc(rcNo(r.b))}</td><td data-l="ทะเบียน">${esc(r.b.plate)}</td><td data-l="ประเภท">${r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ'}</td><td data-l="บริษัท">${esc(r.co)}</td><td class="r" data-l="เบี้ยรวม">${money(r.gross)}</td><td class="r" data-l="%">${r.rate}%</td><td class="r" data-l="ค่าคอม">${money(r.comm)}</td></tr>`).join('')}</tbody></table></div>`:''}
+  ${own?`<details class="ui-card cm-set"><summary class="ui-card-h"><h2>⚙️ ตั้งอัตราค่าคอม (%)</h2><span class="sub">กดเพื่อเปิด · บริษัทที่ไม่ได้ตั้งจะใช้ค่าเริ่มต้น</span></summary><div class="ui-card-b">
+    <div class="cm-cfg"><label>คิดจาก <select id="cm-basis"><option value="net"${cf.basis!=='gross'?' selected':''}>เบี้ยสุทธิ (ไม่รวมอากร/VAT)</option><option value="gross"${cf.basis==='gross'?' selected':''}>เบี้ยรวม</option></select></label>
+      <label>ค่าเริ่มต้น พ.ร.บ. <input class="cm-r" data-co="" data-i="0" inputmode="decimal" value="${cf.def[0]}">%</label><label>ประกัน <input class="cm-r" data-co="" data-i="1" inputmode="decimal" value="${cf.def[1]}">%</label></div>
+    <table class="ui-tbl"><thead><tr><th>บริษัท</th><th class="r">% พ.ร.บ.</th><th class="r">% ประกัน</th></tr></thead><tbody>
+    ${[...new Set([...cos.map(x=>x.co).filter(c=>c!=='ไม่ระบุบริษัท'),...Object.keys(cf.co),...insNames()])].map(c=>`<tr><td>${esc(c)}</td>${[0,1].map(i=>`<td class="r"><input class="cm-r" data-co="${esc(c)}" data-i="${i}" inputmode="decimal" placeholder="${cf.def[i]}" value="${cf.co[c]&&cf.co[c][i]!==cf.def[i]?cf.co[c][i]:''}"></td>`).join('')}</tr>`).join('')}
+    </tbody></table><div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn" id="cm-save">💾 บันทึกอัตราค่าคอม</button></div></div></details>`:''}
+  <p class="note">ค่าคอมเป็นตัวเลขประมาณการจากเบี้ยในบิล ใช้ตรวจเทียบกับใบแจ้งค่าคอมจากบริษัทประกัน · บิลที่ยกเลิกไม่นับ</p></div>`;
+  $('#cm-m').onchange=e=>{if(e.target.value){cmMonth=e.target.value;R.comm()}};
+  $('#cm-prev').onclick=()=>{cmMonth=mv(-1);R.comm()};$('#cm-next').onclick=()=>{if(!isNow){cmMonth=mv(1);R.comm()}};
+  $('#cm-print').onclick=()=>printReport({title:'รายงานค่าคอมมิชชันประกัน',sub:'ประจำเดือน '+ymFull(ym),
+    body:`<table class="pr"><thead><tr><th>บริษัท</th><th class="r">พ.ร.บ.</th><th class="r">เบี้ย พ.ร.บ.</th><th class="r">ประกัน</th><th class="r">เบี้ยประกัน</th><th class="r">ค่าคอม</th></tr></thead><tbody>
+    ${cos.map(x=>`<tr><td>${esc(x.co)}</td><td class="r">${x.pn}</td><td class="r">${money(x.pg)}</td><td class="r">${x.in}</td><td class="r">${money(x.ig)}</td><td class="r"><b>${money(x.pc+x.ic)}</b></td></tr>`).join('')||'<tr><td colspan="6" class="c">ไม่มีรายการ</td></tr>'}
+    </tbody><tfoot><tr><td>รวม</td><td class="r">${S('pn')}</td><td class="r">${money(S('pg'))}</td><td class="r">${S('in')}</td><td class="r">${money(S('ig'))}</td><td class="r"><b>${money(S('pc')+S('ic'))}</b></td></tr></tfoot></table>
+    <p style="font-size:11px;color:#555">คิดจาก${cf.basis==='gross'?'เบี้ยรวม':'เบี้ยสุทธิโดยประมาณ (เบี้ยรวม ÷ 1.07428)'} · ตัวเลขประมาณการ ใช้ตรวจเทียบกับใบแจ้งจากบริษัทประกัน</p>`});
+  if($('#cm-save'))$('#cm-save').onclick=async e=>{const num=x=>{const v=parseFloat(String(x).replace(/,/g,''));return isFinite(v)&&v>=0&&v<=100?v:null};
+    const c={basis:$('#cm-basis').value,def:[...cf.def],co:{}};
+    document.querySelectorAll('.cm-r[data-co=""]').forEach(i=>{const v=num(i.value);if(v!=null)c.def[+i.dataset.i]=v});
+    document.querySelectorAll('.cm-r:not([data-co=""])').forEach(i=>{if(i.value.trim()==='')return;const v=num(i.value);if(v==null)return;const k=i.dataset.co,r=c.co[k]||(c.co[k]=[null,null]);r[+i.dataset.i]=v});
+    Object.values(c.co).forEach(r=>{if(r[0]==null)r[0]=c.def[0];if(r[1]==null)r[1]=c.def[1]});
+    const o=JSON.parse(JSON.stringify(SET));o.comm=c;e.target.disabled=true;
+    try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกอัตราค่าคอมแล้ว');R.comm()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}finally{e.target.disabled=false}};
+};
 R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
   $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
   let list;try{list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
@@ -7657,6 +7714,11 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
   #view .sm-tbl tr.sm-r td{padding-left:100px!important;padding-top:10px!important;padding-bottom:10px!important}
   #view .sm-tbl tr.sm-r td[data-l]::before{font-size:11.5px}
 }
+/* ค่าคอมประกัน */
+.cm-cfg{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
+.cm-cfg label{display:inline-flex;align-items:center;gap:6px}
+.cm2 input.cm-r{width:70px;text-align:right}
+.cm-set>summary{cursor:pointer;list-style:none}.cm-set>summary::-webkit-details-marker{display:none}.cm-set:not([open])>summary{border-bottom:0}
 /* เลือกเล่มทะเบียน: ปุ่มกล่องใหญ่ เห็นชัดว่าเลือกอันไหน */
 .docpick{display:inline-flex;gap:8px;flex-wrap:wrap}
 .docpick label{position:relative;cursor:pointer;margin:0}
