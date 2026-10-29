@@ -6028,7 +6028,7 @@ const DB=(()=>{
     return out}
   // ----- 16: ไฟล์สำรองฐานข้อมูล (JSON) ทุกสาขา + ตรวจไฟล์ + กู้คืนส่วนที่หายไป -----
   const BK_TABS=[['branches','id'],['staff','user_id','user_id,username,full_name,role,branch_id,active,created_at'],['customers','id'],['vehicles','id'],['bills','id'],['payments','id'],['bill_edits','id'],['dlt_jobs','bill_id'],
-    ['bill_files','id'],['bill_requests','id'],['insp_queue','id'],['cash_closes','id'],['expenses','id'],['app_settings','key'],['news','id'],['audit_log','id']];
+    ['bill_files','id'],['bill_requests','id'],['insp_queue','id'],['cash_closes','id'],['expenses','id'],['remits','id'],['app_settings','key'],['news','id'],['audit_log','id']];
   async function exportAll(prog){if(!LIVE)throw new Error('ใช้ได้เมื่อเข้าสู่ระบบจริงเท่านั้น');if(me.role!=='owner')throw new Error('เฉพาะเจ้าของร้าน');const c=await client(),data={},counts={},skipped=[];
     for(const [t,k,cols] of BK_TABS){if(prog)prog(t);const r=await pages(()=>c.from(t).select(cols||'*').order(k));if(r.error){skipped.push(t);continue}data[t]=r.data;counts[t]=r.data.length}
     return{data,counts,skipped}}
@@ -6534,7 +6534,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
   $('#bk-all').onclick=e=>run(e.target,all,`siam-report-${tag}${iso(TODAY)}.xlsx`,false);
   if(!own)return;
   const sha=async txt=>{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(txt));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')};
-  const TL={branches:'สาขา',staff:'พนักงาน',customers:'ลูกค้า',vehicles:'รถ',bills:'บิล',payments:'รับเงิน/คืนเงิน',bill_edits:'ประวัติแก้ไข',dlt_jobs:'งานขนส่ง',bill_files:'รายชื่อไฟล์แนบ',bill_requests:'คำขอยกเลิก/คืนเงิน',insp_queue:'คิวตรวจ',cash_closes:'ปิดยอด',expenses:'รายจ่าย',app_settings:'ตั้งค่า',news:'ข่าวสาร',audit_log:'ประวัติการใช้งาน'};
+  const TL={branches:'สาขา',staff:'พนักงาน',customers:'ลูกค้า',vehicles:'รถ',bills:'บิล',payments:'รับเงิน/คืนเงิน',bill_edits:'ประวัติแก้ไข',dlt_jobs:'งานขนส่ง',bill_files:'รายชื่อไฟล์แนบ',bill_requests:'คำขอยกเลิก/คืนเงิน',insp_queue:'คิวตรวจ',cash_closes:'ปิดยอด',expenses:'รายจ่าย',remits:'เงินนำส่ง',app_settings:'ตั้งค่า',news:'ข่าวสาร',audit_log:'ประวัติการใช้งาน'};
   if($('#bk-db'))$('#bk-db').onclick=async e=>{const btn=e.target,st=$('#bk-db-st');btn.disabled=true;
     try{const r=await DB.exportAll(t=>{st.textContent='กำลังดึงข้อมูล: '+(TL[t]||t)+'...'});const txt=JSON.stringify(r.data),h=await sha(txt);
       const meta={app:'siam-service-backup',version:1,created_at:new Date().toISOString(),created_by:user.name,shop:shop().title,counts:r.counts,skipped:r.skipped,sha256:h};
@@ -7462,7 +7462,7 @@ function newBillForm(){svcOn=new Set(['tax']);svcView='tax';cur='add';renderNav(
 
 
 /* ---------- ประวัติการใช้งาน (เฉพาะเจ้าของร้าน) ---------- */
-const AU_T={bills:'บิล',payments:'การรับชำระ',expenses:'รายจ่าย',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
+const AU_T={bills:'บิล',payments:'การรับชำระ',expenses:'รายจ่าย',remits:'เงินนำส่ง',cash_closes:'ปิดยอดประจำวัน',dlt_jobs:'งานขนส่ง',insp_queue:'คิวตรวจสภาพ',customers:'ข้อมูลลูกค้า',vehicles:'ข้อมูลรถ',staff:'ผู้ใช้งาน',branches:'ข้อมูลสาขา',app_settings:'การตั้งค่าระบบ'};
 const AU_EM={bills:'🧾',payments:'💵',expenses:'💸',cash_closes:'🔒',dlt_jobs:'🚚',insp_queue:'🔧',customers:'👤',vehicles:'🚗',staff:'👥',branches:'🏢',app_settings:'⚙️'};
 const AU_A={insert:'เพิ่ม',update:'แก้ไข',delete:'ลบ'};
 const AU_F={total:'ยอดรวม',discount:'ส่วนลด',items:'รายการในบิล',status:'สถานะ',note:'หมายเหตุ',snapshot:'ข้อมูลลูกค้า/รถ',pick_date:'วันนัดรับ',ins_premium:'ค่าเบี้ยประกัน',amount:'จำนวนเงิน',method:'วิธีชำระ',
