@@ -2916,8 +2916,8 @@ function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='own
   $('#ssum').innerHTML=`<div class="ss-h">สรุปงานวันนี้</div>
     <button type="button" class="ss-r" data-go="income"><span>บิลวันนี้</span><b>${td.length}</b><small>บิล</small></button>
     <button type="button" class="ss-r" data-go="income"><span>รับชำระวันนี้</span><b>${money(paidOn(iso(TODAY))).replace(/\.00$/,'')}</b><small>บาท</small></button>
-    <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>ค้างจากบิลวันนี้</span><b>${debt}</b><small>บิล</small></button>
-    <button type="button" class="ss-r" data-go="dlt"><span>รอยื่นขนส่ง</span><b>${wait}</b><small>คัน</small></button>${(n=>n?`<button type="button" class="ss-r bad" data-go="close"><span>เงินโอนรอตรวจ</span><b>${n}</b><small>รายการ</small></button>`:'')(intake.flatMap(b=>trWait(b)).length)}`;
+    <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>บิลวันนี้ที่ยังค้างชำระ</span><b>${debt}</b><small>บิล</small></button>
+    <button type="button" class="ss-r" data-go="dlt"><span>งานขนส่งรอยื่น</span><b>${wait}</b><small>คัน</small></button>${(n=>n?`<button type="button" class="ss-r bad" data-go="close"><span>เงินโอนรอตรวจ</span><b>${n}</b><small>รายการ</small></button>`:'')(intake.flatMap(b=>trWait(b)).length)}`;
   tAlerts()}
 // เงินที่รับจริงในวันนั้น (ทุกบิล รวมบิลเก่าที่มาจ่ายเพิ่ม) ใช้เกณฑ์เดียวกับหน้าปิดยอด
 // เงินโอนที่ยังรอตรวจสอบไม่นับเป็นเงินรับจริง (แยกไว้ใน waitOn)
@@ -3086,7 +3086,7 @@ R.home=()=>{
   const isoT=iso(TODAY),yest=iso(plus(-1)),td=intake.filter(b=>iso(b.d)===isoT&&!b.void),yd=intake.filter(b=>iso(b.d)===yest&&!b.void).length;
   const qT=QUEUE.filter(q=>iso(new Date(q.at.created))===isoT),qc=k=>qT.filter(q=>q.st===k).length;
   if(!hdTab)hdTab=qT.length?'queue':'bills';
-  const diff=td.length-yd,ar=(n,unit)=>n?`<span class="hk-d ${n>0?'up':'dn'}">${n>0?'▲':'▼'} ${Math.abs(n)} ${unit}จากเมื่อวาน</span>`:`<span class="hk-d">เท่ากับเมื่อวาน</span>`;
+  const diff=td.length-yd,ar=(n,unit)=>n?`<span class="hk-d ${n>0?'up':'dn'}">${n>0?'▲ มากกว่า':'▼ น้อยกว่า'}เมื่อวาน ${Math.abs(n)} ${unit}</span>`:`<span class="hk-d">เท่ากับเมื่อวาน</span>`;
   const paidT=paidOn(iso(TODAY)),debtB=intake.filter(b=>b.amt-b.paid>0.004),dltOpen=dltJobs().filter(b=>dltOf(b).st!=='done').length;
   const I=p=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
   const IC={car:'<path d="M5 16V11l2-5h10l2 5v5"/><path d="M3 16h18v3H3z"/><circle cx="7.5" cy="13" r="1"/><circle cx="16.5" cy="13" r="1"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',ok:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l3 3 5-6"/>',bad:'<circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/>',
@@ -3100,26 +3100,26 @@ R.home=()=>{
     const owe=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&b.amt-b.paid>0.004).map(b=>[b.id,b])).values()],oweSum=owe.reduce((t,b)=>t+b.amt-b.paid,0);
     const T=(k,ic,l,n,sub,cls)=>`<button type="button" class="hw-t ${cls}${n?'':' zero'}" data-hw="${k}"><span class="hw-ic">${I(IC[ic])}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`;
     return `<section class="hw" aria-label="งานค้าง"><div class="hw-h"><b>งานค้างที่ต้องทำต่อ</b><small>กดเพื่อเปิดรายการ</small></div><div class="hw-g">
-      ${T('tr','clock','เงินโอนรอตรวจสอบ',w.length,w.length?money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท':'ไม่มีรายการ','sand')}
-      ${T('open','bill','งานยังไม่เสร็จ (30 วัน)',open,'ดูขั้นตอนที่ค้าง','sky')}
-      ${T('pick','truck','เอกสารรอลูกค้ารับ',pick,'งานขนส่งได้ป้าย/เล่มแล้ว','lilac')}
-      ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
+      ${T('tr','clock','เงินโอนรอตรวจสอบ',w.length,w.length?'ยอด '+money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท · รอยืนยันว่าเงินเข้าบัญชี':'ไม่มีรายการ','sand')}
+      ${T('open','bill','บิลที่งานยังไม่จบ (30 วันล่าสุด)',open,'กดเพื่อดูว่าค้างขั้นตอนไหน','sky')}
+      ${T('pick','truck','เอกสารรอส่งให้ลูกค้า',pick,'ได้ป้าย/เล่มจากขนส่งแล้ว','lilac')}
+      ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?'ยอดค้างรวม '+money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
     </div></section>`;})()}
   <div class="hk-row">
     ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
     ${useQ()?`${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
-    ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากคิว ${qtot} คัน</span>`,'queue')}
-    ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'ไม่มีรถตรวจไม่ผ่าน'}</span>`,'queue')}`:`${kpi('green','ok','รับชำระวันนี้',money(paidOn(iso(TODAY))).replace(/\.00$/,''),'บาท','<span class="hk-d">เงินยืนยันแล้ว</span>','close')}
-    ${kpi('amber','clock','รอยื่นขนส่ง',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">งานขนส่งที่ยังไม่ยื่น · ยังไม่เสร็จทั้งหมด ${dltOpen} คัน</span>`,'dlt')}
-    ${kpi('red','bad','ครบกำหนดใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ลูกค้าที่ควรแจ้งเตือน</span>','bell')}`}
+    ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากรถเข้าคิววันนี้ ${qtot} คัน</span>`,'queue')}
+    ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'วันนี้ยังไม่มีรถไม่ผ่าน'}</span>`,'queue')}`:`${kpi('green','ok','รับชำระวันนี้',money(paidOn(iso(TODAY))).replace(/\.00$/,''),'บาท','<span class="hk-d">เฉพาะเงินที่ยืนยันแล้ว</span>','close')}
+    ${kpi('amber','clock','งานขนส่งรอยื่น',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">ยังไม่จบทั้งหมด ${dltOpen} คัน (รวมรอป้าย/เล่ม)</span>`,'dlt')}
+    ${kpi('red','bad','ครบกำหนดต่ออายุใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ภาษี / พ.ร.บ. / ประกัน · ควรแจ้งลูกค้า</span>','bell')}`}
   </div>
   <section class="hq">
     <div class="hq-h"><h2>เมนูด่วนสำหรับพนักงาน</h2><p>เริ่มงานได้อย่างรวดเร็ว</p></div>
     <div class="hq-g">
-      <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ลงทะเบียนรถเข้าตรวจ</small></span><i>›</i></button>
+      <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ออกบิลค่าบริการให้ลูกค้า</small></span><i>›</i></button>
       ${useQ()?`<button type="button" class="hq-b green" data-go="queue">${I(IC.queue)}<span><b>คิวตรวจสภาพ</b><small>รับรถเข้าคิว / บันทึกผลตรวจ</small></span><i>›</i></button>`:`<button type="button" class="hq-b green" data-go="track">${I(IC.queue)}<span><b>ติดตามงาน</b><small>งานที่ยังไม่เสร็จ / ส่งมอบเอกสาร</small></span><i>›</i></button>`}
       <button type="button" class="hq-b yellow" data-go="cust">${I(IC.search)}<span><b>ค้นหาข้อมูลลูกค้า</b><small>ทะเบียน / ชื่อ / เบอร์โทร</small></span><i>›</i></button>
-      <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>บิลค้างชำระทั้งหมด / ค้นหาบิล</small></span><i>›</i></button>
+      <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รับเงินบิลที่ยังค้างชำระ</small></span><i>›</i></button>
     </div>
     <svg class="hq-art" viewBox="0 0 220 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 66h180M38 66V52l16-18h70l26 18h22c8 0 12 4 12 10v4"/><circle cx="62" cy="68" r="11"/><circle cx="160" cy="68" r="11"/><path d="M60 36h30v16H46M98 36h22l20 16H98z"/></svg>
   </section>
@@ -3537,7 +3537,7 @@ function tkNext(b){if(b.void)return'';const S=jobSteps(b),debt=b.amt-b.paid,wt=w
   if(!t)return '<div class="tk-next ok">✓ งานนี้ครบทุกขั้นตอนแล้ว</div>';
   // งานค้างอื่นที่ยังเหลือ (ไม่ซ่อนเรื่องอื่น)
   const more=nextSteps(b).map(x=>x[1].split(' · ')[0]).filter(x=>!t.startsWith(x.replace(/ \d.*$/,''))&&!/^ค้างชำระ|^เงินโอนรอตรวจ/.test(x)||(/^ค้างชำระ/.test(x)&&!/ยอดค้าง/.test(t))||(/^เงินโอนรอตรวจ/.test(x)&&!/โอน/.test(t)));
-  return `<div class="tk-next"><span>➜ <b>ทำต่อ:</b> ${esc(t)}${more.length?`<small class="tk-more">ยังค้างอีก: ${esc(more.join(' · '))}</small>`:''}</span>${btn}</div>`}
+  return `<div class="tk-next"><span>➜ <b>ขั้นต่อไป:</b> ${esc(t)}${more.length?`<small class="tk-more">ขั้นที่เหลือ: ${esc(more.join(' · '))}</small>`:''}</span>${btn}</div>`}
 document.addEventListener('click',async e=>{const x=e.target.closest('[data-tka]');if(!x)return;const k=x.dataset.tka,b=getBill(+x.dataset.id);
   if(k==='dltdone'&&b){const debt=b.amt-b.paid>0.004;if(!await uiConfirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท\n`:'')+`ยืนยันว่าลูกค้ารับเอกสาร/ป้ายของ ${b.plate} แล้ว?`))return;
     x.disabled=true;try{await dltSet([b],{st:'done'});toast('บันทึกลูกค้ารับเอกสารแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}return}
@@ -3579,8 +3579,8 @@ R.track=()=>{const day=trackD||iso(TODAY),isT=day===iso(TODAY),since=iso(plus(-3
   $('#view').innerHTML=`<div class="ui tk">
   <div class="ui-head"><span class="ui-ic">🧭</span><div class="ui-tt"><h1>ติดตามงาน</h1><div class="ui-sub">${useQ()?'รับรถ → ':''}ตรวจสภาพ → เปิดบิล → ชำระเงิน → งานขนส่ง → ส่งมอบเอกสาร · แสดงเฉพาะขั้นที่บิลนั้นมี</div></div>
     <div class="ui-tools">${trackF==='today'?`<input type="date" id="tk-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่">`:''}</div></div>
-  <div class="chips tk-f">${chip('today',isT?'วันนี้':'วันที่เลือก')}${chip('open','งานยังไม่เสร็จ (30 วัน)',open.length)}${chip('old','ค้างเกิน 30 วัน',old.length)}${chip('req','รออนุมัติยกเลิก/คืนเงิน',pr.length)}${chip('docm','เอกสารแนบไม่ครบ',dm.length)}</div>
-  ${trackF==='today'?`<div class="ui-kpis tk-k"><div class="ui-kpi" data-t="blue"><div><div class="k-l">${useQ()?'รถทั้งหมด':'บิลทั้งหมด'}</div><div class="k-v">${list.length+qOnly.length}</div></div></div>${useQ()?`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอตรวจ/กำลังตรวจ</div><div class="k-v">${qOnly.filter(q=>q.st==='wait'||q.st==='check').length}</div></div></div><div class="ui-kpi" data-t="violet"><div><div class="k-l">รอเปิดบิล</div><div class="k-v">${qOnly.filter(q=>q.st==='pass').length}</div></div></div>`:`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอยื่นขนส่ง</div><div class="k-v">${list.filter(b=>dltKind(b)&&dltOf(b).st==='received').length}</div></div></div>`}<div class="ui-kpi" data-t="green"><div><div class="k-l">รอชำระ</div><div class="k-v">${stage('pay')}</div></div></div><div class="ui-kpi" data-t="navy"><div><div class="k-l">รอส่งมอบเอกสาร</div><div class="k-v">${stage('dlv')}</div></div></div></div>`:''}
+  <div class="chips tk-f">${chip('today',isT?'วันนี้':'วันที่เลือก')}${chip('open','บิลที่งานยังไม่จบ (30 วันล่าสุด)',open.length)}${chip('old','บิลที่งานยังไม่จบ (เกิน 30 วัน)',old.length)}${chip('req','รออนุมัติยกเลิก/คืนเงิน',pr.length)}${chip('docm','เอกสารแนบไม่ครบ',dm.length)}</div>
+  ${trackF==='today'?`<div class="ui-kpis tk-k"><div class="ui-kpi" data-t="blue"><div><div class="k-l">${useQ()?'รถทั้งหมด':'บิลทั้งหมด'}</div><div class="k-v">${list.length+qOnly.length}</div></div></div>${useQ()?`<div class="ui-kpi" data-t="amber"><div><div class="k-l">รอตรวจ/กำลังตรวจ</div><div class="k-v">${qOnly.filter(q=>q.st==='wait'||q.st==='check').length}</div></div></div><div class="ui-kpi" data-t="violet"><div><div class="k-l">รอเปิดบิล</div><div class="k-v">${qOnly.filter(q=>q.st==='pass').length}</div></div></div>`:`<div class="ui-kpi" data-t="amber"><div><div class="k-l">งานขนส่งรอยื่น</div><div class="k-v">${list.filter(b=>dltKind(b)&&dltOf(b).st==='received').length}</div></div></div>`}<div class="ui-kpi" data-t="green"><div><div class="k-l">รอรับชำระเงิน</div><div class="k-v">${stage('pay')}</div></div></div><div class="ui-kpi" data-t="navy"><div><div class="k-l">รอส่งมอบเอกสาร</div><div class="k-v">${stage('dlv')}</div></div></div></div>`:''}
   <div class="tk-list">${qOnly.map(q=>`<div class="tk-c"><div class="tk-h"><span class="plate tk-plate"><b>${esc(q.plate)}</b><small>${esc(q.prov)}</small></span><span class="tk-who"><b>${esc(q.name||'–')}</b><small>อยู่ในคิวตรวจสภาพ</small></span><span class="sp"></span><button type="button" class="btn sm line" data-go="queue">ไปที่คิว</button></div>${stepsHTML(qS(q))}</div>`).join('')}
     ${list.map(b=>{const pend=(b.reqs||[]).find(r=>r.st==='pending');return `<div class="tk-c${b.void?' void':''}"><div class="tk-h"><span class="plate tk-plate"><b>${esc(b.plate)}</b><small>${esc(b.prov)}</small></span><span class="tk-who"><b>${esc(b.name||'–')}</b><small>${b.no?'บิล '+esc(b.no)+' · ':''}${fmt(b.d)} ${esc(b.t||'')}${b.t?' น.':''}</small></span><span class="tk-svc" title="บริการในบิลนี้: ${esc(b.items.map(i=>i[0]).join(', '))}"><small>บริการในบิล</small>${b.items.map(i=>`<span>${esc(String(i[0]).replace(/^ค่า/,''))}</span>`).join('')}</span><span class="tk-amt"><small>ยอดบิล</small><b>${money(b.amt)}</b>${!b.void&&b.amt-b.paid>0.004?`<em>ค้าง ${money(b.amt-b.paid)}</em>`:''}</span>${b.void?'<span class="ui-pill bad">ยกเลิก</span>':''}${pend?`<span class="ui-pill warn">รออนุมัติ${RQ_K[pend.kind]}</span>`:''}${(b.fpend||[]).length?`<span class="ui-pill warn">เอกสารขาด ${b.fpend.length}</span>`:''}<span class="sp"></span><button type="button" class="btn sm line" data-showbill="${b.id}">ดูบิล</button></div>${stepsHTML(jobSteps(b))}${tkNext(b)}</div>`}).join('')}
     ${!list.length&&!qOnly.length?'<div class="ui-card"><div class="ui-empty"><span class="e-ic">🗒️</span>ไม่มีงานในรายการนี้</div></div>':''}</div></div>`;
