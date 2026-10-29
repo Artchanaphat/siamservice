@@ -6458,7 +6458,7 @@ const stEmbed=k=>{if(!user||user.role!=='owner'||cur!==k)return;const v=$('#view
   const nodes=[...v.childNodes];v.innerHTML=`<div class="st st-shell"><div class="ltop"><span class="ui-ic">⚙️</span><h1>ตั้งค่าระบบ</h1><span class="sub">${LIVE?'มีผลกับทุกสาขาและทุกเครื่องทันทีหลังบันทึก':'โหมดทดลอง: แก้ได้ แต่ไม่ถูกบันทึกจริง'}</span></div><div class="st-lay">${stNavHTML()}<div class="st-main st-sub"></div></div></div>`;
   const lay=v.querySelector('.st-lay'),main=lay.querySelector('.st-main');nodes.forEach(n=>main.appendChild(n));
   lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));stNavBind(lay)};
-const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['due','⏱️','กำหนดเวลาและการเตือน',['⏱️'],'กำหนดเวลา'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
+const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['due','⏱️','กำหนดเวลาและการเตือน',['⏰','🚚','📆','🔧'],'กำหนดเวลา'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
   ['เอกสาร',[['rc','🧾','รูปแบบใบเสร็จ',['🧾'],'ใบเสร็จ']]],
   ['การแจ้งเตือน',[['lineoa','🔑','เชื่อมต่อ LINE OA',['🔑'],'LINE OA'],['remind','🔔','เตือนลูกค้าทาง LINE',['🔔'],'เตือนลูกค้า'],['daily','💬','สรุปประจำวันทาง LINE',['💬'],'สรุปรายวัน'],['sms','📱','ส่ง SMS (ThaiBulkSMS)',['📱'],'SMS']]]];
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
@@ -6480,12 +6480,15 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     ${N('insp_car','ค่าตรวจสภาพ รถยนต์','รถอายุเกิน '+(+SET.insp_age_car||7)+' ปี')}${N('insp_heavy','ค่าตรวจสภาพ รถหนักเกิน 2,000 กก.')}${N('insp_moto','ค่าตรวจสภาพ มอเตอร์ไซค์','รถอายุเกิน '+(+SET.insp_age_moto||5)+' ปี')}</div></div>
   <div class="card stf-card"><div class="sech teal">📅 ปีจดทะเบียน</div><div class="st-grid">
     <label class="field"><span>ปีจดทะเบียนเก่าสุดที่เลือกได้ (พ.ศ.)</span><input id="st-year" inputmode="numeric" maxlength="4" value="${(+SET.reg_min_year||1947)+543}"><small class="sub">ช่อง "วันจดทะเบียนรถ" จะให้เลือกปีตั้งแต่ปีนี้ถึงปีปัจจุบัน</small></label></div></div>
-  <div class="card stf-card"><div class="sech teal">⏱️ กำหนดเวลาและการเตือน</div><div class="st-grid">
-    ${D('exp_soon','นับว่า "ใกล้หมดอายุ" เมื่อเหลือไม่เกิน','ใช้ในหน้าค้นหา หน้าแรก และสีวันหมดอายุ')}
-    ${D('dlt_late_received','งานขนส่ง: รอยื่นเกิน','นับจากวันรับงาน แล้วขึ้นเตือนสีแดง')}${D('dlt_late_submitted','งานขนส่ง: ยื่นแล้วรอป้ายเกิน','นับจากวันที่กดยื่นขนส่ง')}${D('dlt_late_plate','งานขนส่ง: ได้ป้ายแล้วลูกค้ายังไม่มารับเกิน','นับจากวันที่ได้ป้าย')}
-    ${D('pick_days','วันนัดรับเริ่มต้นในบิลใหม่ (นับจากวันนี้)','0 = รับวันเดียวกัน','วัน',0)}
-    ${D('insp_age_car','รถยนต์เสียค่าตรวจสภาพเมื่ออายุเกิน','ใช้ตอนคำนวณอัตโนมัติ','ปี')}${D('insp_age_moto','มอเตอร์ไซค์เสียค่าตรวจสภาพเมื่ออายุเกิน','ใช้ตอนคำนวณอัตโนมัติ','ปี')}</div>
-    <div class="st-grid two">${T('dlt_items_tax','รายการในบิลที่นับเป็นงาน "ต่อภาษี" (เข้าหน้างานขนส่ง)','ชื่อต้องตรงกับรายการในบิล',1)}${T('dlt_items_tr','รายการในบิลที่นับเป็นงาน "โอน/ย้าย" (เข้าหน้างานขนส่ง)','ชื่อต้องตรงกับรายการในบิล',1)}</div></div>
+  <div class="card stf-card"><div class="sech teal">⏰ แจ้งเตือนวันหมดอายุ</div><div class="st-grid">
+    ${D('exp_soon','นับว่า "ใกล้หมดอายุ" เมื่อเหลือไม่เกิน','ใช้ในหน้าค้นหา หน้าแรก และสีวันหมดอายุ')}</div></div>
+  <div class="card stf-card"><div class="sech teal">🚚 งานขนส่ง</div><p class="sub" style="margin:4px 16px 0">ถ้างานค้างอยู่ขั้นไหนเกินจำนวนวันที่ตั้ง จะขึ้นเตือนสีแดงในหน้างานขนส่งและในสรุป LINE</p><div class="st-grid">
+    ${D('dlt_late_received','รอยื่นขนส่ง เกิน','นับจากวันรับงาน')}${D('dlt_late_submitted','ยื่นแล้ว รอป้าย เกิน','นับจากวันที่กดยื่นขนส่ง')}${D('dlt_late_plate','ได้ป้ายแล้ว ลูกค้ายังไม่มารับ เกิน','นับจากวันที่ได้ป้าย')}</div>
+    <div class="st-grid two">${T('dlt_items_tax','รายการในบิลที่นับเป็นงาน "ต่อภาษี"','ชื่อต้องตรงกับรายการในบิล',1)}${T('dlt_items_tr','รายการในบิลที่นับเป็นงาน "โอน/ย้าย"','ชื่อต้องตรงกับรายการในบิล',1)}</div></div>
+  <div class="card stf-card"><div class="sech teal">📆 วันนัดรับในบิลใหม่</div><div class="st-grid">
+    ${D('pick_days','ตั้งวันนัดรับเป็น วันนี้ + ','0 = รับวันเดียวกัน','วัน',0)}</div></div>
+  <div class="card stf-card"><div class="sech teal">🔧 เกณฑ์อายุรถที่ต้องเสียค่าตรวจสภาพ</div><p class="sub" style="margin:4px 16px 0">ใช้ตอนกดคำนวณอัตโนมัติในบิลใหม่ (ค่าตรวจตั้งได้ที่หมวด ค่าบริการ)</p><div class="st-grid">
+    ${D('insp_age_car','รถยนต์ อายุเกิน','','ปี')}${D('insp_age_moto','มอเตอร์ไซค์ อายุเกิน','','ปี')}</div></div>
   <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
     ${T('brands','ยี่ห้อรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('bodies','ลักษณะรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}
     ${T('prefixes','คำนำหน้าชื่อ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('insurers','บริษัทประกัน','ป้ายสีเหลือง = กองทุนกลาง · กด × เพื่อลบ')}</div></div>
