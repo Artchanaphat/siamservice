@@ -4945,7 +4945,7 @@ R.add=(E)=>{if(!E)billKey=null;
     <div class="sec plain">
       <div class="form">
         ${D('b-pick','<em class="lc-orange">วันนัดรับ</em>',T1)}
-        <div class="field"><span>เล่มทะเบียนที่นำมา</span><div class="row"><label class="row" style="gap:6px"><input type="radio" name="b-doc" value="ตัวจริง" style="width:auto"> ตัวจริง</label><label class="row" style="gap:6px"><input type="radio" name="b-doc" value="สำเนา" checked style="width:auto"> สำเนา</label></div></div>
+        <div class="field"><span>เล่มทะเบียนที่นำมา</span><div class="docpick" role="radiogroup"><label><input type="radio" name="b-doc" value="ตัวจริง"><span>📗 เล่มตัวจริง</span></label><label><input type="radio" name="b-doc" value="สำเนา" checked><span>📄 สำเนา</span></label></div></div>
       </div>
     </div>
 
@@ -7657,5 +7657,14 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
   #view .sm-tbl tr.sm-r td{padding-left:100px!important;padding-top:10px!important;padding-bottom:10px!important}
   #view .sm-tbl tr.sm-r td[data-l]::before{font-size:11.5px}
 }
+/* เลือกเล่มทะเบียน: ปุ่มกล่องใหญ่ เห็นชัดว่าเลือกอันไหน */
+.docpick{display:inline-flex;gap:8px;flex-wrap:wrap}
+.docpick label{position:relative;cursor:pointer;margin:0}
+.docpick input{position:absolute;opacity:0;width:1px!important;height:1px;pointer-events:none}
+.docpick span{display:inline-flex;align-items:center;gap:6px;min-width:120px;justify-content:center;padding:9px 16px;border:2px solid #cfd8e3;border-radius:10px;background:#fff;color:#475569;font-weight:600;font-size:14px;transition:all .15s}
+.docpick label:hover span{border-color:#93b4e8}
+.docpick input:checked+span{border-color:#1670d6;background:#1670d6;color:#fff;box-shadow:0 2px 8px rgba(22,112,214,.3)}
+.docpick input:checked+span::before{content:'✓';font-weight:800}
+.docpick input:focus-visible+span{outline:3px solid #ffd400;outline-offset:2px}
 </style>
 <!-- /SIAM_INCOME_FILTER_V2 -->
