@@ -2193,6 +2193,27 @@ body{margin:0}
 .oc-car{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #d6e2f5;background:#f7faff;border-radius:8px;padding:3px 9px;font:inherit;font-size:13px;color:#0f2a6b;cursor:pointer}
 .oc-car span{font-size:12px;color:#5b6b88}
 .oc-car:hover{background:#eaf1ff}
+.bh-list{display:flex;flex-direction:column;gap:6px}
+.bh-row{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;border:1px solid #e3eaf5;background:#fff;border-radius:9px;padding:7px 10px;font:inherit;font-size:13px;color:#0f2a6b;cursor:pointer}
+.bh-row:hover{background:#f3f7ff}
+.bh-row.cur{border-color:#93b4f0;background:#eef4ff}
+.bh-d small{display:block;color:#64748b;font-size:11.5px}
+.bh-w{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bh-w em{font-style:normal;font-size:11px;color:#1d4ed8;background:#dbeafe;border-radius:999px;padding:0 6px}
+.bh-a{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-weight:600}
+.bh-st{font-size:11px;font-weight:600;border-radius:999px;padding:0 7px}
+.bh-st.ok{background:#dcfce7;color:#166534}
+.bh-st.debt{background:#fee2e2;color:#b91c1c}
+.bh-st.void{background:#e5e7eb;color:#4b5563}
+.bh-pane{display:flex;flex-direction:column;gap:12px}
+.bh-pane .card{background:#fff;border:1px solid #e3eaf5;padding:10px 14px}
+.bh-pane .card-head{font-weight:700;color:#0f2a6b;padding:2px 0 6px;font-size:14px}
+.bh-pane .row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:7px 0;border-top:1px solid #eef2f8;font-size:14px}
+.bh-pane .lbl{color:#475569}
+.bh-pane .val{text-align:right}
+.bh-pane .nb-main{font-size:15px;padding:12px}
+.bh-ph{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;font-size:16px;color:#0f2a6b}
+.bh-x{border:0;background:#e8eef8;border-radius:8px;width:34px;height:34px;font-size:16px;cursor:pointer}
 @media print{
   .tsr-pop{display:none!important}
 }
@@ -3439,6 +3460,20 @@ function copyToAdd(b){go('add');const p=b.plate.split(' ');$('#x-cha').value=p[0
 const ACC=(title,color,icon,body,acc=true)=>`<div class="card${acc?' acc open':''}"><div class="card-head${acc?' acc-head':''}"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="${color}" stroke-width="1.4">${icon}</svg>${title}${acc?'<div class="acc-icon"></div>':''}</div><div class="${acc?'acc-body':''}"><div class="card-body">${body}</div></div></div>`;
 const RW=(l,v,cls='')=>`<div class="row"><div class="lbl">${l}</div><div class="val ${cls}">${v}</div></div>`;
 const beFull=d=>`${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
+/* ประวัติบิลของรถคันนี้ (หน้าบิล) กดแล้วเปิดดูบิลในแผงด้านข้าง ไม่ออกจากหน้าเดิม */
+const carHist=c=>[...new Map([...intake,...oldBills].filter(x=>x&&x.carId===c.id).map(x=>[x.id,x])).values()].sort((a,z)=>z.d-a.d||String(z.t).localeCompare(String(a.t)));
+const bhSt=x=>{if(x.void)return '<span class="bh-st void">ยกเลิก</span>';const d=split(x).debt;return d>0.004?`<span class="bh-st debt">ค้าง ${money(d)}</span>`:'<span class="bh-st ok">ชำระแล้ว</span>'};
+function bhHTML(c,b){const L=carHist(c);if(L.length<2)return '';
+  return ACC(`ประวัติบิลของรถคันนี้ (${L.length})`,'#0e7490','<rect x="3" y="2" width="12" height="14" rx="2"/><path d="M6 6h6M6 9h6M6 12h3"/>',
+    `<div class="bh-list">${L.map(x=>`<button type="button" class="bh-row${x.id===b.id?' cur':''}" data-bh="${x.id}"><span class="bh-d">${fmt(x.d)}<small>${esc(x.no||'')}</small></span><span class="bh-w">${esc(x.what||'')}${x.id===b.id?' <em>บิลนี้</em>':''}</span><span class="bh-a">${money(x.amt)}${bhSt(x)}</span></button>`).join('')}</div>`)}
+function bhOpen(id){const x=getBill(id);if(!x)return;const s=split(x);
+  $('#panel').innerHTML=`<div class="bh-pane"><div class="bh-ph"><div><b>${esc(x.plate)}</b> <span class="sub">${esc(x.prov||'')}</span><div class="sub">บิล ${esc(x.no||'-')} · ${beFull(x.d)}${x.t?' '+esc(x.t)+' น.':''}</div></div><button type="button" class="bh-x" id="bh-x" aria-label="ปิด">✕</button></div>
+    ${x.void?`<div class="ui-note bad">⛔ บิลนี้ถูกยกเลิกแล้ว</div>`:''}
+    <div class="card"><div class="card-head">รายการ</div><div class="card-body">${x.items.map(([l,a])=>RW(esc(l),money(a)+' บาท')).join('')}${x.disc?RW('ส่วนลด','-'+money(x.disc)+' บาท'):''}${x.refund?RW('คืนเงิน / ปรับลด','-'+money(x.refund)+' บาท'):''}${RW('<b>สุทธิ</b>','<b>'+money(x.amt)+' บาท</b>')}</div></div>
+    <div class="card"><div class="card-head">การชำระเงิน</div><div class="card-body">${x.pays.length?x.pays.map(p=>RW(`${fmt(p.d)} ${esc(p.t||'')}<br><small>${esc(p.how||'')}${p.by?' · '+esc(p.by):''}</small>`,`${money(p.amt)} บาท${p.wait?' <span class="bh-st debt">รอตรวจ</span>':''}`)).join(''):'<span class="exp-empty">ยังไม่มีการชำระ</span>'}${RW('คงค้าง',s.debt>0.004?`<b style="color:#b91c1c">${money(s.debt)} บาท</b>`:'0.00 บาท')}</div></div>
+    <div class="card"><div class="card-head">ลูกค้า</div><div class="card-body">${RW('ชื่อ',esc((x.prefix||'คุณ')+' '+(x.name||'')))}${RW('เบอร์',esc(x.tel||'–'))}${x.ctn||x.ctt?RW('ผู้มาติดต่อ',esc([x.ctn,x.ctt].filter(Boolean).join(' · '))):''}${x.rnote?RW('หมายเหตุ',esc(x.rnote)):''}</div></div>
+    <button type="button" class="nb-main" id="bh-go">📄 เปิดหน้าบิลนี้</button></div>`;
+  $('#dlg').hidden=false;$('#bh-x').onclick=()=>{$('#dlg').hidden=true};$('#bh-go').onclick=()=>{$('#dlg').hidden=true;showBill(id)}}
 R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const c=cars.find(x=>x.id===b.carId)||{},s=split(b),debt=s.debt>0.004,oc=c.id?ownerCars(c):[];
   const V=c.raw||{},CU=V.customers||{},kind=V.body||(/บรรทุก/.test(b.type)?'บรรทุกส่วนบุคคล':/จักรยานยนต์/.test(b.type)?'จักรยานยนต์':'นั่งส่วนบุคคล');
@@ -3455,6 +3490,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   <div class="grid"><div>
     ${ACC('ข้อมูลรถ','#7D26CD','<rect x="1" y="6" width="16" height="9" rx="2.5"/><path d="M4 6l1.5-3h7L14 6"/>',RW('ประเภทรถ',esc(b.type))+RW('ลักษณะรถ',esc(kind))+RW('ยี่ห้อ',esc(V.brand||(b.model||'–').split(' ')[0]))+RW('รุ่น',esc(V.brand?(V.model||'–'):(b.model.split(' ').slice(1).join(' ')||'–')))+RW('ทะเบียน',esc(b.plate+' '+b.prov),'blue')+(b.cc?RW('CC',b.cc):'')+(V.color?RW('สี',esc(V.color)):'')+(V.chassis_no?RW('เลขตัวถัง',esc(V.chassis_no)):'')+(V.engine_no?RW('เลขเครื่อง',esc(V.engine_no)):'')+(V.weight_kg?RW('น้ำหนักรถ',V.weight_kg+' กก.'):'')+RW('เอกสารที่นำมา',esc(b.doc||'สำเนา')))}
     ${ACC('ลูกค้า','#0000FF','<circle cx="9" cy="6" r="3.5"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6"/>',RW('ชื่อ',esc((b.prefix||'คุณ')+' '+b.name))+RW('เบอร์',b.tel?esc(b.tel):'–','blue')+(b.ctn||b.ctt?RW('ผู้มาติดต่อ',esc([b.ctn,b.ctt].filter(Boolean).join(' · '))):'')+(b.note?RW('Short Note',esc(b.note)):'')+(b.rnote?RW('หมายเหตุ',esc(b.rnote)):'')+RW('ที่อยู่',addr?esc(addr):NA)+(oc.length?RW(`รถคันอื่น (${oc.length})`,`<div class="oc-list">${oc.map(x=>`<button type="button" class="oc-car" data-oc="${x.id}"><b>${esc(x.plate)}</b><span>${esc(x.prov||'')}</span></button>`).join('')}</div>`):''))}
+    <div id="bh-box">${c.id?bhHTML(c,b):''}</div>
     ${(b.fpend||[]).length?`<div class="ui-note warn bf-miss">📎 <span><b>เอกสารไม่ครบ</b> ยังขาด ${b.fpend.length} ไฟล์: ${b.fpend.map(esc).join(', ')}<br><small>กด "เพิ่มรูปภาพ" หรือ "เพิ่มไฟล์ PDF" ด้านล่างเพื่ออัปโหลดซ้ำ (ไม่สร้างบิลใหม่)</small></span><span class="sp"></span>${user&&(user.role==='owner'||user.role==='head')?'<button type="button" class="btn sm line" id="bf-clr">ไม่ต้องแนบแล้ว</button>':''}</div>`:''}
     ${ACC('รูปภาพ','#FF34B3','<rect x="2" y="3" width="14" height="12" rx="2.5"/><path d="M2 12l4-3 3 3 2-2 5 4"/>',`<div class="bf-box" id="bf-image"><span class="exp-empty">กำลังโหลด...</span></div><div class="bf-add"><label class="btn line">➕ เพิ่มรูปภาพ<input type="file" accept="image/*" multiple hidden data-bfadd></label></div>`,false)}
     ${ACC('PDF','#FF0000','<path d="M4 2h7l4 4v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M11 2v4h4"/>',`<div class="bf-box" id="bf-pdf"><span class="exp-empty">กำลังโหลด...</span></div><div class="bf-add"><label class="btn line">➕ เพิ่มไฟล์ PDF<input type="file" accept="application/pdf" multiple hidden data-bfadd></label></div>`,false)}
@@ -3494,6 +3530,8 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   ov.onclick=e=>{if(e.target===ov)ov.classList.remove('show')};
   $('#nb-new').onclick=()=>debt?ov.classList.add('show'):copyToAdd(b);
   document.querySelectorAll('[data-oc]').forEach(x=>x.onclick=()=>openCar(+x.dataset.oc));
+  const bhBind=()=>document.querySelectorAll('[data-bh]').forEach(x=>x.onclick=()=>bhOpen(+x.dataset.bh));bhBind();
+  if(LIVE&&c.id)DB.carBills(c.id).then(n=>{if(n&&cur==='bill'&&curBill===b.id){const x=$('#bh-box');if(x){x.innerHTML=bhHTML(c,b);bhBind()}}}).catch(()=>{});
   $('#nb-edit').onclick=()=>{editBill=b.id;go('edit')};
   if(b.ins)$('#nb-inst').onclick=()=>{go('inst');Object.assign(INST.st,{mode:'all',tab:'all',q:b.plate});R.inst()};
   $('#nb-back').onclick=()=>go(billBack==='bill'?'income':billBack);
