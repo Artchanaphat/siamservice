@@ -2193,6 +2193,9 @@ body{margin:0}
 .oc-car{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #d6e2f5;background:#f7faff;border-radius:8px;padding:3px 9px;font:inherit;font-size:13px;color:#0f2a6b;cursor:pointer}
 .oc-car span{font-size:12px;color:#5b6b88}
 .oc-car:hover{background:#eaf1ff}
+.dj-pay{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.dj-pay.debt{background:#fee2e2;color:#b91c1c}
+.dj-pay.ok{background:#dcfce7;color:#166534}
 .ltable .c-act{width:44px;text-align:right;padding-right:10px}
 .ic-open{display:inline-grid;place-items:center;width:32px;height:32px;border:1px solid #d6e2f5;background:#f7faff;border-radius:8px;color:#1d4ed8;cursor:pointer}
 .ic-open svg{width:17px;height:17px}
@@ -7262,13 +7265,14 @@ R.dlt=()=>{const all=dltJobs(),doneVisible=b=>siamDltDoneRange==='all'||dltAge(b
     <span class="sub" id="dj-n"></span>
     ${dltF==='done'?`<label class="siam-dlt-history">แสดงงานที่เสร็จแล้ว <select id="siam-dlt-history" aria-label="ช่วงเวลางานขนส่งที่เสร็จแล้ว"><option value="30" ${siamDltDoneRange==='30'?'selected':''}>30 วันล่าสุด</option><option value="all" ${siamDltDoneRange==='all'?'selected':''}>ทั้งหมดที่โหลดอยู่</option></select></label>`:''}
     <button class="btn line" id="dj-print">🖨️ พิมพ์ใบนำส่ง</button>${dltF!=='late'&&DLT_NEXT[dltF]?`<button class="btn" id="dj-bulk">✓ ${DLT_NEXT[dltF][1]}</button>`:''}</div>
-  ${list.length?`<div class="card dj-card"><div class="tablewrap"><table class="dj-tbl"><thead><tr><th class="ck"><input type="checkbox" id="dj-all" aria-label="เลือกทั้งหมด"></th><th>วันที่รับ / บิล</th><th>ทะเบียน</th><th>เจ้าของ</th><th>งาน</th><th>เล่มทะเบียน</th><th>สถานะ</th><th></th></tr></thead><tbody>
+  ${list.length?`<div class="card dj-card"><div class="tablewrap"><table class="dj-tbl"><thead><tr><th class="ck"><input type="checkbox" id="dj-all" aria-label="เลือกทั้งหมด"></th><th>วันที่รับ / บิล</th><th>ทะเบียน</th><th>เจ้าของ</th><th>งาน</th><th>เล่มทะเบียน</th><th>สถานะงาน</th><th>การชำระเงิน</th><th></th></tr></thead><tbody>
   ${list.map(b=>{const j=dltOf(b),nx=DLT_NEXT[j.st];return `<tr data-j="${b.id}" class="${dltLate(b)?'late':''}"><td class="ck"><input type="checkbox" data-ck ${dltSel.has(b.id)?'checked':''} aria-label="เลือก"></td>
     <td data-l="วันที่รับ">${fmt(b.d)}<div class="sub">${esc(b.no||'')}</div></td>
     <td data-l="ทะเบียน"><b>${esc(b.plate)}</b><div class="sub">${esc(b.prov||'')}</div></td>
     <td data-l="เจ้าของ">${esc(b.name)}<div class="sub">${esc(b.tel||'')}</div></td>
     <td data-l="งาน">${esc(dltKind(b))}</td><td data-l="เล่มทะเบียน">${esc(b.doc||'สำเนา')}</td>
-    <td data-l="สถานะ">${dltPill(b)}${dltLate(b)?`<div class="dj-late">ค้าง ${dltAge(b)} วัน</div>`:j.st!=='done'?`<div class="sub">${dltAge(b)} วัน</div>`:''}${j.cert?`<div class="sub">ใบรับรอง ${esc(j.cert)}</div>`:''}${owe(b)?`<div class="dj-debt">ค้างชำระ ${money(split(b).debt)} บาท</div>`:''}${trWait(b).length?'<div class="dj-wait">⏳ เงินโอนรอตรวจสอบ</div>':''}</td>
+    <td data-l="สถานะงาน">${dltPill(b)}${dltLate(b)?`<div class="dj-late">⚠ เกินกำหนด ${dltAge(b)-DLT_LATE[j.st]} วัน</div>`:j.st!=='done'?`<div class="sub">${dltAge(b)?'อยู่ขั้นนี้ '+dltAge(b)+' วัน':'เข้าขั้นนี้วันนี้'}${DLT_LATE[j.st]!=null?' (กำหนด '+DLT_LATE[j.st]+' วัน)':''}</div>`:''}${j.cert?`<div class="sub">ใบรับรอง ${esc(j.cert)}</div>`:''}</td>
+    <td data-l="การชำระเงิน">${owe(b)?`<span class="dj-pay debt">ค้าง ${money(split(b).debt)}</span>`:'<span class="dj-pay ok">ชำระครบ</span>'}${trWait(b).length?'<div class="dj-wait">⏳ โอนรอตรวจ</div>':''}</td>
     <td class="act">${nx?`<button class="btn" data-nx="${nx[0]}">${nx[1]}</button>`:''}<button class="btn line" data-ed title="รายละเอียด">แก้ไข</button><button class="btn line" data-cp title="คัดลอกทะเบียนแล้วเปิดเว็บเช็คภาษีกรมขนส่ง">🔍</button><button class="btn line" data-showbill="${b.id}" title="ดูบิล">บิล</button></td></tr>`}).join('')}
   </tbody></table></div></div>`:`<div class="eempty"><div>ไม่มีรายการในหมวดนี้</div></div>`}
   </div><div class="dlt-sheet" id="dj-sheet"></div></div>`;
