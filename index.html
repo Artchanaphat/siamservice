@@ -3103,7 +3103,7 @@ R.home=()=>{
     ${useQ()?`${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
     ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากคิว ${qtot} คัน</span>`,'queue')}
     ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'ไม่มีรถตรวจไม่ผ่าน'}</span>`,'queue')}`:`${kpi('green','ok','รับชำระวันนี้',money(paidOn(iso(TODAY))).replace(/\.00$/,''),'บาท','<span class="hk-d">เงินยืนยันแล้ว</span>','close')}
-    ${kpi('amber','clock','รอยื่นขนส่ง',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน','<span class="hk-d">งานขนส่งที่ยังไม่ยื่น</span>','dlt')}
+    ${kpi('amber','clock','รอยื่นขนส่ง',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">งานขนส่งที่ยังไม่ยื่น · ยังไม่เสร็จทั้งหมด ${dltOpen} คัน</span>`,'dlt')}
     ${kpi('red','bad','ครบกำหนดใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ลูกค้าที่ควรแจ้งเตือน</span>','bell')}`}
   </div>
   <section class="hq">
@@ -3129,12 +3129,6 @@ R.home=()=>{
       <div class="ui-card ha"><div class="hc-h"><h2>${I('<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>')}รายการแจ้งเตือน</h2></div>
         <div class="ha-l">${alertList().map(([k,ic,l,c,col])=>`<button type="button" class="ha-i" data-al="${k}" ${c?'':'disabled'}><i>${ic}</i><span>${l}</span><b style="${c?`background:${col}`:''}">${c}</b></button>`).join('')}</div></div>
     </div>
-  </div>
-  <div class="hb-row">
-    <button type="button" class="hb pink" data-go="close"><span class="hb-ic">${I(IC.coin)}</span><span><small>รับชำระวันนี้ (ยืนยันแล้ว)</small><b>${money(paidT)}<em>บาท</em></b>${waitOn(iso(TODAY))?`<small class="hb-wait">+ โอนรอตรวจสอบ ${money(waitOn(iso(TODAY)))}</small>`:''}</span></button>
-    <button type="button" class="hb sky" data-go="income"><span class="hb-ic">${I(IC.bill)}</span><span><small>บิลวันนี้</small><b>${td.length}<em>ใบ · ${money(td.reduce((a,b)=>a+b.amt,0))} บาท</em></b></span></button>
-    <button type="button" class="hb sand" data-go="income"><span class="hb-ic">${I(IC.warn)}</span><span><small>ค้างชำระทั้งหมด</small><b>${debtB.length}<em>บิล · ${money(debtB.reduce((a,b)=>a+b.amt-b.paid,0))} บาท</em></b></span></button>
-    <button type="button" class="hb lilac" data-go="dlt"><span class="hb-ic">${I(IC.truck)}</span><span><small>งานขนส่งที่ยังไม่เสร็จ</small><b>${dltOpen}<em>คัน</em></b></span><i>›</i></button>
   </div>
   <div class="exp">
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
