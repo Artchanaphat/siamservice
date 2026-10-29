@@ -2357,6 +2357,21 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 .st-ntabs>button.on{background:#1d63ed;border-color:#1d63ed;color:#fff}
 .st-ntabs>button.on small{color:#ffe4c7}
 .st-bar.dirty::before{content:'⚠️ มีการแก้ไขที่ยังไม่ได้บันทึก';margin-right:auto;align-self:center;color:#b45309;font-weight:700;font-size:14px}
+.ask-edit{margin-left:8px;font:inherit;font-size:12.5px;font-weight:650;border:1px solid #d7e4f6;background:#fff;color:#2453a4;border-radius:8px;padding:3px 9px;cursor:pointer}
+.le-l{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;max-height:46vh;overflow:auto}
+.le-i{display:inline-flex;align-items:center;gap:4px;background:#f1f5fb;border:1px solid #dfe6f1;border-radius:8px;padding:4px 4px 4px 10px;font-size:13.5px}
+.le-i button{border:0;background:none;color:#b42318;font-size:16px;line-height:1;cursor:pointer;padding:0 6px}
+.le-add{display:flex;gap:8px}
+.le-add input{flex:1;min-width:0;height:40px;padding:0 10px;border:1px solid #cfd5dd;border-radius:10px;font:inherit}
+.bf-dg+.bf-dg{margin-top:8px}
+.bf-dh{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.bf-de{font:inherit;font-size:12px;border:1px solid #d7e4f6;background:#fff;color:#2453a4;border-radius:7px;padding:2px 8px;cursor:pointer}
+.prb-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 18px;margin-bottom:10px}
+.prb-g span{font-size:13px;color:#64748b}
+.prb-g b{font-size:15px;color:#0b2766;margin-top:-4px}
+.prb-f{display:grid;gap:8px}
+.prb-f label{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:14px}
+.prb-f input{width:120px;height:38px;padding:0 10px;border:1px solid #cfd5dd;border-radius:9px;font:inherit;text-align:right}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -2932,7 +2947,22 @@ const insConfirmedPaid=b=>Math.max(0,Math.min(b.ins||0,Math.round((confirmedPaid
 /* tax calculator */
 function carTax(cc){let t=Math.min(cc,600)*.5;if(cc>600)t+=(Math.min(cc,1800)-600)*1.5;if(cc>1800)t+=(cc-1800)*4;return t}
 function pickupTax(kg){const tb=[[500,300],[750,450],[1000,600],[1250,750],[1500,900],[1750,1050],[2000,1350],[2500,1650],[3000,1950],[3500,2250],[4000,2550],[4500,2850],[5000,3150],[6000,3450],[7000,3750]];for(const[w,f]of tb)if(kg<=w)return f;return 4050}
-const motoPrb=cc=>cc<=75?161.57:cc<=125?323.14:cc<=150?430.14:645.21;
+// เบี้ย พ.ร.บ. อยู่ใน app_settings key 'rates' (หัวหน้าสาขา/เจ้าของร้านแก้ได้ ต้องรัน SQL 24)
+let RATES={};
+const PRB=k=>+((RATES.prb||{})[k]??PRB_DEF[k]);
+const PRB_L=[['car','รถยนต์นั่ง / EV (รย.1)'],['pickup','รถกระบะ (รย.3)'],['van','รถตู้ (รย.2)'],['m75','มอเตอร์ไซค์ ไม่เกิน 75 cc'],['m125','มอเตอร์ไซค์ 76–125 cc'],['m150','มอเตอร์ไซค์ 126–150 cc'],['mbig','มอเตอร์ไซค์ เกิน 150 cc']];
+const prbCan=()=>user&&(user.role==='owner'||user.role==='head');
+const prbHTML=()=>`<div class="prb-g">${PRB_L.map(([k,l])=>`<span>${l}</span><b>${money(PRB(k))}</b>`).join('')}</div>${prbCan()?'<button type="button" class="btn line" data-prbedit>✏️ แก้เบี้ย พ.ร.บ.</button>':''}<p class="sub">ใช้ตอนคำนวณอัตโนมัติในบิลใหม่และหน้าคำนวณภาษี · แก้ได้เฉพาะหัวหน้าสาขาและเจ้าของร้าน</p>`;
+// แก้เบี้ย พ.ร.บ. (หัวหน้าสาขา/เจ้าของร้าน) บันทึกทันที
+function prbEdit(after){const ov=document.createElement('div');ov.className='ask-ov';
+  ov.innerHTML=`<div class="ask" role="dialog" aria-modal="true"><div class="ask-h"><b>แก้เบี้ย พ.ร.บ.</b><span>ราคารวมภาษีและอากรแล้ว · มีผลกับบิลใหม่ทุกสาขา</span></div>
+    <div class="ask-b prb-f">${PRB_L.map(([k,l])=>`<label><span>${l}</span><input data-p="${k}" inputmode="decimal" value="${PRB(k)}"></label>`).join('')}</div>
+    <div class="ask-f"><button type="button" class="btn line" data-x>ยกเลิก</button><button type="button" class="btn" data-ok>💾 บันทึก</button></div></div>`;
+  document.body.append(ov);ov.querySelector('[data-x]').onclick=()=>ov.remove();
+  ov.querySelector('[data-ok]').onclick=async()=>{const p={};for(const i of ov.querySelectorAll('[data-p]')){const v=parseFloat(i.value.replace(/,/g,''));if(!(v>0)){alert('กรุณาใส่ราคาให้ถูกต้อง: '+i.previousElementSibling.textContent);i.focus();return}p[i.dataset.p]=v}
+    const o=Object.assign({},RATES,{prb:p});try{if(LIVE)await DB.saveRates(o);RATES=o;ov.remove();toast(LIVE?'บันทึกเบี้ย พ.ร.บ. แล้ว':'โหมดทดลอง: ไม่ได้บันทึกจริง');if(after)after()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-prbedit]');if(b&&prbCan())prbEdit(()=>{const box=b.parentNode;box.innerHTML=prbHTML()})});
+const motoPrb=cc=>cc<=75?PRB('m75'):cc<=125?PRB('m125'):cc<=150?PRB('m150'):PRB('mbig');
 
 function status(d){
   if(!d)return '<span class="pill brand">ไม่มี</span>';
@@ -3901,6 +3931,11 @@ const INS_CO=["กรุงเทพประกันภัย", "กลาง�
 const PREFIX=["คุณ", "นาย", "นาง", "นางสาว", "พลตำรวจเอก", "พลตำรวจเอก หญิง", "พลตำรวจโท", "พลตำรวจโท หญิง", "พลตำรวจตรี", "พลตำรวจตรี หญิง", "พันตำรวจเอก", "พันตำรวจเอก หญิง", "พันตำรวจเอกพิเศษ", "พันตำรวจเอกพิเศษ หญิง", "พันตำรวจโท", "พันตำรวจโท หญิง", "พันตำรวจตรี", "พันตำรวจตรี หญิง", "ร้อยตำรวจเอก", "ร้อยตำรวจเอก หญิง", "ร้อยตำรวจโท", "ร้อยตำรวจโท หญิง", "ร้อยตำรวจตรี", "ร้อยตำรวจตรี หญิง", "นายดาบตำรวจ", "ดาบตำรวจหญิง", "สิบตำรวจเอก", "สิบตำรวจเอก หญิง", "สิบตำรวจโท", "สิบตำรวจโท หญิง", "สิบตำรวจตรี", "สิบตำรวจตรี หญิง", "จ่าสิบตำรวจ", "จ่าสิบตำรวจ หญิง", "พลตำรวจ", "พลตำรวจ หญิง", "พลเอก", "พลเอก หญิง", "พลโท", "พลโท หญิง", "พลตรี", "พลตรี หญิง", "พันเอก", "พันเอก หญิง", "พันเอกพิเศษ", "พันเอกพิเศษ หญิง", "พันโท", "พันโท หญิง", "พันตรี", "พันตรี หญิง", "ร้อยเอก", "ร้อยเอก หญิง", "ร้อยโท", "ร้อยโท หญิง", "ร้อยตรี", "ร้อยตรี หญิง", "สิบเอก", "สิบเอก หญิง", "สิบโท", "สิบโท หญิง", "สิบตรี", "สิบตรี หญิง", "จ่าสิบเอก", "จ่าสิบเอก หญิง", "จ่าสิบโท", "จ่าสิบโท หญิง", "จ่าสิบตรี", "จ่าสิบตรี หญิง", "พลทหารบก", "ว่าที่ พ.ต.", "ว่าที่ พ.ต. หญิง", "ว่าที่ ร.อ.", "ว่าที่ ร.อ. หญิง", "ว่าที่ ร.ท.", "ว่าที่ ร.ท. หญิง", "ว่าที่ ร.ต.", "ว่าที่ ร.ต. หญิง", "พลเรือเอก", "พลเรือเอก หญิง", "พลเรือโท", "พลเรือโท หญิง", "พลเรือตรี", "พลเรือตรี หญิง", "นาวาเอก", "นาวาเอก หญิง", "นาวาเอกพิเศษ", "นาวาเอกพิเศษ หญิง", "นาวาโท", "นาวาโท หญิง", "นาวาตรี", "นาวาตรี หญิง", "เรือเอก", "เรือเอก หญิง", "เรือโท", "เรือโท หญิง", "เรือตรี", "เรือตรี หญิง", "พันจ่าเอก", "พันจ่าเอก หญิง", "พันจ่าโท", "พันจ่าโท หญิง", "พันจ่าตรี", "พันจ่าตรี หญิง", "จ่าเอก", "จ่าเอก หญิง", "จ่าโท", "จ่าโท หญิง", "จ่าตรี", "จ่าตรี หญิง", "พลทหารเรือ", "พลอากาศเอก", "พลอากาศเอก หญิง", "พลอากาศโท", "พลอากาศโท หญิง", "พลอากาศตรี", "พลอากาศตรี หญิง", "นาวาอากาศเอก", "นาวาอากาศเอก หญิง", "นาวาอากาศเอกพิเศษ", "นาวาอากาศเอกพิเศษ หญิง", "นาวาอากาศโท", "นาวาอากาศโท หญิง", "นาวาอากาศตรี", "นาวาอากาศตรี หญิง", "เรืออากาศเอก", "เรืออากาศเอก หญิง", "เรืออากาศโท", "เรืออากาศโท หญิง", "เรืออากาศตรี", "เรืออากาศตรี หญิง", "พันจ่าอากาศเอก", "พันจ่าอากาศเอก หญิง", "พันจ่าอากาศโท", "พันจ่าอากาศโท หญิง", "พันจ่าอากาศตรี", "พันจ่าอากาศตรี หญิง", "จ่าอากาศเอก", "จ่าอากาศเอก หญิง", "จ่าอากาศโท", "จ่าอากาศโท หญิง", "จ่าอากาศตรี", "จ่าอากาศตรี หญิง", "พลทหารอากาศ", "หม่อม", "หม่อมเจ้า", "หม่อมราชวงศ์", "หม่อมหลวง", "ดร.", "ศ.ดร.", "ศ.", "ผศ.ดร.", "ผศ.", "รศ.ดร.", "รศ.", "นพ.", "แพทย์หญิง", "สัตวแพทย์", "สพญ.", "ทพ.", "ทพญ.", "เภสัชกร", "ภกญ.", "วัด", "พระ", "พระครู", "พระมหา", "พระสมุห์", "พระอธิการ", "สามเณร", "แม่ชี", "บาทหลวง", "MR", "MRS", "MS", "MISS", "Dr.", "บริษัท", "หจก.", "โรงเรียน", "สหกรณ์", "อื่นๆ"];
 /* ตั้งค่าระบบ (เจ้าของร้านแก้ได้ที่ ตั้งค่าระบบ) ค่าเริ่มต้นด้านล่าง ระบบจริงเก็บในตาราง app_settings */
 const INS_DEF=[["กรุงเทพประกันภัย", "BKI", 0], ["กลางคุ้มครองผู้ประสบภัยจากรถ", "RVP", 1], ["คิวบีอี ประกันภัย", "QBE", 0], ["คุ้มภัยโตเกียวมารีนประกันภัย", "TMSTH", 0], ["จรัญประกันภัย", "CHARAN", 0], ["ชับบ์สามัคคีประกันภัย", "CHUBB", 0], ["ซมโปะ ประกันภัย", "SOMPO", 0], ["ทิพยประกันภัย", "TIP", 0], ["ทูนประกันภัย", "TUNE", 0], ["ธนชาตประกันภัย", "TNI", 0], ["นวกิจประกันภัย", "NAVAKIJ", 0], ["นำสินประกันภัย", "NAMSENG", 0], ["บางกอกสหประกันภัย", "BUS", 0], ["ประกันคุ้มภัย", "SAFETY", 0], ["ประกันภัยไทยวิวัฒน์", "TVI", 0], ["พิพัทประกัน", "PPI", 0], ["มิตรแท้ประกันภัย", "MITTARE", 0], ["วิริยะประกันภัย", "VIRIYAH", 0], ["ศรีอยุธยา เจนเนอรัล ประกันภัย", "SRIAYUD", 0], ["สยามซิตี้ประกันภัย", "SIAMCITY", 0], ["สหมงคลประกันภัย", "SAHAMONG", 0], ["สินทรัพย์ประกันภัย", "SINSAP", 0], ["สินมั่นคงประกันภัย", "SMK", 0], ["อลิอันซ์ ประกันภัย", "ALLIANZ", 0], ["อินทรประกันภัย", "INDARA", 0], ["เทเวศประกันภัย", "DEVES", 0], ["เมืองไทยประกันภัย", "MTI", 0], ["เอ็ม เอส ไอ จี ประกันภัย", "MSIG", 0], ["เอราวัณประกันภัย", "ERAWAN", 0], ["เออร์โกประกันภัย", "ERGO", 0], ["แอกซ่าประกันภัย", "AXA", 0], ["แอลเอ็มจี ประกันภัย", "LMG", 0], ["ไทยประกันภัย", "THAINS", 0], ["ไทยพัฒนาประกันภัย", "THAIPAT", 0], ["ไทยศรีประกันภัย", "THAISRI", 0], ["ไทยเศรษฐกิจประกันภัย", "TSI", 0], ["ไทยไพบูลย์ประกันภัย", "TPI", 0], ["ไอโออิ กรุงเทพ ประกันภัย", "AIOI", 0]];
+// รายการที่พนักงานแก้เองได้ (app_settings key 'lists', ต้องรัน SQL 24 ให้พนักงานบันทึกได้)
+const PRB_DEF={car:645.21,pickup:967.28,van:1182.35,m75:161.57,m125:323.14,m150:430.14,mbig:645.21};
+const LISTS_DEF={insp_fail:['ไฟหน้าไม่ติด','ไฟเลี้ยว/ไฟเบรกไม่ติด','ควันดำเกินมาตรฐาน','เสียงดังเกินมาตรฐาน','เบรกไม่ผ่าน','ศูนย์ล้อ/ช่วงล่าง','ยางสึก','กระจก/ที่ปัดน้ำฝน','แตรไม่ดัง','เลขตัวถัง/เลขเครื่องไม่ชัด'],
+  docs:{tax:['เล่มทะเบียนรถ (ตัวจริงหรือสำเนา)','พ.ร.บ. ภาคบังคับ (ถ้ามี)','หลักฐานการชำระภาษีปีก่อน (ถ้ามี)'],tr:['เล่มทะเบียนรถตัวจริง','บัตรประชาชนผู้โอนและผู้รับโอน','หนังสือมอบอำนาจ (ถ้าไม่มาเอง)','สัญญาซื้อขาย'],insp:['เล่มทะเบียนรถ (ตัวจริงหรือสำเนา)','นำรถมาตรวจที่ร้าน']}};
+let LISTS=JSON.parse(JSON.stringify(LISTS_DEF));
 const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,fee_tr_car:300,fee_tr_moto:200,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,exp_soon:30,dlt_late_received:2,dlt_late_submitted:7,dlt_late_plate:14,insp_age_car:7,insp_age_moto:5,pick_days:1,queue_off:[],dlt_items_tax:['ค่าภาษีรถ','ค่าฝากต่อภาษี'],dlt_items_tr:['ค่าโอน','ค่าย้าย','ค่าโอนย้าย','ค่าเปลี่ยนสี','ค่าตรวจสภาพโอน','ค่าเรื่อง'],passthru:['ค่าภาษีรถ','ค่าปรับล่าช้า','พ.ร.บ.','ประกันภาคสมัครใจ'],exp_cats:['ค่าแรงพนักงาน','ค่าเช่า','ค่าไฟ','ค่าน้ำ','ค่าอินเทอร์เน็ต/โทรศัพท์','ค่าเครื่องมือ/ซ่อมบำรุง','ค่าเอกสาร/เครื่องเขียน','ค่าน้ำมัน/เดินทาง','อื่นๆ'],line_oa:'',line_days:[30,7],sms_sender:'',sms_force:'standard',sms_days:30,sms_tpl_reg:'รถทะเบียน {ทะเบียน} {จังหวัด} ภาษีจะหมดอายุ {วันหมดอายุ} ต่อภาษีได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',sms_tpl_ins:'ประกันรถ {ทะเบียน} {จังหวัด} จะหมดอายุ {วันหมดอายุ} ต่ออายุได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',rc:{a4:'half',slip:'std',logo:1,pp:1,line:1,sign:1,shopQr:0,taxid:'',foot:'ขอบคุณที่ใช้บริการ'},brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
 let SET=JSON.parse(JSON.stringify(SET_DEF));
 const insNames=()=>SET.insurers.map(x=>x[0]);
@@ -5402,12 +5437,12 @@ R.add=(E)=>{if(!E)billKey=null;
       if($('#b-insp').dataset.user!=='1')setM('b-insp',ty?(auto||base):0);
       $('#b-tro').hidden=true;$('#b-auto-note').textContent=ty?'ตรวจสภาพอย่างเดียว: ไม่คิดภาษี พ.ร.บ. และค่าฝากต่อภาษี (แก้ค่าตรวจสภาพเองได้)':'ตรวจสภาพอย่างเดียว: เลือกประเภทรถ แล้วระบบจะใส่ค่าตรวจสภาพมาตรฐานให้';calcLate();return}
     let tax=0,insp=0,prb=0,note='';
-    if(ty==='sedan'){tax=carTax(cc);const pct=reg&&ageIn>=6?(ageIn>=10?50:(ageIn-5)*10):0;tax*=1-pct/100;insp=car7;prb=645.21;note=`รถปีที่ ${ageIn}${pct?` ลด ${pct}%`:''}`}
-    else if(ty==='van'){tax=kg>0?vanTax(kg):0;insp=car7;prb=1182.35;note='รย.2 คิดตามน้ำหนัก'}
-    else if(ty==='pickup'){tax=kg>0?pickupTax(kg):0;insp=car7;prb=967.28;note='รย.3 คิดตามน้ำหนัก'}
+    if(ty==='sedan'){tax=carTax(cc);const pct=reg&&ageIn>=6?(ageIn>=10?50:(ageIn-5)*10):0;tax*=1-pct/100;insp=car7;prb=PRB('car');note=`รถปีที่ ${ageIn}${pct?` ลด ${pct}%`:''}`}
+    else if(ty==='van'){tax=kg>0?vanTax(kg):0;insp=car7;prb=PRB('van');note='รย.2 คิดตามน้ำหนัก'}
+    else if(ty==='pickup'){tax=kg>0?pickupTax(kg):0;insp=car7;prb=PRB('pickup');note='รย.3 คิดตามน้ำหนัก'}
     else if(ty==='moto'){tax=$('#b-body').value==='จักรยานยนต์ + พวงข้าง'?150:100;insp=moto5;prb=motoPrb(cc);note='รย.12 เหมาคัน'}
-    else if(ty==='ev'){tax=kg>0?vanTax(kg):0;insp=car7;prb=645.21;note='EV ไม่เกิน 7 ที่นั่ง คิดตามน้ำหนัก'}
-    else if(ty==='ev_van'){tax=kg>0?Math.round(vanTax(kg)/2):0;insp=car7;prb=1182.35;note='EV เกิน 7 ที่นั่ง ครึ่งหนึ่งของอัตรา'}
+    else if(ty==='ev'){tax=kg>0?vanTax(kg):0;insp=car7;prb=PRB('car');note='EV ไม่เกิน 7 ที่นั่ง คิดตามน้ำหนัก'}
+    else if(ty==='ev_van'){tax=kg>0?Math.round(vanTax(kg)/2):0;insp=car7;prb=PRB('van');note='EV เกิน 7 ที่นั่ง ครึ่งหนึ่งของอัตรา'}
     else if(ty==='ev_moto'){tax=50;insp=moto5;prb=motoPrb(cc);note='EV จักรยานยนต์ เหมาคัน'}
     else{$('#b-auto-note').textContent=ty?'ประเภทรถนี้ระบบคิดให้ไม่ได้ กรุณากรอกยอดเอง':'เลือกประเภทรถ วันจดทะเบียน และขนาดรถ แล้วระบบจะคิดภาษีให้';$('#b-tro').hidden=true;recalc();return}
     if($('#b-tax').dataset.user!=='1')setM('b-tax',tax);else note+=' · ใช้ค่าภาษีที่พิมพ์เอง';
@@ -5628,7 +5663,9 @@ function billLayout(E){const form=$('#bill');if(!form)return;
   side.innerHTML=`<div class="bf-card bf-find" id="bf-find"><h3>${E?'บิลที่กำลังแก้ไข':'ค้นหาลูกค้าเดิม'}</h3>${E?`<p class="sub">${esc(E.no||'')} · ${esc(E.plate)} · ${esc(E.name)}</p>`:''}</div>
     <div class="bf-card bf-sum"><h3>สรุปยอดค่าบริการ</h3><div id="bf-sumslot"></div></div>
     <div class="bf-btns"><button type="button" class="btn line" id="bf-reset">${esc(reset?reset.textContent.trim()==='รีเซ็ท'?'ล้างข้อมูล':reset.textContent.trim():'ล้างข้อมูล')}</button><button type="submit" form="bill" class="btn bf-save">💾 บันทึก</button></div>
-    <div class="bf-card bf-doc"><h3>เอกสารที่ต้องใช้</h3><ul><li>เล่มทะเบียนรถ (ตัวจริงหรือสำเนา)</li><li>พ.ร.บ. ภาคบังคับ (ถ้ามี)</li><li>หลักฐานการชำระภาษีปีก่อน (ถ้ามี)</li><li>บัตรประชาชนเจ้าของรถ (กรณีโอน/ย้าย)</li></ul></div>`;
+    <div class="bf-card bf-doc" id="bf-doc"></div>`;
+  const docDraw=()=>{const d=LISTS.docs||LISTS_DEF.docs;$('#bf-doc').innerHTML=`<h3>เอกสารที่ต้องใช้</h3>${[['tax','ต่อภาษี / พ.ร.บ.'],['tr','โอน / ย้าย'],['insp','ตรวจสภาพ']].map(([k,l])=>`<div class="bf-dg"><div class="bf-dh"><b>${l}</b><button type="button" class="bf-de" data-de="${k}" aria-label="แก้ไขเอกสาร ${l}">✏️ แก้ไข</button></div><ul>${(d[k]||[]).map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')}`;
+    document.querySelectorAll('[data-de]').forEach(b=>b.onclick=async()=>{const k=b.dataset.de,L=await listEdit('เอกสารที่ต้องใช้ · '+b.previousElementSibling.textContent,(LISTS.docs||{})[k]||[]);if(L&&await saveListsNow(o=>{o.docs=Object.assign({},o.docs,{[k]:L})}))docDraw()})};docDraw();
   $('#bf-reset').onclick=()=>reset&&reset.click();
   // จอกว้าง: ย้ายช่องค้นหา/ยอดรวม/รายการไปแผงขวา · จอแคบ: คืนตำแหน่งเดิม (แถบยอดรวมติดล่างจอ)
   const chk=$('#view .check-card'),bar=form.querySelector('.paybar'),list=$('#sum-list');
@@ -5777,7 +5814,7 @@ R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
     const tax=ct.type==='moto'?100:ct.type==='pickup'?pickupTax(ct.kg):carTax(ct.cc)*(1-disc);
     const rows=[['ค่าตรวจสภาพ',insp],['ภาษีประจำปี',tax]];
     if(ct.late)rows.push([`เงินเพิ่ม ${ct.late} เดือน (1%/เดือน)`,tax*.01*ct.late]);
-    if(ct.prb){rows.push(['พ.ร.บ.',ct.type==='moto'?motoPrb(ct.cc):ct.type==='pickup'?967.28:645.21]);const pf=ct.type==='moto'?SET.fee_prb_moto:SET.fee_prb_car;if(pf)rows.push(['ค่าต่อ พ.ร.บ.',pf])}
+    if(ct.prb){rows.push(['พ.ร.บ.',ct.type==='moto'?motoPrb(ct.cc):ct.type==='pickup'?PRB('pickup'):ct.type==='van'?PRB('van'):PRB('car')]);const pf=ct.type==='moto'?SET.fee_prb_moto:SET.fee_prb_car;if(pf)rows.push(['ค่าต่อ พ.ร.บ.',pf])}
     rows.push(['ค่าฝากต่อภาษี',ct.fee]);rows.forEach(r=>r[1]=up(r[1]));
     $('#c-out').innerHTML=rows.map(([k,v])=>`<div class="li"><span>${k}</span><span class="num">${baht(v)}</span></div>`).join('');
     $('#c-tot').textContent=baht(rows.reduce((s,r)=>s+r[1],0))};
@@ -6137,10 +6174,16 @@ const DB=(()=>{
   async function delFile(f){const c=await client();try{const r=await c.storage.from('bill-files').remove([f.path]);if(r.error)throw new Error(r.error.message);chk(await c.from('bill_files').delete().eq('id',f.id))}catch(e){need11(e)}}
   async function lineRpc(fn){const c=await client();const r=await c.rpc(fn);if(r.error)need06(new Error(r.error.message));return r.data}
   async function saveSettings(o){const c=await client();try{chk(await c.from('app_settings').upsert({key:'main',value:o,updated_by_name:me.name},{onConflict:'key'}))}catch(e){need05(e)}}
-  async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
+  async function loadSettings(c){const r=await c.from('app_settings').select('key,value').in('key',['main','lists','rates']);if(r.error||!r.data)return;
+    const m=r.data.find(x=>x.key==='main'),l=r.data.find(x=>x.key==='lists');if(m)SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),m.value);
+    LISTS=Object.assign(JSON.parse(JSON.stringify(LISTS_DEF)),l?l.value:{});LISTS.docs=Object.assign({},LISTS_DEF.docs,LISTS.docs||{});const rt=r.data.find(x=>x.key==='rates');RATES=rt?rt.value:{}}
+  async function saveRates(o){const c=await client();const r=await c.from('app_settings').upsert({key:'rates',value:o,updated_by_name:me.name},{onConflict:'key'});
+    if(r.error)throw new Error(/row-level|policy|permission/i.test(r.error.message)?'ยังไม่ได้รัน SQL 24 หรือบัญชีนี้ไม่มีสิทธิ์ (เฉพาะหัวหน้าสาขา/เจ้าของร้าน)':r.error.message)}
+  async function saveLists(o){const c=await client();const r=await c.from('app_settings').upsert({key:'lists',value:o,updated_by_name:me.name},{onConflict:'key'});
+    if(r.error)throw new Error(/row-level|policy|permission/i.test(r.error.message)?'ยังไม่ได้รัน SQL 24 (ให้พนักงานแก้รายการได้) · เจ้าของร้านบันทึกได้ตามปกติ':r.error.message)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
   return{addFile,listFiles,delFile,smsSend:items=>rpc11('sms_send',{p_items:items}),smsCredit:()=>rpc11('sms_credit'),smsStatus:()=>rpc11('sms_secret_status'),setSmsSecrets:(k,x)=>rpc11('set_sms_secrets',{p_key:k,p_secret:x}),smsRecent:()=>rpc11('sms_recent'),
-    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,carOtherBranches,resync,reqAction,decide,deliver,setInsp,reloadBill,exportAll,backupList,backupGet,backupNow,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,carOtherBranches,resync,reqAction,decide,deliver,setInsp,reloadBill,exportAll,backupList,backupGet,backupNow,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,saveLists,saveRates,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* SIAMSERVICE_STAFF_AVATAR_V1: staff photo add-on. No legacy functions renamed. */
 const StaffAvatar=(()=>{
@@ -6561,13 +6604,27 @@ const Q_FAIL=['ไฟหน้าไม่ติด','ไฟเลี้ยว/�
 function qFor(plate,prov){const q=qPending;return q&&q.plate.replace(/\s/g,'')===String(plate).replace(/\s/g,'')&&q.prov===prov?q.id:null}
 async function qMarkBilled(plate,prov,billId){const q=qPending;if(!q||qFor(plate,prov)!==q.id)return;qPending=null;q.billed=true;q.billId=billId||null;if(!LIVE)return}
 /* หน้าต่างถามข้อความแบบเดียวกับระบบ (แทน prompt ของเบราว์เซอร์) คืนค่า null ถ้ายกเลิก */
+// แก้รายการ (เพิ่ม/ลบ) แล้วบันทึกลง LISTS ทันที ใช้ได้ทุกตำแหน่งผู้ใช้
+function listEdit(title,arr){return new Promise(res=>{let L=[...arr];const ov=document.createElement('div');ov.className='ask-ov';
+  const draw=()=>{ov.querySelector('.le-l').innerHTML=L.map((x,i)=>`<span class="le-i">${esc(x)}<button type="button" data-rm="${i}" aria-label="ลบ ${esc(x)}">×</button></span>`).join('')||'<span class="sub">ยังไม่มีรายการ</span>';
+    ov.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{L.splice(+b.dataset.rm,1);draw()})};
+  ov.innerHTML=`<div class="ask" role="dialog" aria-modal="true"><div class="ask-h"><b>${esc(title)}</b><span>เพิ่มหรือลบรายการ แล้วกดบันทึก ใช้ได้ทุกเครื่องทันที</span></div>
+    <div class="ask-b"><div class="le-l"></div><div class="le-add"><input placeholder="พิมพ์รายการใหม่" maxlength="80"><button type="button" class="btn line">＋ เพิ่ม</button></div></div>
+    <div class="ask-f"><button type="button" class="btn line" data-x>ยกเลิก</button><button type="button" class="btn" data-ok>💾 บันทึก</button></div></div>`;
+  document.body.append(ov);draw();const inp=ov.querySelector('.le-add input'),add=()=>{const v=inp.value.trim();if(v&&!L.includes(v))L.push(v);inp.value='';draw();inp.focus()};
+  ov.querySelector('.le-add button').onclick=add;inp.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}};
+  const done=v=>{ov.remove();res(v)};ov.querySelector('[data-x]').onclick=()=>done(null);
+  ov.querySelector('[data-ok]').onclick=()=>{if(inp.value.trim())add();done(L)}})}
+async function saveListsNow(mut){const o=JSON.parse(JSON.stringify(LISTS));mut(o);try{if(LIVE)await DB.saveLists(o);LISTS=o;toast(LIVE?'บันทึกรายการแล้ว':'โหมดทดลอง: ไม่ได้บันทึกจริง');return true}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message);return false}}
 function askDlg(o){return new Promise(res=>{const ov=document.createElement('div');ov.className='ask-ov';const pre=(o.value||'').split(/\s*,\s*/).filter(Boolean);
   ov.innerHTML=`<div class="ask" role="dialog" aria-modal="true"><div class="ask-h ${o.tone||''}"><b>${esc(o.title)}</b>${o.sub?`<span>${esc(o.sub)}</span>`:''}</div>
-    <div class="ask-b">${o.label?`<div class="ask-l">${esc(o.label)}</div>`:''}${o.chips?`<div class="ask-chips">${o.chips.map(c=>`<button type="button" class="ask-c${pre.includes(c)?' on':''}">${esc(c)}</button>`).join('')}</div>`:''}
+    <div class="ask-b">${o.label?`<div class="ask-l">${esc(o.label)}${o.onEdit?' <button type="button" class="ask-edit">✏️ แก้ไขรายการ</button>':''}</div>`:''}${o.chips?`<div class="ask-chips">${o.chips.map(c=>`<button type="button" class="ask-c${pre.includes(c)?' on':''}">${esc(c)}</button>`).join('')}</div>`:''}
     <textarea class="ask-t" rows="2" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)">${esc(pre.filter(x=>!(o.chips||[]).includes(x)).join(', '))}</textarea></div>
     <div class="ask-f"><button type="button" class="btn line" data-x>ยกเลิก</button><button type="button" class="btn ${o.tone==='bad'?'qc-fail':''}" data-ok>${esc(o.ok||'ตกลง')}</button></div></div>`;
   document.body.append(ov);const done=v=>{ov.remove();document.removeEventListener('keydown',kd);res(v)},kd=e=>{if(e.key==='Escape')done(null)};document.addEventListener('keydown',kd);
   ov.querySelectorAll('.ask-c').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+  const ed=ov.querySelector('.ask-edit');if(ed)ed.onclick=async()=>{const L=await o.onEdit();if(!L)return;const on=new Set([...ov.querySelectorAll('.ask-c.on')].map(b=>b.textContent)),box=ov.querySelector('.ask-chips');
+    box.innerHTML=L.map(c=>`<button type="button" class="ask-c${on.has(c)?' on':''}">${esc(c)}</button>`).join('');box.querySelectorAll('.ask-c').forEach(b=>b.onclick=()=>b.classList.toggle('on'));o.chips=L};
   ov.querySelector('[data-x]').onclick=()=>done(null);ov.onclick=e=>{if(e.target===ov)done(null)};
   ov.querySelector('[data-ok]').onclick=()=>{const v=[...[...ov.querySelectorAll('.ask-c.on')].map(b=>b.textContent),...ov.querySelector('.ask-t').value.split(/\s*,\s*/).map(x=>x.trim()).filter(Boolean)].join(', ');
     if(o.required!==false&&!v){ov.querySelector('.ask-l').classList.add('err');return}done(v)}})}
@@ -6688,7 +6745,7 @@ R.queue=async()=>{clearInterval(qTimer);
     finally{b.disabled=false}
   });
   document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=async()=>{const q=qOf(b),st=b.dataset.qs;let note=q.note;
-    if(st==='fail'){const r=await askDlg({title:'ไม่ผ่านการตรวจสภาพ',sub:q.plate+' '+q.prov,label:'สาเหตุที่ไม่ผ่าน (เลือกได้หลายข้อ)',chips:Q_FAIL,value:q.note||'',ok:'บันทึกไม่ผ่าน',tone:'bad'});if(r==null)return;note=r}
+    if(st==='fail'){const r=await askDlg({title:'ไม่ผ่านการตรวจสภาพ',sub:q.plate+' '+q.prov,label:'สาเหตุที่ไม่ผ่าน (เลือกได้หลายข้อ)',chips:LISTS.insp_fail||Q_FAIL,onEdit:async()=>{const L=await listEdit('เหตุผลที่ตรวจไม่ผ่าน',LISTS.insp_fail||Q_FAIL);if(L&&await saveListsNow(o=>{o.insp_fail=L}))return L},value:q.note||'',ok:'บันทึกไม่ผ่าน',tone:'bad'});if(r==null)return;note=r}
     if(st==='wait')note='';b.disabled=true;try{await set(q,{st,note})}catch(err){b.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{const q=qOf(b);if(!await uiConfirm('ลบ '+q.plate+' ออกจากคิว?'))return;
     try{if(LIVE)await DB.delQueue(q.id);QUEUE.splice(QUEUE.indexOf(q),1);R.queue()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
@@ -6750,6 +6807,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   <div class="card stf-card"><div class="sech teal">💰 ค่าบริการ (ใช้ตอนกดคำนวณภาษีอัตโนมัติ)</div><div class="st-grid">
     ${N('fee_tax','ค่าฝากต่อภาษี','ทุกประเภทรถ')}${N('fee_tr_car','ค่าเรื่อง งานโอน รถยนต์','ใส่ให้อัตโนมัติเมื่อกรอกค่าโอน/ย้าย/เปลี่ยนสี')}${N('fee_tr_moto','ค่าเรื่อง งานโอน มอเตอร์ไซค์','ค่าตรวจสภาพโอนใช้ราคาค่าตรวจสภาพด้านล่าง')}${N('fee_prb_moto','ค่าต่อ พ.ร.บ. มอเตอร์ไซค์')}${N('fee_prb_car','ค่าต่อ พ.ร.บ. รถยนต์','ใส่ 0 ถ้าไม่เก็บ')}
     ${N('insp_car','ค่าตรวจสภาพ รถยนต์','รถอายุเกิน '+(+SET.insp_age_car||7)+' ปี')}${N('insp_heavy','ค่าตรวจสภาพ รถหนักเกิน 2,000 กก.')}${N('insp_moto','ค่าตรวจสภาพ มอเตอร์ไซค์','รถอายุเกิน '+(+SET.insp_age_moto||5)+' ปี')}</div></div>
+  <div class="card stf-card"><div class="sech teal">💰 เบี้ย พ.ร.บ. (ภาคบังคับ ตามประกาศ คปภ.)</div><div id="st-prb" style="padding:12px 16px">${prbHTML()}</div></div>
   <div class="card stf-card"><div class="sech teal">📅 ปีจดทะเบียน</div><div class="st-grid">
     <label class="field"><span>ปีจดทะเบียนเก่าสุดที่เลือกได้ (พ.ศ.)</span><input id="st-year" inputmode="numeric" maxlength="4" value="${(+SET.reg_min_year||1947)+543}"><small class="sub">ช่อง "วันจดทะเบียนรถ" จะให้เลือกปีตั้งแต่ปีนี้ถึงปีปัจจุบัน</small></label></div></div>
   <div class="card stf-card"><div class="sech teal">🚦 ระบบคิวตรวจสภาพ</div><div class="st-grid" style="grid-template-columns:1fr">
@@ -7035,6 +7093,7 @@ R.comm=()=>{cmMonth=cmMonth||ymOf(TODAY);const ym=cmMonth,cf=commCfg(),rows=comm
     try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกอัตราค่าคอมแล้ว');R.comm()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}finally{e.target.disabled=false}};
 };
 {const f=R.comm;R.comm=()=>{f();insTabs('comm')}}
+{const f=R.calc;R.calc=()=>{f();if(prbCan())$('#view').insertAdjacentHTML('beforeend',`<div class="ui-card prb-card"><div class="ui-card-h"><h2>เบี้ย พ.ร.บ. ที่ใช้คำนวณ</h2></div><div style="padding:12px 16px">${prbHTML()}</div></div>`)}}
 R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
   $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
   let list;try{list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
