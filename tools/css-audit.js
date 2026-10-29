@@ -57,11 +57,11 @@ async function worker(widths,acc,log,pageFn=analyze,arg=model,sink=null){const b
   for(const w of widths){const opt=w<=400?{...devices['iPhone 13'],viewport:{width:w,height:800}}:{viewport:{width:w,height:900}};
     const ctx=await b.newContext({...opt,reducedMotion:'reduce'});const p=await ctx.newPage();p.on('dialog',d=>d.dismiss().catch(()=>{}));
     await p.clock.setFixedTime(new Date('2026-10-29T10:30:00+07:00'));
-    let n=0,MED='screen';const take=async tag=>{tag=(MED==='print'?'P:':'')+tag;try{await p.mouse.move(0,0);await p.waitForTimeout(150);const r=await p.evaluate(pageFn,arg);if(sink)sink(w+'|'+tag,r);else{r.matched.forEach(x=>acc.matched.add(x));r.won.forEach(x=>acc.won.add(x));(r.invalid||[]).forEach(x=>acc.invalid.add(x))}n++}catch(e){log.push(w+' '+tag+': '+e.message.slice(0,120))}};
+    let n=0,MED='screen';const take=async tag=>{tag=(MED==='print'?'P:':'')+tag;try{await p.mouse.move(0,0);await p.waitForTimeout(150);const r=await p.evaluate(pageFn,arg);if(sink)sink(w+'|'+tag,r);else{r.matched.forEach(x=>acc.matched.add(x));r.won.forEach(x=>acc.won.add(x));(r.invalid||[]).forEach(x=>acc.invalid.add(x));if(acc.lost){const wn=new Set(r.won);for(const x of r.matched)if(!wn.has(x)){const l=acc.lost.get(x);if(l)l.push(w+' '+tag);else acc.lost.set(x,[w+' '+tag])}}}n++}catch(e){log.push(w+' '+tag+': '+e.message.slice(0,120))}};
     const step=async(tag,fn)=>{try{await fn();await take(tag)}catch(e){log.push(w+' '+tag+': '+e.message.slice(0,120))}};
     const fresh=async(role)=>{await login(p,role)};
     await p.goto('file://'+file);await p.waitForTimeout(500);await take('login');
-    for(const media of (w===900||w===390)?['screen','print']:['screen']){await p.emulateMedia({media});MED=media;
+    for(const media of [390,710,780,900,1050].includes(w)?['screen','print']:['screen']){await p.emulateMedia({media});MED=media;
       await fresh();
       const pages=await p.evaluate(()=>Object.keys(R).filter(k=>!['bill','edit','docsDay'].includes(k)));
       for(const g of pages)await step(g,()=>p.evaluate(g=>go(g),g));
@@ -106,7 +106,7 @@ async function worker(widths,acc,log,pageFn=analyze,arg=model,sink=null){const b
   await b.close()}
 
 module.exports={worker,WIDTHS,model,rules};
-if(require.main===module)(async()=>{const acc={matched:new Set(),won:new Set(),invalid:new Set()},log=[];
+if(require.main===module)(async()=>{const acc={matched:new Set(),won:new Set(),invalid:new Set(),lost:args.includes('--since')?new Map():null},log=[];
   const groups=Array.from({length:WORKERS},()=>[]);WIDTHS.forEach((w,i)=>groups[i%WORKERS].push(w));
   await Promise.all(groups.map(g=>worker(g,acc,log)));
   const byId={};rules.forEach(r=>r.decls.forEach(d=>byId[d.id]={r,d}));
@@ -117,5 +117,16 @@ if(require.main===module)(async()=>{const acc={matched:new Set(),won:new Set(),i
   console.log(log.filter(l=>!/^w\d+:/.test(l)).slice(0,30).join('\n'));
   console.log(log.filter(l=>/^w\d+:/.test(l)).join(' | '));
   console.log(`rules ${rules.length} · declarations matched ${acc.matched.size} · overridden everywhere ${dead.length}`);
+  // --since <git ref>: guard mode. Only declarations added since that ref are judged:
+  // a new declaration that matches elements but never takes effect means an older rule overrides it.
+  if(args.includes('--since')){const ref=args[args.indexOf('--since')+1];const old=require('child_process').execSync(`git show ${ref}:index.html`,{cwd:path.dirname(file),maxBuffer:1<<26}).toString();
+    const tmp=path.join(require('os').tmpdir(),'css-audit-old.html');fs.writeFileSync(tmp,old);const key=(r,d)=>r.media.join('|')+'\u0000'+r.sel+'\u0000'+d.text;
+    const oldKeys=new Set();parseFile(tmp).rules.forEach(r=>r.decls.forEach(d=>oldKeys.add(key(r,d))));
+    const fresh=[];rules.forEach(r=>r.decls.forEach(d=>{if(!d.bad&&!oldKeys.has(key(r,d)))fresh.push(d.id)}));const deadSet=new Set(dead);
+    const bad=fresh.filter(id=>acc.lost.has(id)&&!acc.invalid.has(id)&&!byId[id].d.prop.startsWith('--')&&!vendor(byId[id].d)),unmatched=fresh.filter(id=>!acc.matched.has(id));
+    console.log(`\nnew declarations since ${ref}: ${fresh.length} · overridden in some screens/states: ${bad.length} · matched nothing in audited states: ${unmatched.length}`);
+    bad.forEach(id=>{const {r,d}=byId[id],l=acc.lost.get(id);console.log(`  ✗ ${r.media.join(' ')} ${r.sel.slice(0,70)} { ${d.text} } — no effect in ${l.length} states, e.g. ${l.slice(0,3).join(', ')}`)});
+    unmatched.slice(0,20).forEach(id=>{const {r,d}=byId[id];console.log(`  ? ${r.media.join(' ')} ${r.sel.slice(0,70)} { ${d.text} }`)});
+    process.exit(bad.length?1:0)}
   dead.slice(0,15).forEach(id=>{const {r,d}=byId[id];console.log(`  ${r.sel.slice(0,60)} { ${d.text.slice(0,60)} }`)});
   process.exit(dead.length?1:0)})();
