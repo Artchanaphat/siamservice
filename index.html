@@ -7390,7 +7390,7 @@ async function accReport(ym){let list=LIVE?await DB.listExpenses(ym):EXPENSES.fi
         {name:'ค่าคอมประกัน',cols:[12,12,12,18,24,14,8,12],rows:[['วันที่','เลขที่บิล','ทะเบียน','ประเภท','บริษัท','เบี้ยรวม','%','ค่าคอม']].concat(cm.map(r=>[iso(r.b.d),rcNo(r.b),r.b.plate,r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ',r.co,r.gross,r.rate,r.comm]))}]);
       toast('ดาวน์โหลดรายงานส่งนักบัญชีแล้ว')}
 /* ---------- ภาพรวมเจ้าของ: ทุกสาขาในหน้าเดียว (เฉพาะเจ้าของร้าน) ---------- */
-let ovDay=null,ovData=null,ovMore=false;
+let ovDay=null,ovData=null,ovMore=true;
 // โหมดทดลอง: สาขา 1 จากข้อมูลในเครื่อง สาขา 2 เป็นตัวเลขตัวอย่าง
 function demoOverview(day){const t=(b,k)=>b.reduce((s,x)=>s+(+x[k]||0),0),dd=new Date(day+'T00:00'),bills=[...intake,...oldBills].filter(b=>iso(b.d)===day&&!b.void);
   const pays=[];[...intake,...oldBills].forEach(b=>(b.pays||[]).forEach(p=>{if(p.d&&iso(p.d)===day)pays.push({b,p})}));const ok=pays.filter(x=>!x.p.wait);
