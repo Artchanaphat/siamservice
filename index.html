@@ -6152,6 +6152,29 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
       catch(err){ev.target.disabled=false;ev.target.textContent='♻️ กู้คืนส่วนที่หายไป';alert('กู้คืนไม่สำเร็จ: '+err.message)}}};
 };
 
+/* ช่องค้นหาในหน้า: ใส่ให้ทุกหน้าที่มีรายการแต่ยังไม่มีช่องค้นหาของตัวเอง (กรองรายการที่แสดงอยู่ จำคำค้นไว้ตอนหน้ารีเฟรช) */
+const LSQ={};
+const LS_CFG={
+  queue:[{at:'.qq-board',items:'.qq-board .qc',ph:'ค้นหาในคิว ทะเบียน / ชื่อ / เบอร์'}],
+  track:[{at:'.tk-list',items:'.tk-list>.tk-c',ph:'ค้นหา ทะเบียน / ชื่อ / เลขบิล'}],
+  docs:[{at:'.pt-tbl',items:'.pt-tbl tbody tr',ph:'ค้นหา ทะเบียน / ชื่อ'}],
+  close:[{card:'รายการรับชำระเงิน',ph:'ค้นหา ทะเบียน / ชื่อ / เลขบิล / ผู้รับเงิน'}],
+  expense:[{card:'รายการรายจ่าย',ph:'ค้นหา หมวด / หมายเหตุ / ผู้บันทึก'}],
+  comm:[{card:'รายการตามบิล',ph:'ค้นหา ทะเบียน / บริษัท / เลขบิล'},{card:'⚙️ ตั้งอัตราค่าคอม (%)',ph:'ค้นหาบริษัท'}]};
+function lsAttach(){const C=LS_CFG[cur];if(!C)return;const v=$('#view');
+  C.forEach((c,ix)=>{let host,items;
+    if(c.card){const h=[...v.querySelectorAll('.ui-card-h h2')].find(h=>h.textContent.trim()===c.card);if(!h)return;const card=h.closest('.ui-card');host=card.querySelector('.ui-card-h');items=[...card.querySelectorAll('tbody tr')]}
+    else{const a=v.querySelector(c.at);if(!a)return;host=a;items=[...v.querySelectorAll(c.items)]}
+    if(!host||host.dataset.lsr||items.length<2)return;host.dataset.lsr='1';
+    const key=cur+ix,w=document.createElement('div');w.className='lsr non-printable';
+    w.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.1-4.1"/></svg><input type="search" autocomplete="off" aria-label="${esc(c.ph)}" placeholder="${esc(c.ph)}"><span class="lsr-n"></span>`;
+    if(c.card){host.append(w);if(host.closest('summary'))w.addEventListener('click',e=>e.preventDefault())}else host.before(w);
+    const inp=w.querySelector('input'),n=w.querySelector('.lsr-n'),norm=x=>String(x||'').replace(/[\s,-]/g,'').toLowerCase();
+    const run=()=>{const q=norm(inp.value);LSQ[key]=inp.value;let k=0;items.forEach(r=>{const show=!q||norm(r.textContent+' '+[...r.querySelectorAll('input')].map(i=>i.value).join(' ')).includes(q);r.hidden=!show;if(show)k++});n.textContent=q?`พบ ${k} จาก ${items.length}`:''};
+    inp.addEventListener('input',run);inp.addEventListener('keydown',e=>{if(e.key==='Escape'&&inp.value){e.stopPropagation();inp.value='';run()}if(e.key===' ')e.stopPropagation()});
+    if(LSQ[key]){inp.value=LSQ[key];run()}})}
+{let rq=0;new MutationObserver(()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(lsAttach)}).observe(document.getElementById('view'),{childList:true,subtree:true})}
+
 /* ---------- 3. คิวตรวจสภาพหน้าลาน ---------- */
 const QUEUE=[];let qSeq=0,qTimer=null;
 let qPending=null; let siamQueueFocus=null;
@@ -7773,6 +7796,16 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 .uim-b .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
 @keyframes uim-f{from{opacity:0}}@keyframes uim-u{from{transform:translateY(8px);opacity:0}}
 @media print{.uim{display:none!important}}
+/* ช่องค้นหาในหน้า (lsAttach) */
+.lsr{display:flex;align-items:center;gap:8px;height:36px;padding:0 10px;border:1px solid #d5deea;border-radius:10px;background:#fff;color:#64748b;min-width:0;flex:0 1 320px;margin-left:auto}
+.lsr svg{width:16px;height:16px;flex:none}
+.lsr input{border:0!important;outline:none;background:transparent;height:100%!important;padding:0!important;font-size:13.5px;flex:1;min-width:0;box-shadow:none!important}
+.lsr-n{font-size:12px;white-space:nowrap;color:#1670d6}
+.lsr input[type=search],#view .lsr input[type=search]:focus,#view .lsr input[type=search]:focus-visible{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;-webkit-appearance:none;appearance:none}
+.lsr:focus-within{border-color:#1670d6;box-shadow:0 0 0 3px rgba(22,112,214,.12)}
+#view>*>.lsr,.qq>.lsr,.tk>.lsr,.pt>.lsr,.lsr:not(.ui-card-h .lsr){margin:0 0 10px;max-width:420px}
+.ui-card-h:has(.lsr){flex-wrap:wrap;gap:8px}
+@media (max-width:640px){.lsr{flex-basis:100%;max-width:none!important}}
 /* ค่าคอมประกัน */
 .cm-cfg{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
 .cm-cfg label{display:inline-flex;align-items:center;gap:6px}
