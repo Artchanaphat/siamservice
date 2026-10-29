@@ -2284,6 +2284,12 @@ body{margin:0}
 @media screen and (max-width:640px){.tk-svc{order:5;flex-basis:100%;justify-content:flex-start;padding-left:0;border-left:0;margin-left:0}#view .tk-plate{min-width:96px;padding:4px 10px 3px}#view .tk-plate b{font-size:17px}.tk-who b{font-size:14.5px}.tk-who small{font-size:12px}
   #view .tk-c .jt li b{font-size:11.5px!important}#view .tk-c .jt li small{font-size:10.5px!important}#view .tk-c .jt i{width:24px;height:24px;font-size:12px}#view .tk-c .jt li:not(:last-child)::after{top:13px;left:calc(50% + 14px);right:calc(-50% + 14px)}}
 .tk-svc small{flex-basis:100%;font-size:12px;color:#7a8699}
+#view .hw-t{border-radius:16px;padding:12px 14px;gap:12px}#view .hw-t .hw-ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;flex:none;color:#fff;font-size:0}#view .hw-t .hw-ic svg{width:23px;height:23px}
+#view .hw-t.sand{background:#fff7e8;border-color:#fdebc8}#view .hw-t.sand .hw-ic{background:linear-gradient(135deg,#f59e0b,#fbbf24)}#view .hw-t.sand b{color:#b45309}
+#view .hw-t.sky{background:#eef4ff;border-color:#dce7fd}#view .hw-t.sky .hw-ic{background:linear-gradient(135deg,#1d63ed,#60a5fa)}#view .hw-t.sky b{color:#1d4ed8}
+#view .hw-t.lilac{background:#f4f0ff;border-color:#e7defd}#view .hw-t.lilac .hw-ic{background:linear-gradient(135deg,#7c3aed,#a78bfa)}#view .hw-t.lilac b{color:#6d28d9}
+#view .hw-t.pink{background:#fff0f1;border-color:#fde0e3}#view .hw-t.pink .hw-ic{background:linear-gradient(135deg,#f43f5e,#fb7185)}#view .hw-t.pink b{color:#be123c}
+#view .hw-t.zero b{color:#64748b}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -3091,12 +3097,12 @@ R.home=()=>{
     const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p}))),days=[...new Set(w.map(x=>iso(x.p.d)))].sort(),since=iso(plus(-30));
     const open=intake.filter(b=>iso(b.d)>=since&&!jobDone(b)).length,pick=dltJobs().filter(b=>dltOf(b).st==='plate').length;
     const owe=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&b.amt-b.paid>0.004).map(b=>[b.id,b])).values()],oweSum=owe.reduce((t,b)=>t+b.amt-b.paid,0);
-    const T=(k,ic,l,n,sub,cls)=>`<button type="button" class="hw-t${n?' '+cls:''}" data-hw="${k}"><span class="hw-ic">${ic}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`;
+    const T=(k,ic,l,n,sub,cls)=>`<button type="button" class="hw-t ${cls}${n?'':' zero'}" data-hw="${k}"><span class="hw-ic">${I(IC[ic])}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`;
     return `<section class="hw" aria-label="งานค้าง"><div class="hw-h"><b>งานค้างที่ต้องทำต่อ</b><small>กดเพื่อเปิดรายการ</small></div><div class="hw-g">
-      ${T('tr','⏳','โอนรอตรวจสอบ',w.length,w.length?money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท':'ไม่มีรายการ','warn')}
-      ${T('open','🧾','งานยังไม่เสร็จ (30 วัน)',open,'ดูขั้นตอนที่ค้าง','now')}
-      ${T('pick','📦','เอกสารรอลูกค้ารับ',pick,'งานขนส่งได้ป้าย/เล่มแล้ว','now')}
-      ${T('debt','💵','บิลค้างชำระ',owe.length,owe.length?money(oweSum)+' บาท':'ไม่มีรายการ','bad')}
+      ${T('tr','clock','โอนรอตรวจสอบ',w.length,w.length?money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท':'ไม่มีรายการ','sand')}
+      ${T('open','bill','งานยังไม่เสร็จ (30 วัน)',open,'ดูขั้นตอนที่ค้าง','sky')}
+      ${T('pick','truck','เอกสารรอลูกค้ารับ',pick,'งานขนส่งได้ป้าย/เล่มแล้ว','lilac')}
+      ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
     </div></section>`;})()}
   <div class="hk-row">
     ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
