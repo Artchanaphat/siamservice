@@ -27,7 +27,7 @@
 | PromptPay QR | สร้างในเบราว์เซอร์ เบอร์/เลข PromptPay อยู่ใน `branches.promptpay` | – |
 
 ## 3. ฐานข้อมูล (SQL ใน `db/` รันใน Supabase SQL Editor ตามลำดับ)
-รันแล้วครบ **01–17** (อาร์ทรันเอง):
+รันแล้วครบ **01–19** (อาร์ทรันเอง):
 
 | ไฟล์ | เนื้อหา |
 |---|---|
@@ -46,8 +46,8 @@
 | 15-void-refund | `bill_requests` ยกเลิก/คืนเงินต้องอนุมัติ (`request_bill_action`, `decide_bill_action`) หัวหน้าอนุมัติคำขอตัวเองไม่ได้ |
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
-| 18-line-daily-fix | **ยังไม่ได้รัน (รอ อาร์ท)** แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
-| 19-close-pending-guard | **ยังไม่ได้รัน (รอ อาร์ท)** trigger บน `cash_closes`: staff บันทึกปิดยอดไม่ได้ถ้าวันนั้นมีเงินโอนรอตรวจ (owner/head ได้) ย้อนกลับ = drop trigger `cash_closes_pending_guard` |
+| 18-line-daily-fix | แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
+| 19-close-pending-guard | trigger บน `cash_closes`: staff บันทึกปิดยอดไม่ได้ถ้าวันนั้นมีเงินโอนรอตรวจ (owner/head ได้) ย้อนกลับ = drop trigger `cash_closes_pending_guard` |
 
 ### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/01-schema.sql
@@ -111,7 +111,7 @@
 - ตั้งค่า SMS ThaiBulkSMS, ปิด GitHub Pages เดิม, ตรวจหน้า "ตรวจสอบระบบ" บน pages.dev, เรื่อง backup
 
 ยังค้างจริง (ตรวจจาก repo):
-- **SQL 18 (`db/18-line-daily-fix.sql`) อยู่ใน repo แล้ว รอ อาร์ท รันใน Supabase**: แก้สรุป LINE ประจำวันให้นับเฉพาะเงิน verified และหักคืนเงิน ตรงกับหน้าปิดยอด v75 (ทดสอบบน Postgres 16 ที่โหลด 01–17 แล้ว ผลถูกต้อง)
-- ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน และเช็คฝั่ง DB ด้วย SQL 19 (รอรัน)
+- SQL 18 และ 19 รันแล้ว (อาร์ท 29 ต.ค. 2569)
+- ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน และเช็คฝั่ง DB ด้วย SQL 19 (รันแล้ว 29 ต.ค.)
 - ไม่มี doctype (quirks mode) แก้ได้แต่ต้องทดสอบทั้งระบบ
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4
