@@ -2789,7 +2789,9 @@ const DLT_TAX=['ค่าภาษีรถ','ค่าฝากต่อภา�
 const dltKind=b=>{const n=b.items.map(i=>i[0]),k=[];if(n.some(x=>DLT_TAX.includes(x)))k.push('ต่อภาษี');if(n.some(x=>DLT_TR.includes(x)))k.push('โอน/ย้าย');return k.join(' + ')};
 const DLT_ST={received:['รอยื่นขนส่ง','#b45309','#fef3c7'],submitted:['ยื่นแล้ว รอป้าย','#1d4ed8','#dbeafe'],plate:['ได้ป้ายแล้ว รอลูกค้ารับ','#6d28d9','#ede9fe'],done:['ลูกค้ารับแล้ว','#15803d','#dcfce7']};
 const DLT_NEXT={received:['submitted','ยื่นขนส่งแล้ว'],submitted:['plate','ได้ป้ายแล้ว'],plate:['done','ลูกค้ารับแล้ว']};
-const DLT_LATE={received:2,submitted:7,plate:14}; // อยู่สถานะนี้เกินกี่วันให้เตือน
+// อยู่สถานะนี้เกินกี่วันให้เตือน (ตั้งได้ที่ ตั้งค่าระบบ › กำหนดเวลาและการเตือน)
+const DLT_LATE={get received(){return +SET.dlt_late_received||2},get submitted(){return +SET.dlt_late_submitted||7},get plate(){return +SET.dlt_late_plate||14}};
+const SOON=()=>+SET.exp_soon||30; // ช่วง "ใกล้หมดอายุ" (วัน)
 const dltOf=b=>b.dlt||(b.dlt={st:'received',cert:'',rcpt:'',note:'',by:'',at:{}});
 const dltAge=b=>{const j=dltOf(b),t=j.at[j.st]?new Date(j.at[j.st]):b.d;const d=new Date(t);d.setHours(0,0,0,0);return Math.max(0,Math.round((TODAY-d)/DAY))};
 const dltLate=b=>{const j=dltOf(b);return DLT_LATE[j.st]!=null&&dltAge(b)>DLT_LATE[j.st]};
@@ -2812,7 +2814,7 @@ function status(d){
   const n=daysTo(d);
   if(n<0)return `<span class="pill bad">เลย ${-n} วัน</span>`;
   if(n<=7)return `<span class="pill bad">อีก ${n} วัน</span>`;
-  if(n<=30)return `<span class="pill warn">อีก ${n} วัน</span>`;
+  if(n<=SOON())return `<span class="pill warn">อีก ${n} วัน</span>`;
   return `<span class="pill ok">${fmt(d)}</span>`;
 }
 const plateHTML=c=>`<span class="plate"><b>${esc(c.plate)}</b><small>${esc(c.prov)}</small></span>`;
@@ -2864,7 +2866,7 @@ const tClock=()=>{const d=new Date();if(!$('#tdate'))return;$('#tdate').innerHTM
 setInterval(tClock,20000);
 // รายการแจ้งเตือน (ใช้ทั้งกระดิ่งด้านบนและหน้าหลัก)
 function alertList(){const trw=intake.flatMap(b=>trWait(b)),late=dltJobs().filter(dltLate).length,debt=intake.filter(b=>b.amt-b.paid>0.004).length;
-  return [['tax','🚗','ภาษีรถใกล้หมดอายุ (30 วัน)',expList('tax').length,'#2563eb'],['prb','🛡️','พ.ร.บ. ใกล้หมดอายุ (30 วัน)',expList('prb').length,'#ea580c'],
+  return [['tax','🚗',`ภาษีรถใกล้หมดอายุ (${SOON()} วัน)`,expList('tax').length,'#2563eb'],['prb','🛡️','พ.ร.บ. ใกล้หมดอายุ (30 วัน)',expList('prb').length,'#ea580c'],
     ['ins','📋','ประกันภาคสมัครใจใกล้หมดอายุ',expList('ins').length,'#7c3aed'],['trw','⏳','เงินโอนรอตรวจสอบ',trw.length,'#d97706'],
     ['late','🚚','งานขนส่งค้างเกินกำหนด',late,'#dc2626'],['debt','💰','บิลค้างชำระ',debt,'#be123c'],
     ['req','✋','คำขอยกเลิก/คืนเงิน รออนุมัติ',user&&(user.role==='owner'||user.role==='head')?pendReqs().length:0,'#9333ea'],['docm','📎','บิลที่เอกสารแนบไม่ครบ',intake.filter(b=>!b.void&&(b.fpend||[]).length).length,'#0f766e']]}
@@ -3005,7 +3007,7 @@ const MGROUPS=[['งานหน้าร้าน','รถเข้า › ต�
 const exCat0=cats=>{try{const c=localStorage.getItem('siam-ex-cat');if(cats.includes(c))return c}catch(_){}return cats[0]};
 let expKind='tax',expQ='',hidden=new Set();
 const EXPK=[['tax','ทะเบียนรถ','<rect x="3" y="7" width="18" height="10" rx="3"/><path d="M7 17v2M17 17v2M3 12h18"/>'],['prb','พรบ. ภาคบังคับ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกันภาคสมัครใจ','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
-const expList=k=>cars.filter(c=>c[k]&&daysTo(c[k])<=30&&!hidden.has(k+c.id)).sort((a,b)=>a[k]-b[k]);
+const expList=k=>cars.filter(c=>c[k]&&daysTo(c[k])<=SOON()&&!hidden.has(k+c.id)).sort((a,b)=>a[k]-b[k]);
 const ctShort=t=>{const m=/\(([^()]+)\)\s*$/.exec(t||'');return m?m[1]:(t||'–')};// แสดงรหัสสั้น เช่น รย.1 (ชื่อเต็มอยู่ใน title)
 let hdTab=null,hdQF='all',hdQ='',hdCal=null,hdDay=null;
 R.home=()=>{
@@ -3609,7 +3611,7 @@ R.news=()=>{
 
 let q='',cTab='tax',cMonth=0,cYear=0,cSort='latest';
 const CT=[['tax','ทะเบียนรถ','tab-reg','<path d="M5 11l1.5-4h11L19 11"/><rect x="3" y="11" width="18" height="6" rx="2"/><circle cx="7.5" cy="14" r="1"/><circle cx="16.5" cy="14" r="1"/>'],['prb','พรบ. ภาคบังคับ','tab-prb','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/>'],['ins','ประกัน ภาคสมัครใจ','tab-ins','<path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/>'],['k','พรบ. ขนส่ง','tab-k','<path d="M2 6h11v9H2zM13 9h5l3 3v3h-8z"/><circle cx="6" cy="17" r="1.6"/><circle cx="17" cy="17" r="1.6"/>']];
-const expPill=d=>{if(!d)return'<span class="xp none">–</span>';const n=daysTo(d);return `<span class="xp ${n<0?'bad':n<=30?'warn':'ok'}">${fmt(d)}</span>`};
+const expPill=d=>{if(!d)return'<span class="xp none">–</span>';const n=daysTo(d);return `<span class="xp ${n<0?'bad':n<=SOON()?'warn':'ok'}">${fmt(d)}</span>`};
 R.cust=()=>{
   const tl=CT.find(t=>t[0]===cTab)[1];
   const cYrs=[...new Set(cars.map(c=>c[cTab]).filter(Boolean).map(x=>x.getFullYear()))].sort((a,z)=>a-z);
@@ -3621,7 +3623,7 @@ R.cust=()=>{
   <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือนที่หมดอายุ</span><button class="mchip ${cMonth===0?'on':''}" data-mo="0">ทุกเดือน</button>${TH_MF.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
   <div class="sortbar">
     <button class="sort-btn ${cSort==='latest'?'on':''}" data-so="latest">🕑 อัปเดตล่าสุด</button>
-    <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon">⏰ ใกล้หมดอายุ <span class="sort-hint">(30 วัน)</span></button>
+    <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon">⏰ ใกล้หมดอายุ <span class="sort-hint">(${SOON()} วัน)</span></button>
     <button class="sort-btn red ${cSort==='expired'?'on':''}" data-so="expired">❌ หมดอายุแล้ว</button>
     <span class="sub" id="ccount"></span><span style="flex:1"></span>
     <label class="search-pill"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="กรองรายการนี้: ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(q)}" autocomplete="off"></label>
@@ -3636,7 +3638,7 @@ R.cust=()=>{
     list=list.filter(c=>d(c));
     if(cMonth)list=list.filter(c=>d(c)&&d(c).getMonth()+1===cMonth);
     if(cYear)list=list.filter(c=>d(c)&&d(c).getFullYear()===cYear);
-    if(cSort==='soon')list=list.filter(c=>d(c)&&daysTo(d(c))>=0&&daysTo(d(c))<=30).sort((a,b)=>d(a)-d(b));
+    if(cSort==='soon')list=list.filter(c=>d(c)&&daysTo(d(c))>=0&&daysTo(d(c))<=SOON()).sort((a,b)=>d(a)-d(b));
     else if(cSort==='expired')list=list.filter(c=>d(c)&&daysTo(d(c))<0).sort((a,b)=>d(a)-d(b));
     else list=list.slice().sort((a,b)=>b.created-a.created);
     $('#ccount').textContent=list.length+' รายการ';cList=list;
@@ -3652,7 +3654,7 @@ R.cust=()=>{
   // พิมพ์รายการตามตัวกรองที่แสดงอยู่ (A4 แนวนอน)
   $('#c-print').onclick=()=>{if(!cList.length){toast('ไม่มีรายการให้พิมพ์');return}
     const tl=((document.querySelector(`[data-ct="${cTab}"]`)||{}).textContent||'').trim(),f=x=>x?beFull(x):'–',
-      flt=[cMonth?'เดือน'+TH_MF[cMonth-1]:'',cYear?'ปี '+(cYear+543):'',{soon:'ใกล้หมดอายุ (30 วัน)',expired:'หมดอายุแล้ว'}[cSort]||'',q.trim()?'ค้นหา "'+esc(q.trim())+'"':''].filter(Boolean).join(' · ');
+      flt=[cMonth?'เดือน'+TH_MF[cMonth-1]:'',cYear?'ปี '+(cYear+543):'',{soon:`ใกล้หมดอายุ (${SOON()} วัน)`,expired:'หมดอายุแล้ว'}[cSort]||'',q.trim()?'ค้นหา "'+esc(q.trim())+'"':''].filter(Boolean).join(' · ');
     printReport({title:'รายการ'+tl,sub:(flt?flt+' · ':'')+cList.length+' รายการ',land:true,
       body:`<table class="pr"><thead><tr><th style="width:8mm">ที่</th><th style="width:30mm">ทะเบียนรถ</th><th>ชื่อ-นามสกุล</th><th style="width:30mm">เบอร์โทร</th><th>ประเภทรถ</th><th style="width:30mm">หมดอายุ</th><th style="width:26mm">วันที่บันทึก</th></tr></thead><tbody>
       ${cList.map((c,i)=>`<tr><td class="c">${i+1}</td><td><b>${esc(c.plate)}</b><br><small>${esc(c.prov||'')}</small></td><td>${esc(c.name||'–')}</td><td>${esc(c.tel||'–')}</td><td>${esc(c.type||'')}</td><td>${f(c[cTab])}</td><td>${f(c.created)}</td></tr>`).join('')}</tbody></table>`})};
@@ -3671,7 +3673,7 @@ const INS_CO=["กรุงเทพประกันภัย", "กลาง�
 const PREFIX=["คุณ", "นาย", "นาง", "นางสาว", "พลตำรวจเอก", "พลตำรวจเอก หญิง", "พลตำรวจโท", "พลตำรวจโท หญิง", "พลตำรวจตรี", "พลตำรวจตรี หญิง", "พันตำรวจเอก", "พันตำรวจเอก หญิง", "พันตำรวจเอกพิเศษ", "พันตำรวจเอกพิเศษ หญิง", "พันตำรวจโท", "พันตำรวจโท หญิง", "พันตำรวจตรี", "พันตำรวจตรี หญิง", "ร้อยตำรวจเอก", "ร้อยตำรวจเอก หญิง", "ร้อยตำรวจโท", "ร้อยตำรวจโท หญิง", "ร้อยตำรวจตรี", "ร้อยตำรวจตรี หญิง", "นายดาบตำรวจ", "ดาบตำรวจหญิง", "สิบตำรวจเอก", "สิบตำรวจเอก หญิง", "สิบตำรวจโท", "สิบตำรวจโท หญิง", "สิบตำรวจตรี", "สิบตำรวจตรี หญิง", "จ่าสิบตำรวจ", "จ่าสิบตำรวจ หญิง", "พลตำรวจ", "พลตำรวจ หญิง", "พลเอก", "พลเอก หญิง", "พลโท", "พลโท หญิง", "พลตรี", "พลตรี หญิง", "พันเอก", "พันเอก หญิง", "พันเอกพิเศษ", "พันเอกพิเศษ หญิง", "พันโท", "พันโท หญิง", "พันตรี", "พันตรี หญิง", "ร้อยเอก", "ร้อยเอก หญิง", "ร้อยโท", "ร้อยโท หญิง", "ร้อยตรี", "ร้อยตรี หญิง", "สิบเอก", "สิบเอก หญิง", "สิบโท", "สิบโท หญิง", "สิบตรี", "สิบตรี หญิง", "จ่าสิบเอก", "จ่าสิบเอก หญิง", "จ่าสิบโท", "จ่าสิบโท หญิง", "จ่าสิบตรี", "จ่าสิบตรี หญิง", "พลทหารบก", "ว่าที่ พ.ต.", "ว่าที่ พ.ต. หญิง", "ว่าที่ ร.อ.", "ว่าที่ ร.อ. หญิง", "ว่าที่ ร.ท.", "ว่าที่ ร.ท. หญิง", "ว่าที่ ร.ต.", "ว่าที่ ร.ต. หญิง", "พลเรือเอก", "พลเรือเอก หญิง", "พลเรือโท", "พลเรือโท หญิง", "พลเรือตรี", "พลเรือตรี หญิง", "นาวาเอก", "นาวาเอก หญิง", "นาวาเอกพิเศษ", "นาวาเอกพิเศษ หญิง", "นาวาโท", "นาวาโท หญิง", "นาวาตรี", "นาวาตรี หญิง", "เรือเอก", "เรือเอก หญิง", "เรือโท", "เรือโท หญิง", "เรือตรี", "เรือตรี หญิง", "พันจ่าเอก", "พันจ่าเอก หญิง", "พันจ่าโท", "พันจ่าโท หญิง", "พันจ่าตรี", "พันจ่าตรี หญิง", "จ่าเอก", "จ่าเอก หญิง", "จ่าโท", "จ่าโท หญิง", "จ่าตรี", "จ่าตรี หญิง", "พลทหารเรือ", "พลอากาศเอก", "พลอากาศเอก หญิง", "พลอากาศโท", "พลอากาศโท หญิง", "พลอากาศตรี", "พลอากาศตรี หญิง", "นาวาอากาศเอก", "นาวาอากาศเอก หญิง", "นาวาอากาศเอกพิเศษ", "นาวาอากาศเอกพิเศษ หญิง", "นาวาอากาศโท", "นาวาอากาศโท หญิง", "นาวาอากาศตรี", "นาวาอากาศตรี หญิง", "เรืออากาศเอก", "เรืออากาศเอก หญิง", "เรืออากาศโท", "เรืออากาศโท หญิง", "เรืออากาศตรี", "เรืออากาศตรี หญิง", "พันจ่าอากาศเอก", "พันจ่าอากาศเอก หญิง", "พันจ่าอากาศโท", "พันจ่าอากาศโท หญิง", "พันจ่าอากาศตรี", "พันจ่าอากาศตรี หญิง", "จ่าอากาศเอก", "จ่าอากาศเอก หญิง", "จ่าอากาศโท", "จ่าอากาศโท หญิง", "จ่าอากาศตรี", "จ่าอากาศตรี หญิง", "พลทหารอากาศ", "หม่อม", "หม่อมเจ้า", "หม่อมราชวงศ์", "หม่อมหลวง", "ดร.", "ศ.ดร.", "ศ.", "ผศ.ดร.", "ผศ.", "รศ.ดร.", "รศ.", "นพ.", "แพทย์หญิง", "สัตวแพทย์", "สพญ.", "ทพ.", "ทพญ.", "เภสัชกร", "ภกญ.", "วัด", "พระ", "พระครู", "พระมหา", "พระสมุห์", "พระอธิการ", "สามเณร", "แม่ชี", "บาทหลวง", "MR", "MRS", "MS", "MISS", "Dr.", "บริษัท", "หจก.", "โรงเรียน", "สหกรณ์", "อื่นๆ"];
 /* ตั้งค่าระบบ (เจ้าของร้านแก้ได้ที่ ตั้งค่าระบบ) ค่าเริ่มต้นด้านล่าง ระบบจริงเก็บในตาราง app_settings */
 const INS_DEF=[["กรุงเทพประกันภัย", "BKI", 0], ["กลางคุ้มครองผู้ประสบภัยจากรถ", "RVP", 1], ["คิวบีอี ประกันภัย", "QBE", 0], ["คุ้มภัยโตเกียวมารีนประกันภัย", "TMSTH", 0], ["จรัญประกันภัย", "CHARAN", 0], ["ชับบ์สามัคคีประกันภัย", "CHUBB", 0], ["ซมโปะ ประกันภัย", "SOMPO", 0], ["ทิพยประกันภัย", "TIP", 0], ["ทูนประกันภัย", "TUNE", 0], ["ธนชาตประกันภัย", "TNI", 0], ["นวกิจประกันภัย", "NAVAKIJ", 0], ["นำสินประกันภัย", "NAMSENG", 0], ["บางกอกสหประกันภัย", "BUS", 0], ["ประกันคุ้มภัย", "SAFETY", 0], ["ประกันภัยไทยวิวัฒน์", "TVI", 0], ["พิพัทประกัน", "PPI", 0], ["มิตรแท้ประกันภัย", "MITTARE", 0], ["วิริยะประกันภัย", "VIRIYAH", 0], ["ศรีอยุธยา เจนเนอรัล ประกันภัย", "SRIAYUD", 0], ["สยามซิตี้ประกันภัย", "SIAMCITY", 0], ["สหมงคลประกันภัย", "SAHAMONG", 0], ["สินทรัพย์ประกันภัย", "SINSAP", 0], ["สินมั่นคงประกันภัย", "SMK", 0], ["อลิอันซ์ ประกันภัย", "ALLIANZ", 0], ["อินทรประกันภัย", "INDARA", 0], ["เทเวศประกันภัย", "DEVES", 0], ["เมืองไทยประกันภัย", "MTI", 0], ["เอ็ม เอส ไอ จี ประกันภัย", "MSIG", 0], ["เอราวัณประกันภัย", "ERAWAN", 0], ["เออร์โกประกันภัย", "ERGO", 0], ["แอกซ่าประกันภัย", "AXA", 0], ["แอลเอ็มจี ประกันภัย", "LMG", 0], ["ไทยประกันภัย", "THAINS", 0], ["ไทยพัฒนาประกันภัย", "THAIPAT", 0], ["ไทยศรีประกันภัย", "THAISRI", 0], ["ไทยเศรษฐกิจประกันภัย", "TSI", 0], ["ไทยไพบูลย์ประกันภัย", "TPI", 0], ["ไอโออิ กรุงเทพ ประกันภัย", "AIOI", 0]];
-const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,passthru:['ค่าภาษีรถ','ค่าปรับล่าช้า','พ.ร.บ.','ประกันภาคสมัครใจ'],exp_cats:['ค่าแรงพนักงาน','ค่าเช่า','ค่าไฟ','ค่าน้ำ','ค่าอินเทอร์เน็ต/โทรศัพท์','ค่าเครื่องมือ/ซ่อมบำรุง','ค่าเอกสาร/เครื่องเขียน','ค่าน้ำมัน/เดินทาง','อื่นๆ'],line_oa:'',line_days:[30,7],sms_sender:'',sms_force:'standard',sms_days:30,sms_tpl_reg:'รถทะเบียน {ทะเบียน} {จังหวัด} ภาษีจะหมดอายุ {วันหมดอายุ} ต่อภาษีได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',sms_tpl_ins:'ประกันรถ {ทะเบียน} {จังหวัด} จะหมดอายุ {วันหมดอายุ} ต่ออายุได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',rc:{a4:'half',slip:'std',logo:1,pp:1,line:1,sign:1,shopQr:0,taxid:'',foot:'ขอบคุณที่ใช้บริการ'},brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
+const SET_DEF={fee_tax:50,fee_prb_moto:7,fee_prb_car:0,insp_car:200,insp_heavy:300,insp_moto:60,reg_min_year:1947,exp_soon:30,dlt_late_received:2,dlt_late_submitted:7,dlt_late_plate:14,passthru:['ค่าภาษีรถ','ค่าปรับล่าช้า','พ.ร.บ.','ประกันภาคสมัครใจ'],exp_cats:['ค่าแรงพนักงาน','ค่าเช่า','ค่าไฟ','ค่าน้ำ','ค่าอินเทอร์เน็ต/โทรศัพท์','ค่าเครื่องมือ/ซ่อมบำรุง','ค่าเอกสาร/เครื่องเขียน','ค่าน้ำมัน/เดินทาง','อื่นๆ'],line_oa:'',line_days:[30,7],sms_sender:'',sms_force:'standard',sms_days:30,sms_tpl_reg:'รถทะเบียน {ทะเบียน} {จังหวัด} ภาษีจะหมดอายุ {วันหมดอายุ} ต่อภาษีได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',sms_tpl_ins:'ประกันรถ {ทะเบียน} {จังหวัด} จะหมดอายุ {วันหมดอายุ} ต่ออายุได้ที่ {ชื่อร้าน} โทร {เบอร์ร้าน}',rc:{a4:'half',slip:'std',logo:1,pp:1,line:1,sign:1,shopQr:0,taxid:'',foot:'ขอบคุณที่ใช้บริการ'},brands:BRANDS,bodies:BODY,prefixes:PREFIX,insurers:INS_DEF};
 let SET=JSON.parse(JSON.stringify(SET_DEF));
 const insNames=()=>SET.insurers.map(x=>x[0]);
 const SVC=[['tax','ต่อภาษี / พรบ.ภาคบังคับ'],['tr','โอนย้าย / อื่นๆ'],['ins','ประกัน ภาคสมัครใจ'],['k','พรบ. ขนส่ง']];
@@ -6455,11 +6457,12 @@ const stEmbed=k=>{if(!user||user.role!=='owner'||cur!==k)return;const v=$('#view
   const nodes=[...v.childNodes];v.innerHTML=`<div class="st st-shell"><div class="ltop"><span class="ui-ic">⚙️</span><h1>ตั้งค่าระบบ</h1><span class="sub">${LIVE?'มีผลกับทุกสาขาและทุกเครื่องทันทีหลังบันทึก':'โหมดทดลอง: แก้ได้ แต่ไม่ถูกบันทึกจริง'}</span></div><div class="st-lay">${stNavHTML()}<div class="st-main st-sub"></div></div></div>`;
   const lay=v.querySelector('.st-lay'),main=lay.querySelector('.st-main');nodes.forEach(n=>main.appendChild(n));
   lay.querySelectorAll('[data-stn]').forEach(b=>b.classList.toggle('on',b.dataset.stn===k));stNavBind(lay)};
-const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
+const ST_NAV=[['ร้านและบริการ',[['fee','💰','ค่าบริการ และปีจดทะเบียน',['💰','📅'],'ค่าบริการ'],['lists','🚗','ข้อมูลรถและลูกค้า',['🚗'],'ข้อมูลรถ'],['due','⏱️','กำหนดเวลาและการเตือน',['⏱️'],'กำหนดเวลา'],['exp','📒','รายจ่ายและกำไร',['📒'],'รายจ่าย']]],
   ['เอกสาร',[['rc','🧾','รูปแบบใบเสร็จ',['🧾'],'ใบเสร็จ']]],
   ['การแจ้งเตือน',[['lineoa','🔑','เชื่อมต่อ LINE OA',['🔑'],'LINE OA'],['remind','🔔','เตือนลูกค้าทาง LINE',['🔔'],'เตือนลูกค้า'],['daily','💬','สรุปประจำวันทาง LINE',['💬'],'สรุปรายวัน'],['sms','📱','ส่ง SMS (ThaiBulkSMS)',['📱'],'SMS']]]];
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
   const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
+  const D=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" data-day inputmode="numeric" maxlength="3" value="${SET[k]??SET_DEF[k]}"><em>วัน</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k])));
   const T=(k,l,h,sm)=>`<div class="field st-list st-list-readable" data-l="${k}"><span>${l} <em class="sub">(<b class="st-cnt">${LS[k].length}</b> รายการ)</em></span>
     <label class="st-searchline"><span class="st-search-label">ค้นหาในรายการที่มีอยู่</span><input class="st-find" type="search" name="ss_filter_${k}" placeholder="พิมพ์เพื่อกรองรายการ…" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true"></label>
@@ -6476,6 +6479,9 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     ${N('insp_car','ค่าตรวจสภาพ รถยนต์','รถอายุเกิน 7 ปี')}${N('insp_heavy','ค่าตรวจสภาพ รถหนักเกิน 2,000 กก.')}${N('insp_moto','ค่าตรวจสภาพ มอเตอร์ไซค์','รถอายุเกิน 5 ปี')}</div></div>
   <div class="card stf-card"><div class="sech teal">📅 ปีจดทะเบียน</div><div class="st-grid">
     <label class="field"><span>ปีจดทะเบียนเก่าสุดที่เลือกได้ (พ.ศ.)</span><input id="st-year" inputmode="numeric" maxlength="4" value="${(+SET.reg_min_year||1947)+543}"><small class="sub">ช่อง "วันจดทะเบียนรถ" จะให้เลือกปีตั้งแต่ปีนี้ถึงปีปัจจุบัน</small></label></div></div>
+  <div class="card stf-card"><div class="sech teal">⏱️ กำหนดเวลาและการเตือน</div><div class="st-grid">
+    ${D('exp_soon','นับว่า "ใกล้หมดอายุ" เมื่อเหลือไม่เกิน','ใช้ในหน้าค้นหา หน้าแรก และสีวันหมดอายุ')}
+    ${D('dlt_late_received','งานขนส่ง: รอยื่นเกิน','นับจากวันรับงาน แล้วขึ้นเตือนสีแดง')}${D('dlt_late_submitted','งานขนส่ง: ยื่นแล้วรอป้ายเกิน','นับจากวันที่กดยื่นขนส่ง')}${D('dlt_late_plate','งานขนส่ง: ได้ป้ายแล้วลูกค้ายังไม่มารับเกิน','นับจากวันที่ได้ป้าย')}</div></div>
   <div class="card stf-card"><div class="sech teal">🚗 รายการข้อมูลรถและลูกค้า</div><div class="st-grid two">
     ${T('brands','ยี่ห้อรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('bodies','ลักษณะรถ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}
     ${T('prefixes','คำนำหน้าชื่อ','พิมพ์ในช่องเพื่อค้นหา · กด × เพื่อลบ')}${T('insurers','บริษัทประกัน','ป้ายสีเหลือง = กองทุนกลาง · กด × เพื่อลบ')}</div></div>
@@ -6524,7 +6530,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     <div class="st-grid st-keys"><label class="field"><span>ส่งทดสอบไปที่เบอร์</span><div class="st-num"><input id="sk-to" inputmode="tel" maxlength="12" autocomplete="off" placeholder="เบอร์มือถือ 10 หลัก"><button type="button" class="btn line" id="sk-test">📤 ส่งทดสอบ</button></div><small class="sub">ใช้ 1–2 เครดิต · ใช้ชื่อผู้ส่งและข้อความที่บันทึกไว้แล้ว</small></label></div></div></div>
   <div class="st-bar"><button type="button" class="btn line" id="st-reset">คืนค่าเริ่มต้น</button><button type="button" class="btn" id="st-save">💾 บันทึกการตั้งค่า</button></div></div>`;
   const read=()=>{const o=JSON.parse(JSON.stringify(SET));let bad='',badEl=null;const B=(m,el)=>{if(!bad){bad=m;badEl=el}};
-    document.querySelectorAll('#view .st-main input[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0))B(i.closest('label')?.querySelector('span')?.textContent||'ค่าบริการ',i);else o[i.dataset.k]=v});
+    document.querySelectorAll('#view .st-main input[data-k]').forEach(i=>{const v=parseFloat(i.value.replace(/,/g,''));if(!(v>=0)||(i.dataset.day!=null&&!(v>=1&&v<=365&&v%1===0)))B(i.closest('label')?.querySelector('span')?.textContent||'ค่าบริการ',i);else o[i.dataset.k]=v});
     const y=parseInt($('#st-year').value,10)-543;if(!(y>=1900&&y<=TODAY.getFullYear()))B('ปีจดทะเบียนเก่าสุด',$('#st-year'));else o.reg_min_year=y;
     Object.keys(LS).forEach(k=>{if(!LS[k].length)B('รายการว่าง',$('[data-stsec="lists"]'));o[k]=JSON.parse(JSON.stringify(LS[k]))});
     o.rc=rcRead();o.line_oa=$('#st-oa').value.trim();const dd=[...document.querySelectorAll('#st-days .on')].map(b=>+b.dataset.d);
@@ -6997,7 +7003,7 @@ const AU_SKIP=/(_at|_by|_by_name|_code)$|^(id|user_id|row_id)$/;
 const AU_ST={open:'ค้างชำระ',paid:'ชำระครบ',void:'ยกเลิก',received:'รับเรื่องแล้ว',submitted:'ยื่นขนส่งแล้ว',plate:'ได้ป้ายแล้ว',done:'ส่งมอบลูกค้าแล้ว',wait:'รอตรวจ',check:'กำลังตรวจ',pass:'ผ่าน',fail:'ไม่ผ่าน'};
 const AU_ROLE={owner:'เจ้าของกิจการ',head:'หัวหน้าสาขา',staff:'พนักงาน'};
 const AU_SL={fee_tax:'ค่าบริการต่อภาษี',fee_prb_moto:'ค่าบริการ พ.ร.บ. รถจักรยานยนต์',fee_prb_car:'ค่าบริการ พ.ร.บ. รถยนต์',insp_car:'ค่าตรวจสภาพรถยนต์',insp_heavy:'ค่าตรวจสภาพรถเกิน 2,000 กก.',insp_moto:'ค่าตรวจสภาพรถจักรยานยนต์',
-  reg_min_year:'ปีจดทะเบียนเก่าสุด',brands:'ยี่ห้อรถ',bodies:'ลักษณะรถ',prefixes:'คำนำหน้าชื่อ',insurers:'บริษัทประกัน',passthru:'รายการเงินนำส่ง',exp_cats:'หมวดรายจ่าย',line_oa:'LINE ID ของร้าน',line_days:'แจ้งเตือนล่วงหน้า'};
+  reg_min_year:'ปีจดทะเบียนเก่าสุด',exp_soon:'ช่วงใกล้หมดอายุ (วัน)',dlt_late_received:'กำหนดรอยื่นขนส่ง (วัน)',dlt_late_submitted:'กำหนดรอป้าย (วัน)',dlt_late_plate:'กำหนดลูกค้ารับป้าย (วัน)',brands:'ยี่ห้อรถ',bodies:'ลักษณะรถ',prefixes:'คำนำหน้าชื่อ',insurers:'บริษัทประกัน',passthru:'รายการเงินนำส่ง',exp_cats:'หมวดรายจ่าย',line_oa:'LINE ID ของร้าน',line_days:'แจ้งเตือนล่วงหน้า'};
 const auBrN=id=>{const b=(LIVE?DB.branches:[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]).find(x=>x.id===id);return b?b.name:'ส่วนกลาง'};
 const auV=(k,v)=>v==null||v===''?'–':k==='items'&&Array.isArray(v)?v.map(i=>i[0]+' '+money(i[1])).join(', '):k==='status'?AU_ST[v]||v:k==='role'?AU_ROLE[v]||v:k==='branch_id'?auBrN(v)
   :k==='active'?(v?'ใช้งาน':'ระงับ'):k==='line_user_id'?'เชื่อมต่อแล้ว':k==='billed'?(v?'เปิดบิลแล้ว':'ยังไม่เปิดบิล'):/amount|total|discount|cash|premium|transfer|diff/.test(k)&&!isNaN(v)?money(v)+' บาท'
@@ -7033,7 +7039,7 @@ function auEntry(r){const n=r.new_data||{},o=r.old_data||{},a=r.action,d=a==='de
       if(Array.isArray(y)||Array.isArray(x)){const nm=z=>Array.isArray(z)?z[0]:z,xs=(x||[]).map(nm),ys=(y||[]).map(nm);if(!x)return rows.push([L,undefined,ys.length+' รายการ']);
         const ad=ys.filter(z=>!xs.includes(z)),rm=xs.filter(z=>!ys.includes(z));
         return rows.push([L,undefined,[ad.length?'เพิ่ม '+ad.join(', '):'',rm.length?'นำออก '+rm.join(', '):'',!ad.length&&!rm.length?'ปรับรายละเอียด':''].filter(Boolean).join(' / ')])}
-      const fm=z=>z==null||z===''?'–':k==='reg_min_year'?'พ.ศ. '+(+z+543):typeof z==='number'?money(z)+' บาท':String(z);rows.push([L,x==null?undefined:fm(x),fm(y)])});
+      const fm=z=>z==null||z===''?'–':k==='reg_min_year'?'พ.ศ. '+(+z+543):/^(exp_soon|dlt_late_)/.test(k)?z+' วัน':typeof z==='number'?money(z)+' บาท':String(z);rows.push([L,x==null?undefined:fm(x),fm(y)])});
     item=(rows.length>4?rows.slice(0,3):rows).map(x=>x[0]).join(', ')+(rows.length>4?' และอีก '+(rows.length-3)+' รายการ':'')||'ไม่มีการเปลี่ยนแปลง';break}
   case'staff':v=A('เพิ่มผู้ใช้','แก้ไขผู้ใช้','ลบผู้ใช้');c=A('add','edit','del');ref=d.username||o.username||'';item=d.full_name||o.full_name||'ผู้ใช้งาน';
     rows=a==='update'?chg():auInfo(d,['role','branch_id']);break;
