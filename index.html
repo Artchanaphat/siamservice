@@ -5051,7 +5051,7 @@ R.add=(E)=>{if(!E)billKey=null;
     const ab=$('#b-auto');if(ab)ab.hidden=on;
     const sub=document.querySelector('[data-sec="tax"] .sech.sub-inline');
     if(sub){sub.hidden=on;if(sub.nextElementSibling)sub.nextElementSibling.hidden=on}};
-  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView&&!(inspOnly&&b.dataset.svc==='tax')));const ib=$('#svc-insp');if(ib)ib.setAttribute('aria-pressed',inspOnly);inspView();recalc()};
+  const syncSvc=()=>{document.querySelectorAll('[data-sec]').forEach(s=>s.hidden=s.dataset.sec!==svcView);document.querySelectorAll('[data-svc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.svc===svcView&&!(inspOnly&&b.dataset.svc==='tax')));const ib=$('#svc-insp');if(ib)ib.setAttribute('aria-pressed',inspOnly&&svcView==='tax');inspView();recalc()};
   document.querySelectorAll('[data-svc]').forEach(b=>b.onclick=()=>{if(inspOnly&&b.dataset.svc==='tax'){setInspOnly(false);return}svcView=b.dataset.svc;syncSvc()});
   const fnote=()=>{const k=$('#b-img').files.length,p=$('#b-pdf').files.length;$('#b-files-note').textContent=(k?`รูป ${k} ไฟล์ `:'')+(p?`PDF ${p} ไฟล์`:'')};
   $('#b-img').onchange=fnote;$('#b-pdf').onchange=fnote;
@@ -5135,7 +5135,7 @@ R.add=(E)=>{if(!E)billKey=null;
     else $('#b-auto-note').textContent='ปิดโหมดตรวจสภาพอย่างเดียวแล้ว';
     syncSvc()};
   $('#b-auto').onclick=()=>{if(inspOnly){setInspOnly(false);return}delete $('#b-tax').dataset.user;delete $('#b-prb').dataset.user;autoCalc()};
-  if($('#svc-insp'))$('#svc-insp').onclick=()=>setInspOnly(!inspOnly);
+  if($('#svc-insp'))$('#svc-insp').onclick=()=>{if(inspOnly&&svcView!=='tax'){svcView='tax';syncSvc();return}setInspOnly(!inspOnly)};
   if(!E){
     $('#b-insp').addEventListener('input',function(){this.dataset.user='1'});
     ['b-tax','b-prb','b-prbfee','b-fee'].forEach(id=>$('#'+id).addEventListener('input',()=>{if(inspOnly&&n(id)>0)setInspOnly(false,true)}));
