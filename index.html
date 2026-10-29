@@ -3530,10 +3530,12 @@ function tkNext(b){if(b.void)return'';const S=jobSteps(b),debt=b.amt-b.paid,wt=w
   else if(debt>0.004){t=`รับยอดค้าง ${money(debt)} บาท`;btn=`<button type="button" class="btn sm" data-tka="pay" data-id="${b.id}">💵 รับยอดค้าง</button>`}
   else if(ins.st==='wait'||ins.st==='now'||ins.st==='bad'){t=ins.st==='bad'?'ตรวจไม่ผ่าน · นัดตรวจซ้ำ':'บันทึกผลตรวจสภาพ';btn=ins.rec?(ins.st==='now'?inspBtns(b):''):useQ()?`<button type="button" class="btn sm" data-go="queue">ไปที่คิว</button>`:''}
   else if(dl.st==='now'){t=j.st==='received'?'ยื่นงานที่ขนส่ง':'รอป้าย/เล่มจากขนส่ง';btn=`<button type="button" class="btn sm" data-tka="dlt" data-st="${j.st}">🚚 ไปงานขนส่ง</button>`}
-  else if(dv.st==='now'){t='ส่งมอบเอกสารให้ลูกค้า';btn=dv.dlv?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 บันทึกส่งมอบ</button>`:`<button type="button" class="btn sm" data-tka="dlt" data-st="plate">📦 ส่งมอบที่งานขนส่ง</button>`}
+  else if(dv.st==='now'){t='ส่งมอบเอกสารให้ลูกค้า';btn=dv.dlv?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 บันทึกส่งมอบแล้ว</button>`:`<button type="button" class="btn sm" data-tka="dltdone" data-id="${b.id}">📦 บันทึกลูกค้ารับเอกสารแล้ว</button>`}
   if(!t)return '<div class="tk-next ok">✓ งานนี้ครบทุกขั้นตอนแล้ว</div>';
   return `<div class="tk-next"><span>➜ <b>ทำต่อ:</b> ${esc(t)}</span>${btn}</div>`}
-document.addEventListener('click',e=>{const x=e.target.closest('[data-tka]');if(!x)return;const k=x.dataset.tka,b=getBill(+x.dataset.id);
+document.addEventListener('click',async e=>{const x=e.target.closest('[data-tka]');if(!x)return;const k=x.dataset.tka,b=getBill(+x.dataset.id);
+  if(k==='dltdone'&&b){const debt=b.amt-b.paid>0.004;if(!await uiConfirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท\n`:'')+`ยืนยันว่าลูกค้ารับเอกสาร/ป้ายของ ${b.plate} แล้ว?`))return;
+    x.disabled=true;try{await dltSet([b],{st:'done'});toast('บันทึกลูกค้ารับเอกสารแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}return}
   if(k==='pay'&&b){showBill(b.id);payDlg(b)}
   else if(k==='tr'&&b){const d=trWait(b).map(y=>iso(y.p.d)).sort()[0];closeDate=d||iso(TODAY);closeEdit=false;go('close')}
   else if(k==='dlt'){dltF=x.dataset.st||'received';dltQ='';go('dlt')}});
