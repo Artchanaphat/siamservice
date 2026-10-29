@@ -1163,6 +1163,10 @@ button.ui-kpi.on{background:#f4f8ff;box-shadow:0 0 0 2px var(--t)}
 }
 .ex-mnav{display:flex;gap:6px;align-items:center}
 .ex-mnav .btn{width:40px;padding:0;justify-content:center;font-size:18px}
+.ex-mnav input{width:auto}
+.ex-mnav>.btn{margin:0!important;align-self:stretch;height:auto}
+.ps-picker-row .ps-nav{width:44px;padding:0;justify-content:center;font-size:18px;flex:none;height:auto!important;align-self:stretch;border-radius:10px}
+.cl-date .ex-mnav{display:inline-flex;vertical-align:middle;align-items:center}
 .ex-cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start}
 .ex-form{display:flex;flex-direction:column;gap:12px}
 .ex-form .field{margin:0}
@@ -6173,7 +6177,21 @@ function lsAttach(){const C=LS_CFG[cur];if(!C)return;const v=$('#view');
     const run=()=>{const q=norm(inp.value);LSQ[key]=inp.value;let k=0;items.forEach(r=>{const show=!q||norm(r.textContent+' '+[...r.querySelectorAll('input')].map(i=>i.value).join(' ')).includes(q);r.hidden=!show;if(show)k++});n.textContent=q?`พบ ${k} จาก ${items.length}`:''};
     inp.addEventListener('input',run);inp.addEventListener('keydown',e=>{if(e.key==='Escape'&&inp.value){e.stopPropagation();inp.value='';run()}if(e.key===' ')e.stopPropagation()});
     if(LSQ[key]){inp.value=LSQ[key];run()}})}
-{let rq=0;new MutationObserver(()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(lsAttach)}).observe(document.getElementById('view'),{childList:true,subtree:true})}
+/* ปุ่ม ‹ › ข้างช่องเลือกวัน/เดือนที่ใช้เปลี่ยนข้อมูลทั้งหน้า (แบบเดียวกับหน้ารายจ่าย) */
+function navAttach(){
+  ['#cl-d','#tk-d','#bk-m'].forEach(sel=>{const i=$('#view '+sel);if(!i||i.closest('.ex-mnav'))return;
+    const w=document.createElement('div');w.className='ex-mnav';i.before(w);
+    const mk=(d,t)=>{const b=document.createElement('button');b.type='button';b.className='btn line';b.textContent=t;b.setAttribute('aria-label',d<0?'ก่อนหน้า':'ถัดไป');b.dataset.d=d;return b};
+    const pv=mk(-1,'‹'),nx=mk(1,'›');w.append(pv,i,nx);
+    const shift=d=>{if(!i.value)return;let v;if(i.type==='month'){const [y,m]=i.value.split('-').map(Number);v=ymOf(new Date(y,m-1+d,1))}else{const x=new Date(i.value+'T00:00');x.setDate(x.getDate()+d);v=iso(x)}return v};
+    const sync=()=>{const n=shift(1);nx.disabled=!!(i.max&&n>i.max)};sync();
+    [pv,nx].forEach(b=>b.onclick=()=>{const v=shift(+b.dataset.d);if(!v||(i.max&&v>i.max))return;i.value=v;i.dispatchEvent(new Event('change',{bubbles:true}))})});
+  // เอกสารรับ-ส่ง: เลือกเดือน/ปีด้วย select
+  const r=$('#view .ps-picker-row');if(r&&!r.dataset.nav){r.dataset.nav='1';
+    const mk=(d,t)=>{const b=document.createElement('button');b.type='button';b.className='btn line ps-nav';b.textContent=t;b.setAttribute('aria-label',d<0?'เดือนก่อน':'เดือนถัดไป');
+      const x=new Date(psY,psM+d,1);if(x>TODAY)b.disabled=true;b.onclick=()=>{psM=x.getMonth();psY=x.getFullYear();R.docs()};return b};
+    r.prepend(mk(-1,'‹'));r.append(mk(1,'›'))}}
+{let rq=0;new MutationObserver(()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(()=>{lsAttach();navAttach()})}).observe(document.getElementById('view'),{childList:true,subtree:true})}
 
 /* ---------- 3. คิวตรวจสภาพหน้าลาน ---------- */
 const QUEUE=[];let qSeq=0,qTimer=null;
