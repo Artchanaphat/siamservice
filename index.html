@@ -2319,6 +2319,31 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 .field .thd>input{flex:1;min-width:0}
 .thd>input,.thd>input::-webkit-datetime-edit{color:transparent}
 .thd-t{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:#1f2937;white-space:nowrap}
+#view .sm-filter-v2 .sm-filter-line.sm-one{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;border-top:0;padding:0}
+#view .sm-filter-v2 .sm-one .sm-search{flex:1 1 280px}
+#view .sm-filter-v2 .sm-one .sm-period-options{flex:0 1 auto;width:auto}
+#view .sm-filter-v2 .sm-one .sm-clear-filter{flex:none;width:auto;margin-left:auto}
+.nb-more{margin:4px 0 12px;border:1px solid #dfe6f1;border-radius:12px;background:#fff}
+.nb-more>summary{cursor:pointer;padding:12px 16px;font-weight:700;color:#0b2766;list-style:none}
+.nb-more>summary small{font-weight:500;color:#64748b;margin-left:6px}
+.nb-more[open]>summary{border-bottom:1px solid #edf1f8}
+.nb-more>.nb-row{padding:12px}
+.ins-tabs{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap}
+.ins-tabs>button{font:inherit;font-size:14px;font-weight:650;padding:9px 16px;border:1px solid #dfe6f1;border-radius:10px;background:#fff;color:#415776;cursor:pointer}
+.ins-tabs>button.on{background:#1d63ed;border-color:#1d63ed;color:#fff}
+@media(max-width:700px){
+#view .ui-tbl.stack.cl-list tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;padding:9px 14px}
+#view .ui-tbl.stack.cl-list tr::before{content:'';order:4;flex-basis:100%;height:0}
+#view .ui-tbl.stack.cl-list td{display:block;padding:0;border:0;text-align:left;font-size:12.5px;color:#64748b}
+#view .ui-tbl.stack.cl-list td::before{content:none}
+#view .ui-tbl.stack.cl-list td:nth-child(3){order:1;font-size:14.5px;color:#0b2766}
+#view .ui-tbl.stack.cl-list td:nth-child(4){order:2;flex:1;min-width:0;font-size:13.5px;color:#334155;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#view .ui-tbl.stack.cl-list td:nth-child(7){order:3;font-size:14.5px;color:#0b2766}
+#view .ui-tbl.stack.cl-list td:nth-child(1){order:5}
+#view .ui-tbl.stack.cl-list td:nth-child(2){order:6}
+#view .ui-tbl.stack.cl-list td:nth-child(5){order:7}
+#view .ui-tbl.stack.cl-list td:nth-child(6){order:8;margin-left:auto}
+}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -2920,7 +2945,7 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 // ===== แถบเมนูด้านซ้าย + แถบบน =====
-const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',close:'ปิดยอดเงินประจำวัน',inst:'ผ่อนชำระประกัน',expense:'รายจ่าย + กำไร',comm:'ค่าคอมประกัน',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
+const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',close:'ปิดยอดเงินประจำวัน',inst:'ประกัน (ผ่อน · ค่าคอม)',expense:'รายจ่าย + กำไร',comm:'ค่าคอมประกัน',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
 const SIC={track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/><path d="M4 6h16M4 18h10"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
   tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
@@ -2928,8 +2953,8 @@ const SIC={track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><
 const qBranches=()=>(typeof DB!=='undefined'&&DB.branches&&DB.branches.length)?DB.branches:[{id:1,name:shop().title}];
 const curBrId=()=>(LIVE&&DB.branch)?DB.branch.id:(qBranches()[0]||{}).id;
 const useQ=()=>!((SET.queue_off||[]).includes(curBrId()));
-const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','comm','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','backup']],['settings']];
-const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
+const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','backup']],['settings']];
+const SCUR={comm:'inst',bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
 const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
 let sOpen=new Set();
 function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='owner'?'settings':cur),own=user&&user.role==='owner';
@@ -3235,7 +3260,6 @@ function moneyPage(cfg){
   const tri=(p,v,lbl)=>`<span class="sm-field-wrap" data-w="${p}"><label>${lbl[0]}</label><select id="f-${p}d">${opt(DD,v[0])}</select></span><span class="sm-field-wrap" data-w="${p}"><label>${lbl[1]}</label><select id="f-${p}m">${opt(MM,v[1])}</select></span><span class="sm-field-wrap" data-w="${p}"><label>ปี</label><select id="f-${p}y">${opt(YY,v[2])}</select></span>`;
   $('#view').innerHTML=`<div class="sm">
   <div class="sm-topbar"><span class="tb-title">${cfg.title}</span>
-    <button type="button" class="sm-alldebt" id="sm-alldebt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>${cfg.alldebt}</button>
     <div class="sm-topbar-actions">${cfg===INC?'<a href="#" class="btn-csv sm-paynow" id="sm-paynow">💰 รับชำระเงิน</a>':''}<a href="#" class="btn-csv" id="sm-csv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9.5 12 5 5M14.5 12l-5 5"/></svg>Export Excel</a><a href="#" class="btn-printA4" id="sm-print"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>พิมพ์รายงาน A4</a></div></div>
   <div class="sm-cardhint">แตะการ์ดเพื่อเลือกดูรายการตามสถานะ · ยอดของ <span id="sm-period"></span></div>
   <div class="sm-summary">
@@ -3244,22 +3268,15 @@ function moneyPage(cfg){
     <div class="sm-scard green" data-tab="done"><span class="sm-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.8 2.8L16 9.5"/></svg></span><div class="sm-scard-lbl">${cfg.labels[2]}</div><div class="sm-scard-val" id="sm-v-done">–</div><div class="sm-scard-sub" id="sm-s-done"></div></div>
   </div>
   <section class="sm-filterbar sm-filter-v2" aria-label="ค้นหาและกรองรายการ">
-    <div class="sm-filter-header"><strong>ค้นหาและกรองรายการ</strong><small>เลือกสถานะและช่วงวันที่ออกบิล · รายการเปลี่ยนทันที</small></div>
-    <div class="sm-filter-line"><span class="sm-filter-label">สถานะชำระเงิน</span>
-      <div class="sm-status-options" role="group" aria-label="สถานะชำระเงิน">
-        <button type="button" class="sm-status-chip" data-sm-tab="all">ทั้งหมด</button>
-        <button type="button" class="sm-status-chip" data-sm-tab="debt">ค้างชำระ</button>
-        <button type="button" class="sm-status-chip" data-sm-tab="done">ชำระครบ</button>
-      </div>
-    </div>
-    <div class="sm-filter-line"><span class="sm-filter-label">ช่วงวันที่ออกบิล</span>
+    <div class="sm-filter-line sm-one"><div class="sm-search"><div class="sm-search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" name="siam-bill-search" id="f-q" autocomplete="off" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า" value="${esc(st.q)}"></div>
+      <button type="button" class="btn-icon red" id="f-x" title="ล้างคำค้น" aria-label="ล้างคำค้น">✕</button></div>
       <div class="sm-period-options" role="group" aria-label="ช่วงวันที่ออกบิล">
         <button type="button" class="sm-period-chip" data-sm-period="today">วันนี้</button>
         <button type="button" class="sm-period-chip" data-sm-period="week">7 วันที่ผ่านมา</button>
         <button type="button" class="sm-period-chip" data-sm-period="month">เดือนนี้</button>
         <button type="button" class="sm-period-chip" data-sm-period="all">ทุกช่วงเวลา</button>
         <button type="button" class="sm-period-chip" data-sm-period="custom">กำหนดเอง</button>
-      </div>
+      </div><button type="button" class="sm-clear-filter" id="f-clear">↺ ล้างตัวกรอง</button>
     </div>
     <div class="sm-custom-dates" id="sm-custom-dates" hidden>
       <div class="sm-custom-heading"><span>กำหนดวัน เดือน ปี สำหรับรายงาน</span><small>เลือกแล้วอัปเดตทันที</small></div>
@@ -3268,11 +3285,7 @@ function moneyPage(cfg){
         <button type="button" class="btn-apply" id="f-apply">ใช้ช่วงวันที่</button>
       </div>
     </div>
-    <div class="sm-filter-line sm-search-line"><label class="sm-filter-label" for="f-q">ค้นหารถ / ลูกค้า</label>
-      <div class="sm-search"><div class="sm-search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" name="siam-bill-search" id="f-q" autocomplete="off" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า" value="${esc(st.q)}"></div>
-      <button type="button" class="btn-icon red" id="f-x" title="ล้างคำค้น" aria-label="ล้างคำค้น">✕</button></div>
-    </div>
-    <div class="sm-filter-footer"><span id="sm-filter-context" aria-live="polite"></span><button type="button" class="sm-clear-filter" id="f-clear">↺ ล้างตัวกรอง</button></div>
+    <span id="sm-filter-context" hidden></span>
   </section>
   <div class="row-count" id="sm-count"></div><div class="sm-history-msg" id="sm-history-msg" role="status" aria-live="polite" hidden></div>
   <div class="tbl-wrap" id="sm-tbl"></div></div>`;
@@ -3371,7 +3384,7 @@ function moneyPage(cfg){
   document.querySelectorAll('.sm-period-chip').forEach(b=>b.onclick=()=>preset(b.dataset.smPeriod));
   document.querySelectorAll('.sm-status-chip').forEach(b=>b.onclick=()=>{st.tab=b.dataset.smTab;draw()});
   $('#f-clear').onclick=()=>{Object.assign(st,{tab:cfg.defTab,mode:'day',quick:'today',d:TD,m:TMo,y:TY,q:''});$('#f-q').value='';draw()};
-  $('#sm-alldebt').onclick=()=>{st.mode='all';st.quick='all';st.tab='debt';draw()};
+  if($('#sm-alldebt'))$('#sm-alldebt').onclick=()=>{st.mode='all';st.quick='all';st.tab='debt';draw()};
   if($('#sm-paynow'))$('#sm-paynow').onclick=e=>{e.preventDefault();payPick()};
   document.querySelectorAll('.sm-scard').forEach(c=>{
     c.setAttribute('role','button');c.setAttribute('tabindex','0');
@@ -3448,7 +3461,10 @@ const INST={title:'ข้อมูลการผ่อนชำระ ค่า
     <div><h5>💰 ประวัติการผ่อนชำระ</h5>${rows?`<div class="sm-pays">${rows}</div>`:'<p class="sm-muted">ยังไม่เคยชำระค่าประกัน</p>'}<hr>${split(b).debt>0.004?`<button class="sm-paybtn" data-pay="${b.id}">💰 <b>รับชำระงวดถัดไป</b> (ยังรับได้ ${money(split(b).debt)})</button>`:waitAmt(b)?'<span class="sm-never">⏳ เงินโอนที่บันทึกไว้กำลังรอตรวจสอบ</span>':'<span class="st-ok">✓ ชำระครบแล้ว</span>'}${waitAmt(b)?`<p class="sm-muted">โอนรอยืนยัน ${money(waitAmt(b))} บาท · ยังไม่ยืนยันยอดชำระครบ</p>`:''}</div>
     <div><h5>📌 หมายเหตุ</h5><p class="sm-muted">${esc((cars.find(c=>c.id===b.carId)||{}).insNote||'–')}</p></div></div>`}};
 R.income=()=>moneyPage(INC);
-R.inst=()=>moneyPage(INST);
+R.inst=()=>{moneyPage(INST);insTabs('inst')};
+// หน้า "ประกัน" = ผ่อนชำระประกัน + ค่าคอมประกัน (แท็บด้านบน)
+function insTabs(k){$('#view').insertAdjacentHTML('afterbegin',`<div class="ins-tabs" role="tablist">${[['inst','🛡️ ผ่อนชำระประกัน'],['comm','💼 ค่าคอมประกัน']].map(([x,t])=>`<button type="button" role="tab" data-it="${x}" class="${x===k?'on':''}" aria-selected="${x===k}">${t}</button>`).join('')}</div>`);
+  document.querySelectorAll('[data-it]').forEach(b=>b.onclick=()=>{if(b.dataset.it!==cur)go(b.dataset.it)})}
 
 /* รับเงินยอดค้าง */
 function payDlg(b){const s=split(b),pn=$('#panel');
@@ -3719,12 +3735,14 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
     <div data-trb="${b.id}">${trPendHTML(b)}${trRejHTML(b)}</div>
     ${reqHTML(b)}
     ${debt?`<button class="nb-main" id="nb-pay">💵 <span>รับยอดค้าง ${money(s.debt)} บาท<small>ลูกค้านำเงินมาจ่ายเพิ่ม · กดเพื่อรับชำระเงินของบิลนี้</small></span></button>
-    <p class="nb-sub-title">หรือ ลูกค้ามาทำรายการอื่น</p>`:''}
+`:''}
+    <details class="nb-more"><summary>⋯ ทำรายการอื่น <small>เปิดบิลใหม่ · แก้ไขข้อมูล${b.ins?' · ประวัติผ่อนประกัน':''}</small></summary>
     <div class="nb-row">
       <button class="nb-btn teal" id="nb-new">📋 <span>เปิดบิลใหม่<small>ลูกค้ามาทำรายการใหม่ เช่น ต่อทะเบียน / ต่อ พรบ. (เปิดบิลใหม่ copy ข้อมูล)</small></span></button>
       <button class="nb-btn light-blue" id="nb-edit">✏️ <span>แก้ไขข้อมูล<small>ใช้เมื่อกรอกผิดเท่านั้น (ไม่นับเป็นรายได้ใหม่)</small></span></button>
     </div>
     ${b.ins?`<div class="nb-row" style="margin-top:10px"><button class="nb-btn primary" id="nb-inst">🛡️ <span>ตรวจสอบประวัติผ่อนชำระประกัน<small>${b.ins-s.ip>0.004?`ค่าประกันค้างอีก ${money(b.ins-s.ip)} บาท`:'ค่าประกันจ่ายครบแล้ว'}</small></span></button></div>`:''}
+    </details>
     <div class="nb-tools"><div class="ios-row${rcOpt().show_slip_button?' ss-slip-enabled':''}">
       <button class="ios-btn secondary" id="nb-back">‹ ย้อนกลับ</button>
       <button class="ios-btn success" data-print="แบบม้วน" ${rcOpt().show_slip_button?'':'hidden'}>🖨️ <span>พิมพ์ใบเสร็จ<small>แบบม้วน</small></span></button>
@@ -6971,6 +6989,7 @@ R.comm=()=>{cmMonth=cmMonth||ymOf(TODAY);const ym=cmMonth,cf=commCfg(),rows=comm
     const o=JSON.parse(JSON.stringify(SET));o.comm=c;e.target.disabled=true;
     try{if(LIVE)await DB.saveSettings(o);SET=o;toast('บันทึกอัตราค่าคอมแล้ว');R.comm()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}finally{e.target.disabled=false}};
 };
+{const f=R.comm;R.comm=()=>{f();insTabs('comm')}}
 R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
   $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
   let list;try{list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
