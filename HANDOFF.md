@@ -82,7 +82,7 @@
   - หน้า (เรียกด้วย `go('...')`): home, add (เปิดบิล), bill (รายละเอียด), edit, cust (ค้นหาลูกค้า/รถ), docs, income (รายได้/ยอดค้าง), inst (ผ่อนประกัน), sms, dlt (งานขนส่ง), queue (คิวตรวจ), track (ติดตามงาน 5 ขั้น), close (ปิดยอด), bell, settings · มีหน้าตรวจสอบระบบ/สำรองข้อมูล/audit (owner)
   - เทมเพลตพิมพ์ใบเสร็จอยู่ท้ายไฟล์ (`<style>` ตัวท้ายสุดเป็นของใบเสร็จ) **ห้ามแทรก CSS ที่ `</style>` ตัวสุดท้าย** ให้แทรกที่ตัวแรก
   - โหมด demo (ปุ่มล็อกอินทดลอง) แสดงเฉพาะ file:// หรือ host ที่มี "claude"
-- `siam-service-style.css` = CSS เก่า (v57) **ไม่ได้ลิงก์จาก index.html แล้ว** ห้ามเพิ่ม `<link>` กลับ
+- `siam-service-style.css` (CSS เก่า v57) ลบออกจาก repo แล้วใน v86 ห้ามเพิ่ม `<link>` CSS ภายนอกกลับ
 - `db/*.sql`, `supabase/functions/line-webhook/index.ts`
 
 ## 5. กฎห้ามแก้

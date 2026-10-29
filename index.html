@@ -5146,7 +5146,8 @@ const DB=(()=>{
     archiveEpoch++;archiveLoaded=false;archivePromise=null;
     cars.length=0;intake.length=0;oldBills.length=0;NEWS.length=0;seq=1e9;bseq=1e9;moreDone.clear();
     vs.forEach(v=>cars.push(rowCar(v)));
-    bs.forEach(r=>{const b=rowBill(r);intake.push(b);const car=cars.find(x=>x.id===b.carId);if(car)car.history.unshift({d:b.d,what:b.what,amt:b.amt})});
+    const byId=new Map(cars.map(c=>[c.id,c]));
+    bs.forEach(r=>{const b=rowBill(r);intake.push(b);const car=byId.get(b.carId);if(car)car.history.unshift({d:b.d,what:b.what,amt:b.amt})});
     lastLoad=Date.now();live()}
   const rowCar=v=>{const cu=v.customers||{};return{id:v.id,custId:v.customer_id,ctype:v.car_type,plate:v.plate,prov:v.province,
       name:[cu.first_name,cu.last_name].filter(Boolean).join(' '),tel:cu.tel||'',note:cu.short_note||'',type:ctLabel(v.car_type),model:[v.brand,v.model].filter(Boolean).join(' '),cc:v.cc||'',
