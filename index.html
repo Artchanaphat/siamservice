@@ -2317,7 +2317,7 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 .thd{position:relative;display:inline-flex;vertical-align:middle;max-width:100%}
 .field .thd{display:flex}
 .field .thd>input{flex:1;min-width:0}
-.thd>input,.thd>input::-webkit-datetime-edit{color:transparent}
+#view .thd>input,#view .thd>input::-webkit-datetime-edit{color:transparent!important;-webkit-text-fill-color:transparent!important}
 .thd-t{position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;color:#1f2937;white-space:nowrap}
 #view .sm-filter-v2 .sm-filter-line.sm-one{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;border-top:0;padding:0}
 #view .sm-filter-v2 .sm-one .sm-search{flex:1 1 280px}
@@ -2997,7 +2997,7 @@ const SHORT={home:'วันนี้',cust:'ลูกค้า',add:'เปิ�
 let cur='home';
 function navHTML(short){return VIEWS.map(([k,l])=>`<button class="nav" data-go="${k}" ${k===cur?'aria-current="page"':''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ICON[k]}</svg>${short?SHORT[k]:l}${k==='bell'&&dueList(7).length?`<span class="cnt">${dueList(7).length}</span>`:''}</button>`).join('')}
 // ===== แถบเมนูด้านซ้าย + แถบบน =====
-const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',remit:'เงินนำส่ง',close:'ปิดยอดเงินประจำวัน',inst:'ประกัน (ผ่อน · ค่าคอม)',expense:'รายจ่าย + กำไร',comm:'ค่าคอมประกัน',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
+const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม่',queue:'คิวตรวจสภาพ',track:'ติดตามงาน',cust:'ค้นหา | ข้อมูลลูกค้า',dlt:'งานขนส่ง',docs:'เอกสารรับ-ส่ง',income:'รายได้ + ยอดค้าง',remit:'เงินนำส่ง',close:'ปิดยอดเงินประจำวัน',inst:'ประกัน (ผ่อน · ค่าคอม)',expense:'รายจ่ายร้าน',comm:'ค่าคอมประกัน',dash:'สรุปรายเดือน',bell:'ส่ง SMS แจ้งเตือน',calc:'คำนวณภาษี',news:'ข่าวสาร',backup:'ส่งออก Excel',settings:'ตั้งค่าระบบ'};
 const SIC={remit:'<path d="M4 10h16v9H4z"/><path d="M12 3l8 4H4z"/><path d="M8 13v3M12 13v3M16 13v3"/>',track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/><path d="M4 6h16M4 18h10"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
   tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
@@ -3172,7 +3172,7 @@ const MENU=[
   ['inst','ผ่อนชำระประกัน','ติดตามงวดผ่อนรายลูกค้า','#e6f1fb','#2f7fd6','<rect x="3" y="6" width="16" height="11" rx="2"/><path d="M3 10h16"/><circle cx="18" cy="17" r="3.4" fill="#2f7fd6" stroke="#2f7fd6"/><path d="M18 15.6V17l1 .8" stroke="#fff"/>'],
   ['bell','ส่ง SMS แจ้งเตือน','เลือกประเภทที่ต้องการส่ง','#fde8e8','#e0474c','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>'],
   ['news','ข่าวสาร','อัปเดต/ประกาศจากทีมงาน','#e2f6f4','#1aa598','<path d="M4 10v4h3l7 4V6L7 10z"/><path d="M17 9a4 4 0 0 1 0 6"/>'],
-  ['backup','ส่งออก Excel / สำรองข้อมูล','ดาวน์โหลดรายงานรายเดือน','#eef2f7','#334155','<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/>'],
+  ['backup','ส่งออก Excel / สำรองข้อมูล','รายงานรายเดือนส่งนักบัญชี','#eef2f7','#334155','<path d="M12 3v12M7 10l5 5 5-5"/><path d="M4 17v3h16v-3"/>'],
   ['calc','คำนวณภาษี','ค่าตรวจ ภาษี พ.ร.บ. ค่าปรับ','#eef3ff','#3d6fd6','<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 12h2M14 12h2M8 16h2M14 16h2"/>'],
 ];
 // จัดกลุ่มเมนูตามลำดับงานจริงของร้าน
@@ -3231,7 +3231,7 @@ R.home=()=>{
     <div class="ui-card hm-main">
       <div class="hm-h"><div class="hm-tabs" role="tablist">${useQ()?`<button role="tab" data-ht="queue" aria-selected="${hdTab==='queue'}">${I(IC.queue)}คิวตรวจสภาพวันนี้</button>`:''}<button role="tab" data-ht="bills" aria-selected="${hdTab==='bills'}">${I(IC.bill)}บิลวันนี้ <span class="hm-c">${td.length}</span></button></div>
         <label class="hm-s">${I(IC.search)}<input id="hd-q" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า / เบอร์โทร" value="${esc(hdQ)}"></label>
-        <button type="button" class="btn" data-go="${hdTab==='queue'?'queue':'add'}">＋ ${hdTab==='queue'?'รับรถเข้าคิว':'เปิดบิลใหม่'}</button></div>
+        ${hdTab==='queue'?'<button type="button" class="btn" data-go="queue">＋ รับรถเข้าคิว</button>':''}</div>
       ${hdTab==='queue'?`<div class="hm-f">${[['all','ทั้งหมด',qtot],['wait','รอตรวจ',qc('wait')],['check','กำลังตรวจ',qc('check')],['pass','ตรวจผ่าน',qc('pass')],['fail','ไม่ผ่าน',qc('fail')]].map(([k,l,n])=>`<button type="button" class="hm-fc${hdQF===k?' on':''}" data-qf="${k}">${l}<b>${n}</b></button>`).join('')}</div>`:''}
       <div id="hd-rows"></div>
     </div>
@@ -6506,18 +6506,15 @@ async function exportXlsx(bills,fname){await loadJS('https://cdn.jsdelivr.net/np
   XLSX.writeFile(wb,fname)}
 R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'));
   const all=[...intake,...oldBills],inM=all.filter(b=>iso(b.d).slice(0,7)===expMonth),lb=lastBackup(),old=!lb||(Date.now()-new Date(lb))>30*DAY;
-  const br=LIVE&&DB.branch?DB.branch:null,tag=(br?br.code+'-':''),own=!!user&&user.role==='owner';
+  const br=LIVE&&DB.branch?DB.branch:null,tag=(br?br.code+'-':''),own=!!user&&user.role==='owner',acc=!!user&&(user.role==='owner'||user.role==='head');
   $('#view').innerHTML=`<div class="bk">
   <div class="ltop"><span class="ui-ic">💾</span><h1>ส่งออก Excel / สำรองข้อมูล</h1><span class="sub">${esc(shop().title)}</span></div>
   ${own?(old?`<div class="dj-alert">⚠️ ${lb?'สำรองฐานข้อมูลครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยสำรองฐานข้อมูลจากเครื่องนี้'} แนะนำให้กด <b>ดาวน์โหลดไฟล์สำรองฐานข้อมูล</b> เก็บไว้อย่างน้อยเดือนละครั้ง</div>`:`<div class="cl-done">✅ สำรองฐานข้อมูลล่าสุด ${beFull(new Date(lb))}</div>`):''}
   ${own?`<div class="ui-note warn" style="margin:10px 0">ℹ️ <span><b>ข้อจำกัดของการสำรองข้อมูล</b> · ชุดสำรองอัตโนมัติทุกคืนเก็บอยู่ใน<b>ฐานข้อมูลเดียวกัน</b> ถ้าโปรเจกต์ Supabase เสียหายหรือถูกลบ ชุดสำรองจะหายไปด้วย · ไฟล์สำรองไม่รวมรูป/PDF ที่แนบบิล บัญชีผู้ใช้และรหัสผ่าน และรหัส LINE/SMS<br><b>แนะนำ</b> ดาวน์โหลดไฟล์สำรองเก็บนอกระบบ (เช่น Google Drive) อย่างน้อยสัปดาห์ละครั้ง และลองกู้คืนในโปรเจกต์ทดสอบเดือนละครั้ง เพื่อให้มั่นใจว่าไฟล์ใช้ได้จริง</span></div>`:''}
   <div class="bk-grid">
-    <div class="card bk-card"><h3>📊 รายงานรายเดือน</h3><p class="sub">บิล รายการค่าใช้จ่าย การรับเงิน และข้อมูลลูกค้า ของเดือนที่เลือก เปิดด้วย Excel หรือ Google Sheets ได้</p>
+    <div class="card bk-card"><h3>📒 รายงานรายเดือน${acc?' (ส่งนักบัญชี)':''}</h3><p class="sub">${acc?'สรุปรายได้ เงินนำส่ง รายจ่าย กำไร พร้อมรายการบิล การรับเงิน รายจ่าย เงินนำส่ง และค่าคอมประกัน (6 แผ่นงาน) ของเดือนที่เลือก':'บิล รายการค่าใช้จ่าย การรับเงิน และข้อมูลลูกค้า ของเดือนที่เลือก'} เปิดด้วย Excel หรือ Google Sheets ได้</p>
       <label class="cl-date">เดือน <input type="month" id="bk-m" value="${expMonth}"></label><p class="sub">${inM.length} บิลในเดือนนี้</p>
-      <button class="btn" id="bk-month" ${inM.length?'':'disabled'}>📥 ดาวน์โหลด Excel เดือนนี้</button></div>
-    <div class="card bk-card"><h3>📊 ส่งออก Excel ทั้งหมด (รายงาน)</h3><p class="sub">บิลที่โหลดอยู่ ${all.length} ใบ และลูกค้า/รถ ${cars.length} คัน ในไฟล์ Excel เดียว สำหรับเปิดดูหรือส่งบัญชี</p>
-      <p class="bk-warn">ไฟล์ Excel เป็นรายงาน <b>ไม่ใช่ไฟล์สำรองฐานข้อมูล</b> ใช้กู้คืนข้อมูลกลับเข้าระบบไม่ได้</p>
-      <button class="btn line" id="bk-all">📥 ส่งออก Excel ทั้งหมด</button></div>
+      <button class="btn" id="bk-month" ${inM.length||acc?'':'disabled'}>📥 ดาวน์โหลดรายงานเดือนนี้</button></div>
     ${own?`<div class="card bk-card bk-db"><h3>🗄️ ไฟล์สำรองฐานข้อมูล (กู้คืนได้)</h3><p class="sub">ข้อมูลทุกสาขาจากฐานข้อมูลจริง: ลูกค้า รถ บิล การรับเงิน/คืนเงิน ประวัติแก้ไข คิว งานขนส่ง ปิดยอด รายจ่าย คำขออนุมัติ และประวัติการใช้งาน พร้อมรหัสตรวจความถูกต้อง (SHA-256)</p>
       <p class="bk-warn">ไม่รวม: รูปภาพ/PDF ที่แนบ (มีเฉพาะรายชื่อไฟล์), รหัสผ่านพนักงาน และรหัส LINE/SMS · ไฟล์มีข้อมูลลูกค้า เก็บในที่ปลอดภัย</p>
       <button class="btn" id="bk-db" ${LIVE?'':'disabled'}>🗄️ ดาวน์โหลดไฟล์สำรองฐานข้อมูล</button><p class="sub" id="bk-db-st">${LIVE?'':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>
@@ -6530,8 +6527,8 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
   const run=async(btn,bills,name,mark)=>{const t=btn.textContent;btn.disabled=true;btn.textContent='กำลังสร้างไฟล์...';
     try{await exportXlsx(bills,name);if(mark){try{localStorage.setItem(BK_KEY,new Date().toISOString())}catch(_){}}toast('ดาวน์โหลดแล้ว: '+name);if(mark)R.backup()}
     catch(err){alert('สร้างไฟล์ไม่สำเร็จ: '+err.message)}finally{if(btn.isConnected){btn.disabled=false;btn.textContent=t}}};
-  $('#bk-month').onclick=e=>run(e.target,inM,`siam-${tag}${expMonth}.xlsx`,false);
-  $('#bk-all').onclick=e=>run(e.target,all,`siam-report-${tag}${iso(TODAY)}.xlsx`,false);
+  $('#bk-month').onclick=async e=>{if(!acc)return run(e.target,inM,`siam-${tag}${expMonth}.xlsx`,false);const b=e.target,t=b.textContent;b.disabled=true;b.textContent='กำลังสร้างไฟล์...';
+    try{await accReport(expMonth)}catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}finally{if(b.isConnected){b.disabled=false;b.textContent=t}}};
   if(!own)return;
   const sha=async txt=>{const h=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(txt));return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('')};
   const TL={branches:'สาขา',staff:'พนักงาน',customers:'ลูกค้า',vehicles:'รถ',bills:'บิล',payments:'รับเงิน/คืนเงิน',bill_edits:'ประวัติแก้ไข',dlt_jobs:'งานขนส่ง',bill_files:'รายชื่อไฟล์แนบ',bill_requests:'คำขอยกเลิก/คืนเงิน',insp_queue:'คิวตรวจ',cash_closes:'ปิดยอด',expenses:'รายจ่าย',remits:'เงินนำส่ง',app_settings:'ตั้งค่า',news:'ข่าวสาร',audit_log:'ประวัติการใช้งาน'};
@@ -6607,7 +6604,7 @@ function navAttach(){
     r.prepend(mk(-1,'‹'));r.append(mk(1,'›'))}}
 // ช่องวันที่/เดือน: แสดงเป็นแบบไทย (29 ต.ค. 2569 / ตุลาคม 2569) ทับช่องของเบราว์เซอร์ ค่าจริงยังเป็น yyyy-mm-dd
 function thDateAttach(){document.querySelectorAll('#view input[type=date]:not([data-th]),#view input[type=month]:not([data-th])').forEach(i=>{i.dataset.th='1';
-  const w=document.createElement('span'),t=document.createElement('span');w.className='thd';t.className='thd-t';t.setAttribute('aria-hidden','true');i.before(w);w.append(i,t);
+  const w=document.createElement('span'),t=document.createElement('span');w.className='thd';t.className='thd-t';t.setAttribute('aria-hidden','true');i.before(w);w.append(i,t);i.style.setProperty('color','transparent','important');i.style.setProperty('-webkit-text-fill-color','transparent','important');
   const cs=getComputedStyle(i);t.style.font=cs.font;t.style.left=(parseFloat(cs.paddingLeft)+parseFloat(cs.borderLeftWidth))+'px';
   const up=()=>{const [y,m,d]=(i.value||'').split('-');t.textContent=!y?'':i.type==='month'?`${TH_MF[m-1]} ${+y+543}`:`${+d} ${TH_M[m-1]} ${+y+543}`};up();i.addEventListener('input',up);i.addEventListener('change',up)})}
 {let rq=0;new MutationObserver(()=>{cancelAnimationFrame(rq);rq=requestAnimationFrame(()=>{lsAttach();navAttach();thDateAttach()})}).observe(document.getElementById('view'),{childList:true,subtree:true})}
@@ -7190,15 +7187,9 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
   const mv=n=>{const [y,m]=ym.split('-').map(Number);return ymOf(new Date(y,m-1+n,1))},isNow=ym===ymOf(TODAY);
   const catMax=Math.max(1,...Object.values(byCat));
   $('#view').innerHTML=`<div class="ui ex2">
-  <div class="ui-head"><span class="ui-ic">💸</span><div class="ui-tt"><h1>รายจ่ายร้าน และกำไร</h1><div class="ui-sub">${esc(shop().title)} · เดือน ${ymFull(ym)}</div></div>
+  <div class="ui-head"><span class="ui-ic">💸</span><div class="ui-tt"><h1>รายจ่ายร้าน</h1><div class="ui-sub">${esc(shop().title)} · เดือน ${ymFull(ym)}</div></div>
     <div class="ui-tools"><div class="ex-mnav"><button class="btn line" id="ex-prev" aria-label="เดือนก่อน">‹</button><input type="month" id="ex-m" value="${ym}" max="${ymOf(TODAY)}"><button class="btn line" id="ex-next" aria-label="เดือนถัดไป"${isNow?' disabled':''}>›</button></div>
-      <button class="btn" id="ex-acc">📒 รายงานส่งนักบัญชี</button><button class="btn line" id="ex-xls">📊 Excel</button><button class="btn line" id="ex-print">🖨️ พิมพ์ A4</button></div></div>
-  <div class="ui-kpis">
-    <div class="ui-kpi" data-t="blue"><span class="k-ic">🧾</span><div><div class="k-l">ยอดตามบิล</div><div class="k-v">${money(sp.total)}</div><div class="k-s">${bills.length} บิล</div></div></div>
-    <div class="ui-kpi" data-t="violet"><span class="k-ic">🏛️</span><div><div class="k-l">เงินนำส่ง</div><div class="k-v">${money(sp.pass)}</div><div class="k-s">ภาษี ค่าปรับ พ.ร.บ. ประกัน</div></div></div>
-    <div class="ui-kpi" data-t="navy"><span class="k-ic">🏪</span><div><div class="k-l">รายได้ของร้าน</div><div class="k-v">${money(sp.shop)}</div><div class="k-s">รายรับ หัก เงินนำส่ง</div></div></div>
-    <div class="ui-kpi" data-t="orange"><span class="k-ic">💸</span><div><div class="k-l">รายจ่ายร้าน</div><div class="k-v">${money(exp)}</div><div class="k-s">${list.length} รายการ</div></div></div>
-    <div class="ui-kpi" data-t="${profit<0?'red':'green'}"><span class="k-ic">${profit<0?'📉':'📈'}</span><div><div class="k-l">${profit<0?'ขาดทุน':'กำไรสุทธิ'}</div><div class="k-v">${money(Math.abs(profit))}</div><div class="k-s">รายได้ร้าน หัก รายจ่าย</div></div></div></div>
+      <button class="btn line" id="ex-print">🖨️ พิมพ์ A4</button></div></div>
   <div class="ex-cols">
     <form class="ui-card" id="ex-f" autocomplete="off"><div class="ui-card-h"><h2>➕ บันทึกรายจ่าย</h2></div><div class="ui-card-b ex-form">
       <div class="field"><span>1. หมวดรายจ่าย</span><div class="ex-cats2" id="ex-c">${cats.map(c=>`<button type="button" class="tog${c===exCat0(cats)?' on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('')}${user&&user.role==='owner'?'<button type="button" class="tog ex-addcat" id="ex-addcat">＋ เพิ่มหมวด</button>':''}</div></div>
@@ -7214,7 +7205,7 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     ${list.map(e=>`<tr><td data-l="วันที่">${beFull(new Date(e.d+'T00:00'))}</td><td data-l="หมวด"><span class="ui-pill info">${esc(e.cat)}</span></td><td data-l="หมายเหตุ">${esc(e.note||'–')}</td><td data-l="ผู้บันทึก">${esc(e.by||'')}</td><td class="r" data-l="จำนวนเงิน"><b>${money(e.amt)}</b></td>${canDel?`<td class="c" data-l="จัดการ"><button class="btn line sm" data-exdel="${e.id}">ลบ</button></td>`:''}</tr>`).join('')}
     </tbody><tfoot><tr><td colspan="4">รวมรายจ่าย</td><td class="r" data-l="รวม">${money(exp)}</td>${canDel?'<td></td>':''}</tr></tfoot></table>`
     :'<div class="ui-empty"><span class="e-ic">📭</span>ยังไม่มีรายจ่ายในเดือนนี้ บันทึกได้จากแบบฟอร์มด้านบน</div>'}</div>
-  <p class="note">ยังไม่รวมค่าคอมมิชชันประกันที่ได้ภายหลัง · รายการที่นับเป็นเงินนำส่ง และหมวดรายจ่าย แก้ได้ที่ ตั้งค่าระบบ</p></div>`;
+  <p class="note">กำไรของร้านดูได้ที่ การเงิน › สรุปรายเดือน · รายงานส่งนักบัญชีอยู่ที่ ส่งออก Excel / สำรองข้อมูล · หมวดรายจ่ายแก้ได้ที่ ตั้งค่าระบบ</p></div>`;
   const exLbl=()=>{const a=parseFloat($('#ex-a').value.replace(/,/g,'')),c=($('#ex-c .on')||{dataset:{c:''}}).dataset.c;$('#ex-go').textContent=a>0?`💾 บันทึก ${c} ${money(a)} บาท`:'💾 บันทึกรายจ่าย'};
   if($('#ex-addcat'))$('#ex-addcat').onclick=async()=>{const n=(await uiPrompt('ชื่อหมวดรายจ่ายใหม่ (เช่น ค่าอาหาร/เครื่องดื่ม)')||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n)return;
     if(SET.exp_cats.includes(n)){alert('มีหมวดนี้อยู่แล้ว');return}
@@ -7222,33 +7213,17 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     try{if(LIVE)await DB.saveSettings(o);SET=o;try{localStorage.setItem('siam-ex-cat',n)}catch(_){}toast('เพิ่มหมวด '+n+' แล้ว');const a=$('#ex-a').value,nt=$('#ex-n').value,d=$('#ex-d').value;R.expense().then(()=>{if($('#ex-a')){$('#ex-a').value=a;$('#ex-n').value=nt;$('#ex-d').value=d;$('#ex-a').dispatchEvent(new Event('input'))}})}catch(err){alert('เพิ่มหมวดไม่สำเร็จ: '+err.message)}};
   document.querySelectorAll('#ex-c .tog:not(#ex-addcat)').forEach(b=>b.onclick=()=>{document.querySelectorAll('#ex-c .tog:not(#ex-addcat)').forEach(x=>x.classList.toggle('on',x===b));try{localStorage.setItem('siam-ex-cat',b.dataset.c)}catch(_){}exLbl()});
   // พนักงาน: เห็นแค่ฟอร์มกับรายการ ไม่เห็นรายได้/กำไรของร้าน
-  if(user&&user.role==='staff'){const k=$('#view .ex2 .ui-kpis'),sc=document.querySelector('#view .ex-cols>.ui-card:nth-child(2)');if(k)k.hidden=true;if(sc)sc.hidden=true;$('#view .ex-cols').style.gridTemplateColumns='minmax(0,720px)'}
+  if(user&&user.role==='staff'){const k=null,sc=document.querySelector('#view .ex-cols>.ui-card:nth-child(2)');if(k)k.hidden=true;if(sc)sc.hidden=true;$('#view .ex-cols').style.gridTemplateColumns='minmax(0,720px)'}
   $('#ex-a').addEventListener('input',exLbl);if(isNow&&matchMedia('(pointer:fine)').matches)$('#ex-a').focus();
   $('#ex-m').onchange=e=>{if(e.target.value){exMonth=e.target.value;R.expense()}};
   $('#ex-prev').onclick=()=>{exMonth=mv(-1);R.expense()};$('#ex-next').onclick=()=>{if(!isNow){exMonth=mv(1);R.expense()}};
   $('#ex-a').onchange=e=>{const v=parseFloat(e.target.value.replace(/,/g,''));if(v>0)e.target.value=v};
   const catRows=Object.entries(byCat).sort((a,z)=>z[1]-a[1]);
-  $('#ex-print').onclick=()=>printReport({title:'รายงานรายจ่ายและกำไร',sub:'ประจำเดือน '+ymFull(ym),
-    body:`<div class="pr-kpi"><div><span>ยอดตามบิล (${bills.length} บิล)</span><b>${money(sp.total)}</b></div><div><span>หัก เงินนำส่ง</span><b>${money(sp.pass)}</b></div><div><span>หัก รายจ่ายร้าน</span><b>${money(exp)}</b></div><div class="tot"><span>${profit<0?'ขาดทุน':'กำไรสุทธิ'}</span><b>${money(Math.abs(profit))}</b></div></div>
+  $('#ex-print').onclick=()=>printReport({title:'รายงานรายจ่ายร้าน',sub:'ประจำเดือน '+ymFull(ym),
+    body:`<div class="pr-kpi"><div class="tot"><span>รวมรายจ่ายร้าน (${list.length} รายการ)</span><b>${money(exp)}</b></div></div>
     <h3 class="pr-s">สรุปตามหมวด</h3><table class="pr"><thead><tr><th>หมวดรายจ่าย</th><th class="r">จำนวนเงิน</th><th class="r">สัดส่วน</th></tr></thead><tbody>${catRows.map(([c,a])=>`<tr><td>${esc(c)}</td><td class="r">${money(a)}</td><td class="r">${(a/exp*100).toFixed(1)}%</td></tr>`).join('')||'<tr><td colspan="3" class="c">ไม่มีรายการ</td></tr>'}</tbody><tfoot><tr><td>รวม</td><td class="r">${money(exp)}</td><td class="r">${exp?'100%':''}</td></tr></tfoot></table>
     <h3 class="pr-s">รายการรายจ่าย (${list.length} รายการ)</h3><table class="pr"><thead><tr><th>วันที่</th><th>หมวด</th><th>หมายเหตุ</th><th>ผู้บันทึก</th><th class="r">จำนวนเงิน</th></tr></thead><tbody>${list.map(e=>`<tr><td>${beFull(new Date(e.d+'T00:00'))}</td><td>${esc(e.cat)}</td><td>${esc(e.note||'–')}</td><td>${esc(e.by||'')}</td><td class="r">${money(e.amt)}</td></tr>`).join('')||'<tr><td colspan="5" class="c">ไม่มีรายการ</td></tr>'}</tbody><tfoot><tr><td colspan="4">รวมรายจ่าย</td><td class="r">${money(exp)}</td></tr></tfoot></table>`,
     sign:['ผู้จัดทำ','ผู้ตรวจสอบ']});
-  $('#ex-acc').onclick=async e=>{const b=e.currentTarget;b.disabled=true;
-    try{const [y,m]=ym.split('-').map(Number),from=ym+'-01',to=iso(new Date(y,m,0)),rc=recvSplit(from,to);let rm=[];try{rm=LIVE?await DB.listRemits(ym):REMITS.filter(x=>x.d.slice(0,7)===ym)}catch(_){}
-      const vb=bills.filter(x=>!x.void).sort((a,z)=>a.d-z.d),pays=[];const seen=new Set();[...intake,...oldBills].forEach(x=>{if(!x||seen.has(x.id))return;seen.add(x.id);(x.pays||[]).forEach(p=>{if(!p.wait&&p.d&&iso(p.d)>=from&&iso(p.d)<=to)pays.push({b:x,p,o:payAlloc(x,p)})})});pays.sort((a,z)=>a.p.d-z.p.d);
-      const cm=commRows(ym),cmT=cm.reduce((t,r)=>t+r.comm,0),cmR=Object.values(((SET.comm_recv||{})[ym])||{}).reduce((t,v)=>t+(+v||0),0),rmT=rm.reduce((t,x)=>t+x.amt,0);
-      await xlsxSheets(`รายงานบัญชี-${ym}.xlsx`,[
-        {name:'สรุป',cols:[36,16],rows:[['รายงานส่งนักบัญชี '+shop().title,''],['เดือน',ymFull(ym)],[],['ยอดตามบิล',sp.total],['  ในนี้เป็นเงินนำส่ง',sp.pass],['  รายได้ของร้าน',sp.shop],[],['เงินที่รับจริง (ยืนยันแล้ว)',rc.all],['  เงินของร้าน',rc.shop],['  เงินที่ต้องนำส่ง',rc.pass],['  นำส่งแล้ว',rmT],['  ยังไม่นำส่ง',Math.round((rc.pass-rmT)*100)/100],[],['รายจ่ายร้าน',exp],[profit<0?'ขาดทุน':'กำไรสุทธิ (รายได้ร้าน − รายจ่าย)',profit],[],['ค่าคอมประกัน (ประมาณ)',Math.round(cmT*100)/100],['ค่าคอมประกัน (ได้รับจริง)',cmR]]},
-        {name:'บิล',cols:[12,12,12,24,14,14,14,14,14],rows:[['วันที่','เลขที่บิล','ทะเบียน','ลูกค้า','ยอดบิล','เงินนำส่ง','รายได้ร้าน','รับแล้ว','ค้างชำระ']].concat(vb.map(x=>{const ps=x.items.filter(([n])=>isPass(n)).reduce((t,[,a])=>t+a,0);return [iso(x.d),x.no||'',x.plate,x.name,x.amt,ps,Math.round((x.amt-ps)*100)/100,x.paid,Math.round((x.amt-x.paid)*100)/100]}))},
-        {name:'รับเงิน',cols:[12,8,12,12,10,14,14,14,14],rows:[['วันที่','เวลา','เลขที่บิล','ทะเบียน','วิธี','ผู้รับ','จำนวนเงิน','เงินร้าน','เงินนำส่ง']].concat(pays.map(({b:x,p,o})=>[iso(p.d),p.t||'',x.no||'',x.plate,p.how||'',p.by||'',p.amt,o.shop,o.pass]))},
-        {name:'รายจ่าย',cols:[12,24,30,18,12],rows:[['วันที่','หมวด','หมายเหตุ','ผู้บันทึก','จำนวนเงิน']].concat(list.map(x=>[x.d,x.cat,x.note||'',x.by||'',x.amt]))},
-        {name:'เงินนำส่ง',cols:[12,18,28,10,24,12],rows:[['วันที่','ประเภท','นำส่งให้','จ่ายด้วย','หมายเหตุ','จำนวนเงิน']].concat(rm.map(x=>[x.d,PASS_L[x.kind]||x.kind,x.payee,x.how,x.note,x.amt]))},
-        {name:'ค่าคอมประกัน',cols:[12,12,12,18,24,14,8,12],rows:[['วันที่','เลขที่บิล','ทะเบียน','ประเภท','บริษัท','เบี้ยรวม','%','ค่าคอม']].concat(cm.map(r=>[iso(r.b.d),rcNo(r.b),r.b.plate,r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ',r.co,r.gross,r.rate,r.comm]))}]);
-      toast('ดาวน์โหลดรายงานส่งนักบัญชีแล้ว')}catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}b.disabled=false};
-  $('#ex-xls').onclick=async e=>{const b=e.target;b.disabled=true;
-    try{await xlsxSheets(`รายจ่าย-${ym}.xlsx`,[{name:'รายจ่าย',cols:[12,24,30,18,12],rows:[['วันที่','หมวด','หมายเหตุ','ผู้บันทึก','จำนวนเงิน']].concat(list.map(x=>[x.d,x.cat,x.note||'',x.by||'',x.amt]))},
-      {name:'สรุป',cols:[30,14],rows:[['รายการ','จำนวนเงิน'],['ยอดตามบิล',sp.total],['เงินนำส่ง',sp.pass],['รายได้ของร้าน',sp.shop],['รายจ่ายร้าน',exp],[profit<0?'ขาดทุน':'กำไรสุทธิ',profit],[],['หมวดรายจ่าย','จำนวนเงิน']].concat(catRows)}]);toast('ดาวน์โหลดไฟล์ Excel แล้ว')}
-    catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}b.disabled=false};
   $('#ex-f').onsubmit=async e=>{e.preventDefault();const amt=Math.round(parseFloat($('#ex-a').value.replace(/,/g,''))*100)/100;
     if(!(amt>0)){alert('กรุณาใส่จำนวนเงิน');return}
     const x={d:$('#ex-d').value,cat:($('#ex-c .on')||{dataset:{c:cats[0]}}).dataset.c,amt,note:$('#ex-n').value.trim(),by:user?user.name:''};
@@ -7260,6 +7235,20 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     try{if(LIVE)await DB.delExpense(id);else EXPENSES.splice(EXPENSES.findIndex(e=>e.id===id),1);R.expense()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
 };
 
+// รายงานส่งนักบัญชี (6 ชีต) ใช้ที่หน้า ส่งออก Excel / สำรองข้อมูล
+async function accReport(ym){let list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym);
+  const bills=[...intake,...oldBills].filter(b=>ymOf(b.d)===ym),sp=billSplit(bills),exp=list.reduce((t,e)=>t+e.amt,0),profit=sp.shop-exp;
+  const [y,m]=ym.split('-').map(Number),from=ym+'-01',to=iso(new Date(y,m,0)),rc=recvSplit(from,to);let rm=[];try{rm=LIVE?await DB.listRemits(ym):REMITS.filter(x=>x.d.slice(0,7)===ym)}catch(_){}
+      const vb=bills.filter(x=>!x.void).sort((a,z)=>a.d-z.d),pays=[];const seen=new Set();[...intake,...oldBills].forEach(x=>{if(!x||seen.has(x.id))return;seen.add(x.id);(x.pays||[]).forEach(p=>{if(!p.wait&&p.d&&iso(p.d)>=from&&iso(p.d)<=to)pays.push({b:x,p,o:payAlloc(x,p)})})});pays.sort((a,z)=>a.p.d-z.p.d);
+      const cm=commRows(ym),cmT=cm.reduce((t,r)=>t+r.comm,0),cmR=Object.values(((SET.comm_recv||{})[ym])||{}).reduce((t,v)=>t+(+v||0),0),rmT=rm.reduce((t,x)=>t+x.amt,0);
+      await xlsxSheets(`รายงานบัญชี-${ym}.xlsx`,[
+        {name:'สรุป',cols:[36,16],rows:[['รายงานส่งนักบัญชี '+shop().title,''],['เดือน',ymFull(ym)],[],['ยอดตามบิล',sp.total],['  ในนี้เป็นเงินนำส่ง',sp.pass],['  รายได้ของร้าน',sp.shop],[],['เงินที่รับจริง (ยืนยันแล้ว)',rc.all],['  เงินของร้าน',rc.shop],['  เงินที่ต้องนำส่ง',rc.pass],['  นำส่งแล้ว',rmT],['  ยังไม่นำส่ง',Math.round((rc.pass-rmT)*100)/100],[],['รายจ่ายร้าน',exp],[profit<0?'ขาดทุน':'กำไรสุทธิ (รายได้ร้าน − รายจ่าย)',profit],[],['ค่าคอมประกัน (ประมาณ)',Math.round(cmT*100)/100],['ค่าคอมประกัน (ได้รับจริง)',cmR]]},
+        {name:'บิล',cols:[12,12,12,24,14,14,14,14,14],rows:[['วันที่','เลขที่บิล','ทะเบียน','ลูกค้า','ยอดบิล','เงินนำส่ง','รายได้ร้าน','รับแล้ว','ค้างชำระ']].concat(vb.map(x=>{const ps=x.items.filter(([n])=>isPass(n)).reduce((t,[,a])=>t+a,0);return [iso(x.d),x.no||'',x.plate,x.name,x.amt,ps,Math.round((x.amt-ps)*100)/100,x.paid,Math.round((x.amt-x.paid)*100)/100]}))},
+        {name:'รับเงิน',cols:[12,8,12,12,10,14,14,14,14],rows:[['วันที่','เวลา','เลขที่บิล','ทะเบียน','วิธี','ผู้รับ','จำนวนเงิน','เงินร้าน','เงินนำส่ง']].concat(pays.map(({b:x,p,o})=>[iso(p.d),p.t||'',x.no||'',x.plate,p.how||'',p.by||'',p.amt,o.shop,o.pass]))},
+        {name:'รายจ่าย',cols:[12,24,30,18,12],rows:[['วันที่','หมวด','หมายเหตุ','ผู้บันทึก','จำนวนเงิน']].concat(list.map(x=>[x.d,x.cat,x.note||'',x.by||'',x.amt]))},
+        {name:'เงินนำส่ง',cols:[12,18,28,10,24,12],rows:[['วันที่','ประเภท','นำส่งให้','จ่ายด้วย','หมายเหตุ','จำนวนเงิน']].concat(rm.map(x=>[x.d,PASS_L[x.kind]||x.kind,x.payee,x.how,x.note,x.amt]))},
+        {name:'ค่าคอมประกัน',cols:[12,12,12,18,24,14,8,12],rows:[['วันที่','เลขที่บิล','ทะเบียน','ประเภท','บริษัท','เบี้ยรวม','%','ค่าคอม']].concat(cm.map(r=>[iso(r.b.d),rcNo(r.b),r.b.plate,r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ',r.co,r.gross,r.rate,r.comm]))}]);
+      toast('ดาวน์โหลดรายงานส่งนักบัญชีแล้ว')}
 /* ---------- สรุปรายเดือนแบบกราฟ ---------- */
 let dashMetric='shop';
 const DASH_M=[['cars','รถเข้า','คัน'],['total','ยอดตามบิล','บาท'],['shop','รายได้ของร้าน','บาท'],['expense','รายจ่าย','บาท'],['profit','กำไร','บาท']];
@@ -7286,7 +7275,7 @@ R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date
   const tblRows=months.slice().reverse().map(ym=>[ym,...DASH_M.map(([k])=>sumM(ym,k))]);
   $('#view').innerHTML=`<div class="ui db2">
   <div class="ui-head"><span class="ui-ic">📊</span><div class="ui-tt"><h1>สรุปรายเดือน</h1><div class="ui-sub">12 เดือนล่าสุด (${ymFull(months[0])} – ${ymFull(ym0)})${brs.length>1?' · ทุกสาขา':''}${LIVE?'':' · โหมดทดลองแสดงตัวเลขตัวอย่าง'}</div></div>
-    <div class="ui-tools"><button class="btn line" id="db-xls">📊 Excel</button><button class="btn line" id="db-print">🖨️ พิมพ์ A4</button></div></div>
+    <div class="ui-tools"><button class="btn line" id="db-print">🖨️ พิมพ์ A4</button></div></div>
   <div class="ui-kpis">${tile('cars','รถเข้า','คัน','blue','🚗')}${tile('shop','รายได้ของร้าน','บาท','navy','🏪')}${tile('expense','รายจ่าย','บาท','orange','💸')}${tile('profit','กำไร','บาท','green','📈')}</div>
   <div class="ui-card db-card"><div class="ui-card-h"><h2>กราฟ${ml}รายเดือน</h2><div class="db-leg">${brs.map((b,i)=>`<span><i style="background:${SERIES[i]}"></i>${esc(b.name)}</span>`).join('')}</div></div>
     <div class="ui-card-b"><div class="db-tabs st-tog" role="tablist">${DASH_M.map(([k,l])=>`<button role="tab" class="tog${k===dashMetric?' on':''}" data-dm="${k}">${l}</button>`).join('')}</div>
@@ -7297,10 +7286,6 @@ R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date
     </tbody><tfoot><tr><td>รวม 12 เดือน</td>${DASH_M.map(([k,l,u])=>`<td class="r" data-l="${l}">${nf(sumAll(k),u)}</td>`).join('')}</tr></tfoot></table></div>
   <p class="note">รายได้ของร้าน = ยอดตามบิล หัก ภาษี ค่าปรับ พ.ร.บ. และเบี้ยประกันที่ต้องนำส่ง · กำไร = รายได้ของร้าน หัก รายจ่ายที่บันทึกไว้</p></div>`;
   const hdr=['เดือน',...DASH_M.map(m=>m[1]+(m[2]==='บาท'?' (บาท)':' (คัน)'))];
-  $('#db-xls').onclick=async e=>{const b=e.target;b.disabled=true;
-    try{await xlsxSheets(`สรุปรายเดือน-${ym0}.xlsx`,[{name:'รวม',cols:[16,12,16,16,14,14],rows:[hdr].concat(tblRows.map(([ym,...v])=>[ymFull(ym),...v]),[['รวม 12 เดือน',...DASH_M.map(([k])=>sumAll(k))]])},
-      ...brs.map(br=>({name:String(br.name).slice(0,30),cols:[16,12,16,16,14,14],rows:[hdr].concat(months.slice().reverse().map(ym=>[ymFull(ym),...DASH_M.map(([k])=>val(get(br.id,ym),k))]))}))]);toast('ดาวน์โหลดไฟล์ Excel แล้ว')}
-    catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}b.disabled=false};
   $('#db-print').onclick=()=>printReport({title:'สรุปผลประกอบการรายเดือน',sub:ymFull(months[0])+' – '+ymFull(ym0),land:true,
     body:`<div class="pr-kpi"><div><span>รถเข้า 12 เดือน</span><b>${nf(sumAll('cars'),'คัน')} คัน</b></div><div><span>รายได้ของร้าน</span><b>${money(sumAll('shop'))}</b></div><div><span>รายจ่าย</span><b>${money(sumAll('expense'))}</b></div><div class="tot"><span>กำไร 12 เดือน</span><b>${money(sumAll('profit'))}</b></div></div>
     <h3 class="pr-s">${brs.length>1?'รวมทุกสาขา':'ตารางรายเดือน'}</h3><table class="pr"><thead><tr>${hdr.map((h,i)=>`<th${i?' class="r"':''}>${h}</th>`).join('')}</tr></thead><tbody>
