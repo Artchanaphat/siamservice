@@ -1,6 +1,6 @@
 # HANDOFF: ระบบหลังร้าน ตรอ.สยามเซอร์วิส
 
-อัปเดต 28 ต.ค. 2569 · เวอร์ชันล่าสุด **v79** (commit 0736008)
+อัปเดต 29 ต.ค. 2569 · เวอร์ชันล่าสุด **v92**
 
 > ไฟล์นี้ไม่มี secret ใดๆ (ไม่มี service_role key, รหัสผ่าน, LINE token/secret, SMS API key) บอกแค่ว่าแต่ละอย่างเก็บไว้ที่ไหน
 
@@ -47,6 +47,7 @@
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
 | 18-line-daily-fix | แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
+| 20-auto-backup | **รอรัน** ตาราง `backup_snapshots` (ไม่มี policy), `_backup_make` (cron `siam-backup-nightly` 02:00 น. เก็บ 14 ชุด ไม่รวม audit_log), RPC เจ้าของ `backup_now` / `backup_list` / `backup_get` · ย้อนกลับ: `select cron.unschedule('siam-backup-nightly'); drop table backup_snapshots cascade;` |
 | 19-close-pending-guard | trigger บน `cash_closes`: staff บันทึกปิดยอดไม่ได้ถ้าวันนั้นมีเงินโอนรอตรวจ (owner/head ได้) ย้อนกลับ = drop trigger `cash_closes_pending_guard` |
 
 ### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
@@ -72,6 +73,7 @@
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/17-staff-avatar.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/18-line-daily-fix.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/19-close-pending-guard.sql
+- https://raw.githubusercontent.com/Artchanaphat/siamservice/main/db/20-auto-backup.sql
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/supabase/functions/line-webhook/index.ts
 - https://raw.githubusercontent.com/Artchanaphat/siamservice/main/index.html (แอปทั้งหมด ~1.15 MB)
 
@@ -113,5 +115,15 @@
 ยังค้างจริง (ตรวจจาก repo):
 - SQL 18 และ 19 รันแล้ว (อาร์ท 29 ต.ค. 2569)
 - ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน และเช็คฝั่ง DB ด้วย SQL 19 (รันแล้ว 29 ต.ค.)
-- ไม่มี doctype (quirks mode) แก้ได้แต่ต้องทดสอบทั้งระบบ
+- ~~ไม่มี doctype~~ ใส่แล้วใน v91 (standards mode) เทียบภาพทุกหน้าแล้ว ต่างแค่ 2–4 px
+- SQL 20 (สำรองอัตโนมัติ) รอรัน
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4
+
+## 8. งานวันที่ 29 ต.ค. 2569 (v85–v92)
+- v85 พิมพ์ทะเบียน/ชื่อ/เบอร์ ในหน้าเปิดบิลและหน้าคิว แสดงลูกค้าเดิมให้เลือก (`carAC`)
+- v86 จับคู่บิลกับรถตอนโหลดด้วย Map · ลบ siam-service-style.css
+- v87 ล้าง CSS (ลบกฎที่ไม่มีใช้ 172, ค่าที่ถูกทับ 260, คอมเมนต์) บรรทัดละกฎ · สคริปต์เทียบภาพ: โฟลเดอร์ project files `siam-service/tools/` (shot.js, cmp.py, clean.py)
+- v88 หน้าปิดยอดแสดงเงินโอนรอตรวจของวันอื่น · v89–v90 ปุ่มเลือกเล่มตัวจริง/สำเนา
+- v91 ใส่ `<!doctype html>` · หน้า **ค่าคอมประกัน** (`R.comm`, เมนูการเงิน) อัตรา % ต่อบริษัทใน `SET.comm` = {basis:'net'|'gross', def:[พรบ%,ประกัน%], co:{บริษัท:[..]}} เบี้ยสุทธิ ≈ เบี้ยรวม ÷ 1.07428 · บิลใหม่เก็บ `snapshot.prbCo`
+- v92 การ์ด "สำรองอัตโนมัติทุกคืน" ในหน้าสำรองข้อมูล (ต้องรัน SQL 20)
+

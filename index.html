@@ -5619,6 +5619,9 @@ const DB=(()=>{
   async function exportAll(prog){if(!LIVE)throw new Error('ใช้ได้เมื่อเข้าสู่ระบบจริงเท่านั้น');if(me.role!=='owner')throw new Error('เฉพาะเจ้าของร้าน');const c=await client(),data={},counts={},skipped=[];
     for(const [t,k,cols] of BK_TABS){if(prog)prog(t);const r=await pages(()=>c.from(t).select(cols||'*').order(k));if(r.error){skipped.push(t);continue}data[t]=r.data;counts[t]=r.data.length}
     return{data,counts,skipped}}
+  // ----- 20: สำรองอัตโนมัติทุกคืน (เก็บในฐานข้อมูล 14 ชุด) -----
+  const rpc20=async(fn,args)=>{const c=await client(),r=await c.rpc(fn,args);if(r.error){if(new RegExp(fn+'|could not find the function|schema cache','i').test(r.error.message))throw new Error('ยังไม่ได้รัน 20-auto-backup.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}return r.data};
+  const backupList=()=>rpc20('backup_list'),backupGet=id=>rpc20('backup_get',{p_id:id}),backupNow=()=>rpc20('backup_now');
   async function dbIds(t){const c=await client(),r=await pages(()=>c.from(t).select('id').order('id'));if(r.error)return null;return new Set(r.data.map(x=>x.id))}
   async function restore(file){if(me.role!=='owner')throw new Error('เฉพาะเจ้าของร้าน');const c=await client(),r=await c.rpc('restore_backup',{p:file});
     if(r.error){if(/restore_backup|could not find the function|schema cache/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 16-backup.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}return r.data}
@@ -5761,7 +5764,7 @@ const DB=(()=>{
   async function loadSettings(c){const r=await c.from('app_settings').select('value').eq('key','main');if(!r.error&&r.data&&r.data[0])SET=Object.assign(JSON.parse(JSON.stringify(SET_DEF)),r.data[0].value)}
   async function changePw(pw){const c=await client();const r=await c.auth.updateUser({password:pw});if(r.error)throw new Error(/same/i.test(r.error.message)?'รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม':/weak|least|short/i.test(r.error.message)?'รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว':r.error.message)}
   return{addFile,listFiles,delFile,smsSend:items=>rpc11('sms_send',{p_items:items}),smsCredit:()=>rpc11('sms_credit'),smsStatus:()=>rpc11('sms_secret_status'),setSmsSecrets:(k,x)=>rpc11('set_sms_secrets',{p_key:k,p_secret:x}),smsRecent:()=>rpc11('sms_recent'),
-    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,resync,reqAction,decide,deliver,reloadBill,exportAll,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
+    avatarUrl,avatarUrls,setStaffAvatar,login,load,loadArchive,get archiveLoaded(){return archiveLoaded},newBill,pay,verifyPay,rejectPay,clearFiles,carBills,resync,reqAction,decide,deliver,reloadBill,exportAll,backupList,backupGet,backupNow,dbIds,restore,health,get has15(){return has15},edit,saveDlt,listCloses,saveCloses,listQueue,addQueue,updQueue,delQueue,saveSettings,listExpenses,addExpense,delExpense,monthlyStats,lineCode,listAudit,lineStatus,setLineSecrets,lineSchedule,setLineSchedule,linePreview:()=>lineRpc('line_preview'),lineTest:()=>lineRpc('line_test'),branchUI,resume,logout,changePw,listStaff,createStaff,resetPw,updStaff,saveBranch,get me(){return me},get branch(){return branch},get branches(){return branches},get dltReady(){return dltReady}}})();
 DB.resume();
 /* SIAMSERVICE_STAFF_AVATAR_V1: staff photo add-on. No legacy functions renamed. */
 const StaffAvatar=(()=>{
@@ -6081,6 +6084,8 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
     ${own?`<div class="card bk-card bk-db"><h3>🗄️ ไฟล์สำรองฐานข้อมูล (กู้คืนได้)</h3><p class="sub">ข้อมูลทุกสาขาจากฐานข้อมูลจริง: ลูกค้า รถ บิล การรับเงิน/คืนเงิน ประวัติแก้ไข คิว งานขนส่ง ปิดยอด รายจ่าย คำขออนุมัติ และประวัติการใช้งาน พร้อมรหัสตรวจความถูกต้อง (SHA-256)</p>
       <p class="bk-warn">ไม่รวม: รูปภาพ/PDF ที่แนบ (มีเฉพาะรายชื่อไฟล์), รหัสผ่านพนักงาน และรหัส LINE/SMS · ไฟล์มีข้อมูลลูกค้า เก็บในที่ปลอดภัย</p>
       <button class="btn" id="bk-db" ${LIVE?'':'disabled'}>🗄️ ดาวน์โหลดไฟล์สำรองฐานข้อมูล</button><p class="sub" id="bk-db-st">${LIVE?'':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>
+    <div class="card bk-card bk-auto"><h3>🌙 สำรองอัตโนมัติทุกคืน 02:00 น.</h3><p class="sub">ระบบเก็บไว้ในฐานข้อมูล 14 คืนล่าสุด ดาวน์โหลดเป็นไฟล์ .json แล้วกู้คืนได้เหมือนไฟล์ด้านบน · ควรดาวน์โหลดเก็บไว้นอกระบบสัปดาห์ละครั้ง</p>
+      <div id="bk-auto-list"><p class="sub">${LIVE?'กำลังโหลด...':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>${LIVE?'<button class="btn line" id="bk-now">🌙 สำรองตอนนี้</button>':''}</div>
     <div class="card bk-card"><h3>🔍 ตรวจ / กู้คืนจากไฟล์สำรอง</h3><p class="sub">เลือกไฟล์ .json ที่ดาวน์โหลดไว้ ระบบจะตรวจว่าไฟล์ครบถ้วนไม่ถูกแก้ไข แล้วเทียบกับฐานข้อมูลปัจจุบัน</p>
       <label class="btn line">📂 เลือกไฟล์สำรอง<input type="file" accept="application/json,.json" id="bk-file" hidden></label><div id="bk-res"></div></div>`:''}</div>
   <p class="note">ไฟล์ Excel เป็นข้อมูลของ${br?' <b>'+esc(br.name)+'</b>':'สาขาที่เลือกอยู่'} ถ้าต้องการสาขาอื่น ให้เปลี่ยนสาขาที่ปุ่ม 📍 ด้านบนก่อน${own?'':' · ไฟล์สำรองฐานข้อมูลและการกู้คืน ใช้ได้เฉพาะเจ้าของร้าน'}</p></div>`;
@@ -6101,6 +6106,19 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
       try{localStorage.setItem(BK_KEY,new Date().toISOString())}catch(_){}
       st.innerHTML=`✅ ดาวน์โหลดแล้ว ${esc(name)} · ${Object.entries(r.counts).map(([k,v])=>`${TL[k]||k} ${v}`).join(' · ')}${r.skipped.length?`<br>⚠️ ยังไม่มีตาราง: ${r.skipped.map(k=>TL[k]||k).join(', ')}`:''}`;toast('สำรองฐานข้อมูลแล้ว')}
     catch(err){st.textContent='';alert('สำรองข้อมูลไม่สำเร็จ: '+err.message)}finally{btn.disabled=false}};
+  const dlJson=async(r,by,day)=>{const txt=JSON.stringify(r.data),h=await sha(txt);
+    const meta={app:'siam-service-backup',version:1,created_at:r.created_at||new Date().toISOString(),created_by:by,shop:shop().title,counts:r.counts,skipped:r.skipped||[],sha256:h};
+    const out=JSON.stringify(meta).slice(0,-1)+',"data":'+txt+'}',name=`siam-db-backup-${day}.json`;
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);return name};
+  const autoList=async()=>{const box=$('#bk-auto-list');if(!box||!LIVE)return;
+    try{const L=await DB.backupList();if(!$('#bk-auto-list'))return;
+      const last=L[0],age=last?(Date.now()-new Date(last.created_at))/36e5:null;
+      box.innerHTML=(!last?'<div class="ui-note warn">⏳ <span>ยังไม่มีชุดสำรอง กด "สำรองตอนนี้" ได้เลย</span></div>':age>30?`<div class="ui-note bad">⚠️ <span><b>สำรองอัตโนมัติไม่ได้ทำงาน</b> ชุดล่าสุดเมื่อ ${fmtDT(last.created_at)}</span></div>`:`<div class="ui-note ok">✅ <span>สำรองล่าสุด ${fmtDT(last.created_at)}</span></div>`)
+        +(L.length?`<table class="ui-tbl bk-tbl"><thead><tr><th>วันเวลา</th><th>แบบ</th><th class="r">บิล</th><th class="r">ขนาด</th><th></th></tr></thead><tbody>${L.map(x=>`<tr><td>${fmtDT(x.created_at)}</td><td>${x.kind==='manual'?'กดเอง':'อัตโนมัติ'}</td><td class="r">${(x.counts||{}).bills??'–'}</td><td class="r">${(x.size_bytes/1048576).toFixed(2)} MB</td><td class="r"><button class="btn line sm" data-bkdl="${x.id}" data-day="${iso(new Date(x.created_at))}">📥 ดาวน์โหลด</button></td></tr>`).join('')}</tbody></table>`:'');
+      box.querySelectorAll('[data-bkdl]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{const r=await DB.backupGet(+b.dataset.bkdl);const n=await dlJson(r,'สำรองอัตโนมัติ',b.dataset.day);toast('ดาวน์โหลดแล้ว: '+n)}catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}finally{b.disabled=false}})}
+    catch(err){box.innerHTML=`<div class="ui-note warn">⚠️ <span>${esc(err.message)}</span></div>`}};
+  autoList();
+  if($('#bk-now'))$('#bk-now').onclick=async e=>{const b=e.target;b.disabled=true;b.textContent='กำลังสำรอง...';try{await DB.backupNow();toast('สำรองข้อมูลแล้ว');await autoList()}catch(err){alert('สำรองไม่สำเร็จ: '+err.message)}finally{b.disabled=false;b.textContent='🌙 สำรองตอนนี้'}};
   if($('#bk-file'))$('#bk-file').onchange=async e=>{const f=e.target.files[0],box=$('#bk-res');e.target.value='';if(!f)return;box.innerHTML='<p class="sub">กำลังตรวจไฟล์...</p>';
     let j;try{j=JSON.parse(await f.text())}catch(_){box.innerHTML='<div class="ui-note bad">❌ <span>ไฟล์นี้ไม่ใช่ไฟล์สำรอง (อ่านไม่ได้)</span></div>';return}
     if(!j||j.app!=='siam-service-backup'||!j.data){box.innerHTML='<div class="ui-note bad">❌ <span>ไฟล์นี้ไม่ใช่ไฟล์สำรองของระบบสยามเซอร์วิส</span></div>';return}
