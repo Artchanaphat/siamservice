@@ -27,7 +27,7 @@
 | PromptPay QR | สร้างในเบราว์เซอร์ เบอร์/เลข PromptPay อยู่ใน `branches.promptpay` | – |
 
 ## 3. ฐานข้อมูล (SQL ใน `db/` รันใน Supabase SQL Editor ตามลำดับ)
-รันแล้วครบ **01–19** (อาร์ทรันเอง):
+รันแล้วครบ **01–20** (อาร์ทรันเอง):
 
 | ไฟล์ | เนื้อหา |
 |---|---|
@@ -47,7 +47,7 @@
 | 16-backup | `restore_backup` (กู้จาก JSON แบบเพิ่มเฉพาะที่ไม่มี) |
 | 17-staff-avatar | bucket `staff-avatars`, `staff.avatar_path`, `set_staff_avatar_v1` (+ ไฟล์ check / rollback) |
 | 18-line-daily-fix | แก้เฉพาะ `daily_summary_text`: นับเฉพาะเงินที่ verified, หักคืนเงิน, ยอดบิล = total − refund_total, แสดงเงินโอนรอตรวจ, เตือนยอดเปลี่ยนหลังปิดยอด (รันซ้ำได้; ย้อนกลับ = รันฟังก์ชันจาก 06 ซ้ำ) |
-| 20-auto-backup | **รอรัน** ตาราง `backup_snapshots` (ไม่มี policy), `_backup_make` (cron `siam-backup-nightly` 02:00 น. เก็บ 14 ชุด ไม่รวม audit_log), RPC เจ้าของ `backup_now` / `backup_list` / `backup_get` · ย้อนกลับ: `select cron.unschedule('siam-backup-nightly'); drop table backup_snapshots cascade;` |
+| 20-auto-backup | รันแล้ว (29 ต.ค. 2569) ตาราง `backup_snapshots` (ไม่มี policy), `_backup_make` (cron `siam-backup-nightly` 02:00 น. เก็บ 14 ชุด ไม่รวม audit_log), RPC เจ้าของ `backup_now` / `backup_list` / `backup_get` · ย้อนกลับ: `select cron.unschedule('siam-backup-nightly'); drop table backup_snapshots cascade;` |
 | 19-close-pending-guard | trigger บน `cash_closes`: staff บันทึกปิดยอดไม่ได้ถ้าวันนั้นมีเงินโอนรอตรวจ (owner/head ได้) ย้อนกลับ = drop trigger `cash_closes_pending_guard` |
 
 ### ลิงก์ raw ของไฟล์ (เปิดอ่านได้ตรง)
@@ -116,7 +116,7 @@
 - SQL 18 และ 19 รันแล้ว (อาร์ท 29 ต.ค. 2569)
 - ~~ปิดยอดได้แม้มีเงินโอนรอตรวจ~~ แก้แล้วใน v80: พนักงานปิดไม่ได้ หัวหน้า/เจ้าของปิดได้หลังยืนยัน และเช็คฝั่ง DB ด้วย SQL 19 (รันแล้ว 29 ต.ค.)
 - ~~ไม่มี doctype~~ ใส่แล้วใน v91 (standards mode) เทียบภาพทุกหน้าแล้ว ต่างแค่ 2–4 px
-- SQL 20 (สำรองอัตโนมัติ) รอรัน
+- SQL 20 (สำรองอัตโนมัติ) รันแล้ว 29 ต.ค. 2569
 - งานหน้าเพิ่ม easyth ถ้ามีไฟล์: sms_topup, หน้า money_pay เต็ม, รายงาน A4
 
 ## 8. งานวันที่ 29 ต.ค. 2569 (v85–v92)
