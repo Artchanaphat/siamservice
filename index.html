@@ -2654,6 +2654,20 @@ body{margin:0}
 
 <script>
 const $=s=>document.querySelector(s);
+/* กล่องแจ้งเตือน / ยืนยัน / กรอกข้อความ ของระบบ (แทน alert, confirm, prompt ของเบราว์เซอร์)
+   uiAlert(ข้อความ) · await uiConfirm(ข้อความ) -> true/false · await uiPrompt(ข้อความ, ค่าเริ่ม) -> ข้อความ หรือ null เมื่อยกเลิก */
+const uiBox=(kind,msg,def)=>new Promise(res=>{const prev=document.activeElement,w=document.createElement('div');w.className='uim';w.setAttribute('role',kind==='alert'?'alertdialog':'dialog');w.setAttribute('aria-modal','true');
+  const t=String(msg==null?'':msg),lines=t.split('\n'),head=lines[0],rest=lines.slice(1).join('\n').replace(/^\n+/,''),
+    danger=kind==='confirm'&&/ลบ|ยกเลิก|ปฏิเสธ|คืนค่าเริ่มต้น/.test(head),ic=kind==='alert'?(/ไม่สำเร็จ|ผิดพลาด|ไม่ได้|ไม่ถูกต้อง|ไม่พบ/.test(t)?'⚠️':'ℹ️'):kind==='prompt'?'✏️':danger?'🗑️':'❓';
+  w.innerHTML=`<div class="uim-c"><div class="uim-h"><span class="uim-ic">${ic}</span><div class="uim-t"></div></div>${rest?'<div class="uim-m"></div>':''}${kind==='prompt'?'<input class="uim-in" autocomplete="off">':''}
+    <div class="uim-b">${kind==='alert'?'':'<button type="button" class="btn line" data-v="0">ยกเลิก</button>'}<button type="button" class="btn${danger?' danger':''}" data-v="1">ตกลง</button></div></div>`;
+  w.querySelector('.uim-t').textContent=head;if(rest)w.querySelector('.uim-m').textContent=rest;const inp=w.querySelector('.uim-in');if(inp)inp.value=def==null?'':String(def);
+  const done=v=>{w.remove();document.removeEventListener('keydown',key,true);try{prev&&prev.focus&&prev.focus({preventScroll:true})}catch(_){}res(kind==='prompt'?(v?inp.value:null):kind==='confirm'?!!v:undefined)};
+  const key=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();done(kind==='alert')}else if(e.key==='Enter'&&(!e.target.matches||!e.target.matches('button'))){e.preventDefault();e.stopPropagation();done(1)}else if(e.key==='Tab'){const f=[...w.querySelectorAll('input,button')],i=f.indexOf(document.activeElement);e.preventDefault();f[(i+(e.shiftKey?-1:1)+f.length)%f.length].focus()}};
+  w.addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b)done(+b.dataset.v)});
+  document.addEventListener('keydown',key,true);document.body.appendChild(w);(inp||w.querySelector('[data-v="1"]')).focus();if(inp)inp.select()});
+const uiAlert=m=>uiBox('alert',m),uiConfirm=m=>uiBox('confirm',m),uiPrompt=(m,d)=>uiBox('prompt',m,d);
+window.alert=m=>{uiAlert(m)};
 const UZ=()=>parseFloat(getComputedStyle(document.documentElement).zoom)||1;  // SIAM_UI_SCALE_V1
 const TODAY=(()=>{const d=new Date();d.setHours(0,0,0,0);return d})();
 let LIVE=false; // true = ใช้ฐานข้อมูลจริง (Supabase)
@@ -3236,7 +3250,7 @@ const trPendHTML=b=>{const w=trWait(b);if(!w.length)return'';
     ${w.map(({p,i})=>`<div class="tr-wait-r"><span>${fmt(p.d)} ${esc(p.t||'')} · รับโดย ${esc(p.by||'-')}</span><b>${money(p.amt)} บาท</b><button type="button" class="btn sm" data-vtr="${b.id}|${i}">✓ เงินเข้าบัญชีแล้ว</button><button type="button" class="btn sm line tr-rej" data-rtr="${b.id}|${i}">✗ ไม่พบยอดเงิน</button></div>`).join('')}</div>`};
 const trRejHTML=b=>(b.rej||[]).length?`<div class="tr-rej-box">${b.rej.map(p=>`<div class="tr-wait-r"><span>❌ เงินโอนถูกปฏิเสธ ${fmt(p.d)} ${esc(p.t||'')} · ${esc(p.rr||'')} · ตรวจโดย ${esc(p.rby||'-')}</span><b><s>${money(p.amt)} บาท</s></b></div>`).join('')}</div>`:'';
 async function rejectTr(b,i,btn){const p=b.pays[i];if(!p||!p.wait)return;
-  const why=prompt(`ปฏิเสธเงินโอน ${money(p.amt)} บาท ของ ${b.plate} (${b.name})\nยอดนี้จะไม่นับเป็นเงินรับ และบิลจะกลับเป็นค้างชำระ\n\nระบุเหตุผล (เช่น ไม่พบยอดเงินเข้าบัญชี):`,'ไม่พบยอดเงินเข้าบัญชี');
+  const why=await uiPrompt(`ปฏิเสธเงินโอน ${money(p.amt)} บาท ของ ${b.plate} (${b.name})\nยอดนี้จะไม่นับเป็นเงินรับ และบิลจะกลับเป็นค้างชำระ\n\nระบุเหตุผล (เช่น ไม่พบยอดเงินเข้าบัญชี):`,'ไม่พบยอดเงินเข้าบัญชี');
   if(why==null)return;if(!why.trim()){alert('กรุณาระบุเหตุผล');return}
   if(btn)btn.disabled=true;
   try{const r=await DB.rejectPay(p,why.trim());b.pays.splice(i,1);Object.assign(p,{wait:false,rej:true,rr:why.trim(),rby:(r&&r.rejected_by)||(user?user.name:''),rat:new Date().toISOString()});(b.rej=b.rej||[]).push(p);
@@ -3246,7 +3260,7 @@ async function rejectTr(b,i,btn){const p=b.pays[i];if(!p||!p.wait)return;
   catch(err){if(btn)btn.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}}
 document.addEventListener('click',e=>{const v=e.target.closest('[data-rtr]');if(!v)return;e.stopPropagation();const [bid,i]=v.dataset.rtr.split('|');const b=getBill(+bid);if(b)rejectTr(b,+i,v)},true);
 async function verifyTr(b,i,btn){const p=b.pays[i];if(!p||!p.wait)return;
-  if(!confirm(`ยืนยันว่าเงินโอน ${money(p.amt)} บาท ของ ${b.plate} (${b.name}) เข้าบัญชีร้านแล้ว?`))return;
+  if(!await uiConfirm(`ยืนยันว่าเงินโอน ${money(p.amt)} บาท ของ ${b.plate} (${b.name}) เข้าบัญชีร้านแล้ว?`))return;
   if(btn)btn.disabled=true;
   try{const r=await DB.verifyPay(p);p.wait=false;p.vby=(r&&r.verified_by)||(user?user.name:'');p.vat=new Date().toISOString();toast('ยืนยันเงินโอนแล้ว');
     document.querySelectorAll('[data-trb]').forEach(h=>{if(+h.dataset.trb===b.id)h.innerHTML=trPendHTML(b)+trRejHTML(b)});
@@ -3323,7 +3337,7 @@ function reqHTML(b){const rs=b.reqs||[],pend=rs.find(r=>r.st==='pending'),done=r
 function reqBind(b,re){document.querySelectorAll('[data-rq-new]').forEach(x=>x.onclick=()=>reqDlg(b,x.dataset.rqNew,re));
   document.querySelectorAll('[data-rq-ok],[data-rq-no]').forEach(x=>x.onclick=async()=>{const ok=!!x.dataset.rqOk,id=+(x.dataset.rqOk||x.dataset.rqNo),r=(b.reqs||[]).find(z=>z.id===id);if(!r)return;
     const msg=ok?(r.kind==='void'?`อนุมัติยกเลิกบิล ${b.no||''}?${r.amt>0?`\nระบบจะบันทึกคืนเงิน ${money(r.amt)} บาท (${r.how})`:''}\nบิลจะไม่ถูกนับในรายงาน (ไม่ลบประวัติ)`:`อนุมัติคืนเงิน ${money(r.amt)} บาท (${r.how})?\nยอดบิลจะลดลงเท่ากับที่คืน`):'ไม่อนุมัติคำขอนี้?';
-    const note=prompt(msg+'\n\nหมายเหตุผู้อนุมัติ (ไม่บังคับ):','');if(note==null)return;
+    const note=await uiPrompt(msg+'\n\nหมายเหตุผู้อนุมัติ (ไม่บังคับ):','');if(note==null)return;
     x.disabled=true;try{await DB.decide(b,r,ok,note.trim());await DB.reloadBill(b.id);toast(ok?'อนุมัติแล้ว ยอดรายงานปรับแล้ว':'บันทึกไม่อนุมัติแล้ว');renderNav();re()}catch(err){x.disabled=false;alert('ดำเนินการไม่สำเร็จ: '+err.message)}})}
 function reqDlg(b,kind,re){const isV=kind==='void',max=Math.max(0,b.paid),chip=(n,v,on)=>`<button type="button" class="chip${on?' on':''}" data-${n}="${esc(v)}">${esc(v)}</button>`;
   if(trWait(b).length){alert('บิลนี้มีเงินโอนรอตรวจสอบ กรุณายืนยันหรือปฏิเสธเงินโอนก่อน');return}
@@ -3345,7 +3359,7 @@ function reqDlg(b,kind,re){const isV=kind==='void',max=Math.max(0,b.paid),chip=(
     const ok=$('#rq-ok');if(ok.disabled)return;ok.disabled=true;ok.textContent='กำลังส่ง...';
     try{const r=await DB.reqAction(b,kind,amt,how,reason);await DB.reloadBill(b.id);$('#dlg').hidden=true;toast('ส่งคำขอแล้ว รออนุมัติ');
       const nb=getBill(b.id)||b,pend=(nb.reqs||[]).find(x=>x.st==='pending');
-      if(pend&&canDecide(pend)&&user.role==='owner'&&confirm('คุณเป็นเจ้าของร้าน ต้องการอนุมัติคำขอนี้เลยไหม?')){await DB.decide(nb,pend,true,'');await DB.reloadBill(b.id);toast('อนุมัติแล้ว ยอดรายงานปรับแล้ว')}
+      if(pend&&canDecide(pend)&&user.role==='owner'&&await uiConfirm('คุณเป็นเจ้าของร้าน ต้องการอนุมัติคำขอนี้เลยไหม?')){await DB.decide(nb,pend,true,'');await DB.reloadBill(b.id);toast('อนุมัติแล้ว ยอดรายงานปรับแล้ว')}
       renderNav();re()}
     catch(err){ok.disabled=false;ok.textContent='ส่งคำขอ';alert('ส่งคำขอไม่สำเร็จ: '+err.message)}}}
 // โหมดทดลอง: จำลองการขอ/อนุมัติในเครื่อง
@@ -3373,7 +3387,7 @@ const stepsHTML=S=>`<ol class="jt">${S.map((s,i)=>`<li class="jt-${s.st}"><i>${s
 function jobHTML(b){const S=jobSteps(b),last=S[4],can=last.dlv&&last.st!=='done'&&!b.void;
   return `<div class="jt-card non-printable"><div class="jt-top"><b>สถานะงาน</b>${jobDone(b)?'<span class="ui-pill ok">งานเสร็จสมบูรณ์</span>':''}<span class="sp"></span>${can?`<button type="button" class="btn sm" data-dlv="${b.id}">📦 ส่งมอบเอกสารให้ลูกค้าแล้ว</button>`:''}${last.dlv&&last.st==='done'&&user&&(user.role==='owner'||user.role==='head')?`<button type="button" class="btn sm line" data-dlv-undo="${b.id}">ยกเลิกสถานะส่งมอบ</button>`:''}</div>${stepsHTML(S)}</div>`}
 document.addEventListener('click',async e=>{const x=e.target.closest('[data-dlv],[data-dlv-undo]');if(!x)return;e.stopPropagation();const undo=!!x.dataset.dlvUndo,b=getBill(+(x.dataset.dlv||x.dataset.dlvUndo));if(!b)return;
-  const debt=b.amt-b.paid>0.004;if(!undo&&!confirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท ยังไม่ยืนยันว่าเงินเข้าบัญชี\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!confirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
+  const debt=b.amt-b.paid>0.004;if(!undo&&!await uiConfirm((debt?`⚠️ บิลนี้ยังค้างชำระ ${money(b.amt-b.paid)} บาท\n`:'')+(trWait(b).length?`⏳ มีเงินโอนรอตรวจสอบ ${money(waitAmt(b))} บาท ยังไม่ยืนยันว่าเงินเข้าบัญชี\n`:'')+`ยืนยันส่งมอบเอกสารของ ${b.plate} ให้ลูกค้าแล้ว?`))return;if(undo&&!await uiConfirm('ยกเลิกสถานะส่งมอบเอกสาร?'))return;
   x.disabled=true;try{const r=await DB.deliver(b,undo);b.dlv={at:(r&&r.delivered_at)||'',by:(r&&r.delivered_by)||''};toast(undo?'ยกเลิกสถานะส่งมอบแล้ว':'บันทึกส่งมอบเอกสารแล้ว');if(R[cur])R[cur]()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}},true);
 let trackF='today',trackD=null;
 R.track=()=>{const day=trackD||iso(TODAY),isT=day===iso(TODAY),since=iso(plus(-30));
@@ -3470,7 +3484,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   if($('#nb-dlt'))$('#nb-dlt').onclick=()=>dltDlg([b],R.bill);
   reqBind(b,R.bill);
   bfRender(b);document.querySelectorAll('[data-bfadd]').forEach(i=>i.onchange=async()=>{const had=(b.fpend||[]).length,n=await uploadBillFiles(b,i.files);i.value='';if(n){if(had)R.bill();else bfRender(b)}});
-  if($('#bf-clr'))$('#bf-clr').onclick=async()=>{if(!confirm('ยืนยันว่าบิลนี้ไม่ต้องแนบเอกสารเพิ่มแล้ว?'))return;try{await DB.clearFiles(b);b.fpend=[];toast('บันทึกแล้ว');R.bill()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
+  if($('#bf-clr'))$('#bf-clr').onclick=async()=>{if(!await uiConfirm('ยืนยันว่าบิลนี้ไม่ต้องแนบเอกสารเพิ่มแล้ว?'))return;try{await DB.clearFiles(b);b.fpend=[];toast('บันทึกแล้ว');R.bill()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
 };
 document.addEventListener('click',e=>{const s=e.target.closest('[data-showbill]');if(s){showBill(+s.dataset.showbill);return}const p=e.target.closest('[data-pay]');if(p)payDlg(getBill(+p.dataset.pay))});
 
@@ -5371,7 +5385,7 @@ R.sms=()=>{const k=smsKind,K=SMSK[k],own=user&&user.role==='owner',tpl=SET[K.tpl
     catch(err){if(!$('#sms-cr'))return;credErr=err.message;$('#sms-cr').textContent='-'}warn()};
   const send=async ids=>{const items=list.filter(c=>ids.includes(c.id));if(!items.length||busy)return;const need=items.reduce((s,c)=>s+smsParts(pv(c)),0);
     if(credit!=null&&need>credit){alert(`เครดิตไม่พอ: ต้องใช้ประมาณ ${need} เครดิต แต่คงเหลือ ${smsNum(credit)} เครดิต`);return}
-    if(!confirm(`ยืนยันส่ง SMS ${items.length} หมายเลข\nใช้ประมาณ ${need} เครดิต${credit!=null?` (คงเหลือ ${smsNum(credit)})`:''}`))return;
+    if(!await uiConfirm(`ยืนยันส่ง SMS ${items.length} หมายเลข\nใช้ประมาณ ${need} เครดิต${credit!=null?` (คงเหลือ ${smsNum(credit)})`:''}`))return;
     busy=true;draw();const P=$('#sms-prog');P.hidden=false;$('#sms-res').innerHTML='';const fail=[];let ok=0,stop='';
     const set=(i)=>{$('#sms-fill').style.width=Math.round(i/items.length*100)+'%';$('#sms-plabel').textContent=`กำลังส่ง ${i} / ${items.length} รายการ…`};set(0);
     for(let i=0;i<items.length&&!stop;i+=20){const part=items.slice(i,i+20);
@@ -5854,7 +5868,7 @@ const StaffAvatar=(()=>{
     input.click();
   }
   async function remove(uid,label){
-    if(!LIVE||!user||!confirm('ลบรูปโปรไฟล์ของ '+label+' และกลับไปใช้โลโก้สยามเซอร์วิสใช่ไหม?'))return;
+    if(!LIVE||!user||!await uiConfirm('ลบรูปโปรไฟล์ของ '+label+' และกลับไปใช้โลโก้สยามเซอร์วิสใช่ไหม?'))return;
     try{await DB.setStaffAvatar(uid,null);toast('ลบรูปโปรไฟล์แล้ว');
       if(user.uid===uid){user.avatarPath=null;refreshCurrent(user)}
       if(cur==='staff')R.staff();
@@ -5986,7 +6000,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
   $('#cl-d').onchange=e=>{if(e.target.value){closeDate=e.target.value;closeEdit=false;R.close()}};
   document.querySelectorAll('[data-cld]').forEach(x=>x.onclick=()=>{closeDate=x.dataset.cld;closeEdit=false;R.close()});
   if($('#cl-today'))$('#cl-today').onclick=()=>{closeDate=iso(TODAY);closeEdit=false;R.close()};
-  if($('#cl-unlock'))$('#cl-unlock').onclick=()=>{if(confirm('ต้องการแก้ไขยอดที่ปิดไปแล้วใช่ไหม? ระบบจะบันทึกชื่อผู้แก้ไขและเวลาใหม่')){closeEdit=true;R.close()}};
+  if($('#cl-unlock'))$('#cl-unlock').onclick=async ()=>{if(await uiConfirm('ต้องการแก้ไขยอดที่ปิดไปแล้วใช่ไหม? ระบบจะบันทึกชื่อผู้แก้ไขและเวลาใหม่')){closeEdit=true;R.close()}};
   if($('#cl-cancel'))$('#cl-cancel').onclick=()=>{closeEdit=false;R.close()};
   $('#cl-print').onclick=()=>{const c=counted(),cs=Object.values(c).filter(x=>x!=null);
     printReport({title:'สรุปปิดยอดเงินประจำวัน',sub:'วันที่ '+beFull(dd)+(done?` · ปิดยอดโดย ${esc(first.by||'-')} ${esc(first.at||'')} น.`:' · ยังไม่ได้ปิดยอด'),
@@ -5997,8 +6011,8 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
       <h3 class="pr-s">รายการรับชำระเงิน (${pays.length} รายการ)</h3><table class="pr"><thead><tr><th>เวลา</th><th>เลขที่บิล</th><th>ทะเบียน</th><th>ลูกค้า</th><th>วิธีชำระ</th><th>ผู้รับเงิน</th><th class="r">จำนวนเงิน</th></tr></thead><tbody>
       ${pays.map(({b,p})=>`<tr><td>${esc(p.t||'')}</td><td>${esc(b.no||'#'+b.id)}</td><td>${esc(b.plate)}</td><td>${esc(b.name)}</td><td>${esc(p.how||'')}${p.wait?' (รอตรวจสอบ)':''}</td><td>${esc(p.by||'')}</td><td class="r">${money(p.amt)}</td></tr>`).join('')||'<tr><td colspan="7" class="c">ไม่มีรายการ</td></tr>'}</tbody></table>`,
       sign:['ผู้ปิดยอด','ผู้ตรวจสอบ']})};
-  if($('#cl-save'))$('#cl-save').onclick=async e=>{if(waits.length&&!canEdit){alert('ยังมีเงินโอนรอตรวจสอบ '+waits.length+' รายการ ('+money(waitSum)+' บาท)\nกรุณาตรวจสอบเงินโอนก่อน หรือให้หัวหน้า/เจ้าของร้านเป็นผู้ปิดยอด');return}if(waits.length&&!confirm(`ยังมีเงินโอนรอตรวจสอบ ${waits.length} รายการ (${money(waitSum)} บาท)\nต้องการปิดยอดเลยใช่ไหม?`))return;const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),c=counted(),list=rows.map(r=>({staff:r.name,cash:r.cash,tr:r.tr,card:r.card,other:r.other,counted:c[r.name],by:user?user.name:'',at}));
-    if(list.some(x=>Number.isNaN(x.counted))){alert('เงินสดที่นับได้ต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป');return}if(list.some(x=>x.counted==null)&&!confirm('ยังกรอกเงินสดที่นับได้ไม่ครบทุกคน จะบันทึกปิดยอดเลยใช่ไหม?'))return;
+  if($('#cl-save'))$('#cl-save').onclick=async e=>{if(waits.length&&!canEdit){alert('ยังมีเงินโอนรอตรวจสอบ '+waits.length+' รายการ ('+money(waitSum)+' บาท)\nกรุณาตรวจสอบเงินโอนก่อน หรือให้หัวหน้า/เจ้าของร้านเป็นผู้ปิดยอด');return}if(waits.length&&!await uiConfirm(`ยังมีเงินโอนรอตรวจสอบ ${waits.length} รายการ (${money(waitSum)} บาท)\nต้องการปิดยอดเลยใช่ไหม?`))return;const now=new Date(),at=String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),c=counted(),list=rows.map(r=>({staff:r.name,cash:r.cash,tr:r.tr,card:r.card,other:r.other,counted:c[r.name],by:user?user.name:'',at}));
+    if(list.some(x=>Number.isNaN(x.counted))){alert('เงินสดที่นับได้ต้องเป็นตัวเลขตั้งแต่ 0 ขึ้นไป');return}if(list.some(x=>x.counted==null)&&!await uiConfirm('ยังกรอกเงินสดที่นับได้ไม่ครบทุกคน จะบันทึกปิดยอดเลยใช่ไหม?'))return;
     e.target.disabled=true;e.target.textContent='กำลังบันทึก...';
     try{if(LIVE)await DB.saveCloses(day,list);else CLOSES[day]=Object.fromEntries(list.map(x=>[x.staff,x]));closeEdit=false;toast('บันทึกปิดยอดแล้ว');R.close()}
     catch(err){e.target.disabled=false;e.target.textContent='💾 บันทึกปิดยอด';alert('บันทึกไม่สำเร็จ: '+err.message)}};
@@ -6025,7 +6039,7 @@ async function bfRender(b){const bi=$('#bf-image'),bp=$('#bf-pdf');if(!bi||!bp)r
   const im=L.filter(f=>f.kind==='image'),pd=L.filter(f=>f.kind==='pdf');
   bi.innerHTML=im.length?`<div class="bf-grid">${im.map(f=>`<div class="bf-th"><a href="${esc(f.url)}" target="_blank" rel="noopener"><img src="${esc(f.url)}" alt="${esc(f.name)}" loading="lazy"></a>${del(f)}</div>`).join('')}</div>`:'<span class="exp-empty">ยังไม่มีรูปภาพ</span>';
   bp.innerHTML=pd.length?pd.map(f=>`<div class="bf-pdf"><a href="${esc(f.url)}" target="_blank" rel="noopener">📄 ${esc(f.name||'เอกสาร.pdf')}</a><span class="sub">${f.size?kb(f.size):''}</span>${del(f)}</div>`).join(''):'<span class="exp-empty">ยังไม่มีไฟล์</span>';
-  document.querySelectorAll('[data-bfdel]').forEach(x=>x.onclick=async()=>{const f=L.find(z=>String(z.id)===x.dataset.bfdel);if(!f||!confirm('ลบไฟล์นี้ใช่ไหม?'))return;
+  document.querySelectorAll('[data-bfdel]').forEach(x=>x.onclick=async()=>{const f=L.find(z=>String(z.id)===x.dataset.bfdel);if(!f||!await uiConfirm('ลบไฟล์นี้ใช่ไหม?'))return;
     try{if(LIVE)await DB.delFile(f);else BF_MEM[b.id]=(BF_MEM[b.id]||[]).filter(z=>z!==f);toast('ลบไฟล์แล้ว');bfRender(b)}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}})}
 
 /* พิมพ์รายงาน A4 แบบเอกสารของร้าน ผ่าน iframe: ไม่ติดหัว/ท้ายของเบราว์เซอร์ ไม่มีหน้าว่างเกิน และหัวตารางซ้ำทุกหน้า */
@@ -6133,7 +6147,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
     box.innerHTML=`<div class="ui-note ${okH&&okC?'ok':'bad'}">${okH&&okC?'✅':'❌'} <span><b>${okH&&okC?'ไฟล์ถูกต้องครบถ้วน':'ไฟล์ไม่ถูกต้อง หรือถูกแก้ไขหลังสำรอง'}</b><br><small>สำรองเมื่อ ${fmtDT(j.created_at)} โดย ${esc(j.created_by||'-')} · รหัสตรวจ ${okH?'ตรง':'ไม่ตรง'} · จำนวนแถว ${okC?'ครบ':'ไม่ครบ'}</small></span></div>
       <table class="ui-tbl bk-tbl"><thead><tr><th>ข้อมูล</th><th class="r">ในไฟล์</th>${LIVE?'<th class="r">ไม่มีในฐานข้อมูลตอนนี้</th>':''}</tr></thead><tbody>${Object.entries(j.counts||{}).map(([k,v])=>`<tr><td>${TL[k]||esc(k)}</td><td class="r">${v}</td>${LIVE?`<td class="r">${miss[k]!=null?(miss[k]?`<b>${miss[k]}</b>`:'0'):'–'}</td>`:''}</tr>`).join('')}</tbody></table>
       ${okH&&okC&&LIVE?`<p class="sub">การกู้คืนจะ <b>เติมเฉพาะข้อมูลที่หายไป</b> ไม่แก้และไม่ลบข้อมูลที่มีอยู่ ${nm?'':'· ตอนนี้ไม่มีบิล/ลูกค้า/รถ/การรับเงินที่หายไป'}</p><button class="btn" id="bk-restore">♻️ กู้คืนส่วนที่หายไป</button>`:''}`;
-    if($('#bk-restore'))$('#bk-restore').onclick=async ev=>{if(!confirm(`กู้คืนข้อมูลจากไฟล์สำรองวันที่ ${fmtDT(j.created_at)}?\nระบบจะเติมเฉพาะแถวที่หายไป ไม่ทับข้อมูลปัจจุบัน`))return;ev.target.disabled=true;ev.target.textContent='กำลังกู้คืน...';
+    if($('#bk-restore'))$('#bk-restore').onclick=async ev=>{if(!await uiConfirm(`กู้คืนข้อมูลจากไฟล์สำรองวันที่ ${fmtDT(j.created_at)}?\nระบบจะเติมเฉพาะแถวที่หายไป ไม่ทับข้อมูลปัจจุบัน`))return;ev.target.disabled=true;ev.target.textContent='กำลังกู้คืน...';
       try{const r=await DB.restore(j);const ins=r.inserted||{};alert(`กู้คืนเสร็จ เพิ่มกลับ ${r.total} แถว\n`+Object.entries(ins).filter(([,v])=>v).map(([k,v])=>`${TL[k]||k}: ${v}`).join('\n'));await DB.load();R.backup()}
       catch(err){ev.target.disabled=false;ev.target.textContent='♻️ กู้คืนส่วนที่หายไป';alert('กู้คืนไม่สำเร็จ: '+err.message)}}};
 };
@@ -6273,7 +6287,7 @@ R.queue=async()=>{clearInterval(qTimer);
   document.querySelectorAll('[data-qs]').forEach(b=>b.onclick=async()=>{const q=qOf(b),st=b.dataset.qs;let note=q.note;
     if(st==='fail'){const r=await askDlg({title:'ไม่ผ่านการตรวจสภาพ',sub:q.plate+' '+q.prov,label:'สาเหตุที่ไม่ผ่าน (เลือกได้หลายข้อ)',chips:Q_FAIL,value:q.note||'',ok:'บันทึกไม่ผ่าน',tone:'bad'});if(r==null)return;note=r}
     if(st==='wait')note='';b.disabled=true;try{await set(q,{st,note})}catch(err){b.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
-  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{const q=qOf(b);if(!confirm('ลบ '+q.plate+' ออกจากคิว?'))return;
+  document.querySelectorAll('[data-qdel]').forEach(b=>b.onclick=async()=>{const q=qOf(b);if(!await uiConfirm('ลบ '+q.plate+' ออกจากคิว?'))return;
     try{if(LIVE)await DB.delQueue(q.id);QUEUE.splice(QUEUE.indexOf(q),1);R.queue()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-qbill]').forEach(b=>b.onclick=async()=>{const q=qOf(b);qPending=q;
     go('add');const [cha,num]=q.plate.split(' '),s=(id,v)=>{const e=$('#'+id);if(!e||v==null)return;e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))};
@@ -6447,11 +6461,11 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     };
     find.oninput=()=>{draw();wrap.scrollTop=0};box.querySelector('.st-addb').onclick=add;
     box.querySelectorAll('.st-add input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
-    wrap.onclick=e=>{
+    wrap.onclick=async e=>{
       const b=e.target.closest('button[data-i]');if(!b)return;
       const index=+b.dataset.i,row=LS[k][index];if(row===undefined)return;
       const label=ins?row[0]:row;
-      if(!confirm('ลบ "'+label+'" ออกจากรายการตั้งค่า?\nรายการจะยังไม่ถูกบันทึกจนกว่าจะกด “บันทึกการตั้งค่า”'))return;
+      if(!await uiConfirm('ลบ "'+label+'" ออกจากรายการตั้งค่า?\nรายการจะยังไม่ถูกบันทึกจนกว่าจะกด “บันทึกการตั้งค่า”'))return;
       LS[k].splice(index,1);draw();toast('นำ "'+label+'" ออกจากรายการชั่วคราวแล้ว')
     };draw();
   });
@@ -6474,7 +6488,7 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   $('#sk-test').onclick=async e=>{const to=smsMobile($('#sk-to').value);if(!to){alert('กรุณาใส่เบอร์มือถือ 10 หลัก (ขึ้นต้น 06 08 หรือ 09)');$('#sk-to').focus();return}
     if(!LIVE){toast('โหมดทดลอง: จำลองการส่งไปที่ '+to);return}if(!(SET.sms_sender||'').trim()){alert('กรุณาใส่ชื่อผู้ส่ง แล้วกด บันทึกการตั้งค่า ก่อนส่งทดสอบ');return}
     const msg=smsFill(SET.sms_tpl_reg||SET_DEF.sms_tpl_reg,{plate:'กก 1234',prov:'นราธิวาส',name:'ทดสอบ',tax:plus(30)},'reg');
-    if(!confirm('ส่งข้อความทดสอบไปที่ '+to+'\n\n'+msg))return;const b=e.target;b.disabled=true;
+    if(!await uiConfirm('ส่งข้อความทดสอบไปที่ '+to+'\n\n'+msg))return;const b=e.target;b.disabled=true;
     try{const r=await DB.smsSend([{to,message:msg,kind:'test',branch_id:DB.branch&&DB.branch.id||null}]);const x=(r.results||[])[0]||{};
       if(x.ok){toast('ส่งทดสอบสำเร็จ');const v=smsCred(r.remaining);if(v!=null)$('#sk-credit-st').textContent='✓ เครดิตคงเหลือ '+smsNum(v)}else alert('ส่งไม่สำเร็จ: '+(x.error||'ไม่ทราบสาเหตุ'))}
     catch(err){alert('ส่งไม่สำเร็จ: '+err.message)}b.disabled=false};
@@ -6487,12 +6501,12 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     try{await fn()}catch(err){const o=$('#ln-out');if(o){o.hidden=false;o.textContent='⚠️ '+err.message}alert('LINE: '+err.message)}finally{btn.disabled=false;btn.textContent=t}};
   $('#ln-prev').onclick=e=>lnRun(e.currentTarget,async()=>{const o=$('#ln-out');o.textContent='กำลังสร้างตัวอย่าง...';o.hidden=false;
     const value=await DB.linePreview();o.textContent=typeof value==='string'?value:JSON.stringify(value??'ไม่มีเนื้อหารายงาน',null,2)});
-  $('#ln-test').onclick=e=>{if(!confirm('ส่งรายงานทดสอบเข้า LINE จริงตอนนี้ใช่ไหม?'))return;
+  $('#ln-test').onclick=async e=>{if(!await uiConfirm('ส่งรายงานทดสอบเข้า LINE จริงตอนนี้ใช่ไหม?'))return;
     lnRun(e.currentTarget,async()=>{const conf=await DB.lineStatus();if(!conf.token||!conf.to)throw new Error('ยังไม่ได้ตั้งค่า LINE Token หรือ User ID ปลายทาง');
       const n=await DB.lineTest(),count=typeof n==='number'?n:Number(n);const o=$('#ln-out');o.hidden=false;
       if(Number.isFinite(count)&&count>=1){o.textContent='✓ ระบบรายงานส่งทดสอบแล้ว '+count+' คน';toast('ส่งรายงานทดสอบแล้ว '+count+' คน')}
       else{o.textContent='⚠️ คำสั่งส่งทดสอบทำงานแล้ว แต่ไม่มีจำนวนผู้รับที่ยืนยันได้ กรุณาตรวจ LINE OA และผู้รับ';toast('ตรวจผลส่งทดสอบที่ LINE OA อีกครั้ง')}})};
-  $('#st-reset').onclick=()=>{if(!confirm('คืนค่าเริ่มต้นทั้งหมด? (ยังไม่บันทึกจนกว่าจะกดบันทึก)'))return;const keep=SET;SET=JSON.parse(JSON.stringify(SET_DEF));R.settings();SET=keep;toast('แสดงค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน')};
+  $('#st-reset').onclick=async ()=>{if(!await uiConfirm('คืนค่าเริ่มต้นทั้งหมด? (ยังไม่บันทึกจนกว่าจะกดบันทึก)'))return;const keep=SET;SET=JSON.parse(JSON.stringify(SET_DEF));R.settings();SET=keep;toast('แสดงค่าเริ่มต้นแล้ว กดบันทึกเพื่อใช้งาน')};
 };
 
 /* ---------- รายจ่ายร้าน + กำไรรายเดือน ---------- */
@@ -6602,7 +6616,7 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     :'<div class="ui-empty"><span class="e-ic">📭</span>ยังไม่มีรายจ่ายในเดือนนี้ บันทึกได้จากแบบฟอร์มด้านบน</div>'}</div>
   <p class="note">ยังไม่รวมค่าคอมมิชชันประกันที่ได้ภายหลัง · รายการที่นับเป็นเงินนำส่ง และหมวดรายจ่าย แก้ได้ที่ ตั้งค่าระบบ</p></div>`;
   const exLbl=()=>{const a=parseFloat($('#ex-a').value.replace(/,/g,'')),c=($('#ex-c .on')||{dataset:{c:''}}).dataset.c;$('#ex-go').textContent=a>0?`💾 บันทึก ${c} ${money(a)} บาท`:'💾 บันทึกรายจ่าย'};
-  if($('#ex-addcat'))$('#ex-addcat').onclick=async()=>{const n=(prompt('ชื่อหมวดรายจ่ายใหม่ (เช่น ค่าอาหาร/เครื่องดื่ม)')||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n)return;
+  if($('#ex-addcat'))$('#ex-addcat').onclick=async()=>{const n=(await uiPrompt('ชื่อหมวดรายจ่ายใหม่ (เช่น ค่าอาหาร/เครื่องดื่ม)')||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n)return;
     if(SET.exp_cats.includes(n)){alert('มีหมวดนี้อยู่แล้ว');return}
     const o=JSON.parse(JSON.stringify(SET));o.exp_cats=[...o.exp_cats.filter(c=>c!=='อื่นๆ'),n,...(o.exp_cats.includes('อื่นๆ')?['อื่นๆ']:[])];
     try{if(LIVE)await DB.saveSettings(o);SET=o;try{localStorage.setItem('siam-ex-cat',n)}catch(_){}toast('เพิ่มหมวด '+n+' แล้ว');const a=$('#ex-a').value,nt=$('#ex-n').value,d=$('#ex-d').value;R.expense().then(()=>{if($('#ex-a')){$('#ex-a').value=a;$('#ex-n').value=nt;$('#ex-d').value=d;$('#ex-a').dispatchEvent(new Event('input'))}})}catch(err){alert('เพิ่มหมวดไม่สำเร็จ: '+err.message)}};
@@ -6630,7 +6644,7 @@ R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
     try{if(LIVE)x.id=await DB.addExpense(x);else{x.id=++expSeq;EXPENSES.push(x)}toast(`บันทึก ${x.cat} ${money(amt)} บาท แล้ว`);exMonth=x.d.slice(0,7);R.expense()}
     catch(err){btn.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}};
   document.querySelectorAll('[data-exdel]').forEach(b=>b.onclick=async()=>{const id=+b.dataset.exdel,x=list.find(e=>e.id===id);
-    if(!confirm(`ลบรายจ่าย ${x.cat} ${money(x.amt)} บาท?`))return;
+    if(!await uiConfirm(`ลบรายจ่าย ${x.cat} ${money(x.amt)} บาท?`))return;
     try{if(LIVE)await DB.delExpense(id);else EXPENSES.splice(EXPENSES.findIndex(e=>e.id===id),1);R.expense()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
 };
 
@@ -7130,18 +7144,18 @@ R.dlt=()=>{const all=dltJobs(),doneVisible=b=>siamDltDoneRange==='all'||dltAge(b
   if($('#dj-all'))$('#dj-all').onchange=e=>{list.forEach(b=>e.target.checked?dltSel.add(b.id):dltSel.delete(b.id));document.querySelectorAll('[data-ck]').forEach(c=>c.checked=e.target.checked);upd()};
   document.querySelectorAll('[data-ck]').forEach(c=>c.onchange=()=>{const id=+c.closest('tr').dataset.j;c.checked?dltSel.add(id):dltSel.delete(id);upd()});
   const rowB=x=>getBill(+x.closest('tr').dataset.j);
-  const oweOk=bs=>{const d=bs.filter(b=>owe(b));return !d.length||confirm(`${d.length===1?'รถ '+d[0].plate+' ยังค้างชำระ '+money(split(d[0]).debt)+' บาท':'มี '+d.length+' คันที่ยังค้างชำระ รวม '+money(d.reduce((a,b)=>a+split(b).debt,0))+' บาท'}\nควรรับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน\n\nต้องการบันทึกว่าลูกค้ารับแล้วต่อหรือไม่?`)};
-  document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{if(x.dataset.nx==='done'&&!oweOk([rowB(x)]))return;x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
+  const oweOk=async bs=>{const d=bs.filter(b=>owe(b));return !d.length||await uiConfirm(`${d.length===1?'รถ '+d[0].plate+' ยังค้างชำระ '+money(split(d[0]).debt)+' บาท':'มี '+d.length+' คันที่ยังค้างชำระ รวม '+money(d.reduce((a,b)=>a+split(b).debt,0))+' บาท'}\nควรรับเงินให้ครบก่อนคืนป้ายหรือเล่มทะเบียน\n\nต้องการบันทึกว่าลูกค้ารับแล้วต่อหรือไม่?`)};
+  document.querySelectorAll('[data-nx]').forEach(x=>x.onclick=async()=>{if(x.dataset.nx==='done'&&!await oweOk([rowB(x)]))return;x.disabled=true;try{await dltSet([rowB(x)],{st:x.dataset.nx});toast(rowB(x).plate+' → '+DLT_ST[x.dataset.nx][0]);R.dlt()}catch(err){x.disabled=false;alert('บันทึกไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-ed]').forEach(x=>x.onclick=()=>dltDlg([rowB(x)],R.dlt));
   document.querySelectorAll('[data-cp]').forEach(x=>x.onclick=()=>{void copyPlate(dltPlate(rowB(x)));window.open('https://eservice.dlt.go.th/esvapp/esv/ebk/esv02q002/','_blank','noopener')});
   if($('#dj-bulk'))$('#dj-bulk').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),nx=DLT_NEXT[dltF];if(!sel.length)return;
-    if(nx[0]==='done'&&!oweOk(sel))return;if(!confirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
+    if(nx[0]==='done'&&!await oweOk(sel))return;if(!await uiConfirm(`เปลี่ยน ${sel.length} คัน เป็น "${DLT_ST[nx[0]][0]}" ?`))return;
     try{await dltSet(sel,{st:nx[0]});dltSel.clear();toast('อัปเดต '+sel.length+' คันแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}};
   $('#dj-print').onclick=async()=>{const sel=list.filter(b=>dltSel.has(b.id)),pl=sel.length?sel:list.filter(b=>dltOf(b).st==='received');
     if(!pl.length){alert('ไม่มีรถที่รอยื่นขนส่ง ติ๊กเลือกรถที่จะพิมพ์ก่อน');return}
     $('#dj-sheet').innerHTML=dltSheet(pl);window.print();
     const wait=pl.filter(b=>dltOf(b).st==='received');
-    if(wait.length&&confirm(`พิมพ์ใบนำส่งแล้ว ต้องการเปลี่ยน ${wait.length} คันนี้เป็น "ยื่นแล้ว รอป้าย" เลยไหม?`)){try{await dltSet(wait,{st:'submitted'});dltSel.clear();toast('อัปเดตแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}}};
+    if(wait.length&&await uiConfirm(`พิมพ์ใบนำส่งแล้ว ต้องการเปลี่ยน ${wait.length} คันนี้เป็น "ยื่นแล้ว รอป้าย" เลยไหม?`)){try{await dltSet(wait,{st:'submitted'});dltSel.clear();toast('อัปเดตแล้ว');R.dlt()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message)}}};
   upd()};
 R.staff=async()=>{
   if(!LIVE||!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้าน (บัญชีจริง) เท่านั้น</div>';return}
@@ -7190,7 +7204,7 @@ R.staff=async()=>{
     const v=f==='active'?el.checked:f==='branch_id'?+el.value:el.value;
     try{await DB.updStaff(tr.dataset.u,{[f]:v});toast('บันทึกแล้ว');R.staff()}catch(err){alert('บันทึกไม่สำเร็จ: '+err.message);R.staff()}});
   document.querySelectorAll('[data-rp]').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');const nm=tr.querySelector('b').textContent;
-    const pw=prompt('ตั้งรหัสผ่านใหม่ให้ '+nm+' (อย่างน้อย 6 ตัว)',genPw());if(pw==null)return;
+    const pw=await uiPrompt('ตั้งรหัสผ่านใหม่ให้ '+nm+' (อย่างน้อย 6 ตัว)',genPw());if(pw==null)return;
     if(pw.trim().length<6){alert('รหัสผ่านต้องมีอย่างน้อย 6 ตัว');return}
     try{await DB.resetPw(tr.dataset.u,pw.trim());alert('ตั้งรหัสใหม่ให้ '+nm+' แล้ว\nรหัสใหม่: '+pw.trim())}catch(err){alert('ไม่สำเร็จ: '+err.message)}});
   document.querySelectorAll('[data-bsave]').forEach(b=>b.onclick=async()=>{const tr=b.closest('tr');const o={};tr.querySelectorAll('[data-bf]').forEach(i=>o[i.dataset.bf]=i.type==='checkbox'?i.checked:i.value.trim());
@@ -7745,6 +7759,20 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
   #view .sm-tbl tr.sm-r td{padding-left:100px!important;padding-top:10px!important;padding-bottom:10px!important}
   #view .sm-tbl tr.sm-r td[data-l]::before{font-size:11.5px}
 }
+/* กล่องแจ้งเตือน/ยืนยัน ของระบบ (uiBox) */
+.uim{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-start;justify-content:center;padding:12vh 16px 16px;background:rgba(8,20,48,.45);animation:uim-f .12s ease-out}
+.uim-c{width:min(440px,100%);background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(8,25,71,.35);padding:20px 20px 16px;border-top:4px solid #1670d6;animation:uim-u .14s ease-out}
+.uim-h{display:flex;gap:12px;align-items:flex-start}
+.uim-ic{font-size:22px;line-height:1.3;flex:none}
+.uim-t{font-size:16px;font-weight:700;color:#0f1f44;line-height:1.5;white-space:pre-line;word-break:break-word}
+.uim-m{margin:8px 0 0 34px;font-size:14px;color:#475569;line-height:1.6;white-space:pre-line;word-break:break-word}
+.uim-in{display:block;width:100%;margin:14px 0 0;height:42px;padding:0 12px;border:1.5px solid #c9d6e3;border-radius:10px;font-size:15px}
+.uim-in:focus{outline:none;border-color:#1670d6;box-shadow:0 0 0 3px rgba(22,112,214,.15)}
+.uim-b{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.uim-b .btn{min-width:96px;height:40px}
+.uim-b .btn.danger{background:#dc2626;border-color:#dc2626;color:#fff}
+@keyframes uim-f{from{opacity:0}}@keyframes uim-u{from{transform:translateY(8px);opacity:0}}
+@media print{.uim{display:none!important}}
 /* ค่าคอมประกัน */
 .cm-cfg{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
 .cm-cfg label{display:inline-flex;align-items:center;gap:6px}
