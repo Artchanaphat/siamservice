@@ -2238,6 +2238,16 @@ body{margin:0}
 @media print{
   .sel-pop{display:none!important}
 }
+
+/* หัวบิล (v116) */
+.bs-top{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr) auto;gap:14px;align-items:center;background:#fff;border:1px solid #dbe3ef;border-radius:14px;padding:14px 16px;margin:0 0 12px}
+.bs-plate{font-size:22px;color:#0b2766;letter-spacing:.3px}.bs-prov{color:#4b5b75;font-weight:600}.bs-sub{color:#5b6b85;font-size:13px;margin-top:2px}
+.bs-money{display:flex;flex-wrap:wrap;gap:8px}.bs-money>div{flex:1 1 110px;background:#f5f8fc;border-radius:10px;padding:7px 10px}
+.bs-money span{display:block;font-size:12px;color:#5b6b85}.bs-money b{font-size:16px;color:#0b2766}
+.bs-money .ok b{color:#1b7f3b}.bs-money .wait{background:#fff6ec}.bs-money .wait b{color:#c2410c}.bs-money .bad{background:#fdeeee}.bs-money .bad b{color:#b42318}
+.bs-act{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+@media (max-width:900px){.bs-top{grid-template-columns:1fr}.bs-act{justify-content:stretch}.bs-act .btn{flex:1}}
+@media print{.bs-top{display:none}}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -2857,9 +2867,9 @@ function renderNav(){const on=SCUR[cur]||(cur==='backup'&&user&&user.role==='own
   $('#snav').querySelectorAll('[data-sg]').forEach(b=>b.onclick=()=>{const g=b.dataset.sg,el=b.parentNode,o=!el.classList.contains('open');el.classList.toggle('open',o);b.setAttribute('aria-expanded',o);o?sOpen.add(g):sOpen.delete(g)});
   const td=intake.filter(b=>iso(b.d)===iso(TODAY)&&!b.void),debt=td.filter(b=>b.amt-b.paid>0.004).length,wait=dltJobs().filter(b=>dltOf(b).st==='received').length;
   $('#ssum').innerHTML=`<div class="ss-h">สรุปงานวันนี้</div>
-    <button type="button" class="ss-r" data-go="income"><span>รถเข้า (เปิดบิล)</span><b>${td.length}</b><small>คัน</small></button>
+    <button type="button" class="ss-r" data-go="income"><span>บิลวันนี้</span><b>${td.length}</b><small>บิล</small></button>
     <button type="button" class="ss-r" data-go="income"><span>รับชำระวันนี้</span><b>${money(paidOn(iso(TODAY))).replace(/\.00$/,'')}</b><small>บาท</small></button>
-    <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>ค้างชำระ</span><b>${debt}</b><small>บิล</small></button>
+    <button type="button" class="ss-r${debt?' bad':''}" data-go="income"><span>ค้างจากบิลวันนี้</span><b>${debt}</b><small>บิล</small></button>
     <button type="button" class="ss-r" data-go="dlt"><span>รอยื่นขนส่ง</span><b>${wait}</b><small>คัน</small></button>${(n=>n?`<button type="button" class="ss-r bad" data-go="close"><span>โอนรอตรวจ</span><b>${n}</b><small>รายการ</small></button>`:'')(intake.flatMap(b=>trWait(b)).length)}`;
   tAlerts()}
 // เงินที่รับจริงในวันนั้น (ทุกบิล รวมบิลเก่าที่มาจ่ายเพิ่ม) ใช้เกณฑ์เดียวกับหน้าปิดยอด
@@ -2985,7 +2995,7 @@ document.addEventListener('click',async e=>{if(!e.target.closest('[data-logout]'
   user=null;$('#shell').hidden=true;$('.tabs').hidden=true;$('#dlg').hidden=true;$('#lp').value='';$('#login').hidden=false});
 // แถวตารางที่กดเปิดได้: ถ้ากำลังลากเลือกข้อความเพื่อคัดลอก ไม่ต้องเปิด
 const selTxt=()=>{try{return String(getSelection()||'').trim().length>0}catch(_){return false}};
-document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g)go(g.dataset.go);const o=e.target.closest('[data-open]');if(o&&!(o.tagName==='TR'&&selTxt()))openCar(+o.dataset.open)});
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){if(g.dataset.debt)incDebtNext=true;go(g.dataset.go)}const o=e.target.closest('[data-open]');if(o&&!(o.tagName==='TR'&&selTxt()))openCar(+o.dataset.open)});
 
 /* views */
 const R={};
@@ -3033,7 +3043,7 @@ R.home=()=>{
   ${(()=>{const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p})));if(!w.length)return'';const days=[...new Set(w.map(x=>iso(x.p.d)))].sort();
     return `<div class="ui-note warn home-trw">⏳ <span><b>เงินโอนรอตรวจสอบ ${w.length} รายการ · ${money(w.reduce((t,x)=>t+x.p.amt,0))} บาท</b> ตรวจกับแอปธนาคารแล้วกดยืนยัน</span><span class="sp"></span><button class="btn sm" id="home-trw" data-day="${days[0]}">ตรวจสอบ</button></div>`})()}
   <div class="hk-row">
-    ${kpi('blue','car','รถเข้าวันนี้ (เปิดบิล)',td.length,'คัน',ar(diff,'คัน '),'income')}
+    ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
     ${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
     ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากคิว ${qtot} คัน</span>`,'queue')}
     ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'ไม่มีรถตรวจไม่ผ่าน'}</span>`,'queue')}
@@ -3044,7 +3054,7 @@ R.home=()=>{
       <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ลงทะเบียนรถเข้าตรวจ</small></span><i>›</i></button>
       <button type="button" class="hq-b green" data-go="queue">${I(IC.queue)}<span><b>คิวตรวจสภาพ</b><small>รับรถเข้าคิว / บันทึกผลตรวจ</small></span><i>›</i></button>
       <button type="button" class="hq-b yellow" data-go="cust">${I(IC.search)}<span><b>ค้นหาข้อมูลลูกค้า</b><small>ทะเบียน / ชื่อ / เบอร์โทร</small></span><i>›</i></button>
-      <button type="button" class="hq-b purple" data-go="income">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รายได้ประจำวัน / ยอดค้าง</small></span><i>›</i></button>
+      <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>บิลค้างชำระทั้งหมด / ค้นหาบิล</small></span><i>›</i></button>
     </div>
     <svg class="hq-art" viewBox="0 0 220 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 66h180M38 66V52l16-18h70l26 18h22c8 0 12 4 12 10v4"/><circle cx="62" cy="68" r="11"/><circle cx="160" cy="68" r="11"/><path d="M60 36h30v16H46M98 36h22l20 16H98z"/></svg>
   </section>
@@ -3122,9 +3132,12 @@ R.home=()=>{
 };
 
 /* หน้ารายได้ + ยอดค้าง และ หน้าผ่อนชำระประกัน (โครงเดียวกัน) */
+let incDebtNext=false;
 function moneyPage(cfg){
   const TD=TODAY.getDate(),TMo=TODAY.getMonth()+1,TY=TODAY.getFullYear();
   const st=cfg.st||(cfg.st={tab:cfg.defTab,mode:'day',d:TD,m:TMo,y:TY,from:[TD,TMo,TY],to:[TD,TMo,TY],q:'',open:new Set()});
+  // มาจากปุ่ม "รับชำระเงิน": เปิดบิลค้างชำระทุกช่วงเวลา แล้ววางเคอร์เซอร์ที่ช่องค้นหา
+  const toDebt=cfg===INC&&incDebtNext;if(toDebt){incDebtNext=false;Object.assign(st,{mode:'all',quick:'all',tab:'debt',q:''})}
   // SIAM_INCOME_FILTER_V2: View-only state; finance totals/export still use existing cfg.recs and split logic.
   if(!st.quick)st.quick=st.mode==='day'&&+st.d===TD&&+st.m===TMo&&+st.y===TY?'today':st.mode==='month'&&+st.m===TMo&&+st.y===TY?'month':st.mode==='all'?'all':st.mode==='week'?'week':'custom';
   if(!st.customMode)st.customMode=st.quick==='custom'&&['day','month','year','range'].includes(st.mode)?st.mode:'range';
@@ -3277,6 +3290,7 @@ function moneyPage(cfg){
   });
   let tm;$('#f-q').oninput=e=>{clearTimeout(tm);st.q=e.target.value;tm=setTimeout(draw,150)};
   $('#f-x').onclick=()=>{$('#f-q').value='';st.q='';clearTimeout(tm);draw();$('#f-q').focus()};
+  if(toDebt&&matchMedia("(pointer:fine)").matches)setTimeout(()=>{const q=$("#f-q");if(q)q.focus()},0);
   // ส่งออกตามช่วงวันที่ แท็บ และคำค้นที่เลือกอยู่
   const isIns=cfg===INST,tabL={all:cfg.labels[0],debt:cfg.labels[1],done:cfg.labels[2]};
   const r2m=x=>Math.round(x*100)/100;
@@ -3503,6 +3517,12 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const exp=(l,d,extra)=>`<div class="exp-sub"><div class="row"><div class="lbl">${l}</div><div class="val">${d?`หมดอายุ ${beFull(d)}`:'<span class="exp-empty">ไม่มีข้อมูล</span>'}</div></div>${d&&extra?`<p class="exp-meta">${esc(extra)}</p>`:''}</div>`;
   $('#view').innerHTML=`<div class="sd">
   ${b.void?`<div class="ui-note bad bv-void">⛔ <span><b>บิลนี้ถูกยกเลิกแล้ว</b> · เหตุผล: ${esc(b.vinfo.reason||'-')}<br><small>ขอโดย ${esc(b.vinfo.by||'-')} · อนุมัติโดย ${esc(b.vinfo.appr||'-')}${b.vinfo.at?' · '+fmtDT(b.vinfo.at):''} · ยอดบิลไม่นับในรายงาน</small></span></div>`:''}
+  ${(()=>{// หัวบิล: รถ/ลูกค้า/เลขบิล + ยอดเงินแยกยืนยันแล้ว/รอตรวจ/ค้าง + ปุ่มหลัก (ไม่ต้องเลื่อนลงไปหา)
+    const wt=trWait(b).reduce((t,x)=>t+x.p.amt,0),ok=b.paid-wt;
+    return `<div class="bs-top">
+    <div class="bs-id"><div><b class="bs-plate">${esc(b.plate||'–')}</b> <span class="bs-prov">${esc(b.prov||'')}</span></div><div class="bs-sub">${esc(b.name||'–')} · เลขที่ ${esc(b.no||'–')} · ${beFull(b.d)}</div></div>
+    <div class="bs-money"><div><span>ยอดสุทธิ</span><b>${money(b.amt)}</b></div><div class="ok"><span>รับแล้ว (ยืนยัน)</span><b>${money(ok)}</b></div>${wt>0.004?`<div class="wait"><span>โอนรอตรวจ</span><b>${money(wt)}</b></div>`:''}<div class="${b.void?'':debt?'bad':'ok'}"><span>${b.void?'สถานะ':debt?'ค้างชำระ':'สถานะ'}</span><b>${b.void?'ยกเลิกแล้ว':debt?money(s.debt):'ชำระครบ'}</b></div></div>
+    <div class="bs-act non-printable">${debt&&!b.void?'<button class="btn" id="bs-pay">💵 รับยอดค้าง</button>':''}${b.void?'':'<button class="btn line" data-print="แบบ A4">🖨️ พิมพ์ใบเสร็จ</button>'}</div></div>`})()}
   ${jobHTML(b)}
   <div class="sd-shop"><div class="sd-logo lg" role="img" aria-label="โลโก้ ตรอ."></div><div><h2>${esc(shop().title)}</h2><div>${esc(shop().address||'ที่อยู่ร้าน (ตั้งได้ที่ จัดการพนักงาน / สาขา)')}<br>โทร : ${esc(shop().phone||'-')}</div></div></div>
   <div class="hdr"><div class="hdr-left">
@@ -3524,18 +3544,18 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
       <div class="sum-row disc"><div class="slbl">ส่วนลด</div><div class="sval">${money(b.disc)} บาท</div></div>
       ${b.refund&&!b.void?`<div class="sum-row disc"><div class="slbl">คืนเงิน / ปรับลดยอด</div><div class="sval">-${money(b.refund)} บาท</div></div>`:''}${b.void?`<div class="sum-row due"><div class="slbl" style="color:#A32D2D;font-weight:600">บิลยกเลิก</div><div class="sval" style="color:#A32D2D">ไม่นับยอด</div></div>`:''}
       <div class="sum-row net"><div class="slbl">สุทธิ</div><div class="sval">${money(b.amt)} บาท</div></div>
-      <div class="sum-row paid"><div class="slbl">รับเงิน</div><div class="sval">${money(b.paid)} บาท</div></div>
+      ${(wt=>`<div class="sum-row paid"><div class="slbl">รับแล้ว (ยืนยัน)</div><div class="sval">${money(b.paid-wt)} บาท</div></div>${wt>0.004?`<div class="sum-row"><div class="slbl" style="color:#c2410c">โอนรอตรวจสอบ</div><div class="sval" style="color:#c2410c">${money(wt)} บาท</div></div>`:''}`)(trWait(b).reduce((t,x)=>t+x.p.amt,0))}
       ${debt?`<div class="sum-row due"><div class="slbl" style="color:#A32D2D;font-weight:600">ค้างชำระทั้งหมด</div><div class="sval" style="color:#A32D2D;font-weight:700">${money(s.debt)} บาท</div></div>`:''}</div>
   </div></div>
   <div class="nb-wrap">
     <div data-trb="${b.id}">${trPendHTML(b)}${trRejHTML(b)}</div>
     ${reqHTML(b)}
     ${debt?`<div class="nb-debt-banner">⚠️ <span>บิลนี้ยังค้างชำระ <b>${money(s.debt)} บาท</b></span></div>
-    <button class="nb-main" id="nb-pay">💵 <span>ลูกค้านำเงินมาจ่ายเพิ่ม<small>รับเงินค้างชำระของบิลนี้ ${money(s.debt)} บาท</small></span></button>
+    <button class="nb-main" id="nb-pay">💵 <span>รับยอดค้าง<small>ลูกค้านำเงินมาจ่ายเพิ่ม · รับเงินค้างชำระของบิลนี้ ${money(s.debt)} บาท</small></span></button>
     <p class="nb-sub-title">หรือ ลูกค้ามาทำรายการอื่น</p>`:''}
     <div class="nb-row">
-      <button class="nb-btn teal" id="nb-new">📋 <span>ลูกค้ามาทำรายการใหม่<small>เช่น ต่อทะเบียน / ต่อ พรบ. (เปิดบิลใหม่ copy ข้อมูล)</small></span></button>
-      <button class="nb-btn light-blue" id="nb-edit">✏️ <span>แก้ไขข้อมูลที่ผิดพลาด<small>ใช้เมื่อกรอกผิดเท่านั้น (ไม่นับเป็นรายได้ใหม่)</small></span></button>
+      <button class="nb-btn teal" id="nb-new">📋 <span>เปิดบิลใหม่<small>ลูกค้ามาทำรายการใหม่ เช่น ต่อทะเบียน / ต่อ พรบ. (เปิดบิลใหม่ copy ข้อมูล)</small></span></button>
+      <button class="nb-btn light-blue" id="nb-edit">✏️ <span>แก้ไขข้อมูล<small>ใช้เมื่อกรอกผิดเท่านั้น (ไม่นับเป็นรายได้ใหม่)</small></span></button>
     </div>
     ${b.ins?`<div class="nb-row" style="margin-top:10px"><button class="nb-btn primary" id="nb-inst">🛡️ <span>ตรวจสอบประวัติผ่อนชำระประกัน<small>${b.ins-s.ip>0.004?`ค่าประกันค้างอีก ${money(b.ins-s.ip)} บาท`:'ค่าประกันจ่ายครบแล้ว'}</small></span></button></div>`:''}
     <div class="nb-tools"><div class="ios-row${rcOpt().show_slip_button?' ss-slip-enabled':''}">
@@ -3555,6 +3575,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   const bhBind=()=>document.querySelectorAll('[data-bh]').forEach(x=>x.onclick=()=>bhOpen(+x.dataset.bh));bhBind();
   if(LIVE&&c.id)DB.carBills(c.id).then(n=>{if(n&&cur==='bill'&&curBill===b.id){const x=$('#bh-box');if(x){x.innerHTML=bhHTML(c,b);bhBind()}}}).catch(()=>{});
   $('#nb-edit').onclick=()=>{editBill=b.id;go('edit')};
+  {const bp=$('#bs-pay');if(bp)bp.onclick=()=>{const x=$('#nb-pay');if(x)x.click()}}
   if(b.ins)$('#nb-inst').onclick=()=>{go('inst');Object.assign(INST.st,{mode:'all',tab:'all',q:b.plate});R.inst()};
   $('#nb-back').onclick=()=>go(billBack==='bill'?'income':billBack);
   document.querySelectorAll('[data-print]').forEach(x=>x.onclick=()=>receiptDlg(b,x.dataset.print));
