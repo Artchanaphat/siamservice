@@ -2297,6 +2297,15 @@ body #view .ctabs button.tab-card.tab-card{flex:0 0 auto!important;display:flex!
 #view .ctabs .tab-label{font-size:14px!important;margin:0!important}
 #view .ctabs .tab-n{min-width:22px;padding:1px 7px;border-radius:999px;background:#eef2f7;color:#334155;font-size:12.5px;font-weight:600;text-align:center}#view .ctabs .tab-card.active .tab-n{background:#1d63ed;color:#fff}
 #view .months{justify-content:flex-start!important}
+#view .cf-box{background:#fff;border:1px solid #e3e9f2;border-radius:16px;padding:14px 16px;margin:0 0 14px!important;display:flex;flex-direction:column;gap:12px}
+#view .cf-box .ctabs,#view .cf-box .months,#view .cf-box .sortbar{margin:0!important;padding:0!important;min-height:0!important}
+#view .cf-box .ctabs{padding-bottom:12px!important;border-bottom:1px solid #eef2f7}
+#view .cf-box .sort-btn{font-size:13.5px;font-weight:600;padding:6px 14px;min-height:32px;border:1.5px solid #d1d9e6;background:#f5f7fb;color:#3a3a3c;box-shadow:none;border-radius:20px}
+#view .cf-box .sort-btn svg{flex:none}
+#view .cf-box .sort-btn.on,#view .cf-box .sort-btn.on.warn,#view .cf-box .sort-btn.on.red{background:#1d63ed;border-color:#1d63ed;color:#fff;box-shadow:none}
+#view .cf-box .sort-btn.on .sort-hint{color:#dbe7ff}
+#view .ltop .ui-ic svg{color:#1d63ed}
+#view .cf-box .months>.sub{white-space:nowrap;display:inline-flex;align-items:center;gap:4px}@media screen and (max-width:640px){#view .cf-box .months>.sub{flex-basis:100%}#view .cf-box{padding:12px}}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -3784,18 +3793,18 @@ R.cust=()=>{
   const cYrs=[...new Set(cars.map(c=>c[cTab]).filter(Boolean).map(x=>x.getFullYear()))].sort((a,z)=>a-z);
   if(cYear&&!cYrs.includes(cYear))cYear=0;
   $('#view').innerHTML=`
-  <div class="ltop"><span class="ui-ic">👥</span><h1>รายการ ${tl}</h1><button class="btn-add success" data-go="add">＋ เปิดบิลใหม่</button><button class="btn line" id="c-print">🖨️ พิมพ์เอกสาร A4</button></div>
-  <div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span><span class="tab-n">${cars.filter(c=>c[k]).length}</span></button>`).join('')}</div>
+  <div class="ltop"><span class="ui-ic"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 16V11l2-5h10l2 5v5"/><path d="M3 16h18v3H3z"/><circle cx="7.5" cy="13" r="1"/><circle cx="16.5" cy="13" r="1"/></svg></span><h1>รายการ ${tl}</h1><button class="btn-add success" data-go="add">＋ เปิดบิลใหม่</button><button class="btn line" id="c-print"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg> พิมพ์เอกสาร A4</button></div>
+  <div class="cf-box"><div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span><span class="tab-n">${cars.filter(c=>c[k]).length}</span></button>`).join('')}</div>
   ${cYrs.length>1?`<div class="months"><span class="sub">ปีที่หมดอายุ</span><button class="mchip ${!cYear?'on':''}" data-yr="0">ทุกปี</button>${cYrs.map(y=>`<button class="mchip ${cYear===y?'on':''}" data-yr="${y}">${y+543}</button>`).join('')}</div>`:''}
   <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือนที่หมดอายุ</span><button class="mchip ${cMonth===0?'on':''}" data-mo="0">ทุกเดือน</button>${TH_MF.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
   <div class="sortbar">
-    <button class="sort-btn ${cSort==='latest'?'on':''}" data-so="latest">🕑 อัปเดตล่าสุด</button>
-    <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon">⏰ ใกล้หมดอายุ <span class="sort-hint">(${SOON()} วัน)</span></button>
-    <button class="sort-btn red ${cSort==='expired'?'on':''}" data-so="expired">❌ หมดอายุแล้ว</button>
+    <button class="sort-btn ${cSort==='latest'?'on':''}" data-so="latest"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> อัปเดตล่าสุด</button>
+    <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 16H3z"/><path d="M12 10v4M12 17h.01"/></svg> ใกล้หมดอายุ <span class="sort-hint">(${SOON()} วัน)</span></button>
+    <button class="sort-btn red ${cSort==='expired'?'on':''}" data-so="expired"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg> หมดอายุแล้ว</button>
     <span class="sub" id="ccount"></span><span style="flex:1"></span>
     <label class="search-pill"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(q)}" autocomplete="off"></label>
     <button type="button" class="btn line sm" id="c-clear">✕ ล้างตัวกรอง</button>
-  </div>
+  </div></div>
   <div class="tbl-wrap tablewrap"><table class="ltable"><thead><tr><th>#</th><th>วันที่บันทึก</th><th>ชื่อ นามสกุล</th><th>เบอร์โทร</th><th class="hide-sm">ประเภทรถ</th><th>ทะเบียนรถ</th>${cTab==='ins'?'<th>บริษัทประกัน</th>':cTab==='k'?'<th>หมายเหตุ</th>':''}<th>${tl} หมดวันที่</th><th class="c-act"></th></tr></thead><tbody id="rows"></tbody></table></div>`;
   let cList=[];
   const draw=()=>{
