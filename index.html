@@ -2724,6 +2724,10 @@ const TH_M=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ
 const fmt=d=>`${d.getDate()} ${TH_M[d.getMonth()]} ${String(d.getFullYear()+543).slice(2)}`;
 const plus=n=>new Date(TODAY.getTime()+n*DAY);
 const daysTo=d=>Math.round((d-TODAY)/DAY);
+// ข้ามเที่ยงคืน: เลื่อน TODAY เป็นวันใหม่ (แก้ค่าเดิม ทุกจุดที่อ้าง TODAY ได้วันใหม่ทันที) แล้ววาดหน้าใหม่เฉพาะหน้าที่ไม่มีฟอร์มกรอกค้าง
+setInterval(()=>{const d=new Date();d.setHours(0,0,0,0);if(d.getTime()===TODAY.getTime())return;TODAY.setTime(d.getTime());
+  const dl=document.getElementById('dlg'),busy=(dl&&!dl.hidden)||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||'');
+  if(!busy&&['home','income','track','docs','docsDay','cust','bell','dash','dlt','comm'].includes(cur)&&typeof R[cur]==='function')R[cur]()},60000);
 /* ร้านเก็บเงินเป็นบาทเต็ม: ยอดทุกรายการปัดเศษสตางค์ขึ้น (645.21 → 646) */
 const up=x=>x>0?Math.ceil(Math.round(x*100)/100):x;
 const baht=n=>n.toLocaleString('th-TH',{maximumFractionDigits:2})+' ฿';
@@ -5356,12 +5360,17 @@ R.add=(E)=>{if(!E)billKey=null;
       const ov=document.createElement('div');ov.className='svo';
       ov.innerHTML=`<div class="svo-box"><div class="svo-ic"><svg class="svo-spin" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#27500A" stroke-width="2.5" stroke-linecap="round"><path d="M12 2v4M12 18v4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8M2 12h4M18 12h4M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></div><div class="svo-t">กำลังบันทึกข้อมูล...</div><div class="svo-s">กรุณารอสักครู่</div><div class="svo-bar"><i></i></div></div>`;
       document.body.append(ov);requestAnimationFrame(()=>ov.querySelector('.svo-bar i').style.width='85%');
-      setTimeout(()=>{
+      setTimeout(async()=>{
         const nch=ch.length+chV.length+chC.length;
-        if(nch){Object.assign(E,nw);E.type=E.ctype?ctLabel(E.ctype):E.type;
+        if(nch){const now=new Date(),ent={d:TODAY,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),what:'แก้ไขข้อมูล: '+[...ch.map(k=>LBL[k]),...chV.map(k=>XL[k]),...chC.map(k=>XL[k])].join(', '),by:user.name};
+          const E2={...E,...nw};E2.type=E2.ctype?ctLabel(E2.ctype):E.type;
+          // รอฐานข้อมูลบันทึกสำเร็จก่อน จึงเปลี่ยนข้อมูลในหน้าและแจ้งว่าบันทึกแล้ว
+          try{await DB.edit(E2,c,ent,{veh:vehN,cust:custN})}
+          catch(err){console.error(err);ov.remove();alert('บันทึกการแก้ไขไม่สำเร็จ: '+(err&&err.message||err)+'\nข้อมูลที่กรอกยังอยู่ในฟอร์ม ยังไม่มีอะไรถูกบันทึก');return}
+          Object.assign(E,nw);E.type=E2.type;
           if(c.id){Object.assign(c,{plate:nw.plate,prov:nw.prov,name:nw.name,tel:nw.tel,model:nw.model,cc:nw.cc,note:nw.note,ctype:E.ctype,type:E.type});
             const mm=nw.model.split(' ');c.raw={...V0,...vehN,plate:nw.plate,province:nw.prov,car_type:E.ctype,brand:mm[0]||'',model:mm.slice(1).join(' '),cc:nw.cc||null,customers:{...CU0,...custN,prefix:nw.prefix,first_name:(nw.name.split(' ')[0]||''),last_name:nw.name.split(' ').slice(1).join(' '),tel:nw.tel,short_note:nw.note}}}
-          const now=new Date();E.edits.push({d:TODAY,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),what:'แก้ไขข้อมูล: '+[...ch.map(k=>LBL[k]),...chV.map(k=>XL[k]),...chC.map(k=>XL[k])].join(', '),by:user.name});DB.edit(E,c,E.edits[E.edits.length-1],{veh:vehN,cust:custN})}
+          E.edits.push(ent)}
         ov.querySelector('.svo-ic').innerHTML='<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#27500A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>';
         ov.querySelector('.svo-t').textContent=nch?'บันทึกเรียบร้อย':'ไม่มีข้อมูลที่เปลี่ยน';ov.querySelector('.svo-s').textContent=nch?'ยอดเงินไม่เปลี่ยน ไม่นับเป็นรายได้ใหม่':'กลับไปหน้ารายละเอียดบิล';ov.querySelector('.svo-bar i').style.width='100%';
         setTimeout(()=>{ov.remove();showBill(E.id)},800);
@@ -5732,11 +5741,18 @@ const DB=(()=>{
     add('14','บันทึกบิลปลอดภัย (กันซ้ำ/ธุรกรรมเดียว) ปฏิเสธเงินโอน คิวผูกบิล',await fnOk('create_bill',{p:{}}),'รัน 14-safe-bills.sql (จำเป็นก่อนใช้เวอร์ชันนี้)');
     add('15','ยกเลิกบิล / คืนเงิน / ส่งมอบเอกสาร',await fnOk('decide_bill_action',{p_id:-1,p_approve:false,p_note:''}),'รัน 15-void-refund.sql');
     add('16','กู้คืนจากไฟล์สำรอง',await fnOk('restore_backup',{p:{}}),'รัน 16-backup.sql');
+    // 19–22: ถามฐานข้อมูลตรงๆ ว่าติดตั้งแล้วหรือยัง (schema_status มากับ SQL 22 อ่านอย่างเดียว)
+    let ss=null;try{const r=await c.rpc('schema_status');if(!r.error)ss=r.data}catch(_){}
+    const s22=v=>ss?!!v:null;
+    add('19','กันพนักงานปิดยอดตอนมีเงินโอนรอตรวจ',s22(ss&&ss.s19),'รัน 19-close-pending-guard.sql');
+    add('20','สำรองข้อมูลอัตโนมัติทุกคืน',s22(ss&&ss.s20&&ss.s20cron),'รัน 20-auto-backup.sql'+(ss&&ss.s20&&!ss.s20cron?' (ยังไม่มีงานตั้งเวลา siam-backup-nightly)':''));
+    add('21','สรุป LINE อ่านกำหนดงานขนส่งจากตั้งค่า',s22(ss&&ss.s21),'รัน 21-line-daily-v2.sql');
+    add('22','ความปลอดภัยบิล/รับเงิน/ปิดยอด แก้บิลธุรกรรมเดียว',!!(ss&&ss.s22),'รัน 22-security-fixes.sql');
     add('Realtime','ซิงก์ข้อมูลทุกเครื่องทันที',rtOK,'รัน 14-safe-bills.sql แล้วรีเฟรชหน้า (ถ้ายังไม่ได้ ระบบจะโหลดใหม่ทุก 3 นาทีแทน)');
     let line={};try{line=(await c.rpc('line_secret_status')).data||{}}catch(_){}
-    add('LINE','สรุปประจำวัน/แจ้งเตือนเข้า LINE',!!(line.token&&line.to),'ใส่ Channel access token และ User ID ในหน้าตั้งค่า > LINE');
+    add('LINE','สรุปประจำวัน/แจ้งเตือนเข้า LINE',line.token&&line.to?'set':false,'ใส่ Channel access token และ User ID ในหน้าตั้งค่า > LINE');
     let sms={};try{sms=(await c.rpc('sms_secret_status')).data||{}}catch(_){}
-    add('SMS','ส่ง SMS (ThaiBulkSMS)',!!(sms.key&&sms.secret),'ใส่ API Key / Secret ในหน้าตั้งค่า > SMS (อย่าส่งรหัสในแชท)');
+    add('SMS','ส่ง SMS (ThaiBulkSMS)',sms.key&&sms.secret?'set':false,'ใส่ API Key / Secret ในหน้าตั้งค่า > SMS (อย่าส่งรหัสในแชท)');
     return out}
   // ----- 16: ไฟล์สำรองฐานข้อมูล (JSON) ทุกสาขา + ตรวจไฟล์ + กู้คืนส่วนที่หายไป -----
   const BK_TABS=[['branches','id'],['staff','user_id','user_id,username,full_name,role,branch_id,active,created_at'],['customers','id'],['vehicles','id'],['bills','id'],['payments','id'],['bill_edits','id'],['dlt_jobs','bill_id'],
@@ -5759,15 +5775,21 @@ const DB=(()=>{
   async function clearFiles(b){if(!LIVE)return;const c=await client(),r=await c.rpc('clear_files_pending',{p_bill:b.id});if(r.error){if(/clear_files_pending|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 14-safe-bills.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}}
   async function verifyPay(p){if(!LIVE)return{verified_by:user?user.name:''};if(!p.id)throw new Error('ยังบันทึกรายการนี้ไม่เสร็จ ลองใหม่อีกครั้ง');
     const c=await client(),r=await c.rpc('verify_payment',{p_id:p.id});if(r.error){if(/verify_payment|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 13-transfer-verify.sql ใน Supabase');throw new Error(r.error.message)}return r.data}
-  async function edit(E,c,ent,x){if(!LIVE)return;x=x||{};
-    try{const s=await client();
-      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prbCo:E.prbCo||'',prefix:E.prefix||'',doc:E.doc||'สำเนา',ctn:E.ctn||'',ctt:E.ctt||''};
-      const up=chk(await s.from('bills').update({snapshot:snap,note:E.rnote||''}).eq('id',E.id).select('id'));
-      if(!up.length)throw new Error('บัญชีนี้ไม่มีสิทธิ์แก้ไขบิล (เฉพาะเจ้าของร้าน/หัวหน้าสาขา)');
-      chk(await s.from('bill_edits').insert({bill_id:E.id,what:ent.what,after:snap,by_name:ent.by||me.name}));
-      if(c&&c.custId){const nm=(E.name||'').split(' ');chk(await s.from('customers').update({...(x.cust||{}),prefix:E.prefix||'',first_name:nm[0]||'',last_name:nm.slice(1).join(' '),tel:E.tel||'',short_note:E.note||''}).eq('id',c.custId))}
-      if(c&&c.id&&c.id<1e9){const mm=(E.model||'').split(' ');chk(await s.from('vehicles').update({...(x.veh||{}),plate:E.plate,province:E.prov,car_type:E.ctype||null,brand:mm[0]||'',model:mm.slice(1).join(' '),cc:+E.cc||null}).eq('id',c.id))}}
-    catch(err){fail('บันทึกการแก้ไข',err)}}
+  // แก้ไขบิล: ใช้ edit_bill (SQL 22) บันทึกบิล+ประวัติ+ลูกค้า+รถ ในธุรกรรมเดียว; ผิดพลาด = โยน error ให้หน้าแก้ไขแจ้งและไม่เปลี่ยนข้อมูลในหน้า
+  async function edit(E,c,ent,x){if(!LIVE)return;x=x||{};const s=await client();
+    const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prbCo:E.prbCo||'',prefix:E.prefix||'',doc:E.doc||'สำเนา',ctn:E.ctn||'',ctt:E.ctt||''};
+    const nm=(E.name||'').split(' '),mm=(E.model||'').split(' ');
+    const cust=c&&c.custId?{...(x.cust||{}),prefix:E.prefix||'',first_name:nm[0]||'',last_name:nm.slice(1).join(' '),tel:E.tel||'',short_note:E.note||''}:null;
+    const veh=c&&c.id&&c.id<1e9?{...(x.veh||{}),plate:E.plate,province:E.prov,car_type:E.ctype||null,brand:mm[0]||'',model:mm.slice(1).join(' '),cc:+E.cc||null}:null;
+    const r=await s.rpc('edit_bill',{p:{bill_id:E.id,what:ent.what,snapshot:snap,note:E.rnote||'',cust_id:cust?c.custId:null,cust,veh_id:veh?c.id:null,veh}});
+    if(!r.error)return r.data;
+    if(!/could not find the function|schema cache/i.test(r.error.message))throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''));
+    // ยังไม่ได้รัน 22-security-fixes.sql: บันทึกแบบเดิม (ทีละตาราง)
+    const up=chk(await s.from('bills').update({snapshot:snap,note:E.rnote||''}).eq('id',E.id).select('id'));
+    if(!up.length)throw new Error('บัญชีนี้ไม่มีสิทธิ์แก้ไขบิล (เฉพาะเจ้าของร้าน/หัวหน้าสาขา)');
+    chk(await s.from('bill_edits').insert({bill_id:E.id,what:ent.what,after:snap,by_name:ent.by||me.name}));
+    if(cust)chk(await s.from('customers').update(cust).eq('id',c.custId));
+    if(veh)chk(await s.from('vehicles').update(veh).eq('id',c.id))}
   function branchUI(){document.querySelectorAll('.tbranch').forEach(x=>x.remove());if(!LIVE||!branch)return;
     const host=document.querySelector('.tleft');if(!host)return;
     const w=document.createElement('span');w.className='tbranch';const pin='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
@@ -6199,6 +6221,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
   $('#view').innerHTML=`<div class="bk">
   <div class="ltop"><span class="ui-ic">💾</span><h1>ส่งออก Excel / สำรองข้อมูล</h1><span class="sub">${esc(shop().title)}</span></div>
   ${own?(old?`<div class="dj-alert">⚠️ ${lb?'สำรองฐานข้อมูลครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยสำรองฐานข้อมูลจากเครื่องนี้'} แนะนำให้กด <b>ดาวน์โหลดไฟล์สำรองฐานข้อมูล</b> เก็บไว้อย่างน้อยเดือนละครั้ง</div>`:`<div class="cl-done">✅ สำรองฐานข้อมูลล่าสุด ${beFull(new Date(lb))}</div>`):''}
+  ${own?`<div class="ui-note warn" style="margin:10px 0">ℹ️ <span><b>ข้อจำกัดของการสำรองข้อมูล</b> · ชุดสำรองอัตโนมัติทุกคืนเก็บอยู่ใน<b>ฐานข้อมูลเดียวกัน</b> ถ้าโปรเจกต์ Supabase เสียหายหรือถูกลบ ชุดสำรองจะหายไปด้วย · ไฟล์สำรองไม่รวมรูป/PDF ที่แนบบิล บัญชีผู้ใช้และรหัสผ่าน และรหัส LINE/SMS<br><b>แนะนำ</b> ดาวน์โหลดไฟล์สำรองเก็บนอกระบบ (เช่น Google Drive) อย่างน้อยสัปดาห์ละครั้ง และลองกู้คืนในโปรเจกต์ทดสอบเดือนละครั้ง เพื่อให้มั่นใจว่าไฟล์ใช้ได้จริง</span></div>`:''}
   <div class="bk-grid">
     <div class="card bk-card"><h3>📊 รายงานรายเดือน</h3><p class="sub">บิล รายการค่าใช้จ่าย การรับเงิน และข้อมูลลูกค้า ของเดือนที่เลือก เปิดด้วย Excel หรือ Google Sheets ได้</p>
       <label class="cl-date">เดือน <input type="month" id="bk-m" value="${expMonth}"></label><p class="sub">${inM.length} บิลในเดือนนี้</p>
@@ -7383,8 +7406,8 @@ R.health=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div cla
   $('#view').innerHTML=`<div class="ui"><div class="ui-head"><span class="ui-ic">🩺</span><div class="ui-tt"><h1>ตรวจการเชื่อมต่อระบบ</h1><div class="ui-sub">ตรวจว่าไฟล์ SQL และบริการภายนอกพร้อมใช้งานหรือยัง (ตรวจแบบอ่านอย่างเดียว ไม่บันทึกข้อมูล)</div></div><div class="ui-tools"><button class="btn line" id="hc-re">↻ ตรวจอีกครั้ง</button></div></div><div class="ui-card" id="hc-box"><div class="ui-empty">${LIVE?'กำลังตรวจ...':'โหมดทดลอง: ไม่ได้เชื่อมต่อฐานข้อมูลจริง เข้าสู่ระบบด้วยบัญชีจริงเพื่อตรวจ'}</div></div>
   <div class="ui-card"><div class="ui-card-h"><h2>สิ่งที่หน้านี้ตรวจไม่ได้ ต้องลองจริง</h2></div><div class="ui-card-b"><ul class="hc-ul"><li>พิมพ์ใบเสร็จลงกระดาษ A4 จริง (ตั้งเครื่องพิมพ์: ขนาด A4, ขอบ "ไม่มี/ค่าเริ่มต้น", สเกล 100%)</li><li>ส่ง SMS จริง 1 ข้อความไปเบอร์ของร้าน และเช็กเครดิตคงเหลือ</li><li>กด "ทดสอบส่ง LINE" ในหน้าตั้งค่า แล้วดูว่าข้อความเข้า LINE เจ้าของร้าน</li><li>เปิดไฟล์ Excel ที่ส่งออกด้วย Excel / Google Sheets</li></ul></div></div></div>`;
   $('#hc-re').onclick=()=>R.health();if(!LIVE)return;
-  try{const L=await DB.health();if(cur!=='health')return;const bad=L.filter(x=>!x.ok).length;
-    $('#hc-box').innerHTML=`<div class="ui-card-h"><h2>${bad?`⚠️ ยังต้องตั้งค่า ${bad} รายการ`:'✅ พร้อมใช้งานครบทุกรายการ'}</h2></div><div style="overflow-x:auto"><table class="ui-tbl stack"><thead><tr><th>ส่วน</th><th>ใช้สำหรับ</th><th>สถานะ</th><th>ต้องทำ</th></tr></thead><tbody>${L.map(x=>`<tr><td data-l="ส่วน"><b>${esc(x.file)}</b></td><td data-l="ใช้สำหรับ">${esc(x.name)}</td><td data-l="สถานะ">${x.ok?'<span class="ui-pill ok">พร้อมใช้</span>':'<span class="ui-pill bad">ยังไม่พร้อม</span>'}</td><td data-l="ต้องทำ" class="sub">${x.ok?'–':esc(x.how)}</td></tr>`).join('')}</tbody></table></div>`}
+  try{const L=await DB.health();if(cur!=='health')return;const bad=L.filter(x=>x.ok===false).length;
+    $('#hc-box').innerHTML=`<div class="ui-card-h"><h2>${bad?`⚠️ ยังต้องตั้งค่า ${bad} รายการ`:'✅ พร้อมใช้งานครบทุกรายการ'}</h2></div><div style="overflow-x:auto"><table class="ui-tbl stack"><thead><tr><th>ส่วน</th><th>ใช้สำหรับ</th><th>สถานะ</th><th>ต้องทำ</th></tr></thead><tbody>${L.map(x=>`<tr><td data-l="ส่วน"><b>${esc(x.file)}</b></td><td data-l="ใช้สำหรับ">${esc(x.name)}</td><td data-l="สถานะ">${x.ok==='set'?'<span class="ui-pill warn">เชื่อมต่อแล้ว · ยังไม่ได้ทดสอบส่งจริง</span>':x.ok===null?'<span class="ui-pill warn">ตรวจไม่ได้</span>':x.ok?'<span class="ui-pill ok">ติดตั้งแล้ว</span>':'<span class="ui-pill bad">ยังไม่พร้อม</span>'}</td><td data-l="ต้องทำ" class="sub">${x.ok==='set'?'ทดสอบส่งจริง 1 ครั้งจากหน้าตั้งค่า':x.ok===null?'รัน 22-security-fixes.sql เพื่อให้หน้านี้ตรวจข้อนี้ได้':x.ok?'–':esc(x.how)}</td></tr>`).join('')}</tbody></table></div>`}
   catch(err){$('#hc-box').innerHTML=`<div class="ui-empty">ตรวจไม่สำเร็จ: ${esc(err.message)}</div>`}};
 ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k);await r;stEmbed(k);return r}});
 </script>
