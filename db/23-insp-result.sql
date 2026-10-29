@@ -2,6 +2,7 @@
 -- วิธีรัน: Supabase › SQL Editor › New query › วางทั้งไฟล์ › Run  (เพิ่มคอลัมน์ใหม่ ไม่แก้ข้อมูลเดิม)
 -- กติกา: พนักงานทุกคนในสาขาบันทึกผลครั้งแรกได้ · เปลี่ยน/ล้างผลที่บันทึกแล้ว เฉพาะเจ้าของร้าน/หัวหน้าสาขา · บิลที่ยกเลิกแล้วบันทึกไม่ได้
 -- ทุกครั้งที่บันทึกจะเก็บประวัติใน bill_edits
+-- เพิ่ม: กันเปิดบิลใหม่ที่ยอดรวม 0 บาท (ตรวจในฐานข้อมูล)
 -- ย้อนกลับ: drop function if exists public.set_insp_result(bigint, text);
 --          alter table public.bills drop column if exists insp_result, drop column if exists insp_at, drop column if exists insp_by;
 
@@ -31,5 +32,17 @@ begin
 end $$;
 revoke all on function public.set_insp_result(bigint, text) from public, anon;
 grant execute on function public.set_insp_result(bigint, text) to authenticated;
+
+-- ---------- กันบิลยอด 0 บาท (บิลใหม่เท่านั้น บิลเดิมไม่ถูกแก้) ----------
+create or replace function public.bill_total_guard() returns trigger
+language plpgsql set search_path = public as $$
+begin
+  if coalesce(current_setting('siam.restoring', true), '') = '1' then return new; end if;  -- กู้คืนข้อมูลเดิมได้
+  if coalesce(new.total, 0) <= 0 then raise exception 'ยอดรวมบิลเป็น 0 บาท กรุณาตรวจว่าใส่ราคาของแต่ละรายการครบแล้ว'; end if;
+  return new;
+end $$;
+drop trigger if exists bills_total_guard on public.bills;
+create trigger bills_total_guard before insert on public.bills for each row execute function public.bill_total_guard();
+-- ย้อนกลับส่วนนี้: drop trigger if exists bills_total_guard on public.bills; drop function if exists public.bill_total_guard();
 
 -- ตรวจผล: select column_name from information_schema.columns where table_name = 'bills' and column_name like 'insp_%';  -- ต้องได้ 3 แถว

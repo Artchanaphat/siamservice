@@ -5408,7 +5408,7 @@ R.add=(E)=>{if(!E)billKey=null;
     if(!billCheck())return;
     const sb=$('#bill [type=submit]');if(sb&&sb.disabled)return;
     recalc();const pr=pmW.read();if(pr.err){alert(pr.err);(pr.focus||$('#pm-bill')).scrollIntoView({block:'center'});if(pr.focus)pr.focus.focus();return}
-    const tot=recalc();if(tot<0){alert('ยอดรวมติดลบ (ส่วนลดมากกว่าค่าบริการ) กรุณาตรวจช่องส่วนลด');const d=$('#b-dis');if(d)d.focus();return}const plate=v('b-cha')+' '+v('b-num');const typ=$('#b-type').value;
+    const tot=recalc();if(tot<0){alert('ยอดรวมติดลบ (ส่วนลดมากกว่าค่าบริการ) กรุณาตรวจช่องส่วนลด');const d=$('#b-dis');if(d)d.focus();return}if(!(tot>0)){alert('ยอดรวมบิลเป็น 0 บาท กรุณาตรวจว่าใส่ราคาของแต่ละรายการครบแล้ว');return}const plate=v('b-cha')+' '+v('b-num');const typ=$('#b-type').value;
     const name=v('c-name')+' '+v('c-sur');
     let c=cars.find(x=>x.plate.replace(/\s/g,'')===plate.replace(/\s/g,'')&&x.prov===$('#b-city').value);
     const c0=c?{...c,history:[...c.history]}:null,fl=[...$('#b-img').files,...$('#b-pdf').files];
