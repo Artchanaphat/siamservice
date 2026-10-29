@@ -2181,6 +2181,18 @@ body{margin:0}
 .tsr-none{padding:12px;color:#7887a2;font-size:13.5px}
 .tsr-all{display:block;width:100%;margin-top:4px;border:0;border-top:1px solid #eef2f8;background:none;padding:9px 10px;font:inherit;font-size:13px;font-weight:600;color:#1d63ed;text-align:left;cursor:pointer;border-radius:0 0 9px 9px}
 .tsr-all:hover{background:#f5f8ff}
+.cg{padding:6px 4px 8px;border-top:1px solid #eef2f8}
+.cg-h{display:flex;align-items:baseline;gap:10px;padding:2px 6px 6px;color:#0f2a6b;font-size:13.5px}
+.cg-h span{color:#5b6b88;font-size:13px}
+.cg-h em{margin-left:auto;font-style:normal;font-size:12px;color:#5b6b88;background:#f1f5fb;border-radius:999px;padding:1px 8px}
+.cg-cars{display:flex;flex-wrap:wrap;gap:6px;padding:0 4px}
+.tsr-it.cg-car,.tsr-it.cg-new{display:inline-flex;flex-direction:column;align-items:flex-start;gap:1px;width:auto;border:1px solid #d6e2f5;border-radius:9px;padding:6px 10px;line-height:1.3}
+.cg-car span{font-size:12px;color:#5b6b88}
+.tsr-it.cg-new{justify-content:center;border-style:dashed;color:#1d63ed;font-weight:600;font-size:13px}
+.oc-list{display:flex;flex-wrap:wrap;gap:6px}
+.oc-car{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #d6e2f5;background:#f7faff;border-radius:8px;padding:3px 9px;font:inherit;font-size:13px;color:#0f2a6b;cursor:pointer}
+.oc-car span{font-size:12px;color:#5b6b88}
+.oc-car:hover{background:#eaf1ff}
 @media print{
   .tsr-pop{display:none!important}
 }
@@ -2716,7 +2728,7 @@ const daily=[[6,8],[7,11],[8,9],[9,14],[10,12],[11,7],[12,13]]; // [dayOffset, c
 let bseq=184;
 function mkBill(o){const c=o.carId?cars.find(x=>x.id===o.carId):cars.find(x=>x.plate===o.plate);
   const b={id:++bseq,d:o.d||TODAY,t:o.t||'',plate:o.plate||c.plate,prov:o.prov||(c&&c.prov)||'กรุงเทพมหานคร',name:o.name||c.name,tel:o.tel!=null?o.tel:(c?c.tel:''),note:o.note!=null?o.note:(c?c.note:''),
-    ctype:o.ctype||LEGACY_CT[o.type]||ctOf(c),type:'',model:o.model||(c&&c.model)||'',cc:o.cc||(c&&c.cc)||'',carId:c?c.id:null,items:o.items,ins:o.ins||0,insCo:o.insCo||(c&&c.insCo)||'',disc:o.disc||0,doc:o.doc||'สำเนา',prefix:o.prefix||'',rnote:o.rnote||'',pays:[],edits:o.edits||[]};
+    ctype:o.ctype||LEGACY_CT[o.type]||ctOf(c),type:'',model:o.model||(c&&c.model)||'',cc:o.cc||(c&&c.cc)||'',carId:c?c.id:null,items:o.items,ins:o.ins||0,insCo:o.insCo||(c&&c.insCo)||'',disc:o.disc||0,doc:o.doc||'สำเนา',prefix:o.prefix||'',rnote:o.rnote||'',ctn:o.ctn||'',ctt:o.ctt||'',pays:[],edits:o.edits||[]};
   b.type=b.ctype?ctLabel(b.ctype):(o.type||'');
   b.amt=Math.round((b.items.reduce((s,i)=>s+i[1],0)-b.disc)*100)/100;b.what=b.items.map(i=>i[0]).join(' + ');
   (o.pays||[]).forEach(p=>b.pays.push({d:p.d||b.d,t:p.t||b.t,amt:p.amt,how:p.how||'เงินสด',by:p.by||'admin',wait:!!p.wait}));
@@ -2907,7 +2919,7 @@ document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hi
   const pick=k=>{const c=hits[k];if(!c)return;close();tq.value='';tq.blur();openCar(c.id)};
   const all=()=>{q=tq.value;close();tq.blur();go('cust')};
   const draw=()=>{const s=norm(tq.value);if(!s){close();return}
-    const m=cars.filter(c=>norm(c.plate+c.name+c.tel).includes(s));hits=m.slice(0,8);sel=-1;
+    const CT=ctIdx(),m=cars.filter(c=>norm(c.plate+c.name+c.tel+(CT.has(c.id)?CT.get(c.id).n+CT.get(c.id).t:'')).includes(s));hits=m.slice(0,8);sel=-1;
     box.innerHTML=(hits.length?hits.map((c,k)=>`<button type="button" role="option" class="tsr-it" data-k="${k}"><b>${esc(c.plate)}</b><span class="tsr-pv">${esc(c.prov||'')}</span><span class="tsr-nm">${esc(c.name||'–')}</span><span class="tsr-tel">${esc(c.tel||'')}</span></button>`).join(''):'<div class="tsr-none">ไม่พบข้อมูลที่ค้นหา</div>')
       +(m.length?`<button type="button" class="tsr-all" data-all>ดูทั้งหมด ${m.length} รายการ ›</button>`:'');
     place();box.hidden=false};
@@ -3428,7 +3440,7 @@ const ACC=(title,color,icon,body,acc=true)=>`<div class="card${acc?' acc open':'
 const RW=(l,v,cls='')=>`<div class="row"><div class="lbl">${l}</div><div class="val ${cls}">${v}</div></div>`;
 const beFull=d=>`${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
 R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
-  const c=cars.find(x=>x.id===b.carId)||{},s=split(b),debt=s.debt>0.004;
+  const c=cars.find(x=>x.id===b.carId)||{},s=split(b),debt=s.debt>0.004,oc=c.id?ownerCars(c):[];
   const V=c.raw||{},CU=V.customers||{},kind=V.body||(/บรรทุก/.test(b.type)?'บรรทุกส่วนบุคคล':/จักรยานยนต์/.test(b.type)?'จักรยานยนต์':'นั่งส่วนบุคคล');
   const NA='<span class="exp-empty">ไม่มีข้อมูล</span>',addr=[CU.address,CU.tumbol&&'ต.'+CU.tumbol,CU.amphoe&&'อ.'+CU.amphoe,CU.province&&'จ.'+CU.province,CU.zipcode].filter(Boolean).join(' ');
   const exp=(l,d,extra)=>`<div class="exp-sub"><div class="row"><div class="lbl">${l}</div><div class="val">${d?`หมดอายุ ${beFull(d)}`:'<span class="exp-empty">ไม่มีข้อมูล</span>'}</div></div>${d&&extra?`<p class="exp-meta">${esc(extra)}</p>`:''}</div>`;
@@ -3442,7 +3454,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
     <div class="hdr-right"><div class="hdr-badge upd">↻ อัพเดท:&nbsp;<span>${beFull(b.d)}</span></div></div></div>
   <div class="grid"><div>
     ${ACC('ข้อมูลรถ','#7D26CD','<rect x="1" y="6" width="16" height="9" rx="2.5"/><path d="M4 6l1.5-3h7L14 6"/>',RW('ประเภทรถ',esc(b.type))+RW('ลักษณะรถ',esc(kind))+RW('ยี่ห้อ',esc(V.brand||(b.model||'–').split(' ')[0]))+RW('รุ่น',esc(V.brand?(V.model||'–'):(b.model.split(' ').slice(1).join(' ')||'–')))+RW('ทะเบียน',esc(b.plate+' '+b.prov),'blue')+(b.cc?RW('CC',b.cc):'')+(V.color?RW('สี',esc(V.color)):'')+(V.chassis_no?RW('เลขตัวถัง',esc(V.chassis_no)):'')+(V.engine_no?RW('เลขเครื่อง',esc(V.engine_no)):'')+(V.weight_kg?RW('น้ำหนักรถ',V.weight_kg+' กก.'):'')+RW('เอกสารที่นำมา',esc(b.doc||'สำเนา')))}
-    ${ACC('ลูกค้า','#0000FF','<circle cx="9" cy="6" r="3.5"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6"/>',RW('ชื่อ',esc((b.prefix||'คุณ')+' '+b.name))+RW('เบอร์',b.tel?esc(b.tel):'–','blue')+(b.note?RW('Short Note',esc(b.note)):'')+(b.rnote?RW('หมายเหตุ',esc(b.rnote)):'')+RW('ที่อยู่',addr?esc(addr):NA))}
+    ${ACC('ลูกค้า','#0000FF','<circle cx="9" cy="6" r="3.5"/><path d="M2 16c0-3.3 3.1-6 7-6s7 2.7 7 6"/>',RW('ชื่อ',esc((b.prefix||'คุณ')+' '+b.name))+RW('เบอร์',b.tel?esc(b.tel):'–','blue')+(b.ctn||b.ctt?RW('ผู้มาติดต่อ',esc([b.ctn,b.ctt].filter(Boolean).join(' · '))):'')+(b.note?RW('Short Note',esc(b.note)):'')+(b.rnote?RW('หมายเหตุ',esc(b.rnote)):'')+RW('ที่อยู่',addr?esc(addr):NA)+(oc.length?RW(`รถคันอื่น (${oc.length})`,`<div class="oc-list">${oc.map(x=>`<button type="button" class="oc-car" data-oc="${x.id}"><b>${esc(x.plate)}</b><span>${esc(x.prov||'')}</span></button>`).join('')}</div>`):''))}
     ${(b.fpend||[]).length?`<div class="ui-note warn bf-miss">📎 <span><b>เอกสารไม่ครบ</b> ยังขาด ${b.fpend.length} ไฟล์: ${b.fpend.map(esc).join(', ')}<br><small>กด "เพิ่มรูปภาพ" หรือ "เพิ่มไฟล์ PDF" ด้านล่างเพื่ออัปโหลดซ้ำ (ไม่สร้างบิลใหม่)</small></span><span class="sp"></span>${user&&(user.role==='owner'||user.role==='head')?'<button type="button" class="btn sm line" id="bf-clr">ไม่ต้องแนบแล้ว</button>':''}</div>`:''}
     ${ACC('รูปภาพ','#FF34B3','<rect x="2" y="3" width="14" height="12" rx="2.5"/><path d="M2 12l4-3 3 3 2-2 5 4"/>',`<div class="bf-box" id="bf-image"><span class="exp-empty">กำลังโหลด...</span></div><div class="bf-add"><label class="btn line">➕ เพิ่มรูปภาพ<input type="file" accept="image/*" multiple hidden data-bfadd></label></div>`,false)}
     ${ACC('PDF','#FF0000','<path d="M4 2h7l4 4v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M11 2v4h4"/>',`<div class="bf-box" id="bf-pdf"><span class="exp-empty">กำลังโหลด...</span></div><div class="bf-add"><label class="btn line">➕ เพิ่มไฟล์ PDF<input type="file" accept="application/pdf" multiple hidden data-bfadd></label></div>`,false)}
@@ -3481,6 +3493,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
   $('#nb-m-new').onclick=()=>{ov.classList.remove('show');copyToAdd(b)};
   ov.onclick=e=>{if(e.target===ov)ov.classList.remove('show')};
   $('#nb-new').onclick=()=>debt?ov.classList.add('show'):copyToAdd(b);
+  document.querySelectorAll('[data-oc]').forEach(x=>x.onclick=()=>openCar(+x.dataset.oc));
   $('#nb-edit').onclick=()=>{editBill=b.id;go('edit')};
   if(b.ins)$('#nb-inst').onclick=()=>{go('inst');Object.assign(INST.st,{mode:'all',tab:'all',q:b.plate});R.inst()};
   $('#nb-back').onclick=()=>go(billBack==='bill'?'income':billBack);
@@ -3567,7 +3580,7 @@ R.cust=()=>{
   <div class="tbl-wrap tablewrap"><table class="ltable"><thead><tr><th>#</th><th>วันที่บันทึก</th><th>ชื่อ นามสกุล</th><th>เบอร์โทร</th><th class="hide-sm">ประเภทรถ</th><th>ทะเบียนรถ</th>${cTab==='ins'?'<th>บริษัทประกัน</th>':cTab==='k'?'<th>หมายเหตุ</th>':''}<th>${tl} หมดวันที่</th></tr></thead><tbody id="rows"></tbody></table></div>`;
   const draw=()=>{
     const s=q.trim().replace(/[\s-]/g,'').toLowerCase();
-    let list=cars.filter(c=>!s||(c.plate+c.name+c.tel).replace(/[\s-]/g,'').toLowerCase().includes(s));
+    const CT=s?ctIdx():new Map();let list=cars.filter(c=>!s||(c.plate+c.name+c.tel+(CT.has(c.id)?CT.get(c.id).n+CT.get(c.id).t:'')).replace(/[\s-]/g,'').toLowerCase().includes(s));
     const d=c=>c[cTab];
     list=list.filter(c=>d(c));
     if(cMonth)list=list.filter(c=>d(c)&&d(c).getMonth()+1===cMonth);
@@ -4824,15 +4837,27 @@ function tumbolAC(inp,amp,prov,zip){
 }
 /* พิมพ์ทะเบียน/ชื่อ/เบอร์ แล้วแสดงลูกค้าเดิมที่ตรงกันใต้ช่อง (หน้าเปิดบิล, หน้าคิว)
    F = {id ช่อง: [ฟิลด์ที่เทียบ plate|name|tel, ...id ช่องที่นำค่ามาต่อกัน]} */
-function carAC(F,onPick,hint){const norm=x=>String(x||'').replace(/[\s-]/g,'').toLowerCase(),val=id=>($('#'+id)||{}).value||'';
+// ผู้มาติดต่อแทนเจ้าของ (ลูก/ญาติ) เก็บในบิล ใช้ค้นหารถจากชื่อ/เบอร์ของคนที่มาได้
+const ctIdx=()=>{const M=new Map();intake.forEach(b=>{if(!(b.ctn||b.ctt)||!b.carId)return;const o=M.get(b.carId)||{n:'',t:''};o.n+=' '+(b.ctn||'');o.t+=' '+(b.ctt||'');M.set(b.carId,o)});return M};
+// เจ้าของเดียวกัน = รหัสลูกค้าเดียวกัน หรือชื่อ+เบอร์ตรงกัน (รองรับลูกค้าที่ถูกบันทึกซ้ำไว้ก่อน)
+const ownerKey=c=>{const n=String(c.name||'').replace(/\s+/g,'').toLowerCase(),t=String(c.tel||'').replace(/\D/g,'');return n||t?n+'|'+t:'#'+(c.custId||c.id)};
+const ownerCars=c=>cars.filter(x=>x.id!==c.id&&((c.custId&&x.custId===c.custId)||ownerKey(x)===ownerKey(c)));
+// ช่องชื่อ/เบอร์ (ถ้ามี onOwner) แสดงเป็นรายลูกค้า พร้อมรถทุกคันของคนนั้นให้เลือก + ปุ่มรถคันใหม่
+function carAC(F,onPick,hint,onOwner){const norm=x=>String(x||'').replace(/[\s-]/g,'').toLowerCase(),val=id=>($('#'+id)||{}).value||'';
   const box=document.createElement('div');box.className='tsr-pop';box.setAttribute('role','listbox');box.hidden=true;$('#view').append(box);
   let hits=[],sel=-1,at=null;const close=()=>{box.hidden=true;sel=-1};
   const mark=()=>box.querySelectorAll('.tsr-it').forEach((b,k)=>b.classList.toggle('on',k===sel));
-  const pick=k=>{const c=hits[k];close();if(c)onPick(c)};
+  const pick=k=>{const h=hits[k];close();if(h)(h.own?onOwner:onPick)(h.c)};
   const draw=inp=>{const [f,...ids]=F[inp.id],s=norm(ids.map(val).join(''));if(s.length<2){close();return}
-    hits=cars.filter(c=>norm(c[f]).includes(s)).slice(0,8);sel=-1;if(!hits.length){close();return}
-    box.innerHTML=`<div class="tsr-none" style="padding:4px 8px">ลูกค้าเดิมที่ตรงกัน · คลิกเพื่อ${hint}</div>`+hits.map((c,k)=>`<button type="button" role="option" class="tsr-it" data-k="${k}"><b>${esc(c.plate)}</b><span class="tsr-pv">${esc(c.prov||'')}</span><span class="tsr-nm">${esc(c.name||'–')}</span><span class="tsr-tel">${esc(c.tel||'')}</span></button>`).join('');
-    const z=UZ(),r=inp.getBoundingClientRect(),w=Math.min(Math.max(r.width,360*z),innerWidth-16);box.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))/z+'px';box.style.top=(r.bottom+4)/z+'px';box.style.width=w/z+'px';at=inp;box.hidden=false};
+    const CT=f==='plate'?null:ctIdx(),m=cars.filter(c=>norm(c[f]).includes(s)||(CT&&CT.has(c.id)&&norm(CT.get(c.id)[f==='tel'?'t':'n']).includes(s)));sel=-1;if(!m.length){close();return}
+    if(onOwner&&f!=='plate'){const G=new Map();m.forEach(c=>{const k=ownerKey(c);G.has(k)?G.get(k).push(c):G.set(k,[c])});hits=[];
+      box.innerHTML=`<div class="tsr-none" style="padding:4px 8px">ลูกค้าเดิมที่ตรงกัน · เลือกรถ หรือกด "＋ รถคันใหม่"</div>`+[...G.values()].slice(0,6).map(cs=>{const o=cs.find(c=>c.custId)||cs[0];
+        return `<div class="cg"><div class="cg-h"><b>${esc(o.name||'–')}</b><span>${esc(o.tel||'')}</span><em>${cs.length} คัน</em></div><div class="cg-cars">`+cs.slice(0,8).map(c=>(hits.push({c}),`<button type="button" role="option" class="tsr-it cg-car" data-k="${hits.length-1}"><b>${esc(c.plate)}</b><span>${esc(c.prov||'')}${c.model&&c.model.trim()?' · '+esc(c.model):''}</span></button>`)).join('')+(hits.push({c:o,own:1}),`<button type="button" role="option" class="tsr-it cg-new" data-k="${hits.length-1}">＋ รถคันใหม่</button>`)+'</div></div>'}).join('')}
+    else{hits=m.slice(0,8).map(c=>({c}));
+    box.innerHTML=`<div class="tsr-none" style="padding:4px 8px">ลูกค้าเดิมที่ตรงกัน · คลิกเพื่อ${hint}</div>`+hits.map(({c},k)=>`<button type="button" role="option" class="tsr-it" data-k="${k}"><b>${esc(c.plate)}</b><span class="tsr-pv">${esc(c.prov||'')}</span><span class="tsr-nm">${esc(c.name||'–')}</span><span class="tsr-tel">${esc(c.tel||'')}</span></button>`).join('')}
+    const z=UZ(),r=inp.getBoundingClientRect(),w=Math.min(Math.max(r.width,360*z),innerWidth-16);box.style.left=Math.max(8,Math.min(r.left,innerWidth-w-8))/z+'px';box.style.top=(r.bottom+4)/z+'px';box.style.width=w/z+'px';at=inp;box.hidden=false;
+    // ที่ด้านล่างไม่พอ = เปิดขึ้นด้านบนช่อง
+    const h=box.getBoundingClientRect().height;if(r.bottom+4+h>innerHeight-8&&r.top-4-h>8)box.style.top=(r.top-4-h)/z+'px'};
   box.addEventListener('mousedown',e=>{e.preventDefault();const b=e.target.closest('[data-k]');if(b)pick(+b.dataset.k)});
   Object.keys(F).forEach(id=>{const i=$('#'+id);if(!i)return;
     i.addEventListener('input',()=>draw(i));i.addEventListener('blur',()=>setTimeout(()=>{if(at===i&&document.activeElement!==i)close()},120));
@@ -4988,6 +5013,7 @@ R.add=(E)=>{if(!E)billKey=null;
         ${F('c-tel','เบอร์โทร','inputmode="tel"')}
         <div class="field full"><span>Short Note</span><div class="fc"><input id="c-short" style="width:200px"><span class="hint">- ไม่แสดงในใบเสร็จรับเงิน (แสดงต่อท้าย "เบอร์โทร" หน้าแสดงข้อมูลรวมทั้งหมด)</span></div></div>
         <div class="field full"><span>หมายเหตุ</span><div class="fc"><input id="c-note" style="width:300px"><span class="hint">- แสดงในใบเสร็จรับเงิน</span></div></div>
+        <div class="field full"><span>ผู้มาติดต่อ</span><div class="fc"><input id="c-ctn" placeholder="ชื่อ (ถ้าไม่ใช่เจ้าของ)" style="width:200px"><input id="c-ctt" placeholder="เบอร์โทร" inputmode="tel" style="width:140px"><span class="hint">- กรณีลูกหรือญาตินำรถมาแทนเจ้าของ บันทึกเฉพาะบิลนี้ ชื่อเจ้าของรถไม่เปลี่ยน</span></div></div>
       </div>
     </div>
    </div>
@@ -5040,6 +5066,7 @@ R.add=(E)=>{if(!E)billKey=null;
     r.innerHTML=`<span class="pill ok">มีประวัติ</span>${plateHTML(hit)}<span>${esc(hit.name)} · ${esc(hit.model)}</span><button type="button" class="btn ghost" id="x-copy">คัดลอกข้อมูลรถคันนี้ลงบิล</button>`;
     $('#x-copy').onclick=()=>fillCar(hit);
   };
+  let ownerPick=null;
   const fillCar=hit=>{
       // ข้อมูลเต็มจากฐานข้อมูล (raw) มีเฉพาะโหมดใช้งานจริง โหมดทดลองใช้ข้อมูลย่อ
       const R=hit.raw||{},cu=R.customers||{},sv=(id,val)=>{const e=$('#'+id);if(e&&val!=null&&val!=='')e.value=val},
@@ -5053,14 +5080,19 @@ R.add=(E)=>{if(!E)billKey=null;
       if(R.body){if(hasOpt('b-body',R.body))$('#b-body').value=R.body;else if(hasOpt('b-body','อื่นๆ')){$('#b-body').value='อื่นๆ';$('#b-body-other').hidden=false;$('#b-body-other').value=R.body}}
       sv('b-color',R.color);sv('b-chassis',R.chassis_no);sv('b-engine',R.engine_no);sv('b-kg',R.weight_kg);
       $('#b-cc').value=hit.cc;if(R.reg_date)setDate('b-reg',R.reg_date);setDate('b-taxexp',iso(hit.tax));
-      const nm=hit.name.split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=hit.tel;$('#c-prov').value=hit.prov;
-      if(cu.prefix&&hasOpt('c-pre',cu.prefix))$('#c-pre').value=cu.prefix;
+      fillOwner(hit,1);ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
+  };
+  // ข้อมูลเจ้าของอย่างเดียว (รถคันใหม่ของลูกค้าเดิม) บันทึกแล้วรถคันใหม่จะผูกกับลูกค้าคนเดิม
+  const fillOwner=(hit,inCar)=>{const cu=(hit.raw||{}).customers||{},sv=(id,val)=>{const e=$('#'+id);if(e&&val!=null&&val!=='')e.value=val};
+      const nm=String(hit.name||'').split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=hit.tel||'';$('#c-prov').value=hit.prov||'';
+      if(cu.prefix&&[...$('#c-pre').options].some(o=>o.value===cu.prefix))$('#c-pre').value=cu.prefix;
       sv('c-id',cu.id_card);sv('c-addr',cu.address);sv('c-sub',cu.tumbol);sv('c-dist',cu.amphoe);sv('c-prov',cu.province);sv('c-zip',cu.zipcode);sv('c-short',cu.short_note);
-      ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
+      ownerPick=hit;if(inCar)return;
+      ssRefresh();toast('ดึงข้อมูลเจ้าของแล้ว กรอกทะเบียนรถคันใหม่ได้เลย');const b=$('#b-cha');if(b&&!b.value){b.scrollIntoView({block:'center'});b.focus()}
   };
   // พิมพ์ทะเบียน / ชื่อ / เบอร์ในบิลใหม่ แล้วแสดงลูกค้าเดิมที่ตรงกันใต้ช่อง คลิกเพื่อดึงข้อมูลลงบิล
   if(!E)carAC({'b-cha':['plate','b-cha','b-num'],'b-num':['plate','b-cha','b-num'],'x-cha':['plate','x-cha','x-num'],'x-num':['plate','x-cha','x-num'],
-    'c-name':['name','c-name','c-sur'],'c-sur':['name','c-name','c-sur'],'c-tel':['tel','c-tel']},fillCar,'ดึงข้อมูลลงบิล');
+    'c-name':['name','c-name','c-sur'],'c-sur':['name','c-name','c-sur'],'c-tel':['tel','c-tel']},fillCar,'ดึงข้อมูลลงบิล',fillOwner);
   $('#x-go').onclick=check;['x-cha','x-num'].forEach(id=>$('#'+id).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();check()}}));
 
   // auto tax + fine
@@ -5169,11 +5201,14 @@ R.add=(E)=>{if(!E)billKey=null;
     const oldTax=v('b-taxexp')?new Date(v('b-taxexp')+'T00:00'):null;
     const tax=n('b-tax')>0?(()=>{const d=oldTax||TODAY;const b=d<TODAY?TODAY:d;return new Date(b.getFullYear()+1,b.getMonth(),b.getDate())})():(c&&c.tax)||oldTax||null;
     const prbE=n('b-prb')>0&&v('b-prb-e')?new Date(v('b-prb-e')+'T00:00'):(c&&c.prb)||null;
-    if(!c){c={id:++seq,plate,prov:$('#b-city').value,history:[],note:''};cars.unshift(c)}c.created=new Date();
+    if(!c){c={id:++seq,plate,prov:$('#b-city').value,history:[],note:''};
+      // รถคันใหม่ของลูกค้าเดิม: ผูกกับลูกค้าคนเดิม (เฉพาะเมื่อชื่อยังตรงกับคนที่เลือก กันผูกผิดคน)
+      if(ownerPick&&ownerPick.custId&&name.replace(/\s+/g,'')===String(ownerPick.name||'').replace(/\s+/g,'')){c.custId=ownerPick.custId;c.raw={customers:{...((ownerPick.raw||{}).customers||{})}}}
+      cars.unshift(c)}c.created=new Date();
     Object.assign(c,{name,tel:v('c-tel'),note:v('c-short'),ctype:typ,type:ctLabel(typ),model:$('#b-brand').value+' '+v('b-model'),cc:n('b-cc'),tax,prb:prbE,ins:svcOn.has('ins')&&v('b-ins-e')?new Date(v('b-ins-e')+'T00:00'):c.ins||null,insCo:svcOn.has('ins')?v('b-ins-co')+' '+$('#b-ins-type').value:c.insCo||''});
     let what=[...svcOn].map(k=>k==='tax'&&inspOnly?'ตรวจสภาพ':SVC.find(s=>s[0]===k)[1]).join(' + ');if(what==='ตรวจสภาพ')what='ตรวจสภาพอย่างเดียว';
     c.history.unshift({d:TODAY,what,amt:tot});
-    const now=new Date();const insL=lines.find(l=>l[0]==='ประกันภาคสมัครใจ');intake.push(mkBill({carId:c.id,plate,name,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),items:lines.filter(l=>l[0]!=='ส่วนลด').map(l=>l===insL?['ประกันภาคสมัครใจ',n('b-ins')||l[1]]:l),doc:(document.querySelector('[name=b-doc]:checked')||{}).value||'สำเนา',prefix:$('#c-pre').value,note:v('c-short'),rnote:v('c-note'),disc:n('b-dis')&&svcOn.has('tax')?n('b-dis'):0,ins:insL?(n('b-ins')||insL[1]):0,pays:pr.pays.map(x=>({...x,by:user.name}))}));
+    const now=new Date();const insL=lines.find(l=>l[0]==='ประกันภาคสมัครใจ');intake.push(mkBill({carId:c.id,plate,name,t:String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0'),items:lines.filter(l=>l[0]!=='ส่วนลด').map(l=>l===insL?['ประกันภาคสมัครใจ',n('b-ins')||l[1]]:l),doc:(document.querySelector('[name=b-doc]:checked')||{}).value||'สำเนา',prefix:$('#c-pre').value,note:v('c-short'),rnote:v('c-note'),ctn:v('c-ctn'),ctt:v('c-ctt'),disc:n('b-dis')&&svcOn.has('tax')?n('b-dis'):0,ins:insL?(n('b-ins')||insL[1]):0,pays:pr.pays.map(x=>({...x,by:user.name}))}));
     const bill=intake[intake.length-1],paid=pr.got,chg=pr.chg;
     const qid=qFor(plate,$('#b-city').value);bill.fpend=fl.map(f=>f.name);
     if(LIVE){if(sb){sb.disabled=true;sb.dataset.t=sb.textContent;sb.textContent='กำลังบันทึก...'}
@@ -5221,7 +5256,7 @@ R.add=(E)=>{if(!E)billKey=null;
     const nm=(E.name||'').split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=E.tel||'';
     if(E.prefix&&hasO('c-pre',E.prefix))$('#c-pre').value=E.prefix;
     put('c-id',CU0.id_card);put('c-addr',CU0.address);put('c-sub',CU0.tumbol);put('c-dist',CU0.amphoe);put('c-prov',CU0.province);put('c-zip',CU0.zipcode);
-    put('c-short',E.note||CU0.short_note);put('c-note',E.rnote);
+    put('c-short',E.note||CU0.short_note);put('c-note',E.rnote);put('c-ctn',E.ctn);put('c-ctt',E.ctt);
     // ยอดเงินจากบิลเดิม
     document.querySelectorAll('#bill .money').forEach(i=>{i.value=''});
     svcOn=new Set();
@@ -5246,8 +5281,8 @@ R.add=(E)=>{if(!E)billKey=null;
       e.preventDefault();
       if(!v('b-cha')||!v('b-num')){toast('กรอกป้ายทะเบียนก่อนบันทึก');$('#b-cha').focus();return}
       const typ=$('#b-type').value;
-      const nw={plate:v('b-cha')+' '+v('b-num'),prov:$('#b-city').value,ctype:typ||E.ctype||'',name:(v('c-name')+' '+v('c-sur')).trim(),prefix:$('#c-pre').value,tel:v('c-tel'),model:($('#b-brand').value+' '+v('b-model')).trim(),cc:n('b-cc')||'',note:v('c-short'),rnote:v('c-note')};
-      const LBL={plate:'ทะเบียน',prov:'จังหวัด',ctype:'ประเภทรถ',name:'ชื่อลูกค้า',prefix:'คำนำหน้า',tel:'เบอร์โทร',model:'ยี่ห้อ/รุ่น',cc:'CC',note:'Short Note',rnote:'หมายเหตุ'};
+      const nw={plate:v('b-cha')+' '+v('b-num'),prov:$('#b-city').value,ctype:typ||E.ctype||'',name:(v('c-name')+' '+v('c-sur')).trim(),prefix:$('#c-pre').value,tel:v('c-tel'),model:($('#b-brand').value+' '+v('b-model')).trim(),cc:n('b-cc')||'',note:v('c-short'),rnote:v('c-note'),ctn:v('c-ctn'),ctt:v('c-ctt')};
+      const LBL={ctn:'ผู้มาติดต่อ',ctt:'เบอร์ผู้มาติดต่อ',plate:'ทะเบียน',prov:'จังหวัด',ctype:'ประเภทรถ',name:'ชื่อลูกค้า',prefix:'คำนำหน้า',tel:'เบอร์โทร',model:'ยี่ห้อ/รุ่น',cc:'CC',note:'Short Note',rnote:'หมายเหตุ'};
       const ch=Object.keys(nw).filter(k=>String(nw[k]??'')!==String(E[k]??''));
       const bodyV=$('#b-body').value==='อื่นๆ'?v('b-body-other'):$('#b-body').value,dv=id=>/^\d{4}-\d{2}-\d{2}$/.test(v(id))?v(id):null;
       const vehN={body:bodyV,color:v('b-color'),chassis_no:v('b-chassis'),engine_no:v('b-engine'),weight_kg:n('b-kg')||null,reg_date:dv('b-reg')};
@@ -5520,7 +5555,7 @@ const DB=(()=>{
       // คืนเงิน = ยอดติดลบ (รายการรับเงินเดิมยังอยู่ครบ)
       const ps=(r.payments||[]).sort((a,z)=>new Date(a.paid_at)-new Date(z.paid_at)).map(p=>{const pt=new Date(p.paid_at),rf=p.kind==='refund';return{id:p.id,d:dOnly(pt),t:hm(pt),amt:rf?-p.amount:+p.amount,ref:rf,rnote:p.note||'',how:p.method,by:p.by_name,wait:!rf&&p.verified===false&&!p.rejected,vby:p.verified_by||'',vat:p.verified_at||'',rej:!!p.rejected,rr:p.reject_reason||'',rby:p.rejected_by||'',rat:p.rejected_at||''}});
       const b={id:r.id,no:r.bill_no,branch:r.branch_id,d:dOnly(at),t:hm(at),plate:s.plate||'',prov:s.prov||'',name:s.name||'',tel:s.tel||'',note:s.note||'',rnote:r.note||'',ctype:s.ctype||'',type:s.ctype?ctLabel(s.ctype):(s.type||''),model:s.model||'',cc:s.cc||'',
-        doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',prbCo:s.prbCo||'',disc:+r.discount,amt:+r.total,
+        doc:s.doc||'สำเนา',prefix:s.prefix||'',carId:r.vehicle_id,items:(r.items||[]).map(i=>[i[0],+i[1]]),ins:+r.ins_premium,insCo:s.insCo||'',prbCo:s.prbCo||'',ctn:s.ctn||'',ctt:s.ctt||'',disc:+r.discount,amt:+r.total,
         pays:ps.filter(p=>!p.rej),rej:ps.filter(p=>p.rej),fpend:Array.isArray(r.files_pending)?r.files_pending:[],st:r.status||'',
         amt0:+r.total,refund:+r.refund_total||0,void:r.status==='void',vinfo:{reason:r.void_reason||'',by:r.void_by||'',appr:r.void_approved_by||'',at:r.void_at||''},dlv:{at:r.delivered_at||'',by:r.delivered_by||''},
         reqs:(r.bill_requests||[]).sort((a,z)=>a.id-z.id).map(x=>({id:x.id,kind:x.kind,amt:+x.amount,how:x.method,why:x.reason,by:x.requested_by,uid:x.requested_uid,at:x.requested_at,st:x.status,dby:x.decided_by||'',dat:x.decided_at||'',note:x.decide_note||''})),
@@ -5589,7 +5624,7 @@ const DB=(()=>{
     const veh={plate:c.plate,province:c.prov,car_type:fv('b-type'),body,brand:fv('b-brand'),model:fv('b-model'),color:fv('b-color'),chassis_no:fv('b-chassis'),engine_no:fv('b-engine'),
       cc:fn('b-cc'),weight_kg:fn('b-kg'),reg_date:fd('b-reg'),tax_exp:isoN(c.tax),prb_exp:isoN(c.prb),ins_exp:isoN(c.ins),ins_company:c.insCo||'',prb_company:fn('b-prb')&&fv('b-prb-co')?fv('b-prb-co'):((c.raw||{}).prb_company||''),k_exp:fn('b-k')&&fd('b-k-e')?fd('b-k-e'):isoN(c.k)};
     const pick=fd('b-pick'),billNote=fv('c-note'),tmpId=b.id;
-    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,ctype:b.ctype||'',type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prbCo:fn('b-prb')&&fv('b-prb-co')?fv('b-prb-co'):'',prefix:cust.prefix,doc:b.doc};
+    const snap={plate:b.plate,prov:b.prov,name:b.name,tel:b.tel,note:b.note,ctype:b.ctype||'',type:b.type,model:b.model,cc:b.cc,insCo:b.insCo,prbCo:fn('b-prb')&&fv('b-prb-co')?fv('b-prb-co'):'',prefix:cust.prefix,doc:b.doc,ctn:b.ctn||'',ctt:b.ctt||''};
     // ลูกค้า + รถ + บิล + เงิน บันทึกในธุรกรรมเดียว (14-safe-bills.sql) กดซ้ำ/ส่งซ้ำด้วยรหัสเดิม = ได้บิลเดิม
     try{const s=await client();
       const r=await s.rpc('create_bill',{p:{client_key:o.key,branch_id:branch.id,cust_id:c.custId||null,cust,veh,queue_id:o.queueId||null,
@@ -5659,7 +5694,7 @@ const DB=(()=>{
     const c=await client(),r=await c.rpc('verify_payment',{p_id:p.id});if(r.error){if(/verify_payment|could not find the function/i.test(r.error.message))throw new Error('ยังไม่ได้รัน 13-transfer-verify.sql ใน Supabase');throw new Error(r.error.message)}return r.data}
   async function edit(E,c,ent,x){if(!LIVE)return;x=x||{};
     try{const s=await client();
-      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prbCo:E.prbCo||'',prefix:E.prefix||'',doc:E.doc||'สำเนา'};
+      const snap={plate:E.plate,prov:E.prov,name:E.name,tel:E.tel,note:E.note,ctype:E.ctype||'',type:E.type,model:E.model,cc:E.cc,insCo:E.insCo,prbCo:E.prbCo||'',prefix:E.prefix||'',doc:E.doc||'สำเนา',ctn:E.ctn||'',ctt:E.ctt||''};
       const up=chk(await s.from('bills').update({snapshot:snap,note:E.rnote||''}).eq('id',E.id).select('id'));
       if(!up.length)throw new Error('บัญชีนี้ไม่มีสิทธิ์แก้ไขบิล (เฉพาะเจ้าของร้าน/หัวหน้าสาขา)');
       chk(await s.from('bill_edits').insert({bill_id:E.id,what:ent.what,after:snap,by_name:ent.by||me.name}));
@@ -6314,7 +6349,8 @@ R.queue=async()=>{clearInterval(qTimer);
     const m=c.plate.match(/^(\S+)\s*(\d+)$/)||[0,c.plate,''];$('#qa-cha').value=m[1];$('#qa-num').value=m[2];
     const pv=$('#qa-prov');if([...pv.options].some(o=>o.value===c.prov)){pv.value=c.prov;pv.dispatchEvent(new Event('change',{bubbles:true}))}
     const t=ctShort(ctOf(c)),ty=$('#qa-type');if(t&&[...ty.options].some(o=>o.value===t))ty.value=t;
-    $('#qa-name').value=c.name||'';$('#qa-tel').value=c.tel||'';if(typeof ssRefresh==='function')ssRefresh()},'ใส่ข้อมูลลงคิว');
+    $('#qa-name').value=c.name||'';$('#qa-tel').value=c.tel||'';if(typeof ssRefresh==='function')ssRefresh()},'เข้าคิว',
+    c=>{$('#qa-name').value=c.name||'';$('#qa-tel').value=c.tel||'';$('#qa-cha').value='';$('#qa-num').value='';$('#qa-cha').focus()});
   $('#qa').onsubmit=async e=>{e.preventDefault();const cha=$('#qa-cha').value.trim(),num=$('#qa-num').value.trim();if(!cha||!num){alert('กรุณาใส่ทะเบียนรถ');return}
     const q={plate:cha+' '+num,prov:$('#qa-prov').value,ctype:$('#qa-type').value,name:$('#qa-name').value.trim(),tel:$('#qa-tel').value.trim(),st:'wait',note:'',billed:false,at:{created:new Date().toISOString()}};
     try{if(LIVE)q.id=await DB.addQueue(q);else q.id=++qSeq;QUEUE.push(q);toast('เพิ่ม '+q.plate+' เข้าคิวแล้ว');['qa-cha','qa-num','qa-name','qa-tel'].forEach(id=>$('#'+id).value='');R.queue()}catch(err){alert('เพิ่มไม่สำเร็จ: '+err.message)}};
