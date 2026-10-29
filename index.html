@@ -2806,7 +2806,7 @@ const SLBL={home:'หน้าหลัก',add:'เปิดบิลใหม�
 const SIC={track:'<circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><path d="M7 12h3M14 12h3"/><path d="M4 6h16M4 18h10"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/>',
   money:'<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
   tools:'<path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3.5 17.5a1.5 1.5 0 0 0 2.1 2.1l5.8-5.8a4 4 0 0 0 5.4-5.4l-2.4 2.4-2.1-.6-.6-2.1z"/>'};
-const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','comm','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','news','backup']],['settings']];
+const SNAV=[['home'],['cust'],['queue'],['add'],['track'],['dlt'],['docs'],['close'],['g','money','การเงิน',['income','inst','expense','comm','dash']],['g','tools','แจ้งเตือนและเครื่องมือ',['bell','calc','backup']],['settings']];
 const SCUR={bill:'cust',edit:'cust',docsDay:'docs',sms:'bell',staff:'settings',audit:'settings'};
 const sIcon=k=>{const m=MENU.find(x=>x[0]===k);return SIC[k]||ICON[k]||(m?m[5].replace(/fill="#[0-9a-fA-F]+"/g,'fill="currentColor"'):'')};
 let sOpen=new Set();
@@ -2969,7 +2969,7 @@ const MENU=[
 // จัดกลุ่มเมนูตามลำดับงานจริงของร้าน
 const MGROUPS=[['งานหน้าร้าน','รถเข้า › ตรวจ › เปิดบิล › ยื่นขนส่ง',['queue','add','cust','dlt','calc']],
   ['การเงิน','รับเงิน › ปิดยอด › รายจ่าย › สรุปผล',['income','close','inst','expense','comm','dash']],
-  ['ลูกค้าและเอกสาร','แจ้งเตือน เอกสาร และสำรองข้อมูล',['bell','docs','news','backup']]];
+  ['ลูกค้าและเอกสาร','แจ้งเตือน เอกสาร และสำรองข้อมูล',['bell','docs','backup']]];
 // รายจ่าย: จำหมวดที่ใช้ล่าสุด
 const exCat0=cats=>{try{const c=localStorage.getItem('siam-ex-cat');if(cats.includes(c))return c}catch(_){}return cats[0]};
 let expKind='tax',expQ='',hidden=new Set();
@@ -3578,6 +3578,7 @@ R.cust=()=>{
     <button class="btn-icon red" id="c-clear" aria-label="ล้างตัวกรอง">✕</button>
   </div>
   <div class="tbl-wrap tablewrap"><table class="ltable"><thead><tr><th>#</th><th>วันที่บันทึก</th><th>ชื่อ นามสกุล</th><th>เบอร์โทร</th><th class="hide-sm">ประเภทรถ</th><th>ทะเบียนรถ</th>${cTab==='ins'?'<th>บริษัทประกัน</th>':cTab==='k'?'<th>หมายเหตุ</th>':''}<th>${tl} หมดวันที่</th></tr></thead><tbody id="rows"></tbody></table></div>`;
+  let cList=[];
   const draw=()=>{
     const s=q.trim().replace(/[\s-]/g,'').toLowerCase();
     const CT=s?ctIdx():new Map();let list=cars.filter(c=>!s||(c.plate+c.name+c.tel+(CT.has(c.id)?CT.get(c.id).n+CT.get(c.id).t:'')).replace(/[\s-]/g,'').toLowerCase().includes(s));
@@ -3588,7 +3589,7 @@ R.cust=()=>{
     if(cSort==='soon')list=list.filter(c=>d(c)&&daysTo(d(c))>=0&&daysTo(d(c))<=30).sort((a,b)=>d(a)-d(b));
     else if(cSort==='expired')list=list.filter(c=>d(c)&&daysTo(d(c))<0).sort((a,b)=>d(a)-d(b));
     else list=list.slice().sort((a,b)=>b.created-a.created);
-    $('#ccount').textContent=list.length+' รายการ';
+    $('#ccount').textContent=list.length+' รายการ';cList=list;
     const dm={},seen=new Set();[...intake,...oldBills].forEach(b=>{if(!b||b.void||seen.has(b.id))return;seen.add(b.id);const x=split(b).debt;if(x>0.004){const o=dm[b.carId]||(dm[b.carId]={a:0,n:0,w:0});o.a+=x;o.n++;if(waitAmt(b)>0)o.w=1}});
     const cdebt=c=>{const o=dm[c.id];return o?`<div><span style="display:inline-block;margin-top:3px;padding:1px 8px;border-radius:999px;background:#fef2f2;color:#b91c1c;font-size:12px;font-weight:700">ค้างชำระ ${money(o.a)} บาท${o.n>1?' ('+o.n+' บิล)':''}${o.w?' · มีโอนรอตรวจ':''}</span></div>`:''};
     $('#rows').innerHTML=list.map((c,i)=>`<tr class="rowbtn" data-open="${c.id}" tabindex="0"><td class="sub">${i+1}</td><td class="num">${fmt(c.created)}</td><td>${esc(c.name)}${cdebt(c)}</td><td>${c.tel?`<b class="tel">${esc(c.tel)}</b>`:'<span style="color:#c2410c;font-size:12.5px">ไม่มีเบอร์</span>'}${c.note?`<div class="sub">${esc(c.note)}</div>`:''}</td><td class="hide-sm typ">${esc(ctLabel(ctOf(c)))}</td><td><b class="${d(c)&&daysTo(d(c))<0?'plate-exp':''}">${esc(c.plate)}</b><div class="sub">${esc(c.prov)}</div></td>${cTab==='ins'?`<td class="insco">${c.insCo?`<b>${esc(c.insCo.replace(/\s*ชั้น.*$/,''))}</b><div class="sub">${esc((c.insCo.match(/ชั้น.*$/)||[''])[0].replace('ชั้น','ประเภท'))}</div>${c.insNote?`<div class="sub"><i>หมายเหตุ: ${esc(c.insNote)}</i></div>`:''}`:'–'}</td>`:cTab==='k'?`<td class="knote">${esc(c.kNote||'–')}</td>`:''}<td>${expPill(d(c))}</td></tr>`).join('')||`<tr><td colspan="8"><div class="eempty">ไม่พบรายการ</div></td></tr>`;
@@ -3598,7 +3599,13 @@ R.cust=()=>{
   document.querySelectorAll('[data-so]').forEach(b=>b.onclick=()=>{cSort=b.dataset.so;R.cust()});
   document.querySelectorAll('[data-yr]').forEach(b=>b.onclick=()=>{cYear=cYear===+b.dataset.yr?0:+b.dataset.yr;R.cust()});
   $('#c-clear').onclick=()=>{q='';cMonth=0;cYear=0;cSort='latest';R.cust()};
-  $('#c-print').onclick=()=>toast('ต้นแบบนี้ยังสั่งพิมพ์ไม่ได้ ตัวจริงจะพิมพ์รายการเป็น A4');
+  // พิมพ์รายการตามตัวกรองที่แสดงอยู่ (A4 แนวนอน)
+  $('#c-print').onclick=()=>{if(!cList.length){toast('ไม่มีรายการให้พิมพ์');return}
+    const tl=((document.querySelector(`[data-ct="${cTab}"]`)||{}).textContent||'').trim(),f=x=>x?beFull(x):'–',
+      flt=[cMonth?'เดือน'+TH_MF[cMonth-1]:'',cYear?'ปี '+(cYear+543):'',{soon:'ใกล้หมดอายุ (30 วัน)',expired:'หมดอายุแล้ว'}[cSort]||'',q.trim()?'ค้นหา "'+esc(q.trim())+'"':''].filter(Boolean).join(' · ');
+    printReport({title:'รายการ'+tl,sub:(flt?flt+' · ':'')+cList.length+' รายการ',land:true,
+      body:`<table class="pr"><thead><tr><th style="width:8mm">ที่</th><th style="width:30mm">ทะเบียนรถ</th><th>ชื่อ-นามสกุล</th><th style="width:30mm">เบอร์โทร</th><th>ประเภทรถ</th><th style="width:30mm">หมดอายุ</th><th style="width:26mm">วันที่บันทึก</th></tr></thead><tbody>
+      ${cList.map((c,i)=>`<tr><td class="c">${i+1}</td><td><b>${esc(c.plate)}</b><br><small>${esc(c.prov||'')}</small></td><td>${esc(c.name||'–')}</td><td>${esc(c.tel||'–')}</td><td>${esc(c.type||'')}</td><td>${f(c[cTab])}</td><td>${f(c.created)}</td></tr>`).join('')}</tbody></table>`})};
   $('#q').oninput=e=>{q=e.target.value;draw()};draw();
 };
 
