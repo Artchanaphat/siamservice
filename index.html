@@ -3141,7 +3141,7 @@ R.home=()=>{
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
       <div class="expt" role="tablist">${EXPK.map(([k,l,ic])=>`<button role="tab" data-ek="${k}" aria-selected="${k===expKind}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">${ic}</svg>${l}<span class="ecount">${expList(k).length}</span></button>`).join('')}</div></div>
     <div class="row between" style="flex-wrap:wrap"><span class="sub">หากต้องการปิดการแสดงผลรายการใด กดปุ่ม × ท้ายแถวรายการนั้นได้เลย</span>
-      <label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="eq" placeholder="ค้นหา ทะเบียนรถ / ชื่อลูกค้า" value="${esc(expQ)}"></label></div>
+      <label class="esearch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="eq" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า" value="${esc(expQ)}"></label></div>
     <div id="erows"></div>
   </div></div>`;
   // ตารางกลาง: คิววันนี้ / บิลวันนี้
@@ -3243,7 +3243,7 @@ function moneyPage(cfg){
       </div>
     </div>
     <div class="sm-filter-line sm-search-line"><label class="sm-filter-label" for="f-q">ค้นหารถ / ลูกค้า</label>
-      <div class="sm-search"><div class="sm-search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" name="siam-bill-search" id="f-q" autocomplete="off" placeholder="พิมพ์ทะเบียนรถ หรือชื่อลูกค้า" value="${esc(st.q)}"></div>
+      <div class="sm-search"><div class="sm-search-wrap"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="search" name="siam-bill-search" id="f-q" autocomplete="off" placeholder="ค้นหา ทะเบียน / ชื่อลูกค้า" value="${esc(st.q)}"></div>
       <button type="button" class="btn-icon red" id="f-x" title="ล้างคำค้น" aria-label="ล้างคำค้น">✕</button></div>
     </div>
     <div class="sm-filter-footer"><span id="sm-filter-context" aria-live="polite"></span><button type="button" class="sm-clear-filter" id="f-clear">↺ ล้างตัวกรอง</button></div>
@@ -3787,7 +3787,7 @@ R.cust=()=>{
     <button class="sort-btn warn ${cSort==='soon'?'on':''}" data-so="soon">⏰ ใกล้หมดอายุ <span class="sort-hint">(${SOON()} วัน)</span></button>
     <button class="sort-btn red ${cSort==='expired'?'on':''}" data-so="expired">❌ หมดอายุแล้ว</button>
     <span class="sub" id="ccount"></span><span style="flex:1"></span>
-    <label class="search-pill"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="กรองรายการนี้: ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(q)}" autocomplete="off"></label>
+    <label class="search-pill"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(q)}" autocomplete="off"></label>
     <button class="btn-icon red" id="c-clear" aria-label="ล้างตัวกรอง">✕</button>
   </div>
   <div class="tbl-wrap tablewrap"><table class="ltable"><thead><tr><th>#</th><th>วันที่บันทึก</th><th>ชื่อ นามสกุล</th><th>เบอร์โทร</th><th class="hide-sm">ประเภทรถ</th><th>ทะเบียนรถ</th>${cTab==='ins'?'<th>บริษัทประกัน</th>':cTab==='k'?'<th>หมายเหตุ</th>':''}<th>${tl} หมดวันที่</th><th class="c-act"></th></tr></thead><tbody id="rows"></tbody></table></div>`;
@@ -5621,7 +5621,7 @@ R.sms=()=>{const k=smsKind,K=SMSK[k],own=user&&user.role==='owner',tpl=SET[K.tpl
   <div id="sms-warn"></div>
   <div class="ui-card"><div class="ui-card-h"><h2>ข้อความที่จะส่ง</h2>${own?'<button class="btn line sm" id="sms-edit">แก้ข้อความ</button>':''}</div>
     <div class="ui-card-b"><div class="sms-bubble" id="sms-pv"></div><div class="sub" id="sms-pvn" style="margin-top:6px"></div></div></div>
-  <div class="ui-card"><div class="ui-card-h"><h2>รายการถึงกำหนดส่ง</h2><input id="sms-q" class="sms-q" placeholder="ค้นหาทะเบียน ชื่อ หรือเบอร์" value="${esc(smsQ)}"></div>
+  <div class="ui-card"><div class="ui-card-h"><h2>รายการถึงกำหนดส่ง</h2><input id="sms-q" class="sms-q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(smsQ)}"></div>
     <div class="sms-act"><label class="sms-all"><input type="checkbox" id="sms-all"> เลือกทั้งหมด</label><span class="sp"></span>
       <button class="btn" id="sms-go">📤 ส่ง SMS รายการที่เลือก</button></div>
     <div id="sms-prog" hidden><div class="progress-bar-wrap"><div class="progress-bar-fill" id="sms-fill" style="width:0%"></div></div><div class="progress-label" id="sms-plabel"></div></div>
@@ -7278,7 +7278,7 @@ R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div c
   $('#view').innerHTML=`<div class="aux">
   <div class="aux-top"><h1>📋 ประวัติการเปลี่ยนแปลง</h1><span class="aux-n">${L.length.toLocaleString()} รายการ</span><button class="btn line aux-xl" id="ax-xl">📊 ส่งออก Excel</button></div>
   <div class="aux-bar">
-    <input id="ax-q" class="aux-q" placeholder="🔍 ค้นหาเลขบิล ทะเบียน ชื่อลูกค้า ผู้ใช้งาน..." value="${esc(auQ)}">
+    <input id="ax-q" class="aux-q" placeholder="ค้นหา เลขบิล / ทะเบียน / ชื่อลูกค้า / ผู้ใช้งาน" value="${esc(auQ)}">
     <select id="ax-t"><option value="">📋  ทุกประเภท</option>${types.map(t=>`<option value="${t}"${t===auType?' selected':''}>${AU_EM[t]||'•'}  ${esc(AU_T[t]||t)}</option>`).join('')}</select>
     <label>ตั้งแต่ <input type="date" id="ax-f" value="${auFrom}" max="${iso(TODAY)}"></label><label>ถึง <input type="date" id="ax-to" value="${auTo}" max="${iso(TODAY)}"></label>
     <button class="btn line aux-clr" id="ax-clr">✕ ล้าง</button>
@@ -8137,6 +8137,19 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
 .lsr:focus-within{border-color:#1670d6;box-shadow:0 0 0 3px rgba(22,112,214,.12)}
 .lsr:not(.ui-card-h .lsr){margin:0 0 10px;max-width:420px;width:100%;height:38px!important;min-height:0;grid-column:1/-1;align-self:start;justify-self:start;flex:none}
 .ui-card-h:has(.lsr){flex-wrap:wrap;gap:8px}
+
+/* ช่องค้นหาในหน้า: หน้าตาเดียวกันทุกหน้า และยืดเต็มความกว้าง */
+#view :is(.lsr,.esearch,.search-pill,.sm-search-wrap,.hm-s){height:40px!important;min-height:40px!important;border:1px solid #cbd8e8!important;border-radius:10px!important;background:#fff!important;color:#64748b!important;box-shadow:none}
+#view :is(.lsr,.esearch,.search-pill,.sm-search-wrap,.hm-s):focus-within{border-color:#1670d6!important;box-shadow:0 0 0 3px rgba(22,112,214,.12)!important}
+#view :is(.lsr,.search-pill,.sm-search-wrap,.hm-s){display:flex;align-items:center;gap:8px;padding:0 12px!important}
+#view :is(.lsr,.search-pill,.sm-search-wrap,.hm-s) svg,#view .esearch svg{width:16px!important;height:16px!important;color:#64748b!important}
+#view :is(.lsr,.search-pill,.sm-search-wrap,.hm-s,.esearch) input{font-size:14px!important;height:38px!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#view .esearch input{padding-left:36px!important;border-radius:10px!important}
+#view :is(.lsr,.esearch,.search-pill,.sm-search-wrap,.hm-s){flex:1 1 240px!important;width:auto!important;max-width:none!important;min-width:0!important}
+#view .lsr:not(.ui-card-h .lsr){width:100%!important;flex:none!important;max-width:none!important}
+#view .ui-card-h .lsr{flex:1 1 100%!important;margin-left:0!important}
+#view .sm-search{max-width:none!important;flex:1 1 auto!important}#view .sortbar .search-pill,#view #ax-q{flex:1 1 100%!important;margin-left:0!important;order:-1}#view .sortbar{flex-wrap:wrap}
+#view #sms-q,#view #ax-q{height:40px;border:1px solid #cbd8e8;border-radius:10px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-4.1-4.1'/%3E%3C/svg%3E") no-repeat 12px 50%/16px;padding-left:36px;font-size:14px;flex:1 1 240px;min-width:0}
 @media (max-width:640px){.lsr{flex-basis:100%;max-width:none!important}}
 /* ค่าคอมประกัน */
 .cm-cfg{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin-bottom:12px}
