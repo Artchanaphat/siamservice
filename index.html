@@ -2291,6 +2291,12 @@ body{margin:0}
 #view .hw-t.pink{background:#fff0f1;border-color:#fde0e3}#view .hw-t.pink .hw-ic{background:linear-gradient(135deg,#f43f5e,#fb7185)}#view .hw-t.pink b{color:#be123c}
 #view .hw-t.zero b{color:#64748b}
 @media screen and (max-width:640px){#view .hw-t{padding:10px;gap:8px}#view .hw-t .hw-ic{width:34px;height:34px;border-radius:10px}#view .hw-t .hw-ic svg{width:19px;height:19px}}
+#view .ctabs{display:flex!important;flex-wrap:wrap;gap:8px;grid-template-columns:none!important;margin-bottom:12px}
+body #view .ctabs button.tab-card.tab-card{flex:0 0 auto!important;display:flex!important;flex-direction:row!important;align-items:center;gap:8px;min-height:0!important;height:auto!important;padding:7px 14px 7px 8px!important;border-radius:999px!important;width:auto!important}
+#view .ctabs .tab-icon-box{width:28px!important;height:28px!important;border-radius:999px!important;margin:0!important}#view .ctabs .tab-icon-box svg{width:16px!important;height:16px!important}
+#view .ctabs .tab-label{font-size:14px!important;margin:0!important}
+#view .ctabs .tab-n{min-width:22px;padding:1px 7px;border-radius:999px;background:#eef2f7;color:#334155;font-size:12.5px;font-weight:600;text-align:center}#view .ctabs .tab-card.active .tab-n{background:#1d63ed;color:#fff}
+#view .months{justify-content:flex-start!important}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -3779,7 +3785,7 @@ R.cust=()=>{
   if(cYear&&!cYrs.includes(cYear))cYear=0;
   $('#view').innerHTML=`
   <div class="ltop"><span class="ui-ic">👥</span><h1>รายการ ${tl}</h1><button class="btn-add success" data-go="add">＋ เปิดบิลใหม่</button><button class="btn line" id="c-print">🖨️ พิมพ์เอกสาร A4</button></div>
-  <div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span></button>`).join('')}</div>
+  <div class="ctabs">${CT.map(([k,l,cls,ic])=>`<button class="tab-card ${cls} ${k===cTab?'active':''}" data-ct="${k}"><span class="tab-icon-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round">${ic}</svg></span><span class="tab-label">${l}</span><span class="tab-n">${cars.filter(c=>c[k]).length}</span></button>`).join('')}</div>
   ${cYrs.length>1?`<div class="months"><span class="sub">ปีที่หมดอายุ</span><button class="mchip ${!cYear?'on':''}" data-yr="0">ทุกปี</button>${cYrs.map(y=>`<button class="mchip ${cYear===y?'on':''}" data-yr="${y}">${y+543}</button>`).join('')}</div>`:''}
   <div class="months"><span class="sub"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg> เดือนที่หมดอายุ</span><button class="mchip ${cMonth===0?'on':''}" data-mo="0">ทุกเดือน</button>${TH_MF.map((m,i)=>`<button class="mchip ${cMonth===i+1?'on':''}" data-mo="${i+1}">${m}</button>`).join('')}</div>
   <div class="sortbar">
@@ -3788,7 +3794,7 @@ R.cust=()=>{
     <button class="sort-btn red ${cSort==='expired'?'on':''}" data-so="expired">❌ หมดอายุแล้ว</button>
     <span class="sub" id="ccount"></span><span style="flex:1"></span>
     <label class="search-pill"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><input id="q" placeholder="ค้นหา ทะเบียน / ชื่อ / เบอร์โทร" value="${esc(q)}" autocomplete="off"></label>
-    <button class="btn-icon red" id="c-clear" aria-label="ล้างตัวกรอง">✕</button>
+    <button type="button" class="btn line sm" id="c-clear">✕ ล้างตัวกรอง</button>
   </div>
   <div class="tbl-wrap tablewrap"><table class="ltable"><thead><tr><th>#</th><th>วันที่บันทึก</th><th>ชื่อ นามสกุล</th><th>เบอร์โทร</th><th class="hide-sm">ประเภทรถ</th><th>ทะเบียนรถ</th>${cTab==='ins'?'<th>บริษัทประกัน</th>':cTab==='k'?'<th>หมายเหตุ</th>':''}<th>${tl} หมดวันที่</th><th class="c-act"></th></tr></thead><tbody id="rows"></tbody></table></div>`;
   let cList=[];
@@ -3805,7 +3811,7 @@ R.cust=()=>{
     $('#ccount').textContent=list.length+' รายการ';cList=list;
     const dm={},seen=new Set();[...intake,...oldBills].forEach(b=>{if(!b||b.void||seen.has(b.id))return;seen.add(b.id);const x=split(b).debt;if(x>0.004){const o=dm[b.carId]||(dm[b.carId]={a:0,n:0,w:0});o.a+=x;o.n++;if(waitAmt(b)>0)o.w=1}});
     const cdebt=c=>{const o=dm[c.id];return o?`<div><span style="display:inline-block;margin-top:3px;padding:1px 8px;border-radius:999px;background:#fef2f2;color:#b91c1c;font-size:12px;font-weight:700">ค้างชำระ ${money(o.a)} บาท${o.n>1?' ('+o.n+' บิล)':''}${o.w?' · มีเงินโอนรอตรวจ':''}</span></div>`:''};
-    $('#rows').innerHTML=list.map((c,i)=>`<tr><td class="sub">${i+1}</td><td class="num">${fmt(c.created)}</td><td>${esc(c.name)}${cdebt(c)}</td><td>${c.tel?`<b class="tel">${esc(c.tel)}</b>`:'<span style="color:#c2410c;font-size:12.5px">ไม่มีเบอร์</span>'}${c.note?`<div class="sub">${esc(c.note)}</div>`:''}</td><td class="hide-sm typ">${esc(ctLabel(ctOf(c)))}</td><td><b class="${d(c)&&daysTo(d(c))<0?'plate-exp':''}">${esc(c.plate)}</b><div class="sub">${esc(c.prov)}</div></td>${cTab==='ins'?`<td class="insco">${c.insCo?`<b>${esc(c.insCo.replace(/\s*ชั้น.*$/,''))}</b><div class="sub">${esc((c.insCo.match(/ชั้น.*$/)||[''])[0].replace('ชั้น','ประเภท'))}</div>${c.insNote?`<div class="sub"><i>หมายเหตุ: ${esc(c.insNote)}</i></div>`:''}`:'–'}</td>`:cTab==='k'?`<td class="knote">${esc(c.kNote||'–')}</td>`:''}<td>${expPill(d(c))}</td><td class="c-act"><button type="button" class="ic-open" data-open="${c.id}" title="ดูบิล / ประวัติรถ" aria-label="ดูบิล / ประวัติรถ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h4"/></svg></button></td></tr>`).join('')||`<tr><td colspan="9"><div class="eempty">ไม่พบรายการ</div></td></tr>`;
+    $('#rows').innerHTML=list.map((c,i)=>`<tr><td class="sub">${i+1}</td><td class="num">${fmt(c.created)}</td><td>${esc(c.name)}${cdebt(c)}</td><td>${c.tel?`<b class="tel">${esc(c.tel)}</b>`:'<span style="color:#94a3b8" title="ยังไม่มีเบอร์โทร">–</span>'}${c.note?`<div class="sub">${esc(c.note)}</div>`:''}</td><td class="hide-sm typ">${esc(ctLabel(ctOf(c)))}</td><td><b class="${d(c)&&daysTo(d(c))<0?'plate-exp':''}">${esc(c.plate)}</b><div class="sub">${esc(c.prov)}</div></td>${cTab==='ins'?`<td class="insco">${c.insCo?`<b>${esc(c.insCo.replace(/\s*ชั้น.*$/,''))}</b><div class="sub">${esc((c.insCo.match(/ชั้น.*$/)||[''])[0].replace('ชั้น','ประเภท'))}</div>${c.insNote?`<div class="sub"><i>หมายเหตุ: ${esc(c.insNote)}</i></div>`:''}`:'–'}</td>`:cTab==='k'?`<td class="knote">${esc(c.kNote||'–')}</td>`:''}<td>${expPill(d(c))}</td><td class="c-act"><button type="button" class="ic-open" data-open="${c.id}" title="ดูบิล / ประวัติรถ" aria-label="ดูบิล / ประวัติรถ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 12h6M9 16h4"/></svg></button></td></tr>`).join('')||`<tr><td colspan="9"><div class="eempty">ไม่พบรายการ</div></td></tr>`;
   };
   document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{cTab=b.dataset.ct;R.cust()});
   document.querySelectorAll('[data-mo]').forEach(b=>b.onclick=()=>{cMonth=cMonth===+b.dataset.mo?0:+b.dataset.mo;R.cust()});
