@@ -2284,10 +2284,9 @@ body{margin:0}
 @media screen and (max-width:640px){.tk-svc{order:5;flex-basis:100%;justify-content:flex-start;padding-left:0;border-left:0;margin-left:0}#view .tk-plate{min-width:96px;padding:4px 10px 3px}#view .tk-plate b{font-size:17px}.tk-who b{font-size:14.5px}.tk-who small{font-size:12px}
   #view .tk-c .jt li b{font-size:11.5px!important}#view .tk-c .jt li small{font-size:10.5px!important}#view .tk-c .jt i{width:24px;height:24px;font-size:12px}#view .tk-c .jt li:not(:last-child)::after{top:13px;left:calc(50% + 14px);right:calc(-50% + 14px)}}
 .tk-svc small{flex-basis:100%;font-size:12px;color:#7a8699}
-#view .hk{box-shadow:none}#view .hk.blue{background:#eef4ff;border-color:#dce7fd}#view .hk.green{background:#edfaf2;border-color:#d3f0de}#view .hk.amber{background:#fff7e8;border-color:#fdebc8}#view .hk.red{background:#fff0f1;border-color:#fde0e3}
-#view .hk .hk-ic{color:#fff}#view .hk.blue .hk-ic{background:linear-gradient(135deg,#1d63ed,#60a5fa)}#view .hk.green .hk-ic{background:linear-gradient(135deg,#059669,#34d399)}#view .hk.amber .hk-ic{background:linear-gradient(135deg,#f59e0b,#fbbf24)}#view .hk.red .hk-ic{background:linear-gradient(135deg,#f43f5e,#fb7185)}
-#view .hk .hk-bg{display:none}
-body.pg-home .ssum{display:none!important}
+#view .hk.blue{background:#eef4fd;border-color:#cfe0f8}#view .hk.green{background:#ecf8f0;border-color:#c3e6cf}#view .hk.amber{background:#fff6ec;border-color:#f6d2b0}#view .hk.red{background:#fdeeee;border-color:#f3c1c1}
+#view .hk .hk-ic{background:#fff}#view .hk.blue .hk-v b{color:#1d4ed8}#view .hk.green .hk-v b{color:#15803d}#view .hk.amber .hk-v b{color:#c2410c}#view .hk.red .hk-v b{color:#b42318}
+.ssum{display:none!important}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -2945,7 +2944,7 @@ document.addEventListener('click',e=>{if(!e.target.closest('.tbell'))bellTog(fal
 const sideTog=o=>{document.body.classList.toggle('side-open',o);$('#sveil').hidden=!o;$('#sburger').setAttribute('aria-expanded',o)};
 $('#sburger').onclick=()=>sideTog(!document.body.classList.contains('side-open'));$('#sveil').onclick=()=>sideTog(false);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){sideTog(false);bellTog(false)}});
-function go(k){if(k==='queue'&&!useQ())k='home';if(k!=='docs')psDay=null;{const t=document.getElementById('tq');if(t&&document.activeElement!==t)t.value=''}cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}sideTog(false);document.body.classList.toggle('pg-home',k==='home');document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||k==='health'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
+function go(k){if(k==='queue'&&!useQ())k='home';if(k!=='docs')psDay=null;{const t=document.getElementById('tq');if(t&&document.activeElement!==t)t.value=''}cur=k;try{sessionStorage.setItem('siam-page',k)}catch(e){}sideTog(false);document.body.classList.toggle('mgmt',k==='staff'||k==='settings'||k==='audit'||k==='health'||(k==='backup'&&user&&user.role==='owner'));renderNav();R[k]();
   window.scrollTo(0,0)}
 
 /* login (บัญชีทดลอง) */
@@ -3133,6 +3132,12 @@ R.home=()=>{
       <div class="ui-card ha"><div class="hc-h"><h2>${I('<path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 20a2 2 0 0 0 4 0"/>')}รายการแจ้งเตือน</h2></div>
         <div class="ha-l">${alertList().map(([k,ic,l,c,col])=>`<button type="button" class="ha-i" data-al="${k}" ${c?'':'disabled'}><i>${ic}</i><span>${l}</span><b style="${c?`background:${col}`:''}">${c}</b></button>`).join('')}</div></div>
     </div>
+  </div>
+  <div class="hb-row">
+    <button type="button" class="hb pink" data-go="close"><span class="hb-ic">${I(IC.coin)}</span><span><small>รับชำระวันนี้ (ยืนยันแล้ว)</small><b>${money(paidT)}<em>บาท</em></b>${waitOn(iso(TODAY))?`<small class="hb-wait">+ โอนรอตรวจสอบ ${money(waitOn(iso(TODAY)))}</small>`:''}</span></button>
+    <button type="button" class="hb sky" data-go="income"><span class="hb-ic">${I(IC.bill)}</span><span><small>บิลวันนี้</small><b>${td.length}<em>ใบ · ${money(td.reduce((a,b)=>a+b.amt,0))} บาท</em></b></span></button>
+    <button type="button" class="hb sand" data-go="income"><span class="hb-ic">${I(IC.warn)}</span><span><small>ค้างชำระทั้งหมด</small><b>${debtB.length}<em>บิล · ${money(debtB.reduce((a,b)=>a+b.amt-b.paid,0))} บาท</em></b></span></button>
+    <button type="button" class="hb lilac" data-go="dlt"><span class="hb-ic">${I(IC.truck)}</span><span><small>งานขนส่งที่ยังไม่เสร็จ</small><b>${dltOpen}<em>คัน</em></b></span><i>›</i></button>
   </div>
   <div class="exp">
     <div class="exphead"><h2>จะหมดอายุภายใน 30 วัน</h2>
