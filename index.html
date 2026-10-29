@@ -6621,7 +6621,11 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     find.oninput=()=>{draw();wrap.scrollTop=0};box.querySelector('.st-addb').onclick=add;
     box.querySelectorAll('.st-add input:not([type=checkbox])').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();add()}});
     wrap.onclick=async e=>{
-      const pb=e.target.closest('button[data-pin]');if(pb){const ck=chipKey(LS[k][+pb.dataset.pin]);PIN[k].has(ck)?PIN[k].delete(ck):PIN[k].add(ck);draw();toast((PIN[k].has(ck)?'ปักหมุดแล้ว':'เลิกปักหมุดแล้ว')+' กดบันทึกการตั้งค่าเพื่อใช้งาน');return}
+      // ปักหมุดมีผลทันที (บันทึกเฉพาะลำดับรายการนี้ ไม่รวมการแก้ไขอื่นที่ยังไม่กดบันทึก)
+      const pb=e.target.closest('button[data-pin]');if(pb){const ck=chipKey(LS[k][+pb.dataset.pin]);PIN[k].has(ck)?PIN[k].delete(ck):PIN[k].add(ck);draw();
+        const pn=PIN[k],o=JSON.parse(JSON.stringify(SET)),src=o[k]||SET_DEF[k]||[];o.pins=o.pins||{};o.pins[k]=src.filter(x=>pn.has(chipKey(x))).map(x=>Array.isArray(x)?x[0]:x);
+        o[k]=[...src.filter(x=>pn.has(chipKey(x))),...src.filter(x=>!pn.has(chipKey(x)))];
+        try{if(LIVE)await DB.saveSettings(o);SET=o;toast(pn.has(ck)?'📌 ปักหมุดแล้ว รายการนี้จะขึ้นบนสุดตอนเลือก':'เลิกปักหมุดแล้ว')}catch(err){alert('บันทึกการปักหมุดไม่สำเร็จ: '+err.message)}return}
       const b=e.target.closest('button[data-i]');if(!b)return;
       const index=+b.dataset.i,row=LS[k][index];if(row===undefined)return;
       const label=ins?row[0]:row;
