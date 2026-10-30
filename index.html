@@ -6192,7 +6192,7 @@ const DB=(()=>{
   async function exportAll(prog){if(!LIVE)throw new Error('ใช้ได้เมื่อเข้าสู่ระบบจริงเท่านั้น');if(me.role!=='owner')throw new Error('เฉพาะเจ้าของร้าน');const c=await client(),data={},counts={},skipped=[];
     for(const [t,k,cols] of BK_TABS){if(prog)prog(t);const r=await pages(()=>c.from(t).select(cols||'*').order(k));if(r.error){skipped.push(t);continue}data[t]=r.data;counts[t]=r.data.length}
     return{data,counts,skipped}}
-  // ----- 20: สำรองอัตโนมัติทุกคืน (เก็บในฐานข้อมูล 14 ชุด) -----
+  // ----- 20: สำรองอัตโนมัติทุกคืน (เก็บในฐานข้อมูล 7 ชุด) -----
   const rpc20=async(fn,args)=>{const c=await client(),r=await c.rpc(fn,args);if(r.error){if(new RegExp(fn+'|could not find the function|schema cache','i').test(r.error.message))throw new Error('ยังไม่ได้รัน 20-auto-backup.sql ใน Supabase');throw new Error(r.error.message.replace(/^.*?ERROR:\s*/,''))}return r.data};
   const backupList=()=>rpc20('backup_list'),backupGet=id=>rpc20('backup_get',{p_id:id}),backupNow=()=>rpc20('backup_now');
   async function dbIds(t){const c=await client(),r=await pages(()=>c.from(t).select('id').order('id'));if(r.error)return null;return new Set(r.data.map(x=>x.id))}
@@ -6722,10 +6722,10 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
       <label class="cl-date">เดือน <input type="month" id="bk-m" value="${expMonth}"></label><p class="sub">${inM.length} บิลในเดือนนี้</p>
       <button class="btn" id="bk-month" ${inM.length||acc?'':'disabled'}>📥 ดาวน์โหลดรายงานเดือนนี้</button></div>
     ${own?`<div class="card bk-card bk-db"><h3>🗄️ สำรองข้อมูล</h3>
-      <p class="sub">ระบบสำรองให้เองทุกคืนตี 2 (เก็บ 14 คืนล่าสุด) · แนะนำกดดาวน์โหลดเก็บไว้ใน Google Drive เดือนละครั้ง</p>
+      <p class="sub">ระบบสำรองให้เองทุกคืนตี 2 (เก็บ 7 คืนล่าสุด) · แนะนำกดดาวน์โหลดเก็บไว้ใน Google Drive เดือนละครั้ง</p>
       <p class="bk-last ${old?'bad':'ok'}">${old?`⚠️ ${lb?'ดาวน์โหลดเก็บไว้ครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยดาวน์โหลดเก็บไว้จากเครื่องนี้'}`:`✅ ดาวน์โหลดเก็บไว้ล่าสุด ${beFull(new Date(lb))}`}</p>
       <button class="btn" id="bk-db" ${LIVE?'':'disabled'}>📥 ดาวน์โหลดไฟล์สำรอง</button><p class="sub" id="bk-db-st">${LIVE?'':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p>
-      <details class="bk-more"><summary>🌙 ชุดสำรองอัตโนมัติ (14 คืนล่าสุด)</summary>
+      <details class="bk-more"><summary>🌙 ชุดสำรองอัตโนมัติ (7 คืนล่าสุด)</summary>
         <div id="bk-auto-list"><p class="sub">${LIVE?'กำลังโหลด...':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>${LIVE?'<button class="btn line sm" id="bk-now">🌙 สำรองตอนนี้</button>':''}</details>
       <details class="bk-more"><summary>🔍 ตรวจ / กู้คืนจากไฟล์สำรอง</summary>
         <p class="sub">เลือกไฟล์ .json ที่ดาวน์โหลดไว้ ระบบจะตรวจว่าไฟล์ครบถ้วน แล้วเทียบกับข้อมูลปัจจุบันก่อนกู้คืน</p>
