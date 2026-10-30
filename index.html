@@ -3495,7 +3495,7 @@ function moneyPage(cfg){
     document.querySelectorAll('.sm-status-chip').forEach(b=>{const on=b.dataset.smTab===st.tab;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',on?'true':'false')});
     document.querySelectorAll('.sm-period-chip').forEach(b=>{const on=b.dataset.smPeriod===st.quick;b.classList.toggle('selected',on);b.setAttribute('aria-pressed',on?'true':'false')});
     document.querySelectorAll('.sm-scard').forEach(c=>{const on=c.dataset.tab===st.tab;c.classList.toggle('active-card',on);c.setAttribute('aria-pressed',on?'true':'false')});
-    $('#sm-period').textContent=periodLabel();
+    $('#sm-period').textContent=periodLabel()+(st.q.trim()?' (การ์ดเป็นยอดทั้งช่วง ไม่กรองตามคำค้น)':'');
     $('#f-x').hidden=!st.q;
     const tabL={all:'ทุกสถานะ',debt:'ค้างชำระ',done:'ชำระครบ'};
     $('#sm-filter-context').textContent=`กำลังแสดง: ${tabL[st.tab]} · ${periodLabel()}${st.q.trim()?' · ค้นหา: '+st.q.trim():''}`;
@@ -3529,7 +3529,10 @@ function moneyPage(cfg){
     $('#sm-s-all').textContent=per.length+' '+cfg.unit;{const w=debt.reduce((t,r)=>t+waitAmt(r.b),0);$('#sm-s-debt').textContent=debt.length+' '+cfg.unit+(w>0.004?' · รวมโอนรอตรวจ '+money(w):'')}$('#sm-s-done').textContent=done.length+' '+cfg.unit;
     const q=st.q.trim().toLowerCase();
     const rows=(st.tab==='debt'?debt:st.tab==='done'?done:per).filter(r=>!q||(r.b.plate+' '+r.b.name).toLowerCase().includes(q)).sort((a,z)=>z.b.d-a.b.d||(z.b.t>a.b.t?1:-1));
-    lastRows=rows;lastPer=per;$('#sm-count').textContent=`แสดง ${rows.length} รายการ`;
+    lastRows=rows;lastPer=per;
+    // ค้นหาอยู่: บอกยอดรวมของผลค้นหาด้วย (การ์ดด้านบนเป็นยอดทั้งช่วงเวลา)
+    {const qa=rows.reduce((t,r)=>t+r.amt,0),qd=rows.reduce((t,r)=>t+Math.max(0,r.amt-r.paid),0);
+     $('#sm-count').textContent=`แสดง ${rows.length} รายการ`+(q?` · ยอดรวมผลค้นหา ${money(qa)} บาท`+(qd>0.004?` · ค้างชำระ ${money(qd)} บาท`:''):'')}
     $('#sm-tbl').innerHTML=rows.length?`<table class="sm-tbl"><thead><tr><th>#</th>${cfg.head.map(h=>`<th>${h}</th>`).join('')}<th class="c">สถานะ</th><th></th></tr></thead><tbody>${rows.map((r,n)=>{const op=st.open.has(r.b.id);return `<tr class="sm-r${op?' open':''}" data-b="${r.b.id}"><td class="sm-n">${n+1}</td>${cfg.row(r)}<td class="c" data-l="สถานะ">${r.b.void?'<span class="st-void">ยกเลิก</span>':r.amt-r.paid>0.004?`<span class="st-debt">ค้างชำระ</span>${r.paid===0?'<div class="sm-never">(ยังไม่เคยรับเงิน)</div>':''}${waitAmt(r.b)>0?'<div class="sm-never" style="color:#92400e">⏳ มีเงินโอนรอตรวจ '+money(waitAmt(r.b))+' บาท</div>':''}`:waitAmt(r.b)>0?`<span class="st-ok" style="background:#fffbeb;color:#92400e">⏳ เงินโอนรอตรวจ</span>`:`<span class="st-ok">${cfg.okLabel}</span>`}</td><td class="chev">›</td></tr><tr class="sm-x"${op?'':' hidden'}><td colspan="${cfg.head.length+3}">${cfg.exp(r)}</td></tr>`}).join('')}</tbody></table>`:`<div class="empty-state"><div class="es-icon">📭</div><p>ไม่พบข้อมูลในช่วงที่เลือก</p></div>`;
     document.querySelectorAll('.sm-r').forEach(tr=>tr.onclick=e=>{if(e.target.closest('a,button'))return;const id=+tr.dataset.b;st.open.has(id)?st.open.delete(id):st.open.add(id);tr.classList.toggle('open');tr.nextElementSibling.hidden=!tr.nextElementSibling.hidden});
     maybeLoadArchive();
@@ -6882,7 +6885,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
 /* ช่องค้นหาในหน้า: ใส่ให้ทุกหน้าที่มีรายการแต่ยังไม่มีช่องค้นหาของตัวเอง (กรองรายการที่แสดงอยู่ จำคำค้นไว้ตอนหน้ารีเฟรช) */
 const LSQ={};
 // เปลี่ยนสาขาแล้วล้างคำค้นทุกหน้า กันค้นค้างจากสาขาเดิมแล้วขึ้น "ไม่พบรายการ"
-function clearSearches(){q='';hdQ='';expQ='';dltQ='';auQ='';smsQ='';Object.keys(LSQ).forEach(k=>delete LSQ[k]);const t=$('#tq');if(t)t.value=''}
+function clearSearches(){q='';[INC,INST].forEach(c=>{if(c&&c.st){c.st.q='';c.st.open=new Set()}});hdQ='';expQ='';dltQ='';auQ='';smsQ='';Object.keys(LSQ).forEach(k=>delete LSQ[k]);const t=$('#tq');if(t)t.value=''}
 const LS_CFG={
   queue:[{at:'.qq-board',items:'.qq-board .qc',ph:'ค้นหาในคิว ทะเบียน / ชื่อ / เบอร์'}],
   track:[{at:'.tk-list',items:'.tk-list>.tk-c',ph:'ค้นหา ทะเบียน / ชื่อ / เลขบิล'}],
@@ -7947,6 +7950,8 @@ function bahtText(n){const D=['','หนึ่ง','สอง','สาม','ส�
     for(let i=0;i<L;i++){const d=+s[i],p=L-i-1;if(!d)continue;o+=(p===0&&d===1&&(L>1||hi)?'เอ็ด':p===1&&d===2?'ยี่':p===1&&d===1?'':D[d])+P[p]}return o};
   const [i,f]=(Math.round(Math.abs(+n||0)*100)/100).toFixed(2).split('.'),ib=rd(i),fb=rd(f);
   return (ib?ib+'บาท':fb?'':'ศูนย์บาท')+(fb?fb+'สตางค์':'ถ้วน')}
+// ยังไม่ได้รับเงินเลย = ใบแจ้งหนี้ (ยังไม่ใช่ใบเสร็จ) · รับแล้วบางส่วนหรือครบ = ใบเสร็จรับเงิน
+const rcTitle=b=>(+b.paid||0)>0.004?'ใบเสร็จรับเงิน':'ใบแจ้งหนี้';
 const rcNo=b=>b.no||'SS'+(b.d.getFullYear()+543)+'-'+String(b.id).padStart(5,'0');
 // เตรียม QR (พร้อมเพย์ยอดค้าง + ผูก LINE) ก่อนสร้างใบเสร็จ
 async function rcAssets(b,o,demo){const sh=shop(),debt=Math.max(0,Math.round((b.amt-b.paid)*100)/100),pp=sh.pp||(demo?'0812345678':''),out={debt,pp:null,line:null,why:[]},w=out.why;
@@ -7963,7 +7968,7 @@ function rcCopy(b,o,a,label,isShop,full){const sh=shop(),debt=a.debt,cust=((b.pr
   const qr=!isShop||o.shopQr,items=b.items||[];
   return `<section class="rcx-copy${full?' full':''}">
   <header class="rcx-h">${o.logo?'<span class="lg rcx-logo"></span>':''}<div class="rcx-shop"><b>${esc(sh.title)}</b><div>${esc(sh.address)}</div><div>${[sh.phone&&'โทร '+esc(sh.phone),rcTax(o)&&'เลขประจำตัวผู้เสียภาษี '+esc(rcTax(o))].filter(Boolean).join(' · ')}</div></div>
-    <div class="rcx-doc"><div class="rcx-t">ใบเสร็จรับเงิน</div><span class="rcx-lbl${isShop?' shop':''}">${label}</span>
+    <div class="rcx-doc"><div class="rcx-t">${rcTitle(b)}</div><span class="rcx-lbl${isShop?' shop':''}">${label}</span>
       <table><tr><th>เลขที่</th><td>${esc(rcNo(b))}</td></tr><tr><th>วันที่</th><td>${beFull(b.d)}${b.t?' '+esc(b.t)+' น.':''}</td></tr></table></div></header>
   <div class="rcx-info"><div><span>ลูกค้า</span><b>${esc(cust)}</b>${b.tel?`<em>โทร ${esc(b.tel)}</em>`:''}${b.addr?`<em>${esc(b.addr)}</em>`:''}</div>
     <div><span>ข้อมูลรถ</span><b>${esc(b.plate||'–')} ${esc(b.prov||'')}</b><em>${esc([b.type,b.model].filter(Boolean).join(' · ')||'–')}</em></div></div>
@@ -7982,7 +7987,7 @@ function rcA4(b,o,a){if(o.a4==='full')return `<div class="rcx rcx-a4">${rcCopy(b
   return `<div class="rcx rcx-a4">${rcCopy(b,o,a,'สำหรับลูกค้า',false)}<div class="rcx-cut"><span>✂ ฉีกตามรอยปะ</span></div>${rcCopy(b,o,a,'สำหรับร้าน (สำเนา)',true)}</div>`}
 function rcSlip(b,o,a){const sh=shop(),debt=a.debt,c=o.slip==='compact';
   return `<div class="card receipt rc-doc slip">${!c&&o.logo?'<div class="rc-head"><div class="lg rc-logo"></div>':'<div class="rc-head">'}<div><b>${esc(sh.title)}</b><div class="sub">${esc(sh.address)}</div>${sh.phone?`<div class="sub">โทร ${esc(sh.phone)}</div>`:''}${rcTax(o)?`<div class="sub">เลขผู้เสียภาษี ${esc(rcTax(o))}</div>`:''}</div></div>
-    <div class="rc-title">ใบเสร็จรับเงิน</div>
+    <div class="rc-title">${rcTitle(b)}</div>
     <div class="row between sub"><span>เลขที่ <b class="num">${esc(rcNo(b))}</b></span><span>${beFull(b.d)} ${esc(b.t||'')}</span></div>
     <div class="sub">ทะเบียน ${esc(b.plate)} ${esc(b.prov)} · ${esc((b.prefix||'คุณ')+b.name)}</div>
     <div class="list">${b.items.map(([l,x])=>`<div class="li"><span>${esc(l)}</span><span class="num">${money(x)}</span></div>`).join('')}${b.disc?`<div class="li"><span>ส่วนลด</span><span class="num">-${money(b.disc)}</span></div>`:''}${b.refund?`<div class="li"><span>คืนเงิน / ปรับลดยอด</span><span class="num">-${money(b.refund)}</span></div>`:''}</div>
@@ -8042,7 +8047,7 @@ async function receiptDlg(b,kind,after){if(b.void){alert('บิลนี้ถ�
   pn.classList.toggle('wide',a4);pn.innerHTML='<div class="empty">กำลังสร้างใบเสร็จ...</div>';$('#dlg').hidden=false;
   const a=await rcAssets(b,o),html=a4?rcA4(b,o,a):rcSlip(b,o,a);
   // after = เปิดจากหน้าเปิดบิลหลังบันทึก: แสดงยอดทอน + ปุ่มไปต่อ
-  pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">${after?'✅ บันทึกบิลแล้ว · ':''}ใบเสร็จรับเงิน ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
+  pn.innerHTML=`<div class="row between non-printable"><h2 class="h3" style="font-size:18px">${after?'✅ บันทึกบิลแล้ว · ':''}${rcTitle(b)} ${kind}${a4&&o.a4==='half'?' <small class="sub">(ครึ่งบนลูกค้า · ครึ่งล่างร้าน)</small>':''}</h2><button class="btn line" id="x">ปิด</button></div>
     ${after?`<div class="rc-done non-printable"><span>เลขที่ <b>${esc(rcNo(b))}</b></span><span>ยอดรวม <b>${money(b.amt)}</b> บาท</span>${after.paid?`<span>รับเงิน <b>${money(after.paid)}</b> บาท</span><span class="chg">เงินทอน <b>${money(after.chg)}</b> บาท</span>`:''}</div>`:''}
     ${after?(()=>{try{const S=jobSteps(b),n=S.find(s=>s.st==='now'||s.st==='wait'||s.st==='bad'),
       m=!n?'✓ งานเสร็จสมบูรณ์ ไม่มีขั้นตอนค้าง':n.st==='bad'?(n.l==='ตรวจสภาพ'?'ตรวจสภาพไม่ผ่าน ดูรายละเอียดที่หน้าคิวตรวจสภาพ':'บิลนี้ถูกยกเลิกแล้ว'):n.l==='ตรวจสภาพ'?'ต่อไป: ตรวจสภาพรถ ('+n.sub+') ที่หน้าคิวตรวจสภาพ':n.l==='ชำระเงิน'?(/^ค้าง/.test(n.sub)?(trWait(b).length?'ต่อไป: ตรวจเงินโอนรอตรวจ '+money(waitAmt(b))+' บาท กับแอปธนาคาร และรับเงินคงเหลือ '+n.sub.replace(/^ค้าง\s*/,'')+' บาท':'ต่อไป: รับเงินคงเหลือ '+n.sub.replace(/^ค้าง\s*/,'')+' บาท'):'ต่อไป: ตรวจเงินโอนกับแอปธนาคาร แล้วกดยืนยัน'):'ต่อไป: '+n.l+' ('+n.sub+')';
