@@ -7090,8 +7090,8 @@ const ST_NAV=[['ร้านและบริการ',[['shop','🏪','ข้
   ['การแจ้งเตือน',[['notify','🔔','LINE และ SMS',['🔑','🔔','💬','📱'],'แจ้งเตือน']]]];
 const ST_NSUB=[['lineoa','🔑','เชื่อมต่อ LINE OA'],['remind','🔔','เตือนลูกค้าทาง LINE'],['daily','💬','สรุปประจำวัน'],['sms','📱','SMS']];let stNsub='lineoa',stDirty=false;
 R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
-  const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
-  const D=(k,l,h='',u='วัน',min=1)=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" data-day="${min}" inputmode="numeric" maxlength="3" value="${SET[k]??SET_DEF[k]}"><em>${u}</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
+  const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num st-short"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
+  const D=(k,l,h='',u='วัน',min=1)=>`<label class="field"><span>${l}</span><div class="st-num st-short"><input data-k="${k}" data-day="${min}" inputmode="numeric" maxlength="3" value="${SET[k]??SET_DEF[k]}"><em>${u}</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats','dlt_items_tax','dlt_items_tr'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k]||SET_DEF[k])));
   // บอกว่ารายการนี้ไปโผล่ที่ไหนในระบบ ให้แยกออกว่ารายการไหนคืออะไร
   const USE={brands:'ตัวเลือกในช่อง "ยี่ห้อรถ" ตอนเปิดบิล',bodies:'ตัวเลือกในช่อง "ลักษณะรถ" ตอนเปิดบิล',prefixes:'ตัวเลือกในช่อง "คำนำหน้า" ของเจ้าของรถ',
@@ -8474,6 +8474,8 @@ ST_SYS.forEach(([k])=>{const f=R[k];R[k]=async(...a)=>{const r=f(...a);stEmbed(k
   #view .st :is(input:not([type=checkbox]):not([type=radio]),select,textarea):focus{border-color:#1d63ed;outline:0;box-shadow:0 0 0 3px rgba(29,99,237,.13)}
   #view .st .st-num{display:flex;align-items:center;gap:8px;min-width:0}
   #view .st .st-num>input{flex:1 1 auto;width:100%;}
+  /* ช่องตัวเลขสั้นๆ (บาท/วัน): ไม่ยืดเต็มคอลัมน์ ให้หน่วยอยู่ติดช่อง */
+  #view .st .st-num.st-short>input{flex:0 1 160px;width:160px}
   #view .st .st-num em{flex:none;font-style:normal;font-size:12.5px;color:#647b9d}
   
   
