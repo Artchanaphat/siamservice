@@ -13,7 +13,7 @@ async function fromSupabase(env,un,pw){try{
   const r=await fetch(SB_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SB_KEY,'content-type':'application/json'},body:JSON.stringify({email:un+'@siam.app',password:pw})});
   if(!r.ok)return null;const t=await r.json(),h={apikey:SB_KEY,authorization:'Bearer '+t.access_token};
   const st=(await (await fetch(SB_URL+'/rest/v1/staff?select=user_id,username,full_name,role,branch_id,active&user_id=eq.'+t.user.id,{headers:h})).json())[0];if(!st)return null;
-  if(st.branch_id!=null&&!(await env.DB.prepare('select 1 from branches where id=?').bind(st.branch_id).first())){
+  if(!(await env.DB.prepare('select 1 from branches limit 1').first())||st.branch_id!=null&&!(await env.DB.prepare('select 1 from branches where id=?').bind(st.branch_id).first())){
     const bs=await (await fetch(SB_URL+'/rest/v1/branches?select=*',{headers:h})).json();
     for(const b of bs)await env.DB.prepare('insert or ignore into branches (id,code,name,address,phone,line_id,sms_credit,active,promptpay,created_at) values (?,?,?,?,?,?,?,?,?,?)')
       .bind(b.id,b.code,b.name,b.address||'',b.phone||'',b.line_id||'',b.sms_credit||0,b.active?1:0,b.promptpay||'',new Date(b.created_at).toISOString()).run()}
@@ -31,7 +31,9 @@ async function route(req,env,path){const m=req.method;
     const un=String(username||'').trim().toLowerCase().replace(/@siam\.app$/,'');if(!un||!password)fail('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
     let st=await env.DB.prepare('select * from staff where lower(username)=?').bind(un).first();
     // ย้ายจาก Supabase: บัญชีที่ยังไม่มีรหัสในระบบใหม่ ตรวจรหัสกับ Supabase เดิม ถ้าถูกจะคัดลอกบัญชีมาและใช้รหัสเดิมต่อได้เลย
-    if((!st||!st.pw_hash)&&env.SB_URL!=='off'){const sb=await fromSupabase(env,un,String(password));if(sb)st=sb}
+    // ยังไม่มีสาขา (เจ้าของร้านไม่มีสาขาประจำ) ก็ดึงสาขาจาก Supabase ด้วย
+    const noBr=!(await env.DB.prepare('select 1 from branches limit 1').first());
+    if((!st||!st.pw_hash||noBr)&&env.SB_URL!=='off'){const sb=await fromSupabase(env,un,String(password));if(sb)st=sb}
     if(!st||!(await checkPw(String(password),st.pw_hash)))fail('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง',401);
     if(!st.active)fail('บัญชีนี้ถูกระงับการใช้งาน กรุณาติดต่อเจ้าของร้าน',403);
     const token=await newSession(env,st.user_id,!!remember);return{token,user:{id:st.user_id}}}
