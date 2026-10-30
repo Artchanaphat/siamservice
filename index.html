@@ -6611,12 +6611,14 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
   const by={};verified.forEach(({p})=>{const k=p.by||'ไม่ระบุ',r=by[k]||(by[k]={name:k,cash:0,tr:0,card:0,other:0,n:0});r[payKind(p.how||'')]+=p.amt;r.n++});
   const rows=Object.values(by).sort((a,z)=>a.name.localeCompare(z.name,'th')),sum=k=>rows.reduce((t,r)=>t+r[k],0),all=sum('cash')+sum('tr')+sum('card')+sum('other');
   $('#view').innerHTML='<div class="ui-empty">กำลังโหลด...</div>';
+  // ถามข้อมูล 3 อย่างพร้อมกัน (ปิดยอด, เงินจ่ายออกจากลิ้นชัก, เงินทอนตั้งต้นล่าสุด) ไม่ต้องรอทีละอย่าง
+  const pOuts=dayOuts(day).then(v=>({v}),err=>({err})),pFl=LIVE?DB.lastFloats(day).catch(()=>({})):null;
   let saved={};try{saved=LIVE?await DB.listCloses(day):(CLOSES[day]||{})}catch(err){saved={};toast('ยังโหลดข้อมูลปิดยอดไม่ได้: '+err.message)}
   if(cur!=='close'||closeDate!==day)return;
   const sv=Object.values(saved),done=sv.length>0,canEdit=user&&(user.role==='owner'||user.role==='head'),locked=done&&!closeEdit;
   // เงินสดที่จ่ายออกจากลิ้นชัก + เงินทอนตั้งต้นล่าสุดของแต่ละคน
-  let outs=[],lastF={},outErr='';try{outs=await dayOuts(day)}catch(err){outErr=err.message}
-  if(!done){if(LIVE)lastF=await DB.lastFloats(day);else Object.keys(CLOSES).filter(d=>d<day).sort().forEach(d=>Object.values(CLOSES[d]).forEach(x=>{if(x.flt>0)lastF[x.staff]=x.flt}))}
+  let outs=[],lastF={},outErr='';{const o=await pOuts;if(o.err)outErr=o.err.message;else outs=o.v}
+  if(!done){if(LIVE)lastF=await pFl;else Object.keys(CLOSES).filter(d=>d<day).sort().forEach(d=>Object.values(CLOSES[d]).forEach(x=>{if(x.flt>0)lastF[x.staff]=x.flt}))}
   if(cur!=='close'||closeDate!==day)return;
   const outBy={};outs.forEach(o=>{if(o.drawer)outBy[o.drawer]=(outBy[o.drawer]||0)+o.amt});
   Object.keys(outBy).forEach(n=>{if(!rows.some(r=>r.name===n))rows.push({name:n,cash:0,tr:0,card:0,other:0,n:0})});rows.forEach(r=>r.out=outBy[r.name]||0);rows.sort((a,z)=>a.name.localeCompare(z.name,'th'));
