@@ -26,13 +26,14 @@ export async function beforeWrite(env,u,t,op,old,o){
     Object.assign(o,{cash,transfer:tr,card,other:oth,cash_out:await drawerOut(env,r.branch_id,r.close_date,r.staff_name),closed_by_name:u.name||o.closed_by_name||''})}
   return o}
 
-export async function log(env,u,t,op,old,nw){
+export async function log(env,u,t,op,old,nw){const jobs=[];
   if(AUDIT.includes(t)){let o=old,n=nw;
     if(op==='update'){o={};n={};for(const k of Object.keys(nw))if(k!=='updated_at'&&JSON.stringify(old[k])!==JSON.stringify(nw[k])){o[k]=old[k];n[k]=nw[k]}if(!Object.keys(n).length)o=n=null}
     if(op!=='update'||n){const r=nw||old;
-      await env.DB.prepare('insert into audit_log (user_id,user_name,branch_id,tbl,action,row_id,old_data,new_data) values (?,?,?,?,?,?,?,?)')
-        .bind(u?u.uid:null,u?u.name:'ระบบอัตโนมัติ',r.branch_id??null,t,op,String(r.id??r.bill_id??r.key??r.user_id??''),o?JSON.stringify(o):null,n?JSON.stringify(n):null).run()}}
-  if(SYNC.includes(t)){const r=nw||old;await env.DB.prepare('insert into changes (tbl,row_id,branch_id,bill_id) values (?,?,?,?)').bind(t,String(r.id??r.bill_id??''),r.branch_id??null,r.bill_id??(t==='bills'?r.id:null)).run()}}
+      jobs.push(env.DB.prepare('insert into audit_log (user_id,user_name,branch_id,tbl,action,row_id,old_data,new_data) values (?,?,?,?,?,?,?,?)')
+        .bind(u?u.uid:null,u?u.name:'ระบบอัตโนมัติ',r.branch_id??null,t,op,String(r.id??r.bill_id??r.key??r.user_id??''),o?JSON.stringify(o):null,n?JSON.stringify(n):null).run())}}
+  if(SYNC.includes(t)){const r=nw||old;jobs.push(env.DB.prepare('insert into changes (tbl,row_id,branch_id,bill_id) values (?,?,?,?)').bind(t,String(r.id??r.bill_id??''),r.branch_id??null,r.bill_id??(t==='bills'?r.id:null)).run())}
+  await Promise.all(jobs)}
 
 export async function afterWrite(env,u,t,op,old,nw){
   if(t==='bill_files'&&op==='insert'){const b=await env.DB.prepare('select files_pending from bills where id=?').bind(nw.bill_id).first();
