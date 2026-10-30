@@ -7295,8 +7295,8 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
     try{await fn()}catch(err){const o=$('#ln-out');if(o){o.hidden=false;o.textContent='⚠️ '+err.message}alert('LINE: '+err.message)}finally{btn.disabled=false;btn.textContent=t}};
   $('#ln-prev').onclick=e=>lnRun(e.currentTarget,async()=>{const o=$('#ln-out');o.textContent='กำลังสร้างตัวอย่าง...';o.hidden=false;
     const value=await DB.linePreview();o.textContent=typeof value==='string'?value:JSON.stringify(value??'ไม่มีเนื้อหารายงาน',null,2)});
-  $('#ln-test').onclick=async e=>{if(!await uiConfirm('ส่งรายงานทดสอบเข้า LINE จริงตอนนี้ใช่ไหม?'))return;
-    lnRun(e.currentTarget,async()=>{const conf=await DB.lineStatus();if(!conf.token||!conf.to)throw new Error('ยังไม่ได้ตั้งค่า LINE Token หรือ User ID ปลายทาง');
+  $('#ln-test').onclick=async e=>{const btn=e.currentTarget;if(!await uiConfirm('ส่งรายงานทดสอบเข้า LINE จริงตอนนี้ใช่ไหม?'))return;
+    lnRun(btn,async()=>{const conf=await DB.lineStatus();if(!conf.token||!conf.to)throw new Error('ยังไม่ได้ตั้งค่า LINE Token หรือ User ID ปลายทาง');
       const n=await DB.lineTest(),count=typeof n==='number'?n:Number(n);const o=$('#ln-out');o.hidden=false;
       if(Number.isFinite(count)&&count>=1){o.textContent='✓ ระบบรายงานส่งทดสอบแล้ว '+count+' คน';toast('ส่งรายงานทดสอบแล้ว '+count+' คน')}
       else{o.textContent='⚠️ คำสั่งส่งทดสอบทำงานแล้ว แต่ไม่มีจำนวนผู้รับที่ยืนยันได้ กรุณาตรวจ LINE OA และผู้รับ';toast('ตรวจผลส่งทดสอบที่ LINE OA อีกครั้ง')}})};
