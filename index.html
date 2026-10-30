@@ -5993,15 +5993,62 @@ R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
 
 
 /* ===== ฐานข้อมูลจริง (Supabase) ===== */
+// ตัวเชื่อมฐานข้อมูล Cloudflare ที่ใช้คำสั่งแบบเดียวกับ supabase-js (เฉพาะส่วนที่ระบบใช้) — หน้าเว็บเดิมจึงทำงานได้โดยไม่ต้องแก้
+// เปิดใช้: ?cf=1 ครั้งเดียว (จำไว้ในเครื่อง) · ?cf=0 กลับไปใช้ Supabase
+const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==='1')localStorage.setItem('siam-backend','cf');if(q==='0')localStorage.removeItem('siam-backend');
+  return localStorage.getItem('siam-backend')==='cf'}catch(_){return false}})();
+function cfClient(opt){const store=opt.storage,KEY='siam-auth',API='/api/';
+  const tok=()=>{try{const v=store.getItem(KEY);return v?JSON.parse(v).token:null}catch(_){return null}};
+  async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;
+    let r;try{r=await fetch(API+p,{method:'POST',headers:raw?{...h,'content-type':raw}:h,body:raw?body:JSON.stringify(body||{})})}catch(e){return{data:null,error:{message:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ต'}}}
+    let j;try{j=await r.json()}catch(_){return{data:null,error:{message:'เซิร์ฟเวอร์ตอบกลับผิดพลาด ('+r.status+')'}}}
+    if(r.status===401&&p!=='auth/login'){try{store.removeItem(KEY)}catch(_){}}
+    return j.error?{data:null,error:j.error}:{data:j.data!==undefined?j.data:j,error:null}}
+  class Q{constructor(t){this.q={t,op:'select',sel:'*',f:[],ord:[]};this.one=null}
+    select(s){if(this.q.op==='select')this.q.sel=s||'*';else this.q.ret=s||'*';return this}
+    insert(v){this.q.op='insert';this.q.vals=v;return this}
+    upsert(v,o){this.q.op='upsert';this.q.vals=v;this.q.conflict=o&&o.onConflict||null;return this}
+    update(v){this.q.op='update';this.q.vals=v;return this}
+    delete(){this.q.op='delete';return this}
+    _f(c,op,v){this.q.f.push([c,op,v]);return this}
+    eq(c,v){return this._f(c,'eq',v)}neq(c,v){return this._f(c,'neq',v)}gt(c,v){return this._f(c,'gt',v)}gte(c,v){return this._f(c,'gte',v)}
+    lt(c,v){return this._f(c,'lt',v)}lte(c,v){return this._f(c,'lte',v)}in(c,v){return this._f(c,'in',v)}is(c,v){return this._f(c,'is',v)}
+    contains(c,v){return this._f(c,'cs',v)}filter(c,op,v){return this._f(c,op,v)}or(s){this.q.or=s;return this}
+    order(c,o){this.q.ord.push([c,!(o&&o.ascending===false)]);return this}limit(n){this.q.lim=n;return this}range(a,b){this.q.rng=[a,b];return this}
+    single(){this.one='single';return this}maybeSingle(){this.one='maybe';return this}
+    async run(){const r=await post('q',this.q);if(r.error||!this.one)return r;const d=Array.isArray(r.data)?r.data:(r.data==null?[]:[r.data]);
+      if(this.one==='single'&&d.length!==1)return{data:null,error:{message:d.length?'พบข้อมูลมากกว่า 1 แถว':'ไม่พบข้อมูล'}};return{data:d[0]||null,error:null}}
+    then(ok,no){return this.run().then(ok,no)}}
+  // ซิงก์ข้ามเครื่อง: ถามรายการที่เปลี่ยนทุก 15 วินาที (แทน Realtime)
+  const chans=new Set();let seq=0,timer=null;
+  async function poll(){if(!tok()||document.hidden||!chans.size)return;const r=await fetch(API+'changes?since='+seq,{headers:{authorization:'Bearer '+tok()}}).then(x=>x.json()).catch(()=>null);
+    if(!r||r.error)return;if(seq&&r.rows)for(const x of r.rows){const n=x.tbl==='bills'?{id:+x.row_id,branch_id:x.branch_id}:x.bill_id?{id:+x.row_id,bill_id:x.bill_id,branch_id:x.branch_id}:{id:+x.row_id};
+      for(const c of chans)for(const [t,cb] of c.h)if(t===x.tbl)try{cb({new:n,old:{}})}catch(e){console.warn(e)}}seq=r.seq||seq}
+  return{
+    from:t=>new Q(t),
+    rpc:(n,a)=>post('rpc/'+n,a||{}),
+    auth:{
+      async signInWithPassword({email,password}){const r=await post('auth/login',{username:String(email||'').replace(/@siam\.app$/,''),password,remember:store===window.localStorage});
+        if(r.error)return{data:null,error:r.error};try{store.setItem(KEY,JSON.stringify({token:r.data.token}))}catch(_){}return{data:{user:r.data.user},error:null}},
+      async getSession(){if(!tok())return{data:{session:null}};const r=await post('auth/me');return{data:{session:r.data&&r.data.user?{user:r.data.user}:null},error:r.error}},
+      async signOut(){if(tok())await post('auth/logout');try{store.removeItem(KEY)}catch(_){}return{error:null}},
+      async updateUser({password}){const r=await post('auth/password',{password});return{data:r.data,error:r.error}}},
+    storage:{from:b=>({
+      async upload(p,f,o){return post(`files/upload/${b}/${p}`,f,(o&&o.contentType)||f.type||'application/octet-stream')},
+      async createSignedUrl(p){const r=await post(`files/sign/${b}`,{paths:[p]});return r.error?r:{data:{signedUrl:r.data[0]&&r.data[0].signedUrl},error:null}},
+      createSignedUrls:p=>post(`files/sign/${b}`,{paths:p}),
+      remove:p=>post(`files/remove/${b}`,{paths:p})})},
+    channel(){const c={h:[],on(type,f,cb){c.h.push([f.table,cb]);return c},subscribe(cb){chans.add(c);seq=0;poll();if(!timer)timer=setInterval(poll,15000);if(cb)cb('SUBSCRIBED');return c}};return c},
+    removeChannel(c){chans.delete(c)}}}
 const SB_URL='https://plilxmgripxmebvjafmj.supabase.co',SB_KEY='sb_publishable_38gR_gKTmCYqC3RYMcFpmQ_arM3dFxw';
 const DB=(()=>{
   let sb=null,me=null,branches=[],branch=null,dltReady=false;
   const lib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวเชื่อมฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ต'));document.head.append(s)});
   const authIn=st=>{try{return !!st.getItem('siam-auth')}catch(e){return false}};
-  const client=async()=>{if(!sb){await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;
+  const client=async()=>{if(!sb){if(!CF)await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;
     // ไม่ติ๊กจดจำ = เก็บ session ไว้ในแท็บนี้ (รีเฟรชได้ ปิดแท็บแล้วต้องล็อกอินใหม่)
-    const tab=authIn(window.sessionStorage)&&!authIn(window.localStorage);sb=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:tab||!rem?window.sessionStorage:window.localStorage}})}return sb};
+    const tab=authIn(window.sessionStorage)&&!authIn(window.localStorage);const st=tab||!rem?window.sessionStorage:window.localStorage;sb=CF?cfClient({storage:st}):window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:st}})}return sb};
   const chk=({data,error})=>{if(error)throw new Error(error.message);return data};
   // Supabase ส่งได้ครั้งละไม่เกิน 1,000 แถว จึงดึงทีละหน้าจนครบ
   async function pages(q){let out=[];for(let i=0;;i+=1000){const r=await q().range(i,i+999);if(r.error)return r;out=out.concat(r.data);if(r.data.length<1000)return{data:out,error:null}}}
