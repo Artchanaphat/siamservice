@@ -3153,7 +3153,11 @@ function enterApp(u,resumed){user=u;document.querySelectorAll('.uname').forEach(
   $('#login').hidden=true;$('#shell').hidden=false;$('.tabs').hidden=false;tClock();
   StaffAvatar.refreshCurrent(u);
   let pg='home';if(resumed)try{const k=sessionStorage.getItem('siam-page'),ss=sessionStorage.getItem('siam-stsec');if(PAGE_KEEP.includes(k))pg=k;if(ss)stSec=ss}catch(e){}
-  go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name)}
+  go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name);prefetchPages(u)}
+// โหลดข้อมูลหน้าภาพรวมเจ้าของ/ปิดยอดของวันนี้ไว้ล่วงหน้า กดเข้าหน้าแล้วขึ้นทันที (เข้าหน้าแล้วจะถามเซิร์ฟเวอร์ซ้ำเพื่ออัปเดตเสมอ)
+function prefetchPages(u){if(!LIVE||!CF||!u||(u.role!=='owner'&&u.role!=='head'))return;setTimeout(()=>{const day=iso(TODAY);
+  if(u.role==='owner'&&!ovData)DB.ownerOverview(day).then(d=>{if(!ovData&&d&&d.day===day){ovData=d;ovAt=new Date()}}).catch(()=>{});
+  if(!clCached(day)&&cur!=='close')closeLoad(day,true).catch(()=>{})},1500)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // แปลงข้อความผิดพลาดจากระบบเป็นภาษาไทยที่เข้าใจง่าย
 const loginMsg=err=>{const m=String(err&&err.message||'');console.warn('login:',m);
@@ -5998,9 +6002,11 @@ R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
 const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==='1')localStorage.removeItem('siam-backend');if(q==='0')localStorage.setItem('siam-backend','sb');
   // ระบบหลักคือ Cloudflare ตั้งแต่ 30 ต.ค. 69 · ?cf=0 = เปิดระบบเดิม (Supabase) ไว้ดึงข้อมูลย้อนหลัง
   return localStorage.getItem('siam-backend')!=='sb'}catch(_){return true}})();
+// นับครั้งที่ข้อมูลเปลี่ยน (เขียนเอง หรือเครื่องอื่นเปลี่ยนแล้วซิงก์มา) ใช้บอกว่าข้อมูลที่จำไว้ของหน้าปิดยอดยังใช้ได้ไหม
+let DATA_VER=0;
 function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   const tok=()=>{try{const v=store.getItem(KEY);return v?JSON.parse(v).token:null}catch(_){return null}};
-  async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;
+  async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;if(!(p==='q'&&body&&body.op==='select')&&!/^(auth\/|files\/sign|rpc\/owner_)/.test(p))DATA_VER++;
     let r;try{r=await fetch(API+p,{method:'POST',headers:raw?{...h,'content-type':raw}:h,body:raw?body:JSON.stringify(body||{})})}catch(e){return{data:null,error:{message:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ต'}}}
     let j;try{j=await r.json()}catch(_){return{data:null,error:{message:'เซิร์ฟเวอร์ตอบกลับผิดพลาด ('+r.status+')'}}}
     if(r.status===401&&p!=='auth/login'){try{store.removeItem(KEY)}catch(_){}}
@@ -6023,7 +6029,7 @@ function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   // ซิงก์ข้ามเครื่อง: ถามรายการที่เปลี่ยนทุก 15 วินาที (แทน Realtime)
   const chans=new Set();let seq=0,timer=null;
   async function poll(){if(!tok()||document.hidden||!chans.size)return;const r=await fetch(API+'changes?since='+seq,{headers:{authorization:'Bearer '+tok()}}).then(x=>x.json()).catch(()=>null);
-    if(!r||r.error)return;if(seq&&r.rows)for(const x of r.rows){const n=x.tbl==='bills'?{id:+x.row_id,branch_id:x.branch_id}:x.bill_id?{id:+x.row_id,bill_id:x.bill_id,branch_id:x.branch_id}:{id:+x.row_id};
+    if(!r||r.error)return;if(seq&&r.rows&&r.rows.length)DATA_VER++;if(seq&&r.rows)for(const x of r.rows){const n=x.tbl==='bills'?{id:+x.row_id,branch_id:x.branch_id}:x.bill_id?{id:+x.row_id,bill_id:x.bill_id,branch_id:x.branch_id}:{id:+x.row_id};
       for(const c of chans)for(const [t,cb] of c.h)if(t===x.tbl)try{cb({new:n,old:{}})}catch(e){console.warn(e)}}seq=r.seq||seq}
   return{
     from:t=>new Q(t),
@@ -6598,6 +6604,15 @@ function printEl(el){el.classList.add('print-me');document.body.classList.add('p
 
 /* ---------- 1. ปิดยอดเงินประจำวัน ---------- */
 let closeDate=null;const CLOSES={};
+// ข้อมูลหน้าปิดยอดที่โหลดล่าสุด (วัน+สาขา) ใช้ซ้ำได้ถ้ายังไม่มีการเปลี่ยนแปลงข้อมูลตั้งแต่โหลด
+let clCache=null;const clPick=x=>({saved:x.saved,outs:x.outs,outErr:x.outErr,lastF:x.lastF});
+const clCached=day=>LIVE&&CF&&clCache&&DB.branch&&clCache.k===day+'|'+DB.branch.id&&clCache.v===DATA_VER?clCache:null;
+// ถามข้อมูล 3 อย่างพร้อมกัน (ปิดยอด, เงินจ่ายออกจากลิ้นชัก, เงินทอนตั้งต้นล่าสุด) ไม่ต้องรอทีละอย่าง
+async function closeLoad(day,quiet){const v=DATA_VER,k=LIVE&&CF&&DB.branch?day+'|'+DB.branch.id:'';
+  const pOuts=dayOuts(day).then(v=>({v}),err=>({err})),pFl=LIVE?DB.lastFloats(day).catch(()=>({})):Promise.resolve({});
+  let saved={},bad=false;try{saved=LIVE?await DB.listCloses(day):(CLOSES[day]||{})}catch(err){bad=true;if(!quiet)toast('ยังโหลดข้อมูลปิดยอดไม่ได้: '+err.message)}
+  const o=await pOuts,r={saved,outs:o.err?[]:o.v,outErr:o.err?o.err.message:'',lastF:await pFl};
+  if(k&&!bad&&!o.err)clCache={k,v,...structuredClone(r)};return r}
 const payKind=h=>/สด/.test(h)?'cash':/โอน/.test(h)?'tr':/บัตร/.test(h)?'card':'other';
 const PAYPILL=h=>{const k=payKind(h||'');return `<span class="ui-pill ${k}">${k==='cash'?'💵':k==='tr'?'📱':k==='card'?'💳':''} ${esc(h||'-')}</span>`};
 const diffPill=df=>Math.abs(df)<0.005?'<span class="ui-pill ok">✓ ตรง</span>':df>0?`<span class="ui-pill info">เกิน ${money(df)}</span>`:`<span class="ui-pill bad">ขาด ${money(-df)}</span>`;
@@ -6610,16 +6625,15 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
   const verified=pays.filter(({p})=>!p.wait);
   const by={};verified.forEach(({p})=>{const k=p.by||'ไม่ระบุ',r=by[k]||(by[k]={name:k,cash:0,tr:0,card:0,other:0,n:0});r[payKind(p.how||'')]+=p.amt;r.n++});
   const rows=Object.values(by).sort((a,z)=>a.name.localeCompare(z.name,'th')),sum=k=>rows.reduce((t,r)=>t+r[k],0),all=sum('cash')+sum('tr')+sum('card')+sum('other');
-  $('#view').innerHTML='<div class="ui-empty">กำลังโหลด...</div>';
-  // ถามข้อมูล 3 อย่างพร้อมกัน (ปิดยอด, เงินจ่ายออกจากลิ้นชัก, เงินทอนตั้งต้นล่าสุด) ไม่ต้องรอทีละอย่าง
-  const pOuts=dayOuts(day).then(v=>({v}),err=>({err})),pFl=LIVE?DB.lastFloats(day).catch(()=>({})):null;
-  let saved={};try{saved=LIVE?await DB.listCloses(day):(CLOSES[day]||{})}catch(err){saved={};toast('ยังโหลดข้อมูลปิดยอดไม่ได้: '+err.message)}
+  // เคยเปิดวันนี้แล้วและข้อมูลยังไม่เปลี่ยน: แสดงทันที แล้วถามเซิร์ฟเวอร์ซ้ำเบื้องหลัง
+  const ck=clCached(day);if(!ck)$('#view').innerHTML='<div class="ui-empty">กำลังโหลด...</div>';
+  const F=ck?structuredClone(ck):await closeLoad(day);
   if(cur!=='close'||closeDate!==day)return;
-  const sv=Object.values(saved),done=sv.length>0,canEdit=user&&(user.role==='owner'||user.role==='head'),locked=done&&!closeEdit;
+  if(ck)closeLoad(day).then(r=>{if(JSON.stringify(r)===JSON.stringify(clPick(ck))||cur!=='close'||closeDate!==day)return;const a=document.activeElement;if(a&&a.closest&&a.closest('#view input,#view textarea'))return;R.close()});
+  const saved=F.saved,sv=Object.values(saved),done=sv.length>0,canEdit=user&&(user.role==='owner'||user.role==='head'),locked=done&&!closeEdit;
   // เงินสดที่จ่ายออกจากลิ้นชัก + เงินทอนตั้งต้นล่าสุดของแต่ละคน
-  let outs=[],lastF={},outErr='';{const o=await pOuts;if(o.err)outErr=o.err.message;else outs=o.v}
-  if(!done){if(LIVE)lastF=await pFl;else Object.keys(CLOSES).filter(d=>d<day).sort().forEach(d=>Object.values(CLOSES[d]).forEach(x=>{if(x.flt>0)lastF[x.staff]=x.flt}))}
-  if(cur!=='close'||closeDate!==day)return;
+  let outs=F.outs,lastF={},outErr=F.outErr;
+  if(!done){if(LIVE)lastF=F.lastF;else Object.keys(CLOSES).filter(d=>d<day).sort().forEach(d=>Object.values(CLOSES[d]).forEach(x=>{if(x.flt>0)lastF[x.staff]=x.flt}))}
   const outBy={};outs.forEach(o=>{if(o.drawer)outBy[o.drawer]=(outBy[o.drawer]||0)+o.amt});
   Object.keys(outBy).forEach(n=>{if(!rows.some(r=>r.name===n))rows.push({name:n,cash:0,tr:0,card:0,other:0,n:0})});rows.forEach(r=>r.out=outBy[r.name]||0);rows.sort((a,z)=>a.name.localeCompare(z.name,'th'));
   const outSum=rows.reduce((t,r)=>t+r.out,0),outAll=outs.reduce((t,o)=>t+o.amt,0);
@@ -7599,7 +7613,7 @@ async function accReport(ym){let list=LIVE?await DB.listExpenses(ym):EXPENSES.fi
         {name:'ค่าคอมประกัน',cols:[12,12,12,18,24,14,8,12],rows:[['วันที่','เลขที่บิล','ทะเบียน','ประเภท','บริษัท','เบี้ยรวม','%','ค่าคอม']].concat(cm.map(r=>[iso(r.b.d),rcNo(r.b),r.b.plate,r.k==='prb'?'พ.ร.บ.':'ประกันภาคสมัครใจ',r.co,r.gross,r.rate,r.comm]))}]);
       toast('ดาวน์โหลดรายงานส่งนักบัญชีแล้ว')}
 /* ---------- ภาพรวมเจ้าของ: ทุกสาขาในหน้าเดียว (เฉพาะเจ้าของร้าน) ---------- */
-let ovDay=null,ovData=null,ovMore=false,ovTimer=null;
+let ovDay=null,ovData=null,ovAt=null,ovMore=false,ovTimer=null;
 // โหมดทดลอง: สาขา 1 จากข้อมูลในเครื่อง สาขา 2 เป็นตัวเลขตัวอย่าง
 const DEMO_ACK={};
 function demoOverview(day){const t=(b,k)=>b.reduce((s,x)=>s+(+x[k]||0),0),dd=new Date(day+'T00:00'),bills=[...intake,...oldBills].filter(b=>iso(b.d)===day&&!b.void);
@@ -7623,9 +7637,8 @@ function demoOverview(day){const t=(b,k)=>b.reduce((s,x)=>s+(+x[k]||0),0),dd=new
 R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="ui-empty">หน้านี้ใช้ได้เฉพาะเจ้าของร้าน</div>';return}
   ovDay=ovDay||iso(TODAY);const day=ovDay,dd=new Date(day+'T00:00'),isToday=day===iso(TODAY);clearInterval(ovTimer);
   const hm=x=>String(x.getHours()).padStart(2,'0')+':'+String(x.getMinutes()).padStart(2,'0');
-  if(!ovData||ovData.day!==day)$('#view').innerHTML='<div class="ui-empty">กำลังโหลดข้อมูลทุกสาขา...</div>';
-  let d;try{d=LIVE?await DB.ownerOverview(day):demoOverview(day)}catch(err){$('#view').innerHTML=`<div class="ui"><div class="ui-note warn">⚠️ <span><b>โหลดข้อมูลไม่สำเร็จ</b> ${esc(err.message)} · ตัวเลขที่เห็นก่อนหน้านี้อาจไม่ใช่ยอดล่าสุด</span><span class="sp"></span><button class="btn line" id="ov-re">⟳ ลองใหม่</button></div></div>`;$('#ov-re').onclick=()=>R.owner();return}
-  if(cur!=='owner'||ovDay!==day)return;if(!LIVE)d.branches.forEach(x=>{const k=DEMO_ACK[x.id+'|'+day];if(k)x.close.ack=k});ovData=d;const fetched=new Date();
+  const cached=ovData&&ovData.day===day?ovData:null;if(!cached)$('#view').innerHTML='<div class="ui-empty">กำลังโหลดข้อมูลทุกสาขา...</div>';
+  const paint=(d,fetched)=>{clearInterval(ovTimer);
   const B=d.branches||[],n=v=>+v||0,sumB=f=>B.reduce((s,b)=>s+n(f(b)),0),M=v=>money(n(v)),cnt=v=>Math.round(n(v)).toLocaleString();
   const inc=b=>n(b.mtd.total)-n(b.mtd.pass),prof=b=>inc(b)-n(b.mtd.expense),pinc=b=>n(b.prev.total)-n(b.prev.pass),pprof=b=>pinc(b)-n(b.prev.expense);
   const recv=b=>n(b.today.cash)+n(b.today.tr)+n(b.today.card)+n(b.today.other),outT=b=>n(b.out.exp)+n(b.out.remit)+n(b.out.owner)+n(b.out.bank)+n(b.out.advance)+n(b.out.other);
@@ -7681,7 +7694,7 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
   const head=extra=>`<thead><tr><th></th>${B.length>1?'<th class="r ov-tot">รวม</th>':''}${B.map(b=>`<th class="r">${esc(b.name)}</th>`).join('')}${extra||''}</tr></thead>`,sec=t=>`<tr class="ov-sec"><th colspan="${B.length+3}">${t}</th></tr>`;
   const prevLbl=`${beFull(new Date(d.prev_from+'T00:00'))} – ${beFull(new Date(d.prev_to+'T00:00'))}`,remitLeft=b=>n(b.mtd.pass)-n(b.follow.remit_paid_mtd),dash=v=>n(v)?M(v):'–';
   $('#view').innerHTML=`<div class="ui ov2">
-  <div class="ui-head"><span class="ui-ic">👑</span><div class="ui-tt"><h1>ภาพรวมเจ้าของ</h1><div class="ui-sub">ทุกสาขา · <b>ข้อมูลอัปเดตเมื่อ ${hm(fetched)} น.</b>${isToday?' (อัปเดตเองทุก 2 นาที)':''}${LIVE?'':' · โหมดทดลอง สาขา 2 เป็นตัวเลขตัวอย่าง'}</div></div>
+  <div class="ui-head"><span class="ui-ic">👑</span><div class="ui-tt"><h1>ภาพรวมเจ้าของ</h1><div class="ui-sub">ทุกสาขา · <b id="ov-at">ข้อมูลอัปเดตเมื่อ ${hm(fetched)} น.</b>${isToday?' (อัปเดตเองทุก 2 นาที)':''}${LIVE?'':' · โหมดทดลอง สาขา 2 เป็นตัวเลขตัวอย่าง'}</div></div>
     <div class="ui-tools non-printable"><div class="ex-mnav"><button class="btn line" id="ov-prev" aria-label="วันก่อน">‹</button><input type="date" id="ov-d" value="${day}" max="${iso(TODAY)}" aria-label="เลือกวันที่"><button class="btn line" id="ov-next" aria-label="วันถัดไป"${isToday?' disabled':''}>›</button></div>${isToday?'':'<button class="btn line" id="ov-today">วันนี้</button>'}<button class="btn line" id="ov-re">⟳ อัปเดต</button><button class="btn line" id="ov-print">🖨️ พิมพ์</button></div></div>
   <h2 class="ov-h">📅 ${isToday?'วันนี้':'วันที่'} ${beFull(dd)}</h2>
   <div class="ov-bcs">${order.map(todayCard).join('')}</div>
@@ -7770,6 +7783,13 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
       save:ov=>{const nt=ov.querySelector('#er-n').value.trim();if(ok!=='1'&&!nt){alert('กรุณาใส่เหตุผล');return false}const f=ok==='1'?ov.querySelector('#ov-pf .on').dataset.pf:'';return{nt,f,dr:f==='drawer'?ov.querySelector('#ov-pf-dr').value.trim():''}}});if(!v)return;
     if(!LIVE){const q=EXPREQ.find(y=>y.id===+id);if(q){q.st=ok==='1'?'approved':'rejected';q.dby=user.name;if(ok==='1')EXPENSES.push({id:++expSeq,d:iso(TODAY),cat:q.cat,amt:q.amt,note:q.note,by:user.name,from:v.f,drawer:v.dr,photo:q.photo})}return after(bid,ok==='1'?'อนุมัติแล้ว':'บันทึกไม่อนุมัติแล้ว')}
     try{await DB.decideExpReq(+id,ok==='1',v.f,v.dr,v.nt);after(bid,ok==='1'?'อนุมัติแล้ว ลงเป็นรายจ่ายเรียบร้อย':'บันทึกไม่อนุมัติแล้ว')}catch(err){alert('ไม่สำเร็จ: '+err.message)}});
+  };
+  // เคยเปิดวันนี้แล้ว: แสดงข้อมูลเดิมทันที แล้วค่อยอัปเดตเมื่อเซิร์ฟเวอร์ตอบ (ไม่ค้างอยู่หน้าเดิมระหว่างรอ)
+  if(cached)paint(cached,ovAt);
+  let d;try{d=LIVE?await DB.ownerOverview(day):demoOverview(day)}catch(err){if(cached){toast('อัปเดตข้อมูลไม่สำเร็จ: '+err.message);return}$('#view').innerHTML=`<div class="ui"><div class="ui-note warn">⚠️ <span><b>โหลดข้อมูลไม่สำเร็จ</b> ${esc(err.message)} · ตัวเลขที่เห็นก่อนหน้านี้อาจไม่ใช่ยอดล่าสุด</span><span class="sp"></span><button class="btn line" id="ov-re">⟳ ลองใหม่</button></div></div>`;$('#ov-re').onclick=()=>R.owner();return}
+  if(cur!=='owner'||ovDay!==day)return;if(!LIVE)d.branches.forEach(x=>{const k=DEMO_ACK[x.id+'|'+day];if(k)x.close.ack=k});
+  const same=cached&&ovData===cached&&JSON.stringify(cached)===JSON.stringify(d);ovData=d;ovAt=new Date();
+  if(same&&$('#ov-at'))$('#ov-at').textContent=`ข้อมูลอัปเดตเมื่อ ${hm(ovAt)} น.`;else paint(d,ovAt);
 };
 // หน้าต่างแสดงรายการ
 function ovDlg(title,sub,body,foot){const ov=document.createElement('div');ov.className='ask-ov';
