@@ -1,6 +1,6 @@
 // API หลังบ้านบน Cloudflare Pages Functions (ใช้กับ functions/api/[[path]].js)
 // ตัวแปร: env.DB = D1 (siam-db), env.FILES = R2 (siam-files)
-import {who,newSession,checkPw,hashPw,sha256,fail,HttpError} from './lib/auth.js';
+import {who,forget,newSession,checkPw,hashPw,sha256,fail,HttpError} from './lib/auth.js';
 import {runSelect,runWrite} from './lib/query.js';
 import {RPC} from './lib/rpc.js';
 import {files} from './lib/files.js';
@@ -25,6 +25,9 @@ const J=(d,s=200)=>new Response(JSON.stringify(d),{status:s,headers:{'content-ty
 const need=u=>{if(!u)fail('กรุณาเข้าสู่ระบบใหม่',401);return u};
 
 async function route(req,env,path){const m=req.method;
+  // วัดความเร็วฐานข้อมูล: เปิด /api/ping ในเบราว์เซอร์ได้เลย (ไม่มีข้อมูลร้าน)
+  if(path==='ping'){const ms=[];let meta={};for(let i=0;i<5;i++){const t=Date.now();const r=await env.DB.prepare('select 1').all();ms.push(Date.now()-t);meta=r.meta||{}}
+    return{edge:req.cf&&req.cf.colo,db_region:meta.served_by_region||null,db_ms:ms,avg:Math.round(ms.reduce((a,b)=>a+b,0)/ms.length)}}
   if(path==='line-webhook'&&m==='POST')return lineWebhook(env,req);
   if(path==='cron')return cron(env,req);
   if(path==='auth/login'&&m==='POST'){const {username,password,remember}=await req.json();
@@ -39,14 +42,14 @@ async function route(req,env,path){const m=req.method;
     const token=await newSession(env,st.user_id,!!remember);return{token,user:{id:st.user_id}}}
   const u=await who(env,req);
   if(path==='auth/me')return{user:u?{id:u.uid}:null};
-  if(path==='auth/logout'){if(u)await env.DB.prepare('delete from sessions where token_hash=?').bind(u.token_hash).run();return{ok:true}}
+  if(path==='auth/logout'){if(u){forget(u.token_hash);await env.DB.prepare('delete from sessions where token_hash=?').bind(u.token_hash).run()}return{ok:true}}
   if(path==='auth/password'&&m==='POST'){need(u);const {password}=await req.json();if(String(password||'').length<6)fail('รหัสผ่านสั้นหรือง่ายเกินไป ต้องมีอย่างน้อย 6 ตัว');
     const st=await env.DB.prepare('select pw_hash from staff where user_id=?').bind(u.uid).first();if(await checkPw(password,st.pw_hash))fail('รหัสใหม่ต้องไม่ซ้ำกับรหัสเดิม');
     await env.DB.prepare('update staff set pw_hash=? where user_id=?').bind(await hashPw(password),u.uid).run();
-    await env.DB.prepare('delete from sessions where user_id=? and token_hash<>?').bind(u.uid,u.token_hash).run();return{ok:true}}
-  if(path==='q'&&m==='POST'){need(u);const q=await req.json();return{data:q.op==='select'?await runSelect(env,u,q):await runWrite(env,u,q)}}
+    await env.DB.prepare('delete from sessions where user_id=? and token_hash<>?').bind(u.uid,u.token_hash).run();forget();return{ok:true}}
+  if(path==='q'&&m==='POST'){need(u);const q=await req.json();if(q.op==='select')return{data:await runSelect(env,u,q)};const d=await runWrite(env,u,q);if(q.t==='staff')forget();return{data:d}}
   if(path.startsWith('rpc/')&&m==='POST'){need(u);const fn=RPC[path.slice(4)];if(!fn)fail('could not find the function '+path.slice(4),404);
-    const args=await req.json().catch(()=>({}));return{data:await fn(env,u,args||{},req)}}
+    const args=await req.json().catch(()=>({}));const d=await fn(env,u,args||{},req);if(/staff/.test(path))forget();return{data:d}}
   // ซิงก์ข้ามเครื่อง: รายการที่เปลี่ยนหลังลำดับ since
   if(path==='changes'){need(u);const url=new URL(req.url),since=+url.searchParams.get('since')||0;
     if(!since)return{seq:await env.DB.prepare('select coalesce(max(seq),0) s from changes').first('s'),rows:[]};

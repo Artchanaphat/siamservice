@@ -53,8 +53,8 @@ export const MONEY={
     const st=JSON.parse((await one(env,`select value from app_settings where key='main'`)||{}).value||'{}');
     const lr=+st.dlt_late_received||2,ls=+st.dlt_late_submitted||7,lp=+st.dlt_late_plate||14;
     const vItems=[...(st.dlt_items_tax||['ค่าภาษีรถ','ค่าฝากต่อภาษี']),...(st.dlt_items_tr||['ค่าโอน','ค่าย้าย','ค่าโอนย้าย','ค่าเปลี่ยนสี','ค่าตรวจสภาพโอน','ค่าเรื่อง'])];
-    const out=[];
-    for(const b of await all(env,'select id,code,name from branches where active=1 order by id')){const B=b.id;
+    // ทำทุกสาขาพร้อมกัน
+    const out=await Promise.all((await all(env,'select id,code,name from branches where active=1 order by id')).map(async b=>{const B=b.id;
       const veh=await all(env,`select k,max(moto) moto from (
           select coalesce(json_extract(snapshot,'$.plate'),'')||'|'||coalesce(json_extract(snapshot,'$.prov'),'') k,max(instr(coalesce(json_extract(snapshot,'$.type'),''),'จักรยานยนต์')>0) moto from bills where branch_id=? and status<>'void' and bill_at>=? and bill_at<? group by 1
           union all select plate||'|'||province,max(car_type in ('รย.12','รย.17')) from insp_queue q where branch_id=? and created_at>=? and created_at<? and billed=0
@@ -97,7 +97,8 @@ export const MONEY={
       follow.dlt_wait=(await one(env,`select count(*) n from dlt_jobs j join bills bi on bi.id=j.bill_id where bi.branch_id=? and bi.status<>'void' and j.status='plate'`,B)).n;
       Object.assign(follow,await one(env,`select coalesce(sum(amount),0) adv,count(distinct person) adv_n from cash_outs where branch_id=? and kind='advance' and settled_ym=''`,B));
       follow.remit_paid_mtd=(await one(env,'select coalesce(sum(amount),0) s from remits where branch_id=? and remit_date>=? and remit_date<=?',B,m0,d)).s;
-      out.push({id:B,code:b.code,name:b.name,today,close,out:outx,mtd:await monthPart(env,B,m0,d,p_pass),prev:await monthPart(env,B,pm0,pm1,p_pass),todo,follow})}
+      const [mtd,prev]=await Promise.all([monthPart(env,B,m0,d,p_pass),monthPart(env,B,pm0,pm1,p_pass)]);
+      return{id:B,code:b.code,name:b.name,today,close,out:outx,mtd,prev,todo,follow}}));
     return{day:d,prev_from:pm0,prev_to:pm1,branches:out}},
 
   async owner_detail(env,u,{p_kind,p_sub,p_branch,p_from,p_to,p_pass}){owner(u);const [t0]=dayRange(p_from),[,t1]=dayRange(p_to),sub=p_sub||'all',bw=c=>p_branch==null?'1=1':`${c}=${+p_branch}`;
