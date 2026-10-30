@@ -2464,6 +2464,9 @@ input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 .siam-pay-drawer .pmx-st.warn{background:#fff7ed;border-color:#fed7aa}
 .siam-pay-drawer .pmx-st.ok{background:#f0fdf4;border-color:#bbf7d0}
 .siam-pay-drawer .spay-section-title .spay-help{display:inline;font-weight:400;margin:0}
+#view .bk .bk-last{margin:6px 0 10px;font-size:13px;font-weight:600}#view .bk .bk-last.ok{color:#15803d}#view .bk .bk-last.bad{color:#b45309}
+#view .bk details.bk-more{display:block;width:100%;max-width:none;margin-top:12px;border-top:1px solid #e5e7eb;padding-top:10px}#view .bk details.bk-more>summary{cursor:pointer;font-weight:600;font-size:14px;color:#1e293b;padding:4px 0}
+#view .bk details.bk-more[open]>summary{margin-bottom:8px}#view .bk .bk-foot{margin-top:12px;font-size:12px;color:#64748b}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -6714,19 +6717,20 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
   const br=LIVE&&DB.branch?DB.branch:null,tag=(br?br.code+'-':''),own=!!user&&user.role==='owner',acc=!!user&&(user.role==='owner'||user.role==='head');
   $('#view').innerHTML=`<div class="bk">
   <div class="ltop"><span class="ui-ic">💾</span><h1>ส่งออก Excel / สำรองข้อมูล</h1><span class="sub">${esc(shop().title)}</span></div>
-  ${own?(old?`<div class="dj-alert">⚠️ ${lb?'สำรองฐานข้อมูลครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยสำรองฐานข้อมูลจากเครื่องนี้'} แนะนำให้กด <b>ดาวน์โหลดไฟล์สำรองฐานข้อมูล</b> เก็บไว้อย่างน้อยเดือนละครั้ง</div>`:`<div class="cl-done">✅ สำรองฐานข้อมูลล่าสุด ${beFull(new Date(lb))}</div>`):''}
-  ${own?`<div class="ui-note warn" style="margin:10px 0">ℹ️ <span><b>ข้อจำกัดของการสำรองข้อมูล</b> · ชุดสำรองอัตโนมัติทุกคืนเก็บอยู่ใน<b>ฐานข้อมูลเดียวกัน</b> ถ้าโปรเจกต์ Supabase เสียหายหรือถูกลบ ชุดสำรองจะหายไปด้วย · ไฟล์สำรองไม่รวมรูป/PDF ที่แนบบิล บัญชีผู้ใช้และรหัสผ่าน และรหัส LINE/SMS<br><b>แนะนำ</b> ดาวน์โหลดไฟล์สำรองเก็บนอกระบบ (เช่น Google Drive) อย่างน้อยสัปดาห์ละครั้ง และลองกู้คืนในโปรเจกต์ทดสอบเดือนละครั้ง เพื่อให้มั่นใจว่าไฟล์ใช้ได้จริง</span></div>`:''}
   <div class="bk-grid">
     <div class="card bk-card"><h3>📒 รายงานรายเดือน${acc?' (ส่งนักบัญชี)':''}</h3><p class="sub">${acc?'สรุปรายได้ เงินนำส่ง รายจ่าย กำไร พร้อมรายการบิล การรับเงิน รายจ่าย เงินนำส่ง และค่าคอมประกัน (6 แผ่นงาน) ของเดือนที่เลือก':'บิล รายการค่าใช้จ่าย การรับเงิน และข้อมูลลูกค้า ของเดือนที่เลือก'} เปิดด้วย Excel หรือ Google Sheets ได้</p>
       <label class="cl-date">เดือน <input type="month" id="bk-m" value="${expMonth}"></label><p class="sub">${inM.length} บิลในเดือนนี้</p>
       <button class="btn" id="bk-month" ${inM.length||acc?'':'disabled'}>📥 ดาวน์โหลดรายงานเดือนนี้</button></div>
-    ${own?`<div class="card bk-card bk-db"><h3>🗄️ ไฟล์สำรองฐานข้อมูล (กู้คืนได้)</h3><p class="sub">ข้อมูลทุกสาขาจากฐานข้อมูลจริง: ลูกค้า รถ บิล การรับเงิน/คืนเงิน ประวัติแก้ไข คิว งานขนส่ง ปิดยอด รายจ่าย คำขออนุมัติ และประวัติการใช้งาน พร้อมรหัสตรวจความถูกต้อง (SHA-256)</p>
-      <p class="bk-warn">ไม่รวม: รูปภาพ/PDF ที่แนบ (มีเฉพาะรายชื่อไฟล์), รหัสผ่านพนักงาน และรหัส LINE/SMS · ไฟล์มีข้อมูลลูกค้า เก็บในที่ปลอดภัย</p>
-      <button class="btn" id="bk-db" ${LIVE?'':'disabled'}>🗄️ ดาวน์โหลดไฟล์สำรองฐานข้อมูล</button><p class="sub" id="bk-db-st">${LIVE?'':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>
-    <div class="card bk-card bk-auto"><h3>🌙 สำรองอัตโนมัติทุกคืน 02:00 น.</h3><p class="sub">ระบบเก็บไว้ในฐานข้อมูล 14 คืนล่าสุด ดาวน์โหลดเป็นไฟล์ .json แล้วกู้คืนได้เหมือนไฟล์ด้านบน · ควรดาวน์โหลดเก็บไว้นอกระบบสัปดาห์ละครั้ง</p>
-      <div id="bk-auto-list"><p class="sub">${LIVE?'กำลังโหลด...':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>${LIVE?'<button class="btn line" id="bk-now">🌙 สำรองตอนนี้</button>':''}</div>
-    <div class="card bk-card"><h3>🔍 ตรวจ / กู้คืนจากไฟล์สำรอง</h3><p class="sub">เลือกไฟล์ .json ที่ดาวน์โหลดไว้ ระบบจะตรวจว่าไฟล์ครบถ้วนไม่ถูกแก้ไข แล้วเทียบกับฐานข้อมูลปัจจุบัน</p>
-      <label class="btn line">📂 เลือกไฟล์สำรอง<input type="file" accept="application/json,.json" id="bk-file" hidden></label><div id="bk-res"></div></div>`:''}</div>
+    ${own?`<div class="card bk-card bk-db"><h3>🗄️ สำรองข้อมูล</h3>
+      <p class="sub">ระบบสำรองให้เองทุกคืนตี 2 (เก็บ 14 คืนล่าสุด) · แนะนำกดดาวน์โหลดเก็บไว้ใน Google Drive เดือนละครั้ง</p>
+      <p class="bk-last ${old?'bad':'ok'}">${old?`⚠️ ${lb?'ดาวน์โหลดเก็บไว้ครั้งล่าสุดเกิน 30 วันแล้ว':'ยังไม่เคยดาวน์โหลดเก็บไว้จากเครื่องนี้'}`:`✅ ดาวน์โหลดเก็บไว้ล่าสุด ${beFull(new Date(lb))}`}</p>
+      <button class="btn" id="bk-db" ${LIVE?'':'disabled'}>📥 ดาวน์โหลดไฟล์สำรอง</button><p class="sub" id="bk-db-st">${LIVE?'':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p>
+      <details class="bk-more"><summary>🌙 ชุดสำรองอัตโนมัติ (14 คืนล่าสุด)</summary>
+        <div id="bk-auto-list"><p class="sub">${LIVE?'กำลังโหลด...':'ใช้ได้เมื่อเข้าสู่ระบบจริง'}</p></div>${LIVE?'<button class="btn line sm" id="bk-now">🌙 สำรองตอนนี้</button>':''}</details>
+      <details class="bk-more"><summary>🔍 ตรวจ / กู้คืนจากไฟล์สำรอง</summary>
+        <p class="sub">เลือกไฟล์ .json ที่ดาวน์โหลดไว้ ระบบจะตรวจว่าไฟล์ครบถ้วน แล้วเทียบกับข้อมูลปัจจุบันก่อนกู้คืน</p>
+        <label class="btn line sm">📂 เลือกไฟล์สำรอง<input type="file" accept="application/json,.json" id="bk-file" hidden></label><div id="bk-res"></div></details>
+      <p class="bk-foot">ไฟล์สำรองไม่รวมรูป/PDF ที่แนบ รหัสผ่านพนักงาน และรหัส LINE/SMS · ไฟล์มีข้อมูลลูกค้า เก็บในที่ปลอดภัย</p></div>`:''}</div>
   <p class="note">ไฟล์ Excel เป็นข้อมูลของ${br?' <b>'+esc(br.name)+'</b>':'สาขาที่เลือกอยู่'} ถ้าต้องการสาขาอื่น ให้เปลี่ยนสาขาที่ปุ่ม 📍 ด้านบนก่อน${own?'':' · ไฟล์สำรองฐานข้อมูลและการกู้คืน ใช้ได้เฉพาะเจ้าของร้าน'}</p></div>`;
   $('#bk-m').onchange=e=>{if(e.target.value){expMonth=e.target.value;R.backup()}};
   const run=async(btn,bills,name,mark)=>{const t=btn.textContent;btn.disabled=true;btn.textContent='กำลังสร้างไฟล์...';
@@ -6754,6 +6758,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
       const last=L[0],age=last?(Date.now()-new Date(last.created_at))/36e5:null;
       box.innerHTML=(!last?'<div class="ui-note warn">⏳ <span>ยังไม่มีชุดสำรอง กด "สำรองตอนนี้" ได้เลย</span></div>':age>30?`<div class="ui-note bad">⚠️ <span><b>สำรองอัตโนมัติไม่ได้ทำงาน</b> ชุดล่าสุดเมื่อ ${fmtDT(last.created_at)}</span></div>`:`<div class="ui-note ok">✅ <span>สำรองล่าสุด ${fmtDT(last.created_at)}</span></div>`)
         +(L.length?`<table class="ui-tbl bk-tbl"><thead><tr><th>วันเวลา</th><th>แบบ</th><th class="r">บิล</th><th class="r">ขนาด</th><th></th></tr></thead><tbody>${L.map(x=>`<tr><td>${fmtDT(x.created_at)}</td><td>${x.kind==='manual'?'กดเอง':'อัตโนมัติ'}</td><td class="r">${(x.counts||{}).bills??'–'}</td><td class="r">${(x.size_bytes/1048576).toFixed(2)} MB</td><td class="r"><button class="btn line sm" data-bkdl="${x.id}" data-day="${iso(new Date(x.created_at))}">📥 ดาวน์โหลด</button></td></tr>`).join('')}</tbody></table>`:'');
+      if((!last||age>30)&&box.closest('details'))box.closest('details').open=true;
       box.querySelectorAll('[data-bkdl]').forEach(b=>b.onclick=async()=>{b.disabled=true;try{const r=await DB.backupGet(+b.dataset.bkdl);const n=await dlJson(r,'สำรองอัตโนมัติ',b.dataset.day);toast('ดาวน์โหลดแล้ว: '+n)}catch(err){alert('ดาวน์โหลดไม่สำเร็จ: '+err.message)}finally{b.disabled=false}})}
     catch(err){box.innerHTML=`<div class="ui-note warn">⚠️ <span>${esc(err.message)}</span></div>`}};
   autoList();
