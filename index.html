@@ -3952,7 +3952,7 @@ R.bill=()=>{const b=getBill(curBill);if(!b){go('income');return}
 document.addEventListener('click',e=>{const s=e.target.closest('[data-showbill]');if(s){if(s.tagName==='TR'&&selTxt())return;showBill(+s.dataset.showbill);return}const p=e.target.closest('[data-pay]');if(p)payDlg(getBill(+p.dataset.pay))});
 
 const TH_MF=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-let psM=TODAY.getMonth(),psY=TODAY.getFullYear(),psDay=null;
+let psM=TODAY.getMonth(),psY=TODAY.getFullYear(),psDay=null,psAll=false;
 const dkey=d=>iso(new Date(d.getFullYear(),d.getMonth(),d.getDate()+0)).slice(0,10);
 const fullBE=d=>`${d.getDate()} ${TH_MF[d.getMonth()]} ${d.getFullYear()+543}`;
 // สถานะเอกสารของบิล ใช้คำเดียวกันทุกหน้า: รองานขนส่ง → พร้อมรับ → รับแล้ว
@@ -3961,24 +3961,42 @@ const dlvOf=b=>{const x=stepOf(jobSteps(b),'dlv');return{...x,l:(DLV_L[x.st]||DL
 const dlvBtn=b=>{const x=dlvOf(b);return x.st!=='now'||b.void?'':x.dlv?`<button type="button" class="btn sm" data-dlv="${b.id}">✓ ลูกค้ารับแล้ว</button>`:`<button type="button" class="btn sm" data-tka="dltdone" data-id="${b.id}">✓ ลูกค้ารับแล้ว</button>`};
 R.docs=()=>{
   if(psDay)return R.docsDay();
-  const days={};intake.forEach(b=>{const d=b.d;if(d.getMonth()!==psM||d.getFullYear()!==psY)return;const k=d.toDateString();(days[k]=days[k]||{d,list:[]}).list.push(b)});
+  const days={};intake.forEach(b=>{const d=b.d;if(d.getMonth()!==psM||d.getFullYear()!==psY||b.void||!needDlv(b))return;const k=d.toDateString();(days[k]=days[k]||{d,list:[]}).list.push(b)});
   const list=Object.values(days).sort((a,b)=>b.d-a.d);
-  const yrs=[0,1,2,3,4,5].map(i=>TODAY.getFullYear()-i);
+  // ปีที่เลือกได้ = เฉพาะช่วงที่มีบิลโหลดอยู่จริง
+  const y0=intake.reduce((m,b)=>Math.min(m,b.d.getFullYear()),TODAY.getFullYear()),yrs=[];for(let y=TODAY.getFullYear();y>=y0;y--)yrs.push(y);
+  // เอกสารพร้อมรับทั้งหมด ไม่ขึ้นกับวันที่เปิดบิล
+  const ready=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&dlvOf(b).st==='now').map(b=>[b.id,b])).values()].sort((a,z)=>a.d-z.d);
+  const waitN=intake.filter(b=>!b.void&&dlvOf(b).st==='wait').length;
+  const what=b=>{const k=dltKind(b);return k?(Array.isArray(k)?k.join(', '):String(k)):b.items.filter(i=>/พ\.?ร\.?บ|ประกัน|ป้าย|เล่ม|โอน|ย้าย/.test(i[0])).map(i=>i[0]).join(', ')};
   $('#view').innerHTML=`<div class="ps-scope">
+    <div class="ui-card ps-ready"><div class="ui-card-h"><h2>📦 เอกสารพร้อมรับทั้งหมด <span class="ui-pill info">${ready.length} คัน</span></h2><span class="sub">ทุกคันที่เอกสาร/ป้ายพร้อมให้ลูกค้ามารับ ไม่ขึ้นกับวันที่เปิดบิล${waitN?` · รองานขนส่งอีก ${waitN} คัน`:''}</span>${ready.length?'<button type="button" class="btn line sm non-printable" id="ps-rprint">🖨️ พิมพ์ใบเซ็นรับ</button>':''}</div>
+      ${ready.length?`<div style="overflow-x:auto"><table class="ui-tbl stack"><thead><tr><th>วันที่เปิดบิล</th><th>ทะเบียน</th><th>ลูกค้า</th><th>เอกสาร</th><th>รอมาแล้ว</th><th></th></tr></thead><tbody>
+        ${ready.map(b=>{const dd=Math.max(0,Math.round((TODAY-new Date(b.d.getFullYear(),b.d.getMonth(),b.d.getDate()))/DAY));return `<tr><td data-l="วันที่เปิดบิล">${fmt(b.d)}</td><td data-l="ทะเบียน"><button type="button" class="pt-plate pt-open" data-showbill="${b.id}" title="เปิดบิล">${esc(b.plate)} ${esc(b.prov||'')} ›</button></td>
+          <td data-l="ลูกค้า">${esc(b.name||'')}${b.tel?`<br><small class="sub">${esc(b.tel)}</small>`:''}</td><td data-l="เอกสาร">${esc(what(b)||'-')}${b.doc?`<br><small class="sub">เล่มที่นำมา: ${esc(b.doc)}</small>`:''}</td>
+          <td data-l="รอมาแล้ว">${dd} วัน</td><td>${dlvBtn(b)}</td></tr>`}).join('')}</tbody></table></div>`:'<div class="ui-empty">ไม่มีเอกสารที่รอลูกค้ามารับ</div>'}</div>
     <div class="ps-head-card"><div class="ps-head-title">📋 สำหรับลูกค้าเซ็นรับเอกสาร</div><div class="ps-head-sub">เลือกเดือน/ปีเพื่อดูรายวัน</div>
       <div class="ps-picker-row"><select class="ps-picker-select" id="psm">${TH_MF.map((m,i)=>`<option value="${i}" ${i===psM?'selected':''}>${m}</option>`).join('')}</select>
       <select class="ps-picker-select" id="psy">${yrs.map(y=>`<option value="${y}" ${y===psY?'selected':''}>${y+543}</option>`).join('')}</select></div></div>
     <div class="ps-section-label">ข้อมูลใน เดือน${TH_MF[psM]} ${psY+543}</div>
     <div class="ps-list">${list.length?list.map(x=>`<button class="ps-date-card" data-day="${x.d.getTime()}"><span class="ps-date-info"><span class="ps-date-main">${fullBE(x.d)}</span></span>${(()=>{const r=x.list.filter(b=>!b.void&&dlvOf(b).st==='now').length,w=x.list.filter(b=>!b.void&&dlvOf(b).st==='wait').length;return (r?`<span class="ui-pill info">พร้อมรับ ${r}</span>`:'')+(w?`<span class="ui-pill warn">รองานขนส่ง ${w}</span>`:'')})()}<span class="ps-car-badge">🚗 ${x.list.length} คัน</span><span class="ps-chev">›</span></button>`).join(''):`<div class="ps-empty"><div class="ps-emoji">📭</div>ไม่มีข้อมูลในเดือนนี้</div>`}</div></div>`;
   $('#psm').onchange=e=>{psM=+e.target.value;R.docs()};$('#psy').onchange=e=>{psY=+e.target.value;R.docs()};
-  document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{psDay=new Date(+b.dataset.day);R.docs()});
+  document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{psDay=new Date(+b.dataset.day);psAll=false;R.docs()});
+  if($('#ps-rprint'))$('#ps-rprint').onclick=()=>signSheet(ready,'เอกสารพร้อมรับ ณ วันที่ '+beFull(TODAY));
 };
+// ใบให้ลูกค้าเซ็นรับเอกสาร (A4)
+function signSheet(list,sub){printReport({title:'ทะเบียนลูกค้าเซ็นรับเอกสาร',sub:sub+' · '+list.length+' คัน',
+  body:`<style>table.pr.sg td{height:13mm;vertical-align:middle}table.pr.sg td.sg{border-bottom:1px dotted #94a3b8}table.pr.sg .pl{font-weight:700;color:#14248f}</style>
+  <table class="pr sg"><thead><tr><th style="width:8mm">ที่</th><th style="width:34mm">ทะเบียนรถ</th><th style="width:26mm">เอกสารที่นำมา</th><th style="width:44mm">ชื่อ-นามสกุล</th><th>ลงชื่อผู้รับเอกสาร</th><th style="width:22mm">วันที่รับ</th></tr></thead><tbody>
+  ${list.map((b,i)=>`<tr><td class="c">${i+1}</td><td><span class="pl">${esc(b.plate)}</span><br><small>${esc(b.prov||'')}</small></td><td>${esc(b.doc||'สำเนา')}</td><td>${esc(b.prefix||'คุณ')} ${esc(b.name)}<br><small>${esc(b.no||'')}</small></td><td class="sg"></td><td class="sg"></td></tr>`).join('')}</tbody></table>`,
+  sign:['ผู้ส่งมอบเอกสาร']})}
 R.docsDay=()=>{if(!psDay){go('docs');return}
   // หน้าสำหรับลูกค้าเซ็นรับเอกสาร (paper_type.php ของ easyth)
-  const d=psDay;const list=intake.filter(b=>b.d.toDateString()===d.toDateString()).sort((a,z)=>(a.t||'').localeCompare(z.t||''));
+  const d=psDay;const day=intake.filter(b=>b.d.toDateString()===d.toDateString()).sort((a,z)=>(a.t||'').localeCompare(z.t||''));
+  const list=psAll?day:day.filter(b=>!b.void&&needDlv(b)),hid=day.length-list.length;
   const nb=s=>esc(s).replace(/ /g,'&nbsp;');
   $('#view').innerHTML=`<div class="pt">
-    <div class="pt-head"><div><span class="pt-title">สำหรับลูกค้าเซ็นรับเอกสาร</span><span class="pt-sub">วันที่ ${fullBE(d)}</span></div>
+    <div class="pt-head"><div><span class="pt-title">สำหรับลูกค้าเซ็นรับเอกสาร</span><span class="pt-sub">วันที่ ${fullBE(d)} · ${psAll?'ทุกคัน':'เฉพาะคันที่มีเอกสารต้องส่งมอบ'}${hid||psAll?` <a href="#" class="non-printable" id="pt-all">${psAll?'แสดงเฉพาะคันที่มีเอกสาร':`แสดงทุกคัน (+${hid})`}</a>`:''}</span></div>
       <div class="pt-actions non-printable">
         <a class="pt-btn pt-back" href="#" id="pt-back">← เลือกวันอื่น</a>
         <a class="pt-btn pt-print" href="#" id="pt-print"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>พิมพ์เอกสาร A4</a>
@@ -3989,12 +4007,8 @@ R.docsDay=()=>{if(!psDay){go('docs');return}
       <td data-label="ลงชื่อผู้รับเอกสาร"><div class="pt-signbox"></div></td>
       <td class="non-printable" data-label="สถานะเอกสาร"><div class="pt-st">${(()=>{const x=dlvOf(b);return b.void?'<span class="ui-pill bad">ยกเลิกบิล</span>':`<span class="ui-pill ${x.c}">${x.l}</span>${x.st==='done'&&(x.sub||'').replace(/^รับแล้ว( · )?/,'')?`<small>โดย ${esc(x.sub.replace(/^รับแล้ว( · )?/,''))}</small>`:''}${dlvBtn(b)}`})()}</div></td></tr>`).join('')||'<tr><td colspan="6" style="color:#888;padding:24px">ไม่มีรายการในวันนี้</td></tr>'}</tbody></table></div>`;
   $('#pt-back').onclick=e=>{e.preventDefault();psDay=null;go('docs')};
-  $('#pt-print').onclick=e=>{e.preventDefault();if(!list.length){alert('ไม่มีรายการในวันนี้');return}
-    printReport({title:'ทะเบียนลูกค้าเซ็นรับเอกสาร',sub:'วันที่ '+beFull(d)+' · '+list.length+' คัน',
-      body:`<style>table.pr.sg td{height:13mm;vertical-align:middle}table.pr.sg td.sg{border-bottom:1px dotted #94a3b8}table.pr.sg .pl{font-weight:700;color:#14248f}</style>
-      <table class="pr sg"><thead><tr><th style="width:8mm">ที่</th><th style="width:34mm">ทะเบียนรถ</th><th style="width:26mm">เอกสารที่นำมา</th><th style="width:44mm">ชื่อ-นามสกุล</th><th>ลงชื่อผู้รับเอกสาร</th><th style="width:22mm">วันที่รับ</th></tr></thead><tbody>
-      ${list.map((b,i)=>`<tr><td class="c">${i+1}</td><td><span class="pl">${esc(b.plate)}</span><br><small>${esc(b.prov||'')}</small></td><td>${esc(b.doc||'สำเนา')}</td><td>${esc(b.prefix||'คุณ')} ${esc(b.name)}<br><small>${esc(b.no||'')}</small></td><td class="sg"></td><td class="sg"></td></tr>`).join('')}</tbody></table>`,
-      sign:['ผู้ส่งมอบเอกสาร']})};
+  $('#pt-print').onclick=e=>{e.preventDefault();if(!list.length){alert('ไม่มีรายการในวันนี้');return}signSheet(list,'วันที่ '+beFull(d))};
+  if($('#pt-all'))$('#pt-all').onclick=e=>{e.preventDefault();psAll=!psAll;R.docsDay()};
 };
 /* ข่าวสาร */
 const NEWS=[{id:3,t:'ร้านเปิดรับตรวจสภาพวันอาทิตย์ เริ่มเดือนพฤศจิกายน',d:plus(-2),src:'line'},{id:2,t:'อัปเดตระบบ: แจ้งเตือนลูกค้าผ่าน LINE ก่อนภาษีหมดอายุ',d:plus(-20),src:'facebook'},{id:1,t:'อัตราค่าพ.ร.บ. ปี 2570 (ตัวอย่างประกาศ)',d:plus(-48),src:'facebook',read:true}];
