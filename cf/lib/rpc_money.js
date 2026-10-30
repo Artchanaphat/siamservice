@@ -55,6 +55,8 @@ export const MONEY={
     const vItems=[...(st.dlt_items_tax||['ค่าภาษีรถ','ค่าฝากต่อภาษี']),...(st.dlt_items_tr||['ค่าโอน','ค่าย้าย','ค่าโอนย้าย','ค่าเปลี่ยนสี','ค่าตรวจสภาพโอน','ค่าเรื่อง'])];
     // ทำทุกสาขาพร้อมกัน
     const out=await Promise.all((await all(env,'select id,code,name from branches where active=1 order by id')).map(async b=>{const B=b.id;
+      // แต่ละส่วนไม่ขึ้นต่อกัน: ถามฐานข้อมูลพร้อมกัน
+      const [today,close,qx,outx,todo,follow,[mtd,prev]]=await Promise.all([(async()=>{
       const veh=await all(env,`select k,max(moto) moto from (
           select coalesce(json_extract(snapshot,'$.plate'),'')||'|'||coalesce(json_extract(snapshot,'$.prov'),'') k,max(instr(coalesce(json_extract(snapshot,'$.type'),''),'จักรยานยนต์')>0) moto from bills where branch_id=? and status<>'void' and bill_at>=? and bill_at<? group by 1
           union all select plate||'|'||province,max(car_type in ('รย.12','รย.17')) from insp_queue q where branch_id=? and created_at>=? and created_at<? and billed=0
@@ -66,6 +68,7 @@ export const MONEY={
           coalesce(sum(case when ${m(OTH,'m')} then a end),0) other,coalesce(sum(k='refund'),0) ref_n,coalesce(-sum(case when k='refund' then a end),0) ref_sum
         from (select coalesce(method,'') m,kind k,case when kind='refund' then -amount else amount end a from payments where branch_id=? and paid_at>=? and paid_at<? and rejected=0 and (verified=1 or kind='refund'))`,B,t0,t1));
       Object.assign(today,await one(env,`select count(*) pend_n,coalesce(sum(amount),0) pend_sum from payments where branch_id=? and paid_at>=? and paid_at<? and kind='pay' and verified=0 and rejected=0`,B,t0,t1));
+      return today})(),(async()=>{
       const cc=await all(env,'select * from cash_closes where branch_id=? and close_date=? order by staff_name',B,d);
       const close={staff_n:(await one(env,`select count(distinct coalesce(nullif(by_name,''),'ไม่ระบุ')) n from payments where branch_id=? and paid_at>=? and paid_at<? and rejected=0 and (verified=1 or kind='refund')`,B,t0,t1)).n,
         close_n:cc.length,counted_n:cc.filter(x=>x.counted_cash!=null).length,diff:cc.filter(x=>x.counted_cash!=null).reduce((t,x)=>t+x.counted_cash-x.cash-x.float_cash+x.cash_out,0),
@@ -73,21 +76,24 @@ export const MONEY={
         sum:cc.reduce((t,x)=>t+x.cash+x.transfer+x.card+x.other,0),
         rows:cc.map(x=>({staff:x.staff_name,cash:x.cash,float:x.float_cash,out:x.cash_out,counted:x.counted_cash,diff:x.counted_cash==null?null:x.counted_cash-x.cash-x.float_cash+x.cash_out,note:x.note||''}))};
       const ack=await one(env,'select ack_by by_,ack_note note,ack_at at from close_acks where branch_id=? and close_date=?',B,d);close.ack=ack?{by:ack.by_,note:ack.note,at:ack.at}:null;
-      Object.assign(today,{q_all:(await one(env,'select count(*) n from insp_queue where branch_id=? and created_at>=? and created_at<?',B,t0,t1)).n,
+      return close})(),(async()=>{
+      return{q_all:(await one(env,'select count(*) n from insp_queue where branch_id=? and created_at>=? and created_at<?',B,t0,t1)).n,
         q_wait:(await one(env,`select count(*) n from insp_queue where branch_id=? and created_at>=? and created_at<? and status='wait'`,B,t0,t1)).n,
         q_check:(await one(env,`select count(*) n from insp_queue where branch_id=? and created_at>=? and created_at<? and status='check'`,B,t0,t1)).n,
         docs_wait:(await one(env,`select count(*) n from dlt_jobs j join bills bi on bi.id=j.bill_id where bi.branch_id=? and bi.status<>'void' and j.status<>'done' and bi.bill_at>=?`,B,a400)).n,
         last:[(await one(env,'select max(created_at) x from bills where branch_id=? and bill_at>=? and bill_at<?',B,t0,t1)).x,(await one(env,'select max(paid_at) x from payments where branch_id=? and paid_at>=? and paid_at<?',B,t0,t1)).x,
-          (await one(env,'select max(coalesce(updated_at,created_at)) x from insp_queue where branch_id=? and created_at>=? and created_at<?',B,t0,t1)).x].filter(Boolean).sort().pop()||null});
+          (await one(env,'select max(coalesce(updated_at,created_at)) x from insp_queue where branch_id=? and created_at>=? and created_at<?',B,t0,t1)).x].filter(Boolean).sort().pop()||null}})(),(async()=>{
       const sm=async(t,dc,ex='')=>(await one(env,`select coalesce(sum(amount),0) s from ${t} where branch_id=? and ${dc}=?${ex}`,B,d)).s;
       const outx={exp:await sm('expenses','exp_date'),exp_n:(await one(env,'select count(*) n from expenses where branch_id=? and exp_date=?',B,d)).n,remit:await sm('remits','remit_date'),
         owner:await sm('cash_outs','out_date'," and kind='owner'"),bank:await sm('cash_outs','out_date'," and kind='bank'"),advance:await sm('cash_outs','out_date'," and kind='advance'"),other:await sm('cash_outs','out_date'," and kind='other'"),drawer:await drawerOut(env,B,d,null)};
+      return outx})(),(async()=>{
       const todo={transfers:(await all(env,`select p.id,p.bill_id,bi.bill_no,json_extract(bi.snapshot,'$.plate') plate,json_extract(bi.snapshot,'$.name') name,p.amount amt,p.by_name by_,p.paid_at at,coalesce(p.note,'') note,(select count(*) from bill_files f where f.bill_id=p.bill_id) files
           from payments p join bills bi on bi.id=p.bill_id where p.branch_id=? and p.kind='pay' and p.verified=0 and p.rejected=0 order by p.paid_at`,B)).map(({by_,...x})=>({...x,by:by_})),
         bill_reqs:(await all(env,`select r.id,r.bill_id,bi.bill_no,json_extract(bi.snapshot,'$.plate') plate,r.kind,r.amount amt,r.reason,r.requested_by by_,r.requested_at at,bi.total-bi.refund_total total from bill_requests r join bills bi on bi.id=r.bill_id where r.branch_id=? and r.status='pending' order by r.requested_at`,B)).map(({by_,...x})=>({...x,by:by_})),
         exp_reqs:(await all(env,`select id,category cat,amount amt,note,req_by by_,req_date d,photo<>'' photo from exp_requests where branch_id=? and status='pending' order by created_at`,B)).map(({by_,...x})=>({...x,by:by_,photo:!!x.photo})),
         unclosed:(await all(env,`select distinct date(p.paid_at,'+7 hours') d from payments p where p.branch_id=? and p.paid_at>=? and p.paid_at<? and p.rejected=0 and (p.verified=1 or p.kind='refund')
           and not exists (select 1 from cash_closes c where c.branch_id=? and c.close_date=date(p.paid_at,'+7 hours')) order by d`,B,new Date(new Date(t0).getTime()-7*864e5).toISOString(),t1,B)).map(x=>x.d)};
+      return todo})(),(async()=>{
       const PD=`left join (select bill_id,sum(case when kind='refund' then -amount when verified=1 and rejected=0 then amount else 0 end) paid from payments group by bill_id) p on p.bill_id=bi.id`;
       const follow=await one(env,`select coalesce(sum(max(bi.total-bi.refund_total-coalesce(p.paid,0),0)),0) debt,coalesce(sum(bi.total-bi.refund_total-coalesce(p.paid,0)>0.004),0) debt_n,
         coalesce(sum(case when bi.bill_at<? then max(bi.total-bi.refund_total-coalesce(p.paid,0),0) else 0 end),0) debt_old from bills bi ${PD} where bi.branch_id=? and bi.status<>'void' and bi.bill_at>=?`,a30,B,a400);
@@ -97,7 +103,9 @@ export const MONEY={
       follow.dlt_wait=(await one(env,`select count(*) n from dlt_jobs j join bills bi on bi.id=j.bill_id where bi.branch_id=? and bi.status<>'void' and j.status='plate'`,B)).n;
       Object.assign(follow,await one(env,`select coalesce(sum(amount),0) adv,count(distinct person) adv_n from cash_outs where branch_id=? and kind='advance' and settled_ym=''`,B));
       follow.remit_paid_mtd=(await one(env,'select coalesce(sum(amount),0) s from remits where branch_id=? and remit_date>=? and remit_date<=?',B,m0,d)).s;
-      const [mtd,prev]=await Promise.all([monthPart(env,B,m0,d,p_pass),monthPart(env,B,pm0,pm1,p_pass)]);
+      return follow})(),
+      Promise.all([monthPart(env,B,m0,d,p_pass),monthPart(env,B,pm0,pm1,p_pass)])]);
+      Object.assign(today,qx);
       return{id:B,code:b.code,name:b.name,today,close,out:outx,mtd,prev,todo,follow}}));
     return{day:d,prev_from:pm0,prev_to:pm1,branches:out}},
 
