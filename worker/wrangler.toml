@@ -1,0 +1,17 @@
+# siam-api: หลังบ้านที่อยู่ข้างฐานข้อมูล (D1 อยู่โตเกียว NRT) — deploy อัตโนมัติจาก GitHub (Root directory = worker)
+name = "siam-api"
+main = "index.js"
+compatibility_date = "2025-01-01"
+workers_dev = false
+
+[placement]
+region = "aws:ap-northeast-1"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "siam-db"
+database_id = "982b89e3-39e8-49de-870c-bb50942f1a7f"
+
+[[r2_buckets]]
+binding = "FILES"
+bucket_name = "siam-files"
