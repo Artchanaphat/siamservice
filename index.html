@@ -2433,6 +2433,11 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 #view .hw-g{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 
 input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+
+.ss-it.ss-pin{background:#fffbeb}
+.ss-it.ss-pin.on,.ss-it.ss-pin:hover{background:#fef3c7}
+.ss-it.ss-pin-last{border-bottom:1px solid #fcd34d;margin-bottom:4px}
+.ss-pi{font-style:normal;font-size:12px;margin-right:6px}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -5212,7 +5217,7 @@ function ssel(sel){
   let items=[],ai=-1;
   const txt=()=>sel.selectedIndex>=0?sel.options[sel.selectedIndex].text:'';
   const mark=()=>dd.querySelectorAll('.ss-it').forEach((el,i)=>{el.classList.toggle('on',i===ai);if(i===ai)el.scrollIntoView({block:'nearest'})});
-  const draw=f=>{f=(f||'').toLowerCase();items=[];let h='';const one=(o,g)=>{if(!o.value||!o.text.toLowerCase().includes(f))return'';items.push(o);return `<div class="ss-it${g?' ss-gi':''}${o.value===sel.value?' sel':''}" data-i="${items.length-1}">${esc(o.text)}</div>`};
+  const draw=f=>{f=(f||'').toLowerCase();items=[];let h='';const one=(o,g)=>{if(!o.value||!o.text.toLowerCase().includes(f))return'';items.push(o);const pn=o.dataset.pin,nx=o.nextElementSibling,last=pn&&!f&&!(nx&&nx.dataset.pin);return `<div class="ss-it${g?' ss-gi':''}${o.value===sel.value?' sel':''}${pn?' ss-pin':''}${last?' ss-pin-last':''}" data-i="${items.length-1}">${pn?'<i class="ss-pi" title="ปักหมุดไว้">📌</i>':''}${esc(o.text)}</div>`};
     [...sel.children].forEach(c=>{if(c.tagName==='OPTGROUP'){const inner=[...c.children].map(o=>one(o,1)).join('');if(inner)h+=`<div class="ss-gl">${esc(c.label)}</div>`+inner}else h+=one(c)});
     ai=items.findIndex(o=>o.value===sel.value);dd.innerHTML=h||'<div class="ss-no">ไม่พบรายการ</div>';mark()};
   const pick=i=>{const o=items[i];if(!o)return;sel.value=o.value;inp.value=o.text;dd.hidden=true;sel.dispatchEvent(new Event('change',{bubbles:true}))};
@@ -5642,6 +5647,8 @@ R.add=(E)=>{if(!E)billKey=null;
     receiptDlg(bill,'แบบ A4',{car:c,paid,chg});
   };
   // ช่องค้นหา + ตำบลอัตโนมัติ
+  // รายการที่ปักหมุดไว้ในตั้งค่า: แสดงหมุดในช่องเลือก
+  [['b-brand','brands'],['b-body','bodies'],['c-pre','prefixes']].forEach(([id,k])=>{const e=$('#'+id),P=new Set(((SET.pins||{})[k]||[]).map(x=>String(x).toLowerCase()));if(e)[...e.options].forEach(o=>{if(o.value&&P.has(o.value.toLowerCase()))o.dataset.pin=1})});
   ['x-city','b-city','b-type','b-body','b-brand','b-ins-type','c-pre'].forEach(id=>ssel($('#'+id)));
   tumbolAC($('#c-sub'),$('#c-dist'),$('#c-prov'),$('#c-zip'));
   ['#b-prb-co','#b-ins-co'].forEach(id=>{if($(id))listAC($(id),SET.insurers)});
