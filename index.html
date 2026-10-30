@@ -2409,6 +2409,21 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 .ov-dlg{width:min(1000px,100%);max-height:90vh;display:flex;flex-direction:column}.ov-dlg-b{padding:12px 16px;overflow:auto}.ov-dt{font-size:13.5px}.ov-dt .ov-note{color:#475569;max-width:260px}
 .ov-ev{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0 0 12px}.ov-ev dt{color:#475569}.ov-ev dd{margin:0}.ov-thumbs{display:flex;flex-wrap:wrap;gap:8px}.ov-thumbs img{width:160px;height:160px;object-fit:cover;border-radius:8px;border:1px solid #e5e9f0}
 @media (max-width:600px){.ov-big .ov-l,.ov-big>b{font-size:22px}.ov-work .ov-l{font-size:19px}.ov-h{font-size:16px}}
+
+#bill details.bf-more{border:1px dashed #cbd5e1;border-radius:10px;padding:0 12px;margin:4px 0}
+#bill details.bf-more>summary{cursor:pointer;padding:10px 0;font-weight:600;color:#1d4ed8;font-size:14.5px;list-style:none}
+#bill details.bf-more>summary::-webkit-details-marker{display:none}
+#bill details.bf-more>summary::before{content:'▸ ';}
+#bill details.bf-more[open]>summary::before{content:'▾ ';}
+#bill details.bf-more>summary em{font-style:normal;font-weight:400;color:#64748b;font-size:13px;margin-left:6px}
+#bill details.bf-more[open]{padding-bottom:10px}
+@media (max-width:600px){
+  #bill .paybar{gap:4px 14px;padding:8px 12px;flex-wrap:nowrap;justify-content:space-between}
+  #bill .paybar .pf{display:flex;flex-direction:column;gap:0;margin:0;min-width:0;flex:1 1 0}
+  #bill .paybar .pf>span{font-size:12px;white-space:nowrap}
+  #bill .paybar .pf em{display:none}
+  #bill .paybar #sum-total,#bill .paybar #pay,#bill .paybar #change{font-size:17px;padding:0;min-width:0;width:auto;max-width:110px;height:auto}
+}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -5278,13 +5293,15 @@ R.add=(E)=>{if(!E)billKey=null;
     <div class="card sec">
       <div class="sech">- ข้อมูลทะเบียนรถ -</div>
       <div class="form">
-        ${D('b-reg','วันจดทะเบียนรถ *')}
         <div class="field"><span>ป้ายทะเบียน *</span><div class="fc"><input id="b-cha" placeholder="ตัวอักษร" required style="width:62px"><input id="b-num" placeholder="ตัวเลข" required inputmode="numeric" style="width:62px"><span class="il">จังหวัด</span><select id="b-city" style="width:150px">${opt(PROVS,LIVE?'นราธิวาส':'กรุงเทพมหานคร')}</select></div></div>
+        ${D('b-reg','วันจดทะเบียนรถ *')}
         <label class="field"><span>ประเภทรถ *</span><select id="b-type"><option value="">--เลือกประเภทรถ--</option>${opt(CTYPES.filter(c=>!c[0].startsWith('ev')&&c[0]!=='other').map(c=>[c[0],c[1]]))}<optgroup label="⚡ รถไฟฟ้า (EV)">${opt(CTYPES.filter(c=>c[0].startsWith('ev')).map(c=>[c[0],c[1]]))}</optgroup><option value="other">อื่นๆ</option></select></label>
         <div class="field"><span>ลักษณะรถ</span><div class="fc"><select id="b-body" style="width:190px"><option value="">--เลือกลักษณะรถ--</option>${opt(SET.bodies)}</select><input id="b-body-other" placeholder="ระบุลักษณะรถ" maxlength="30" style="width:170px" hidden></div></div>
         <div class="field full"><span>ยี่ห้อรถ *</span><div class="fc"><select id="b-brand" style="width:170px"><option value="">--เลือกยี่ห้อรถ--</option>${opt(SET.brands)}</select><span class="il">รุ่น</span><input id="b-model" style="width:110px"><span class="il">สี</span><input id="b-color" style="width:70px"></div></div>
+        <details class="field full bf-more"><summary>ข้อมูลเพิ่มเติม <em>เลขตัวถัง · เลขเครื่อง (ไม่บังคับ)</em></summary><div class="form">
         ${F('b-chassis','เลขตัวถัง')}
         ${F('b-engine','เลขเครื่อง')}
+        </div></details>
         <div class="field full"><span>ขนาดรถ</span><div class="fc"><input id="b-cc" placeholder="CC" inputmode="numeric" maxlength="5" style="width:70px"><span class="il">น้ำหนักรถ</span><input id="b-kg" placeholder="กก." inputmode="numeric" maxlength="5" style="width:70px"><span class="hint">(ต้องระบุ ระบบถึงคำนวณภาษี+ค่าปรับ AUTO - เฉพาะรถ (รย.1-3 / รย.12)</span></div></div>
       </div>
     </div>
@@ -5362,17 +5379,19 @@ R.add=(E)=>{if(!E)billKey=null;
       <div class="sech orange">- ข้อมูลส่วนบุคคล -</div>
       <div class="form">
         <div class="field full"><span>คำนำหน้า</span><div class="fc"><select id="c-pre" style="width:150px"><option value="">--คำนำหน้า--</option>${opt(SET.prefixes)}</select><span class="il"><b class="req">*</b>ชื่อ</span><input id="c-name" required style="width:170px"><span class="il"><b class="req">*</b>นามสกุล</span><input id="c-sur" required style="width:170px"></div></div>
-        ${F('c-id','เลขที่บัตร','inputmode="numeric" maxlength="17"')}
-        ${F('c-nat','สัญชาติ','value="ไทย"')}
         ${F('c-addr','บ้านเลขที่','')}
         <div class="field"><span>ตำบล/แขวง *</span><div class="fc"><input id="c-sub" required placeholder="พิมพ์ชื่อตำบล หรือรหัสไปรษณีย์" style="width:260px"></div></div>
         ${F('c-dist','อำเภอ/เขต *','required')}
         ${F('c-prov','จังหวัด *','required')}
         ${F('c-zip','รหัสไปรษณีย์ *','required inputmode="numeric" maxlength="5"')}
         ${F('c-tel','เบอร์โทร','inputmode="tel"')}
-        <div class="field full"><span>Short Note</span><div class="fc"><input id="c-short" style="width:200px"><span class="hint">- ไม่แสดงในใบเสร็จรับเงิน (แสดงต่อท้าย "เบอร์โทร" หน้าแสดงข้อมูลรวมทั้งหมด)</span></div></div>
         <div class="field full"><span>หมายเหตุ</span><div class="fc"><input id="c-note" style="width:300px"><span class="hint">- แสดงในใบเสร็จรับเงิน</span></div></div>
+        <details class="field full bf-more"><summary>ข้อมูลเพิ่มเติม <em>เลขบัตร · สัญชาติ · ผู้มาติดต่อ · โน้ตภายใน (ไม่บังคับ)</em></summary><div class="form">
+        ${F('c-id','เลขที่บัตร','inputmode="numeric" maxlength="17"')}
+        ${F('c-nat','สัญชาติ','value="ไทย"')}
+        <div class="field full"><span>Short Note</span><div class="fc"><input id="c-short" style="width:200px"><span class="hint">- ไม่แสดงในใบเสร็จรับเงิน (แสดงต่อท้าย "เบอร์โทร" หน้าแสดงข้อมูลรวมทั้งหมด)</span></div></div>
         <div class="field full"><span>ผู้มาติดต่อ</span><div class="fc"><input id="c-ctn" placeholder="ชื่อ (ถ้าไม่ใช่เจ้าของ)" style="width:200px"><input id="c-ctt" placeholder="เบอร์โทร" inputmode="tel" style="width:140px"><span class="hint">- กรณีลูกหรือญาตินำรถมาแทนเจ้าของ บันทึกเฉพาะบิลนี้ ชื่อเจ้าของรถไม่เปลี่ยน</span></div></div>
+        </div></details>
       </div>
     </div>
    </div>
@@ -5439,14 +5458,14 @@ R.add=(E)=>{if(!E)billKey=null;
       if(R.body){if(hasOpt('b-body',R.body))$('#b-body').value=R.body;else if(hasOpt('b-body','อื่นๆ')){$('#b-body').value='อื่นๆ';$('#b-body-other').hidden=false;$('#b-body-other').value=R.body}}
       sv('b-color',R.color);sv('b-chassis',R.chassis_no);sv('b-engine',R.engine_no);sv('b-kg',R.weight_kg);
       $('#b-cc').value=hit.cc;if(R.reg_date)setDate('b-reg',R.reg_date);setDate('b-taxexp',iso(hit.tax));
-      fillOwner(hit,1);ssRefresh();autoCalc();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
+      fillOwner(hit,1);ssRefresh();autoCalc();moreSync();toast('คัดลอกข้อมูลรถและเจ้าของลงบิลแล้ว');
   };
   // ข้อมูลเจ้าของอย่างเดียว (รถคันใหม่ของลูกค้าเดิม) บันทึกแล้วรถคันใหม่จะผูกกับลูกค้าคนเดิม
   const fillOwner=(hit,inCar)=>{const cu=(hit.raw||{}).customers||{},sv=(id,val)=>{const e=$('#'+id);if(e&&val!=null&&val!=='')e.value=val};
       const nm=String(hit.name||'').split(' ');$('#c-name').value=nm[0]||'';$('#c-sur').value=nm.slice(1).join(' ');$('#c-tel').value=hit.tel||'';$('#c-prov').value=hit.prov||'';
       if(cu.prefix&&[...$('#c-pre').options].some(o=>o.value===cu.prefix))$('#c-pre').value=cu.prefix;
       sv('c-id',cu.id_card);sv('c-addr',cu.address);sv('c-sub',cu.tumbol);sv('c-dist',cu.amphoe);sv('c-prov',cu.province);sv('c-zip',cu.zipcode);sv('c-short',cu.short_note);
-      ownerPick=hit;if(inCar)return;
+      ownerPick=hit;moreSync();if(inCar)return;
       ssRefresh();toast('ดึงข้อมูลเจ้าของแล้ว กรอกทะเบียนรถคันใหม่ได้เลย');const b=$('#b-cha');if(b&&!b.value){b.scrollIntoView({block:'center'});b.focus()}
   };
   // พิมพ์ทะเบียน / ชื่อ / เบอร์ในบิลใหม่ แล้วแสดงลูกค้าเดิมที่ตรงกันใต้ช่อง คลิกเพื่อดึงข้อมูลลงบิล
@@ -5680,6 +5699,9 @@ R.add=(E)=>{if(!E)billKey=null;
 // ===== หน้าเปิดบิล / แก้ไขบิล: หัวข้อแบบขั้นตอน + แผงสรุปด้านขวา (จัดวางหลังสร้างฟอร์มเดิม ไม่แตะการคำนวณ) =====
 {const addCore=R.add;R.add=E=>{addCore(E);billLayout(E)}}
 let bfMQ=null;
+// เปิด "ข้อมูลเพิ่มเติม" เองเมื่อมีข้อมูลอยู่แล้ว หรือเป็นงานโอน/ย้าย
+function moreSync(){const tr=svcView==='tr';document.querySelectorAll('#bill .bf-more').forEach(d=>{if(d.open)return;
+  if(tr||[...d.querySelectorAll('input')].some(i=>i.value.trim()&&i.value.trim()!==i.defaultValue))d.open=true})}
 function billLayout(E){const form=$('#bill');if(!form)return;
   const main=form.querySelector('.billmain'),cards=[...main.querySelectorAll(':scope>.card.sec')],c1=cards[0],cP=cards.find(c=>c.querySelector('.sech.orange'));
   const ttl=h=>h.textContent.replace(/^\s*-\s*|\s*-\s*$/g,'').trim();
@@ -5705,6 +5727,9 @@ function billLayout(E){const form=$('#bill');if(!form)return;
     document.querySelectorAll('[data-de]').forEach(b=>b.onclick=async()=>{const k=b.dataset.de,L=await listEdit('เอกสารที่ต้องใช้ · '+b.previousElementSibling.textContent,(LISTS.docs||{})[k]||[]);if(L&&await saveListsNow(o=>{o.docs=Object.assign({},o.docs,{[k]:L})}))docDraw()})};docDraw();
   $('#bf-reset').onclick=()=>reset&&reset.click();
   // จอกว้าง: ย้ายช่องค้นหา/ยอดรวม/รายการไปแผงขวา · จอแคบ: คืนตำแหน่งเดิม (แถบยอดรวมติดล่างจอ)
+  // ช่องทะเบียนในฟอร์มค้นหาลูกค้าเดิมให้อยู่แล้ว ไม่ต้องมีช่องค้นหาซ้ำ
+  {const c0=$('#view .check-card');if(c0)c0.remove();if(!E){const f=$('#bf-find');if(f)f.remove()}}
+  moreSync();document.querySelectorAll('[data-svc]').forEach(b=>b.addEventListener('click',moreSync));
   const chk=$('#view .check-card'),bar=form.querySelector('.paybar'),list=$('#sum-list');
   const home={chk:chk&&[chk.parentNode,chk.nextSibling],bar:[bar.parentNode,bar.nextSibling],list:[list.parentNode,list.nextSibling]};
   if(bfMQ)bfMQ.onchange=null;bfMQ=matchMedia('(min-width:1361px)');
