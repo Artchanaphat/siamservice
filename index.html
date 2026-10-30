@@ -7747,7 +7747,7 @@ function rcCopy(b,o,a,label,isShop,full){const sh=shop(),debt=a.debt,cust=((b.pr
       ${debt>0?`<div class="due"><span>ค้างชำระ</span><b>${money(debt)}</b></div>`:'<div class="ok"><span>สถานะ</span><b>ชำระครบแล้ว</b></div>'}</div>
     ${qr&&a.pp?`<div class="rcx-qr"><div class="q">${a.pp}</div><small>สแกนจ่ายยอดค้าง<br>${money(debt)} บาท</small></div>`:''}
     ${qr&&a.line&&a.line.svg?`<div class="rcx-qr"><div class="q">${a.line.svg}</div><small>รับแจ้งเตือนทาง LINE<br>รหัส <b>${a.line.code}</b></small></div>`:''}
-    ${o.sign?`<div class="rcx-sign"><div><i></i><span>ผู้รับเงิน${by?' ('+esc(by)+')':''}</span></div><div><i></i><span>ผู้ชำระเงิน</span></div></div>`:''}</div>
+    ${o.sign?`<div class="rcx-sign"><div><i></i><span>ผู้รับเงิน</span></div><div><i></i><span>ผู้ชำระเงิน</span></div></div>`:''}</div>
   ${o.foot?`<div class="rcx-foot">${esc(o.foot)}</div>`:''}</section>`}
 function rcA4(b,o,a){if(o.a4==='full')return `<div class="rcx rcx-a4">${rcCopy(b,o,a,'ต้นฉบับ',false,true)}</div>`;
   return `<div class="rcx rcx-a4">${rcCopy(b,o,a,'สำหรับลูกค้า',false)}<div class="rcx-cut"><span>✂ ฉีกตามรอยปะ</span></div>${rcCopy(b,o,a,'สำหรับร้าน (สำเนา)',true)}</div>`}
@@ -7761,7 +7761,7 @@ function rcSlip(b,o,a){const sh=shop(),debt=a.debt,c=o.slip==='compact';
     <div class="row between sub"><span>รับเงินแล้ว</span><span class="num">${money(b.paid)}</span></div>${debt>0?`<div class="row between" style="color:#A32D2D"><span>ค้างชำระ</span><b class="num">${money(debt)}</b></div>`:''}
     ${!c&&a.pp?`<div class="rc-qr"><div>${a.pp}</div><div class="sub">สแกนจ่ายยอดค้าง ${money(debt)} บาท ด้วยพร้อมเพย์</div></div>`:''}
     ${!c&&a.line?a.line.svg?`<div class="rc-line"><div class="rc-lqr">${a.line.svg}</div><div><b>รับแจ้งเตือนก่อนภาษีหมดทาง LINE</b><div class="sub">สแกน QR แล้วกดส่งข้อความ หรือแอดไลน์ ${esc(SET.line_oa)} แล้วพิมพ์รหัส</div><div class="rc-code">${a.line.code}</div></div></div>`:'<div class="sub">✓ ลูกค้าผูก LINE ร้านแล้ว</div>':''}
-    <div class="rc-foot">ผู้รับเงิน ${esc(((b.pays||[]).slice(-1)[0]||{}).by||(user?user.name:''))}${o.foot?' · '+esc(o.foot):''}</div></div>`}
+    <div class="rc-foot">ผู้รับเงิน ..............................${o.foot?' · '+esc(o.foot):''}</div></div>`}
 // รายการเยอะจนล้นครึ่งหน้า: ลดขนาดตัวอักษรทีละนิดจนพอดี
 function rcShrink(root){(root||document).querySelectorAll('.rcx-copy').forEach(c=>{let f=c.classList.contains('full')?11:9.5;c.style.fontSize=f+'pt';c.style.zoom='';c.style.height='';c.style.width='';c.classList.remove('dense');
   if(c.scrollHeight<=c.clientHeight+1)return;c.classList.add('dense');
