@@ -3155,9 +3155,14 @@ function enterApp(u,resumed){user=u;document.querySelectorAll('.uname').forEach(
   let pg='home';if(resumed)try{const k=sessionStorage.getItem('siam-page'),ss=sessionStorage.getItem('siam-stsec');if(PAGE_KEEP.includes(k))pg=k;if(ss)stSec=ss}catch(e){}
   go(pg);if(!resumed)toast('เข้าสู่ระบบแล้ว ยินดีต้อนรับ '+u.name);prefetchPages(u)}
 // โหลดข้อมูลหน้าภาพรวมเจ้าของ/ปิดยอดของวันนี้ไว้ล่วงหน้า กดเข้าหน้าแล้วขึ้นทันที (เข้าหน้าแล้วจะถามเซิร์ฟเวอร์ซ้ำเพื่ออัปเดตเสมอ)
-function prefetchPages(u){if(!LIVE||!CF||!u||(u.role!=='owner'&&u.role!=='head'))return;setTimeout(()=>{const day=iso(TODAY);
+function prefetchPages(u){if(!LIVE||!CF||!u)return;setTimeout(()=>{const day=iso(TODAY);
   if(u.role==='owner'&&!ovData)DB.ownerOverview(day).then(d=>{if(!ovData&&d&&d.day===day){ovData=d;ovAt=new Date()}}).catch(()=>{});
-  if(!clCached(day)&&cur!=='close')closeLoad(day,true).catch(()=>{})},1500)}
+  if(!clCached(day)&&cur!=='close')closeLoad(day,true).catch(()=>{});
+  // หน้าอื่นที่ต้องถามเซิร์ฟเวอร์: โหลดเก็บไว้ก่อน (ไม่ใช้เวลาของหน้าที่เปิดอยู่)
+  const ym=ymOf(TODAY),m0=ymOf(new Date(TODAY.getFullYear(),TODAY.getMonth()-11,1)),w=(k,f)=>{if(!pcHas(k))pc(k,f).catch(()=>{})};
+  if(useQ())w('queue',()=>DB.listQueue());w('exp|'+ym,()=>DB.listExpenses(ym));w('exp2',()=>Promise.all([DB.listExpReq(),DB.listAdvances()]));
+  w('remit|'+ym,()=>Promise.all([DB.listRemits(ym),ym>MO_START?DB.remitsBefore(ym):0]));
+  if(u.role==='owner'){w('dash|'+m0,()=>DB.monthlyStats(m0+'-01'));w('staff',()=>DB.listStaff());w('bklist',()=>DB.backupList())}},1500)}
 const lerr=m=>{$('#lerr').textContent=m;$('#lerr').hidden=false};
 // แปลงข้อความผิดพลาดจากระบบเป็นภาษาไทยที่เข้าใจง่าย
 const loginMsg=err=>{const m=String(err&&err.message||'');console.warn('login:',m);
@@ -6003,10 +6008,22 @@ const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==
   // ระบบหลักคือ Cloudflare ตั้งแต่ 30 ต.ค. 69 · ?cf=0 = เปิดระบบเดิม (Supabase) ไว้ดึงข้อมูลย้อนหลัง
   return localStorage.getItem('siam-backend')!=='sb'}catch(_){return true}})();
 // นับครั้งที่ข้อมูลเปลี่ยน (เขียนเอง หรือเครื่องอื่นเปลี่ยนแล้วซิงก์มา) ใช้บอกว่าข้อมูลที่จำไว้ของหน้าปิดยอดยังใช้ได้ไหม
-let DATA_VER=0;
+let DATA_VER=0,SYNC_VER=0;
+// ข้อมูลที่หน้าต่างๆ โหลดล่าสุด: กดเข้าหน้าซ้ำแสดงทันที แล้วถามเซิร์ฟเวอร์ซ้ำเบื้องหลัง (ถ้าเปลี่ยนจะวาดหน้าใหม่ให้เอง)
+// ถ้าเครื่องนี้บันทึกอะไรไปแล้ว (DATA_VER เปลี่ยน) จะไม่ใช้ของเดิม โหลดใหม่ให้เลย
+const PC=new Map();
+const pcKey=key=>LIVE&&CF&&DB.branch?DB.branch.id+'|'+key:null;
+const pcHas=key=>{const k=pcKey(key),c=k&&PC.get(k);return !!c&&c.v===DATA_VER};
+function pc(key,load,page){const k=pcKey(key),c=k&&PC.get(k);
+  const fresh=()=>{const v=DATA_VER;return load().then(d=>{if(k)PC.set(k,{v,d:structuredClone(d),j:JSON.stringify(d)});return d})};
+  if(!c||c.v!==DATA_VER)return fresh();
+  if(page)fresh().then(d=>{if(JSON.stringify(d)===c.j||cur!==page||pcBusy())return;R[page]()}).catch(()=>{});
+  return Promise.resolve(structuredClone(c.d))}
+// กำลังพิมพ์หรือเปิดหน้าต่างค้างอยู่: ไม่วาดหน้าใหม่ทับ (ครั้งหน้าที่เข้าหน้าจะเห็นข้อมูลล่าสุด)
+const pcBusy=()=>{const a=document.activeElement;return !!(a&&a.closest&&a.closest('#view input,#view textarea,#view select'))||!!document.querySelector('.uim,.ask-ov')};
 function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   const tok=()=>{try{const v=store.getItem(KEY);return v?JSON.parse(v).token:null}catch(_){return null}};
-  async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;if(!(p==='q'&&body&&body.op==='select')&&!/^(auth\/|files\/sign|rpc\/owner_)/.test(p))DATA_VER++;
+  async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;if(!(p==='q'&&body&&body.op==='select')&&!/^(auth\/|files\/sign|rpc\/(owner_overview|owner_detail|monthly_stats|backup_list|backup_get|sms_recent|sms_credit|line_schedule|line_preview|line_secret_status|sms_secret_status|schema_status)$)/.test(p))DATA_VER++;
     let r;try{r=await fetch(API+p,{method:'POST',headers:raw?{...h,'content-type':raw}:h,body:raw?body:JSON.stringify(body||{})})}catch(e){return{data:null,error:{message:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ต'}}}
     let j;try{j=await r.json()}catch(_){return{data:null,error:{message:'เซิร์ฟเวอร์ตอบกลับผิดพลาด ('+r.status+')'}}}
     if(r.status===401&&p!=='auth/login'){try{store.removeItem(KEY)}catch(_){}}
@@ -6029,7 +6046,7 @@ function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   // ซิงก์ข้ามเครื่อง: ถามรายการที่เปลี่ยนทุก 15 วินาที (แทน Realtime)
   const chans=new Set();let seq=0,timer=null;
   async function poll(){if(!tok()||document.hidden||!chans.size)return;const r=await fetch(API+'changes?since='+seq,{headers:{authorization:'Bearer '+tok()}}).then(x=>x.json()).catch(()=>null);
-    if(!r||r.error)return;if(seq&&r.rows&&r.rows.length)DATA_VER++;if(seq&&r.rows)for(const x of r.rows){const n=x.tbl==='bills'?{id:+x.row_id,branch_id:x.branch_id}:x.bill_id?{id:+x.row_id,bill_id:x.bill_id,branch_id:x.branch_id}:{id:+x.row_id};
+    if(!r||r.error)return;if(seq&&r.rows&&r.rows.length)SYNC_VER++;if(seq&&r.rows)for(const x of r.rows){const n=x.tbl==='bills'?{id:+x.row_id,branch_id:x.branch_id}:x.bill_id?{id:+x.row_id,bill_id:x.bill_id,branch_id:x.branch_id}:{id:+x.row_id};
       for(const c of chans)for(const [t,cb] of c.h)if(t===x.tbl)try{cb({new:n,old:{}})}catch(e){console.warn(e)}}seq=r.seq||seq}
   return{
     from:t=>new Q(t),
@@ -6606,9 +6623,9 @@ function printEl(el){el.classList.add('print-me');document.body.classList.add('p
 let closeDate=null;const CLOSES={};
 // ข้อมูลหน้าปิดยอดที่โหลดล่าสุด (วัน+สาขา) ใช้ซ้ำได้ถ้ายังไม่มีการเปลี่ยนแปลงข้อมูลตั้งแต่โหลด
 let clCache=null;const clPick=x=>({saved:x.saved,outs:x.outs,outErr:x.outErr,lastF:x.lastF});
-const clCached=day=>LIVE&&CF&&clCache&&DB.branch&&clCache.k===day+'|'+DB.branch.id&&clCache.v===DATA_VER?clCache:null;
+const clCached=day=>LIVE&&CF&&clCache&&DB.branch&&clCache.k===day+'|'+DB.branch.id&&clCache.v===DATA_VER+'|'+SYNC_VER?clCache:null;
 // ถามข้อมูล 3 อย่างพร้อมกัน (ปิดยอด, เงินจ่ายออกจากลิ้นชัก, เงินทอนตั้งต้นล่าสุด) ไม่ต้องรอทีละอย่าง
-async function closeLoad(day,quiet){const v=DATA_VER,k=LIVE&&CF&&DB.branch?day+'|'+DB.branch.id:'';
+async function closeLoad(day,quiet){const v=DATA_VER+'|'+SYNC_VER,k=LIVE&&CF&&DB.branch?day+'|'+DB.branch.id:'';
   const pOuts=dayOuts(day).then(v=>({v}),err=>({err})),pFl=LIVE?DB.lastFloats(day).catch(()=>({})):Promise.resolve({});
   let saved={},bad=false;try{saved=LIVE?await DB.listCloses(day):(CLOSES[day]||{})}catch(err){bad=true;if(!quiet)toast('ยังโหลดข้อมูลปิดยอดไม่ได้: '+err.message)}
   const o=await pOuts,r={saved,outs:o.err?[]:o.v,outErr:o.err?o.err.message:'',lastF:await pFl};
@@ -6818,7 +6835,7 @@ R.backup=()=>{const now=new Date();expMonth=expMonth||(now.getFullYear()+'-'+Str
     const out=JSON.stringify(meta).slice(0,-1)+',"data":'+txt+'}',name=`siam-db-backup-${day}.json`;
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([out],{type:'application/json'}));a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);return name};
   const autoList=async()=>{const box=$('#bk-auto-list');if(!box||!LIVE)return;
-    try{const L=await DB.backupList();if(!$('#bk-auto-list'))return;
+    try{const L=await pc('bklist',()=>DB.backupList(),'backup');if(!$('#bk-auto-list'))return;
       const last=L[0],age=last?(Date.now()-new Date(last.created_at))/36e5:null;
       box.innerHTML=(!last?'<div class="ui-note warn">⏳ <span>ยังไม่มีชุดสำรอง กด "สำรองตอนนี้" ได้เลย</span></div>':age>30?`<div class="ui-note bad">⚠️ <span><b>สำรองอัตโนมัติไม่ได้ทำงาน</b> ชุดล่าสุดเมื่อ ${fmtDT(last.created_at)}</span></div>`:`<div class="ui-note ok">✅ <span>สำรองล่าสุด ${fmtDT(last.created_at)}</span></div>`)
         +(L.length?`<table class="ui-tbl bk-tbl"><thead><tr><th>วันเวลา</th><th>แบบ</th><th class="r">บิล</th><th class="r">ขนาด</th><th></th></tr></thead><tbody>${L.map(x=>`<tr><td>${fmtDT(x.created_at)}</td><td>${x.kind==='manual'?'กดเอง':'อัตโนมัติ'}</td><td class="r">${(x.counts||{}).bills??'–'}</td><td class="r">${(x.size_bytes/1048576).toFixed(2)} MB</td><td class="r"><button class="btn line sm" data-bkdl="${x.id}" data-day="${iso(new Date(x.created_at))}">📥 ดาวน์โหลด</button></td></tr>`).join('')}</tbody></table>`:'');
@@ -6969,7 +6986,7 @@ const Q_ST={wait:['รอตรวจ','#b45309','#fef3c7'],check:['กำลั
 const Q_TYPES=[['รย.1','รถเก๋ง / รถยนต์นั่ง (รย.1)','sedan'],['รย.2','รถตู้ (รย.2)','van'],['รย.3','รถกระบะ (รย.3)','pickup'],['รย.12','รถจักรยานยนต์ (รย.12)','moto'],['อื่นๆ','อื่นๆ','']];
 const hmOf=t=>{const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
 const minsSince=t=>Math.max(0,Math.round((Date.now()-new Date(t))/60000));
-async function qReload(){if(!LIVE)return;const rows=await DB.listQueue();QUEUE.length=0;QUEUE.push(...rows)}
+async function qReload(page){if(!LIVE)return;const rows=await pc('queue',()=>DB.listQueue(),page);QUEUE.length=0;QUEUE.push(...rows)}
 // เติมฟอร์มเข้าคิวจากข้อมูลรถ (ใช้ทั้งช่องค้นหาในหน้าคิว และปุ่ม "เข้าคิวตรวจ" จากช่องค้นหาด้านบน)
 function qaFill(c){if(!$('#qa-cha'))return;
     const m=c.plate.match(/^(\S+)\s*(\d+)$/)||[0,c.plate,''];$('#qa-cha').value=m[1];$('#qa-num').value=m[2];
@@ -6980,8 +6997,8 @@ R.queue=async()=>{clearInterval(qTimer);
   // เก็บข้อมูลที่กำลังกรอกในฟอร์มรับรถไว้ ไม่ให้หายตอนอัปเดตสถานะหรือรีเฟรชคิว
   const QA=['qa-cha','qa-num','qa-prov','qa-type','qa-name','qa-tel'],draft=$('#qa')?Object.fromEntries(QA.map(id=>[id,$('#'+id).value])):null;
   const fo=document.activeElement&&QA.includes(document.activeElement.id)?document.activeElement.id:null;
-  if(LIVE&&!$('#qa'))$('#view').innerHTML='<div class="empty">กำลังโหลดคิว...</div>';
-  if(LIVE){try{await qReload()}catch(err){$('#view').innerHTML=`<div class="empty">โหลดคิวไม่สำเร็จ: ${esc(err.message)}</div>`;return}if(cur!=='queue')return}
+  if(LIVE&&!$('#qa')&&!pcHas('queue'))$('#view').innerHTML='<div class="empty">กำลังโหลดคิว...</div>';
+  if(LIVE){try{await qReload('queue')}catch(err){$('#view').innerHTML=`<div class="empty">โหลดคิวไม่สำเร็จ: ${esc(err.message)}</div>`;return}if(cur!=='queue')return}
   const today=QUEUE.filter(q=>iso(new Date(q.at.created))===iso(TODAY)).sort((a,z)=>new Date(a.at.created)-new Date(z.at.created));
   const no=q=>today.indexOf(q)+1;
   const card=q=>{const [l,fg,bg]=Q_ST[q.st];return `<div class="qc" data-q="${q.id}" style="--c:${fg}">
@@ -7461,8 +7478,8 @@ async function dayOuts(day){const r=LIVE?await DB.dayOut(day):{ex:EXPENSES.filte
 const commRecvSum=ym=>Object.values(((SET.comm_recv||{})[ym])||{}).reduce((t,v)=>t+(+v||0),0);
 const RM_PAYEE={tax:['สำนักงานขนส่งจังหวัดนราธิวาส'],prb:[],ins:[],other:[]};
 R.remit=async()=>{rmMonth=rmMonth||ymOf(TODAY);const ym=rmMonth,[y,m]=ym.split('-').map(Number),from=ym+'-01',to=iso(new Date(y,m,0));
-  $('#view').innerHTML='<div class="ui-empty">กำลังโหลด...</div>';
-  let list,before=0;try{list=LIVE?await DB.listRemits(ym):REMITS.filter(e=>e.d.slice(0,7)===ym);if(ym>MO_START)before=LIVE?await DB.remitsBefore(ym):REMITS.filter(e=>e.d.slice(0,7)>=MO_START&&e.d.slice(0,7)<ym).reduce((t,x)=>t+x.amt,0)}catch(err){$('#view').innerHTML=`<div class="ui-empty">โหลดเงินนำส่งไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+  if(!pcHas('remit|'+ym))$('#view').innerHTML='<div class="ui-empty">กำลังโหลด...</div>';
+  let list,before=0;try{if(LIVE)[list,before]=await pc('remit|'+ym,()=>Promise.all([DB.listRemits(ym),ym>MO_START?DB.remitsBefore(ym):0]),'remit');else{list=REMITS.filter(e=>e.d.slice(0,7)===ym);if(ym>MO_START)before=REMITS.filter(e=>e.d.slice(0,7)>=MO_START&&e.d.slice(0,7)<ym).reduce((t,x)=>t+x.amt,0)}}catch(err){$('#view').innerHTML=`<div class="ui-empty">โหลดเงินนำส่งไม่สำเร็จ: ${esc(err.message)}</div>`;return}
   if(cur!=='remit'||rmMonth!==ym)return;list.sort((a,z)=>z.d.localeCompare(a.d)||z.id-a.id);
   const rc=recvSplit(from,to),paid={tax:0,prb:0,ins:0,other:0};list.forEach(x=>paid[x.kind]=(paid[x.kind]||0)+x.amt);const paidAll=Object.values(paid).reduce((t,v)=>t+v,0),carry=ym>MO_START?Math.round((recvSplit(MO_START+'-01',iso(new Date(y,m-1,0))).pass-before)*100)/100:0,left=Math.round((carry+rc.pass-paidAll)*100)/100;
   const canDel=user&&(user.role==='owner'||user.role==='head'),isNow=ym===ymOf(TODAY),mv=n=>ymOf(new Date(y,m-1+n,1));
@@ -7506,10 +7523,12 @@ R.remit=async()=>{rmMonth=rmMonth||ymOf(TODAY);const ym=rmMonth,[y,m]=ym.split('
     try{if(LIVE)await DB.delRemit(id);else REMITS.splice(REMITS.findIndex(x=>x.id===id),1);toast('ลบแล้ว');R.remit()}catch(err){alert('ลบไม่สำเร็จ: '+err.message)}});
 };
 R.expense=async()=>{exMonth=exMonth||ymOf(TODAY);const ym=exMonth;
-  $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
-  let list,reqs=[],advs=[];try{list=LIVE?await DB.listExpenses(ym):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
+  if(!pcHas('exp|'+ym))$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  // ถามรายจ่าย คำขอเบิก และเงินเบิกล่วงหน้าพร้อมกัน
+  const pX=LIVE?pc('exp2',()=>Promise.all([DB.listExpReq(),DB.listAdvances()]),'expense').then(v=>({v}),err=>({err})):null;
+  let list,reqs=[],advs=[];try{list=LIVE?await pc('exp|'+ym,()=>DB.listExpenses(ym),'expense'):EXPENSES.filter(e=>e.d.slice(0,7)===ym)}
   catch(err){$('#view').innerHTML=`<div class="empty">โหลดรายจ่ายไม่สำเร็จ: ${esc(err.message)}</div>`;return}
-  let err27='';try{if(LIVE)[reqs,advs]=await Promise.all([DB.listExpReq(),DB.listAdvances()]);else{reqs=EXPREQ.slice().reverse();advs=CASHOUTS.filter(x=>x.kind==='advance'&&!x.settled)}}catch(err){err27=err.message}
+  let err27='';try{if(LIVE){const x=await pX;if(x.err)throw x.err;[reqs,advs]=x.v}else{reqs=EXPREQ.slice().reverse();advs=CASHOUTS.filter(x=>x.kind==='advance'&&!x.settled)}}catch(err){err27=err.message}
   if(cur!=='expense'||exMonth!==ym)return;
   const mgr=isMgr(),pend=reqs.filter(r=>r.st==='pending'),recent=reqs.filter(r=>r.st!=='pending').slice(0,5);
   const advBy={};advs.forEach(a=>{const k=a.person||'ไม่ระบุ';(advBy[k]=advBy[k]||[]).push(a)});
@@ -7833,8 +7852,8 @@ function demoStats(months){const out=[];months.forEach((ym,i)=>[1,2].forEach(br=
   total=Math.round(cars*1450),pass=Math.round(total*.71),exp=Math.round((br===1?52000:34000)*(1+.05*Math.cos(i)));
   out.push({branch_id:br,ym,bills:cars,cars,total,passthru:pass,expense:exp})}));return out}
 R.dash=async()=>{const months=[];for(let i=11;i>=0;i--)months.push(ymOf(new Date(TODAY.getFullYear(),TODAY.getMonth()-i,1)));
-  $('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
-  let rows,brs;try{if(LIVE){rows=await DB.monthlyStats(months[0]+'-01');brs=DB.branches}else{rows=demoStats(months);brs=[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]}}
+  if(!pcHas('dash|'+months[0]))$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+  let rows,brs;try{if(LIVE){rows=await pc('dash|'+months[0],()=>DB.monthlyStats(months[0]+'-01'),'dash');brs=DB.branches}else{rows=demoStats(months);brs=[{id:1,name:'สยามเซอร์วิส'},{id:2,name:'สยามเซอร์วิส 2'}]}}
   catch(err){$('#view').innerHTML=`<div class="empty">โหลดสรุปไม่สำเร็จ: ${esc(err.message)}</div>`;return}
   if(cur!=='dash')return;
   const seen=new Set(rows.map(r=>r.branch_id));brs=brs.filter(b=>seen.has(b.id)||(LIVE&&DB.branch&&b.id===DB.branch.id)).slice(0,3);
@@ -8087,8 +8106,8 @@ let auFrom=null,auTo=null,auQ='',auType='',auSort=['at',-1],auSize=50,auPage=0,a
 const auDT=t=>{const d=new Date(t);return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()+543} ${hmOf(t)}:${String(d.getSeconds()).padStart(2,'0')}`};
 R.audit=async keep=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้านเท่านั้น</div>';return}
   auTo=auTo||iso(TODAY);auFrom=auFrom||iso(new Date(TODAY.getTime()-6*DAY));const key=auFrom+'|'+auTo;
-  if(!keep||auKey!==key||!auRows){$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
-    try{auRows=LIVE?await DB.listAudit(auFrom,auTo):AU_DEMO().filter(r=>{const d=iso(new Date(r.at));return d>=auFrom&&d<=auTo})}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
+  if(!keep||auKey!==key||!auRows){if(!pcHas('audit|'+key))$('#view').innerHTML='<div class="empty">กำลังโหลด...</div>';
+    try{auRows=LIVE?await pc('audit|'+key,()=>DB.listAudit(auFrom,auTo),'audit'):AU_DEMO().filter(r=>{const d=iso(new Date(r.at));return d>=auFrom&&d<=auTo})}catch(err){$('#view').innerHTML=`<div class="empty">โหลดประวัติไม่สำเร็จ: ${esc(err.message)}</div>`;return}
     if(cur!=='audit'||auFrom+'|'+auTo!==key)return;auKey=key;auRows.forEach(r=>{r._e=auEntry(r);r._b=auBrN(r.branch_id)})}
   const q=auQ.trim().toLowerCase(),[sk,sd]=auSort;
   const val=r=>sk==='at'?r.at:sk==='v'?r._e.v:sk==='ref'?r._e.ref:sk==='item'?r._e.item:sk==='detail'?r._e.detail:(r.user_name||'');
@@ -8336,8 +8355,8 @@ R.dlt=()=>{const all=dltJobs(),doneVisible=b=>siamDltDoneRange==='all'||dltAge(b
   upd()};
 R.staff=async()=>{
   if(!LIVE||!user||user.role!=='owner'){$('#view').innerHTML='<div class="empty">หน้านี้สำหรับเจ้าของร้าน (บัญชีจริง) เท่านั้น</div>';return}
-  $('#view').innerHTML='<div class="empty">กำลังโหลดข้อมูลพนักงาน...</div>';
-  let d;try{d=await DB.listStaff()}catch(err){$('#view').innerHTML=`<div class="empty">โหลดไม่สำเร็จ: ${esc(err.message)}<br>ถ้ายังไม่ได้รัน 03-staff.sql ใน Supabase ให้รันก่อน</div>`;return}
+  if(!pcHas('staff'))$('#view').innerHTML='<div class="empty">กำลังโหลดข้อมูลพนักงาน...</div>';
+  let d;try{d=await pc('staff',()=>DB.listStaff(),'staff')}catch(err){$('#view').innerHTML=`<div class="empty">โหลดไม่สำเร็จ: ${esc(err.message)}<br>ถ้ายังไม่ได้รัน 03-staff.sql ใน Supabase ให้รันก่อน</div>`;return}
   const {staff,branches:brs}=d,act=brs.filter(b=>b.active),me=DB.me.uid;
   const bOpt=(sel,all)=>(all?brs:act).map(b=>`<option value="${b.id}" ${b.id===sel?'selected':''}>${esc(b.name)}${b.active?'':' (ปิด)'}</option>`).join('');
   $('#view').innerHTML=`<div class="stf">
