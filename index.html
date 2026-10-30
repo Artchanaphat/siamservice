@@ -2431,6 +2431,8 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
 #view .hw-t b{font-size:22px}
 .hw-ok{color:#166534;font-size:15px}
 #view .hw-g{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+
+input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -3160,6 +3162,37 @@ document.querySelectorAll('[data-demo]').forEach(b=>b.onclick=()=>{$('#lerr').hi
     else if(e.key==='Tab')close()},true);
   addEventListener('scroll',e=>{if(!pop.hidden&&!pop.contains(e.target))close()},true);addEventListener('resize',()=>{if(!pop.hidden)close()});
   document.addEventListener('focusin',e=>{if(!pop.hidden&&e.target!==S&&!pop.contains(e.target))close()})})();
+// ช่องพิมพ์ที่มีรายการแนะนำ (datalist): ใช้กล่องรายการแบบเดียวกับช่องเลือก แทนกล่องสีดำของเบราว์เซอร์
+(()=>{const pop=document.createElement('div');pop.className='sel-pop dl-pop';pop.setAttribute('role','listbox');pop.hidden=true;document.body.appendChild(pop);
+  let I=null,hi=-1,vals=[],busy=false,lastAll=false;
+  const close=()=>{pop.hidden=true;I=null;hi=-1};
+  const conv=i=>{if(i.hasAttribute('list')){i.dataset.dl=i.getAttribute('list');i.removeAttribute('list');i.classList.add('dl-in')}};
+  const mark=()=>{const bs=pop.querySelectorAll('.sel-it');bs.forEach((b,k)=>b.classList.toggle('hi',k===hi));if(bs[hi])bs[hi].scrollIntoView({block:'nearest'})};
+  const draw=(i,all)=>{conv(i);lastAll=!!all;const d=document.getElementById(i.dataset.dl||''),q=all?'':i.value.trim().toLowerCase();
+    vals=d?[...new Set([...d.options].map(o=>o.value.trim()).filter(Boolean))].filter(v=>!q||v.toLowerCase().includes(q)):[];
+    if(!vals.length||(vals.length===1&&vals[0]===i.value.trim())){close();return}
+    I=i;hi=-1;const cur=i.value.trim();pop.innerHTML=vals.map((v,k)=>`<button type="button" class="sel-it${v===cur?' on':''}" data-k="${k}">${esc(v)}</button>`).join('');
+    const z=UZ(),r=i.getBoundingClientRect();pop.style.minWidth=r.width/z+'px';pop.style.left=Math.max(8,Math.min(r.left,innerWidth-Math.max(r.width,120)-8))/z+'px';pop.hidden=false;
+    const below=innerHeight-r.bottom-12,above=r.top-12,want=Math.min(pop.scrollHeight,300);
+    if(below>=Math.min(want,200)||below>=above){pop.style.top=(r.bottom+4)/z+'px';pop.style.bottom='';pop.style.maxHeight=Math.max(120,Math.min(300,below))/z+'px'}
+    else{pop.style.top='';pop.style.bottom=(innerHeight-r.top+4)/z+'px';pop.style.maxHeight=Math.min(300,above)/z+'px'}
+    pop.scrollTop=0};
+  const choose=k=>{const i=I,v=vals[k];close();if(!i||v==null)return;busy=true;i.focus();i.value=v;i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));busy=false};
+  const isDL=t=>t&&t.matches&&t.matches('input[list],input[data-dl]');
+  document.addEventListener('mousedown',e=>{if(pop.contains(e.target))return;const t=e.target;
+    if(isDL(t)){conv(t);if(document.activeElement===t){if(pop.hidden)draw(t,true);else close()}return}if(!pop.hidden)close()},true);
+  document.addEventListener('focusin',e=>{if(busy)return;const t=e.target;if(isDL(t))draw(t,true);else if(!pop.contains(t)&&!pop.hidden)close()});
+  document.addEventListener('input',e=>{if(!busy&&isDL(e.target))draw(e.target)},true);
+  pop.addEventListener('mousedown',e=>{e.preventDefault();const b=e.target.closest('.sel-it');if(b)choose(+b.dataset.k)});
+  document.addEventListener('keydown',e=>{if(pop.hidden||e.target!==I)return;
+    if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close()}
+    else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();const n=vals.length;hi=hi<0?(e.key==='ArrowDown'?0:n-1):(hi+(e.key==='ArrowDown'?1:-1)+n)%n;mark()}
+    else if(e.key==='Enter'&&hi>=0){e.preventDefault();e.stopPropagation();choose(hi)}
+    else if(e.key==='Tab')close()},true);
+  // มือถือเลื่อนจอเองตอนแตะช่อง: ย้ายกล่องตามช่อง ไม่ปิด
+  addEventListener('scroll',e=>{if(pop.hidden||pop.contains(e.target))return;const i=I;if(i&&document.activeElement===i){const sv=pop.scrollTop;draw(i,lastAll);pop.scrollTop=sv}else close()},true);addEventListener('resize',()=>{if(!pop.hidden)close()});
+  document.addEventListener('focusout',e=>{if(e.target===I)setTimeout(()=>{if(I&&document.activeElement!==I)close()},0)})
+  let mo=0;new MutationObserver(()=>{if(mo)return;mo=requestAnimationFrame(()=>{mo=0;document.querySelectorAll('input[list]').forEach(conv)})}).observe(document.body,{childList:true,subtree:true})})();
 // ช่องค้นหาด้านบน: พิมพ์แล้วแสดงรายการใต้ช่อง คลิกรายการจึงเปิดข้อมูลรถ (จอเล็ก กดไอคอนแล้วไปหน้าค้นหา)
 (()=>{const tq=$('#tq'),lb=document.querySelector('.tsrch');if(!tq||!lb)return;
   const box=document.createElement('div');box.className='tsr-pop';box.id='tsr-pop';box.setAttribute('role','listbox');box.hidden=true;document.body.appendChild(box);
