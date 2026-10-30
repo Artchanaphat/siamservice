@@ -8031,7 +8031,11 @@ function pmHTML(id,o={}){return `<div class="pmx" id="${id}">
 function pmBind(root,cfg){const sel=new Set(),q=x=>root.querySelector(x),r2=x=>Math.round(x*100)/100;
   const amt=k=>{if(!sel.has(k))return 0;const x=parseFloat((q(`[data-a="${k}"]`).value||'').replace(/,/g,''));return x>0?r2(x):0};
   const got=()=>r2(PM.reduce((t,[k])=>t+amt(k),0));
-  const st=()=>{const d=r2(cfg.due()),g=got(),r=r2(d-g),e=q('[data-st]');
+  // ยอดที่ต้องชำระเปลี่ยน (เช่น เลือกประเภทรถแล้วค่าตรวจขึ้นทีหลัง) และเลือกวิธีเดียวที่ใส่ไว้เต็มยอดเดิม: ปรับตามยอดใหม่ให้ ไม่ให้ค้างโดยไม่ตั้งใจ
+  let lastDue=null;
+  const st=()=>{const d=r2(cfg.due());
+    if(lastDue!=null&&Math.abs(d-lastDue)>0.004&&sel.size===1&&!sel.has('none')){const k=[...sel][0],a=amt(k);if(a>0&&Math.abs(a-lastDue)<0.005)q(`[data-a="${k}"]`).value=d>0?d.toFixed(2):''}
+    lastDue=d;const g=got(),r=r2(d-g),e=q('[data-st]');
     if(!sel.size){e.className='pmx-st';e.textContent='ยังไม่ได้เลือกวิธีรับชำระเงิน'}
     else if(sel.has('none')){e.className='pmx-st warn';e.textContent=`ยังไม่ได้รับเงิน บิลนี้จะบันทึกเป็นค้างชำระ ${money(d)} บาท`}
     else if(r>0.004){e.className='pmx-st warn';e.textContent=`รับแล้ว ${money(g)} บาท · ค้างชำระ ${money(r)} บาท`}
