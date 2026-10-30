@@ -5997,7 +5997,7 @@ R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
 // เปิดใช้: ?cf=1 ครั้งเดียว (จำไว้ในเครื่อง) · ?cf=0 กลับไปใช้ Supabase
 const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==='1')localStorage.setItem('siam-backend','cf');if(q==='0')localStorage.removeItem('siam-backend');
   return localStorage.getItem('siam-backend')==='cf'}catch(_){return false}})();
-function cfClient(opt){const store=opt.storage,KEY='siam-auth',API='/api/';
+function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   const tok=()=>{try{const v=store.getItem(KEY);return v?JSON.parse(v).token:null}catch(_){return null}};
   async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;
     let r;try{r=await fetch(API+p,{method:'POST',headers:raw?{...h,'content-type':raw}:h,body:raw?body:JSON.stringify(body||{})})}catch(e){return{data:null,error:{message:'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้ ตรวจสอบอินเทอร์เน็ต'}}}
