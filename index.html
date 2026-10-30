@@ -5647,7 +5647,9 @@ R.add=(E)=>{if(!E)billKey=null;
   document.querySelectorAll('[data-want]').forEach(b=>b.onclick=()=>{const k=b.dataset.want;
     if(k==='insp'){want.insp=!inspOn();if(!want.insp)delete $('#b-insp').dataset.user}else want[k]=!want[k];
     if(k==='tax'&&want.tax)delete $('#b-tax').dataset.user;if(k==='prb'&&want.prb){delete $('#b-prb').dataset.user;delete $('#b-prbfee').dataset.user}
-    const io=inspOn()&&!want.tax&&!want.prb;if(io!==inspOnly){inspOnly=io;syncSvc()}autoCalc()});
+    const io=inspOn()&&!want.tax&&!want.prb;if(io!==inspOnly){inspOnly=io;syncSvc()}
+    // ยังไม่เลือกประเภทรถ หรือโหมดตรวจอย่างเดียว autoCalc จะจบก่อนวาดปุ่ม: ล้างช่องที่ไม่เลือก แล้ววาดปุ่มให้ทุกครั้ง
+    autoCalc();if(!want.tax)['b-tax','b-fee','b-late'].forEach(id=>setM(id,0));if(!want.prb){setM('b-prb',0);setM('b-prbfee',0)}if(!inspOn())setM('b-insp',0);inspView();recalc()});
   if($('#svc-insp'))$('#svc-insp').onclick=()=>{if(inspOnly&&svcView!=='tax'){svcView='tax';syncSvc();return}setInspOnly(!inspOnly)};
   if(!E){
     $('#b-insp').addEventListener('input',function(){this.dataset.user='1'});
