@@ -27,7 +27,9 @@ const need=u=>{if(!u)fail('กรุณาเข้าสู่ระบบใ�
 async function route(req,env,path){const m=req.method;
   // วัดความเร็วฐานข้อมูล: เปิด /api/ping ในเบราว์เซอร์ได้เลย (ไม่มีข้อมูลร้าน)
   if(path==='ping'){const ms=[];let meta={};for(let i=0;i<5;i++){const t=Date.now();const r=await env.DB.prepare('select 1').all();ms.push(Date.now()-t);meta=r.meta||{}}
-    const {duration,rows_read,rows_written,changes,last_row_id,changed_db,size_after,...where}=meta;return{via:env.ASSETS?'pages':'siam-api',edge:req.cf&&req.cf.colo,db_region:meta.served_by_region||null,db:where,db_ms:ms,avg:Math.round(ms.reduce((a,b)=>a+b,0)/ms.length)}}
+    const {duration,rows_read,rows_written,changes,last_row_id,changed_db,size_after,...where}=meta;// ?full=1 จับเวลาหน้าภาพรวมเจ้าของฝั่งเซิร์ฟเวอร์ (ส่งกลับแค่เวลา ไม่มีข้อมูลร้าน)
+    let owner_ms=null;if(new URL(req.url).searchParams.has('full')){const t=Date.now();await RPC.owner_overview(env,{role:'owner',uid:'ping',name:'ping'},{p_day:new Date(Date.now()+7*36e5).toISOString().slice(0,10),p_pass:[]});owner_ms=Date.now()-t}
+    return{via:env.ASSETS?'pages':'siam-api',owner_ms,edge:req.cf&&req.cf.colo,db_region:meta.served_by_region||null,db:where,db_ms:ms,avg:Math.round(ms.reduce((a,b)=>a+b,0)/ms.length)}}
   if(path==='line-webhook'&&m==='POST')return lineWebhook(env,req);
   if(path==='cron')return cron(env,req);
   if(path==='auth/login'&&m==='POST'){const {username,password,remember}=await req.json();
