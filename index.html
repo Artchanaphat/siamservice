@@ -2438,6 +2438,14 @@ input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 .ss-it.ss-pin.on,.ss-it.ss-pin:hover{background:#fef3c7}
 .ss-it.ss-pin-last{border-bottom:1px solid #fcd34d;margin-bottom:4px}
 .ss-pi{font-style:normal;font-size:12px;margin-right:6px}
+
+#view .st .st-list-readable{border:1px solid #cfdcf1;border-left:5px solid #1d63ed;border-radius:14px;padding:14px 14px 12px;background:#fff;box-shadow:0 2px 8px rgba(15,42,107,.05)}
+#view .st .st-list-readable.st-list>span.stl-h{display:grid;grid-template-columns:auto 1fr;justify-items:start;gap:2px 10px;align-items:baseline;padding-bottom:10px;border-bottom:1px solid #e2e8f0}
+#view .st .stl-t{font-size:17px;color:#0b2766;font-weight:700}
+#view .st .stl-n{font-style:normal;font-size:13px;color:#1d4ed8;background:#eef4ff;border-radius:999px;padding:2px 10px;font-weight:600;white-space:nowrap}
+#view .st .stl-use{grid-column:1/-1;font-size:13.5px;color:#475569;font-weight:400}
+#view .st .st-list-readable .st-search-label{display:none}
+#view .st .st-grid.two:has(.st-list-readable){gap:16px}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -6944,7 +6952,11 @@ R.settings=()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div class=
   const N=(k,l,h='')=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" inputmode="decimal" value="${SET[k]}"><em>บาท</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const D=(k,l,h='',u='วัน',min=1)=>`<label class="field"><span>${l}</span><div class="st-num"><input data-k="${k}" data-day="${min}" inputmode="numeric" maxlength="3" value="${SET[k]??SET_DEF[k]}"><em>${u}</em></div>${h?`<small class="sub">${h}</small>`:''}</label>`;
   const LS={};['brands','bodies','prefixes','insurers','passthru','exp_cats','dlt_items_tax','dlt_items_tr'].forEach(k=>LS[k]=JSON.parse(JSON.stringify(SET[k]||SET_DEF[k])));
-  const T=(k,l,h,sm)=>`<div class="field st-list st-list-readable" data-l="${k}"><span>${l} <em class="sub">(<b class="st-cnt">${LS[k].length}</b> รายการ)</em></span>
+  // บอกว่ารายการนี้ไปโผล่ที่ไหนในระบบ ให้แยกออกว่ารายการไหนคืออะไร
+  const USE={brands:'ตัวเลือกในช่อง "ยี่ห้อรถ" ตอนเปิดบิล',bodies:'ตัวเลือกในช่อง "ลักษณะรถ" ตอนเปิดบิล',prefixes:'ตัวเลือกในช่อง "คำนำหน้า" ของเจ้าของรถ',
+    insurers:'ตัวเลือกบริษัท พ.ร.บ. และประกันภัยในบิล · ป้ายสีเหลือง = กองทุนกลาง',passthru:'รายการในบิลที่ร้านเก็บแทนแล้วต้องนำส่งต่อ ไม่นับเป็นรายได้ร้าน',
+    exp_cats:'ตัวเลือก "หมวด" ในหน้ารายจ่าย',dlt_items_tax:'บิลที่มีรายการเหล่านี้ จะขึ้นในหน้างานขนส่งเป็นงาน "ต่อภาษี"',dlt_items_tr:'บิลที่มีรายการเหล่านี้ จะขึ้นในหน้างานขนส่งเป็นงาน "โอน/ย้าย"'};
+  const T=(k,l,h,sm)=>`<div class="field st-list st-list-readable" data-l="${k}"><span class="stl-h"><b class="stl-t">${l}</b><em class="stl-n"><b class="st-cnt">${LS[k].length}</b> รายการ</em><small class="stl-use">${USE[k]||h}</small></span>
     <label class="st-searchline"><span class="st-search-label">ค้นหาในรายการที่มีอยู่</span><input class="st-find" type="search" name="ss_filter_${k}" placeholder="พิมพ์เพื่อกรองรายการ…" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" data-bwignore="true"></label>
     <div class="st-add">${k==='insurers'?'<input class="st-in" name="ss_add_insurer" placeholder="เพิ่มชื่อบริษัทประกันใหม่" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true"><input class="st-code" name="ss_insurer_code" placeholder="รหัสย่อ" maxlength="10" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true"><label class="st-ck"><input type="checkbox" class="st-cf">กองทุนกลาง</label>':`<input class="st-in" name="ss_add_${k}" placeholder="เพิ่มรายการใหม่ (ชื่อที่จะบันทึก)" autocomplete="off" data-1p-ignore data-lpignore="true" data-bwignore="true">`}<button type="button" class="btn st-addb">＋ เพิ่มรายการ</button></div>
     <div class="st-list-summary"><span class="st-showing" aria-live="polite"></span><span>เลื่อนดูรายการเพิ่มเติมได้</span></div>
