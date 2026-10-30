@@ -2864,7 +2864,7 @@ input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
   #view :is(.ui-card,.sm-scard,.tab-card,.tk-c,.qc,.dj-card,.ps-date-card,.btn,.sort-btn,.chip){transition:none!important;transform:none!important}
 }
 </style>
-<script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth'))document.documentElement.classList.add('booting')}catch(e){}</script>
+<script id="boot-chk">try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth')||localStorage.getItem('siam-auth-cf')||sessionStorage.getItem('siam-auth-cf'))document.documentElement.classList.add('booting')}catch(e){}</script>
 <div class="boot" id="boot"><span class="boot-sp"></span>กำลังโหลดข้อมูล...</div>
 <section class="login" id="login">
   <div class="brand"><span class="lg login-logo" role="img" aria-label="โลโก้ ตรอ."></span>
@@ -5995,8 +5995,9 @@ R.calc=()=>{if(ct.fee==null)ct.fee=SET.fee_tax;
 /* ===== ฐานข้อมูลจริง (Supabase) ===== */
 // ตัวเชื่อมฐานข้อมูล Cloudflare ที่ใช้คำสั่งแบบเดียวกับ supabase-js (เฉพาะส่วนที่ระบบใช้) — หน้าเว็บเดิมจึงทำงานได้โดยไม่ต้องแก้
 // เปิดใช้: ?cf=1 ครั้งเดียว (จำไว้ในเครื่อง) · ?cf=0 กลับไปใช้ Supabase
-const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==='1')localStorage.setItem('siam-backend','cf');if(q==='0')localStorage.removeItem('siam-backend');
-  return localStorage.getItem('siam-backend')==='cf'}catch(_){return false}})();
+const CF=(()=>{try{const q=new URLSearchParams(location.search).get('cf');if(q==='1')localStorage.removeItem('siam-backend');if(q==='0')localStorage.setItem('siam-backend','sb');
+  // ระบบหลักคือ Cloudflare ตั้งแต่ 30 ต.ค. 69 · ?cf=0 = เปิดระบบเดิม (Supabase) ไว้ดึงข้อมูลย้อนหลัง
+  return localStorage.getItem('siam-backend')!=='sb'}catch(_){return true}})();
 function cfClient(opt){const store=opt.storage,KEY='siam-auth-cf',API='/api/';
   const tok=()=>{try{const v=store.getItem(KEY);return v?JSON.parse(v).token:null}catch(_){return null}};
   async function post(p,body,raw){const h={'content-type':'application/json'},t=tok();if(t)h.authorization='Bearer '+t;
@@ -6045,7 +6046,7 @@ const DB=(()=>{
   let sb=null,me=null,branches=[],branch=null,dltReady=false;
   const lib=()=>window.supabase?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement('script');
     s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';s.onload=ok;s.onerror=()=>no(new Error('โหลดตัวเชื่อมฐานข้อมูลไม่ได้ ตรวจสอบอินเทอร์เน็ต'));document.head.append(s)});
-  const authIn=st=>{try{return !!st.getItem('siam-auth')}catch(e){return false}};
+  const authIn=st=>{try{return !!st.getItem(CF?'siam-auth-cf':'siam-auth')}catch(e){return false}};
   const client=async()=>{if(!sb){if(!CF)await lib();const rem=!document.getElementById('lrem')||document.getElementById('lrem').checked;
     // ไม่ติ๊กจดจำ = เก็บ session ไว้ในแท็บนี้ (รีเฟรชได้ ปิดแท็บแล้วต้องล็อกอินใหม่)
     const tab=authIn(window.sessionStorage)&&!authIn(window.localStorage);const st=tab||!rem?window.sessionStorage:window.localStorage;sb=CF?cfClient({storage:st}):window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,storageKey:'siam-auth',storage:st}})}return sb};
