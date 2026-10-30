@@ -223,9 +223,9 @@ tbody tr:nth-child(even) td{background:#fff}
 #svc{justify-content:center;padding:16px}
 .dsel{display:flex;align-items:center;gap:4px}
 .dsel select{width:auto;flex:1;text-align:center}
-.lc-purple{font-style:normal;color:#5b2a86}
-.lc-orange{font-style:normal;color:#e8590c}
-.lc-blue{font-style:normal;color:#1565c0;font-weight:600}
+.lc-purple{font-style:normal;color:inherit}
+.lc-orange{font-style:normal;color:inherit}
+.lc-blue{font-style:normal;color:inherit;font-weight:600}
 .paybar{position:sticky;bottom:0;z-index:5;display:flex;flex-wrap:wrap;gap:12px 40px;align-items:center;background:#dde6f0;border-top:2px solid #0e95ba;box-shadow:0 -4px 10px rgba(0,0,0,.08);padding:12px 16px}
 .pf{display:flex;align-items:center;gap:10px;font-size:15px}
 .pf em{font-style:normal;color:#3d3aa8}
@@ -3241,6 +3241,14 @@ R.home=()=>{
   const kpi=(cls,ic,l,v,unit,sub,go)=>`<button type="button" class="hk ${cls}" ${go?`data-go="${go}"`:''}><span class="hk-ic">${I(IC[ic])}</span><span class="hk-t"><span class="hk-l">${l}</span><span class="hk-v"><b>${v}</b><small>${unit}</small></span>${sub}</span><span class="hk-bg">${I(IC[ic])}</span></button>`;
   const qtot=qT.length,qprog=qtot?Math.round((qc('pass')+qc('fail'))/qtot*100):0;
   $('#view').innerHTML=`<div class="hd">
+  <section class="hq">
+    <div class="hq-g">
+      <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ออกบิลค่าบริการให้ลูกค้า</small></span><i>›</i></button>
+      ${useQ()?`<button type="button" class="hq-b green" data-go="queue">${I(IC.queue)}<span><b>คิวตรวจสภาพ</b><small>รับรถเข้าคิว / บันทึกผลตรวจ</small></span><i>›</i></button>`:`<button type="button" class="hq-b green" data-go="track">${I(IC.queue)}<span><b>ติดตามงาน</b><small>งานที่ยังไม่เสร็จ / ส่งมอบเอกสาร</small></span><i>›</i></button>`}
+      <button type="button" class="hq-b yellow" data-go="cust">${I(IC.search)}<span><b>ค้นหาข้อมูลลูกค้า</b><small>ทะเบียน / ชื่อ / เบอร์โทร</small></span><i>›</i></button>
+      <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รับเงินบิลที่ยังค้างชำระ</small></span><i>›</i></button>
+    </div>
+  </section>
   ${(()=>{// งานค้างทั้งหมดในที่เดียว: กดแล้วเปิดรายการที่กรองไว้
     const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p}))),days=[...new Set(w.map(x=>iso(x.p.d)))].sort(),since=iso(plus(-30));
     const open=intake.filter(b=>iso(b.d)>=since&&!jobDone(b)).length,pick=dltJobs().filter(b=>dltOf(b).st==='plate').length;
@@ -3252,7 +3260,7 @@ R.home=()=>{
       ${T('pick','truck','เอกสารรอส่งให้ลูกค้า',pick,'ได้ป้าย/เล่มจากขนส่งแล้ว','lilac')}
       ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?'ยอดค้างรวม '+money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
     </div></section>`;})()}
-  <div class="hk-row">
+  ${user&&user.role==='staff'?'':`  <div class="hk-row">
     ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
     ${useQ()?`${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
     ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากรถเข้าคิววันนี้ ${qtot} คัน</span>`,'queue')}
@@ -3260,16 +3268,7 @@ R.home=()=>{
     ${kpi('amber','truck','งานขนส่งรอยื่น',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">ยังไม่จบทั้งหมด ${dltOpen} คัน</span>`,'dlt')}
     ${kpi('red','cal','ครบกำหนดต่ออายุใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ภาษี / พ.ร.บ. / ประกัน</span>','bell')}`}
   </div>
-  <section class="hq">
-    <div class="hq-h"><h2>เมนูด่วนสำหรับพนักงาน</h2><p>เริ่มงานได้อย่างรวดเร็ว</p></div>
-    <div class="hq-g">
-      <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ออกบิลค่าบริการให้ลูกค้า</small></span><i>›</i></button>
-      ${useQ()?`<button type="button" class="hq-b green" data-go="queue">${I(IC.queue)}<span><b>คิวตรวจสภาพ</b><small>รับรถเข้าคิว / บันทึกผลตรวจ</small></span><i>›</i></button>`:`<button type="button" class="hq-b green" data-go="track">${I(IC.queue)}<span><b>ติดตามงาน</b><small>งานที่ยังไม่เสร็จ / ส่งมอบเอกสาร</small></span><i>›</i></button>`}
-      <button type="button" class="hq-b yellow" data-go="cust">${I(IC.search)}<span><b>ค้นหาข้อมูลลูกค้า</b><small>ทะเบียน / ชื่อ / เบอร์โทร</small></span><i>›</i></button>
-      <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รับเงินบิลที่ยังค้างชำระ</small></span><i>›</i></button>
-    </div>
-    <svg class="hq-art" viewBox="0 0 220 90" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 66h180M38 66V52l16-18h70l26 18h22c8 0 12 4 12 10v4"/><circle cx="62" cy="68" r="11"/><circle cx="160" cy="68" r="11"/><path d="M60 36h30v16H46M98 36h22l20 16H98z"/></svg>
-  </section>
+`}
   <div class="hm">
     <div class="ui-card hm-main">
       <div class="hm-h"><div class="hm-tabs" role="tablist">${useQ()?`<button role="tab" data-ht="queue" aria-selected="${hdTab==='queue'}">${I(IC.queue)}คิวตรวจสภาพวันนี้</button>`:''}<button role="tab" data-ht="bills" aria-selected="${hdTab==='bills'}">${I(IC.bill)}บิลวันนี้ <span class="hm-c">${td.length}</span></button></div>
@@ -5298,10 +5297,8 @@ R.add=(E)=>{if(!E)billKey=null;
         <label class="field"><span>ประเภทรถ *</span><select id="b-type"><option value="">--เลือกประเภทรถ--</option>${opt(CTYPES.filter(c=>!c[0].startsWith('ev')&&c[0]!=='other').map(c=>[c[0],c[1]]))}<optgroup label="⚡ รถไฟฟ้า (EV)">${opt(CTYPES.filter(c=>c[0].startsWith('ev')).map(c=>[c[0],c[1]]))}</optgroup><option value="other">อื่นๆ</option></select></label>
         <div class="field"><span>ลักษณะรถ</span><div class="fc"><select id="b-body" style="width:190px"><option value="">--เลือกลักษณะรถ--</option>${opt(SET.bodies)}</select><input id="b-body-other" placeholder="ระบุลักษณะรถ" maxlength="30" style="width:170px" hidden></div></div>
         <div class="field full"><span>ยี่ห้อรถ *</span><div class="fc"><select id="b-brand" style="width:170px"><option value="">--เลือกยี่ห้อรถ--</option>${opt(SET.brands)}</select><span class="il">รุ่น</span><input id="b-model" style="width:110px"><span class="il">สี</span><input id="b-color" style="width:70px"></div></div>
-        <details class="field full bf-more"><summary>ข้อมูลเพิ่มเติม <em>เลขตัวถัง · เลขเครื่อง (ไม่บังคับ)</em></summary><div class="form">
         ${F('b-chassis','เลขตัวถัง')}
         ${F('b-engine','เลขเครื่อง')}
-        </div></details>
         <div class="field full"><span>ขนาดรถ</span><div class="fc"><input id="b-cc" placeholder="CC" inputmode="numeric" maxlength="5" style="width:70px"><span class="il">น้ำหนักรถ</span><input id="b-kg" placeholder="กก." inputmode="numeric" maxlength="5" style="width:70px"><span class="hint">(ต้องระบุ ระบบถึงคำนวณภาษี+ค่าปรับ AUTO - เฉพาะรถ (รย.1-3 / รย.12)</span></div></div>
       </div>
     </div>
@@ -6486,7 +6483,7 @@ R.close=async()=>{closeDate=closeDate||iso(TODAY);const day=closeDate;
     <div class="ui-kpi" data-t="blue"><span class="k-ic">📱</span><div><div class="k-l">เงินโอน (ยืนยันแล้ว)</div><div class="k-v">${money(sum('tr'))}</div>${waits.length?`<div class="k-s" style="color:#c2410c">รอตรวจสอบอีก ${money(waitSum)}</div>`:''}</div></div>
     <div class="ui-kpi" data-t="violet"><span class="k-ic">💳</span><div><div class="k-l">บัตรเครดิต</div><div class="k-v">${money(sum('card'))}</div></div></div>
     <div class="ui-kpi" data-t="navy"><span class="k-ic">Σ</span><div><div class="k-l">รับเงินจริงทั้งวัน</div><div class="k-v">${money(all)}</div><div class="k-s">${pays.length} รายการ${waits.length?` · ไม่รวมเงินโอนรอตรวจสอบ ${money(waitSum)}`:''}${refSum?` · หักคืนเงิน ${money(refSum)}`:''}</div></div></div></div>
-  ${verified.length?passBox(recvSplit(day,day),'แยกเงินที่รับวันนี้'):''}
+  ${verified.length&&canEdit?passBox(recvSplit(day,day),'แยกเงินที่รับวันนี้'):''}
   ${waits.length?`<div class="tr-wait non-printable"><div class="tr-wait-h">⏳ <b>เงินโอนรอตรวจสอบ ${waits.length} รายการ · ${money(waitSum)} บาท</b><span>ตรวจกับแอปธนาคารของร้านก่อนปิดยอด</span></div>
     ${waits.map(({b,p})=>`<div class="tr-wait-r"><span>${esc(p.t||'')} · ${esc(b.no||'#'+b.id)} · <b>${esc(b.plate)}</b> ${esc(b.name)} · รับโดย ${esc(p.by||'-')}</span><b>${money(p.amt)} บาท</b><button type="button" class="btn sm" data-vtr="${b.id}|${b.pays.indexOf(p)}">✓ เงินเข้าบัญชีแล้ว</button><button type="button" class="btn sm line tr-rej" data-rtr="${b.id}|${b.pays.indexOf(p)}">✗ ไม่พบยอดเงิน</button></div>`).join('')}</div>`:''}
   ${rows.length?`<div class="ui-card"><div class="ui-card-h"><h2>เงินสดในลิ้นชักแยกตามพนักงาน</h2><span class="sub">ผลต่าง = เงินสดที่นับได้ − (เงินทอนตั้งต้น + เงินสดที่รับ − เงินสดที่จ่ายออก)</span></div>
