@@ -2424,6 +2424,13 @@ body #view .dj-kpis .ui-kpi .k-v{font-size:34px!important;line-height:1.15}#view
   #bill .paybar .pf em{display:none}
   #bill .paybar #sum-total,#bill .paybar #pay,#bill .paybar #change{font-size:17px;padding:0;min-width:0;width:auto;max-width:110px;height:auto}
 }
+
+.shell #view .hq{background:none!important;border:0!important;padding:0!important;box-shadow:none!important;margin-bottom:14px}
+#view .hw-t.sand,#view .hw-t.sky,#view .hw-t.lilac,#view .hw-t.pink{background:#fff;border-color:#e2e8f0}
+#view .hw-t .hw-l{font-size:14.5px;color:#334155;font-weight:600}
+#view .hw-t b{font-size:22px}
+.hw-ok{color:#166534;font-size:15px}
+#view .hw-g{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
 </style>
 
 <!-- SIAMSERVICE_LAYOUT_ONLY_V1: screen-only layout tuning; original navigation preserved -->
@@ -3241,6 +3248,26 @@ R.home=()=>{
   const kpi=(cls,ic,l,v,unit,sub,go)=>`<button type="button" class="hk ${cls}" ${go?`data-go="${go}"`:''}><span class="hk-ic">${I(IC[ic])}</span><span class="hk-t"><span class="hk-l">${l}</span><span class="hk-v"><b>${v}</b><small>${unit}</small></span>${sub}</span><span class="hk-bg">${I(IC[ic])}</span></button>`;
   const qtot=qT.length,qprog=qtot?Math.round((qc('pass')+qc('fail'))/qtot*100):0;
   $('#view').innerHTML=`<div class="hd">
+  <div class="hk-row">
+    ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
+    ${useQ()?`${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
+    ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากรถเข้าคิววันนี้ ${qtot} คัน</span>`,'queue')}
+    ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'วันนี้ยังไม่มีรถไม่ผ่าน'}</span>`,'queue')}`:`${kpi('green','ok','รับชำระวันนี้',money(paidOn(iso(TODAY))).replace(/\.00$/,''),'บาท','<span class="hk-d">เฉพาะเงินที่ยืนยันแล้ว</span>','close')}
+    ${kpi('amber','truck','งานขนส่งรอยื่น',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">ยังไม่จบทั้งหมด ${dltOpen} คัน</span>`,'dlt')}
+    ${kpi('red','cal','ครบกำหนดต่ออายุใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ภาษี / พ.ร.บ. / ประกัน</span>','bell')}`}
+  </div>
+  ${(()=>{// งานค้างทั้งหมดในที่เดียว: กดแล้วเปิดรายการที่กรองไว้
+    const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p}))),days=[...new Set(w.map(x=>iso(x.p.d)))].sort(),since=iso(plus(-30));
+    const open=intake.filter(b=>iso(b.d)>=since&&!jobDone(b)).length,pick=dltJobs().filter(b=>dltOf(b).st==='plate').length;
+    const owe=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&b.amt-b.paid>0.004).map(b=>[b.id,b])).values()],oweSum=owe.reduce((t,b)=>t+b.amt-b.paid,0);
+    const T=(k,ic,l,n,sub,cls)=>n?`<button type="button" class="hw-t ${cls}" data-hw="${k}"><span class="hw-ic">${I(IC[ic])}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`:'';
+    if(!w.length&&!open&&!pick&&!owe.length)return `<section class="hw hw-ok">✅ <b>ไม่มีงานค้าง</b></section>`;
+    return `<section class="hw" aria-label="งานค้าง"><div class="hw-h"><b>งานค้างที่ต้องทำต่อ</b><small>กดเพื่อเปิดรายการ</small></div><div class="hw-g">
+      ${T('tr','clock','เงินโอนรอตรวจสอบ',w.length,w.length?'ยอด '+money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท · รอยืนยันว่าเงินเข้าบัญชี':'ไม่มีรายการ','sand')}
+      ${T('open','bill','บิลที่งานยังไม่จบ (30 วันล่าสุด)',open,'กดเพื่อดูว่าค้างขั้นตอนไหน','sky')}
+      ${T('pick','truck','เอกสารรอส่งให้ลูกค้า',pick,'ได้ป้าย/เล่มจากขนส่งแล้ว','lilac')}
+      ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?'ยอดค้างรวม '+money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
+    </div></section>`;})()}
   <section class="hq">
     <div class="hq-g">
       <button type="button" class="hq-b blue" data-go="add">${I(IC.bill)}<span><b>เปิดบิลใหม่</b><small>ออกบิลค่าบริการให้ลูกค้า</small></span><i>›</i></button>
@@ -3249,26 +3276,6 @@ R.home=()=>{
       <button type="button" class="hq-b purple" data-go="income" data-debt="1">${I(IC.cash)}<span><b>รับชำระเงิน</b><small>รับเงินบิลที่ยังค้างชำระ</small></span><i>›</i></button>
     </div>
   </section>
-  ${(()=>{// งานค้างทั้งหมดในที่เดียว: กดแล้วเปิดรายการที่กรองไว้
-    const w=intake.flatMap(b=>trWait(b).map(x=>({b,p:x.p}))),days=[...new Set(w.map(x=>iso(x.p.d)))].sort(),since=iso(plus(-30));
-    const open=intake.filter(b=>iso(b.d)>=since&&!jobDone(b)).length,pick=dltJobs().filter(b=>dltOf(b).st==='plate').length;
-    const owe=[...new Map([...intake,...oldBills].filter(b=>b&&!b.void&&b.amt-b.paid>0.004).map(b=>[b.id,b])).values()],oweSum=owe.reduce((t,b)=>t+b.amt-b.paid,0);
-    const T=(k,ic,l,n,sub,cls)=>`<button type="button" class="hw-t ${cls}${n?'':' zero'}" data-hw="${k}"><span class="hw-ic">${I(IC[ic])}</span><span><span class="hw-l">${l}</span><b>${n}</b><small>${sub}</small></span></button>`;
-    return `<section class="hw" aria-label="งานค้าง"><div class="hw-h"><b>งานค้างที่ต้องทำต่อ</b><small>กดเพื่อเปิดรายการ</small></div><div class="hw-g">
-      ${T('tr','clock','เงินโอนรอตรวจสอบ',w.length,w.length?'ยอด '+money(w.reduce((t,x)=>t+x.p.amt,0))+' บาท · รอยืนยันว่าเงินเข้าบัญชี':'ไม่มีรายการ','sand')}
-      ${T('open','bill','บิลที่งานยังไม่จบ (30 วันล่าสุด)',open,'กดเพื่อดูว่าค้างขั้นตอนไหน','sky')}
-      ${T('pick','truck','เอกสารรอส่งให้ลูกค้า',pick,'ได้ป้าย/เล่มจากขนส่งแล้ว','lilac')}
-      ${T('debt','cash','บิลค้างชำระ',owe.length,owe.length?'ยอดค้างรวม '+money(oweSum)+' บาท':'ไม่มีรายการ','pink')}
-    </div></section>`;})()}
-  ${user&&user.role==='staff'?'':`  <div class="hk-row">
-    ${kpi('blue','car','บิลวันนี้',td.length,'บิล',ar(diff,'บิล '),'income')}
-    ${useQ()?`${kpi('amber','clock','กำลังตรวจ',qc('check'),'คัน',`<span class="hk-d">รอตรวจ ${qc('wait')} คัน</span><span class="hk-bar"><i style="width:${qprog}%"></i></span>`,'queue')}
-    ${kpi('green','ok','ตรวจผ่านวันนี้',qc('pass'),'คัน',`<span class="hk-d">จากรถเข้าคิววันนี้ ${qtot} คัน</span>`,'queue')}
-    ${kpi('red','bad','ไม่ผ่านวันนี้',qc('fail'),'คัน',`<span class="hk-d">${qc('fail')?'นัดตรวจซ้ำได้ที่หน้าคิว':'วันนี้ยังไม่มีรถไม่ผ่าน'}</span>`,'queue')}`:`${kpi('green','ok','รับชำระวันนี้',money(paidOn(iso(TODAY))).replace(/\.00$/,''),'บาท','<span class="hk-d">เฉพาะเงินที่ยืนยันแล้ว</span>','close')}
-    ${kpi('amber','truck','งานขนส่งรอยื่น',dltJobs().filter(b=>dltOf(b).st==='received').length,'คัน',`<span class="hk-d">ยังไม่จบทั้งหมด ${dltOpen} คัน</span>`,'dlt')}
-    ${kpi('red','cal','ครบกำหนดต่ออายุใน 7 วัน',dueList(7).length,'คัน','<span class="hk-d">ภาษี / พ.ร.บ. / ประกัน</span>','bell')}`}
-  </div>
-`}
   <div class="hm">
     <div class="ui-card hm-main">
       <div class="hm-h"><div class="hm-tabs" role="tablist">${useQ()?`<button role="tab" data-ht="queue" aria-selected="${hdTab==='queue'}">${I(IC.queue)}คิวตรวจสภาพวันนี้</button>`:''}<button role="tab" data-ht="bills" aria-selected="${hdTab==='bills'}">${I(IC.bill)}บิลวันนี้ <span class="hm-c">${td.length}</span></button></div>
