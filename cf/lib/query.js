@@ -43,6 +43,7 @@ const OPS={eq:'=',neq:'<>',gt:'>',gte:'>=',lt:'<',lte:'<='};
 const val=(t,c,v)=>(BOOLC[t]||[]).includes(c)?(v===true||v==='true'?1:v===false||v==='false'?0:v):v;
 async function cond(env,t,[c,op,v]){await col(env,t,c);
   if(op in OPS){if(v===null||v==='null')return[op==='neq'?`${c} is not null`:`${c} is null`,[]];return[`${c} ${OPS[op]} ?`,[val(t,c,v)]]}
+  if(op==='inj')return[`${c} in (select value from json_each(?))`,[JSON.stringify(v)]];
   if(op==='in'){const a=Array.isArray(v)?v:String(v).replace(/^\(|\)$/g,'').split(',');if(!a.length)return['0=1',[]];return[`${c} in (${a.map(()=>'?').join(',')})`,a.map(x=>val(t,c,x))]}
   if(op==='is')return[v===null||v==='null'?`${c} is null`:`${c} is ${v?'not null':'null'}`,[]];
   if(op==='like'||op==='ilike')return[`${c} like ?`,[String(v).replace(/\*/g,'%')]];
@@ -63,12 +64,13 @@ function parseSel(s){s=String(s||'*').replace(/\s+/g,'');const out={cols:[],embe
   if(!out.cols.length)out.cols=['*'];return out}
 async function colList(env,t,cs){if(cs.includes('*'))return'*';for(const c of cs)await col(env,t,c);return cs.join(',')}
 async function embed(env,u,t,rows,embeds){if(!rows.length)return rows;
-  for(const e of embeds){const rel=(REL[t]||{})[e.t];if(!rel)fail(`ไม่รองรับการต่อ ${t}.${e.t}`);const [fk,pk,one]=rel;
+  // ต่อทุกตารางพร้อมกัน ตารางละ 1 คำสั่ง (ส่งรายการคีย์เป็น JSON ก้อนเดียว ไม่ต้องแบ่งเป็นชุดละ 90)
+  await Promise.all(embeds.map(async e=>{const rel=(REL[t]||{})[e.t];if(!rel)fail(`ไม่รองรับการต่อ ${t}.${e.t}`);const [fk,pk,one]=rel;
     const keys=[...new Set(rows.map(r=>r[pk]).filter(x=>x!=null))];const by=new Map();
-    for(let i=0;i<keys.length;i+=90){const ks=keys.slice(i,i+90);const sub=parseSel(e.sel);let cs=await colList(env,e.t,sub.cols);if(cs!=='*'&&!cs.split(',').includes(fk))cs+=','+fk;
-      const [w,p]=await where(env,u,e.t,[[fk,'in',ks]]);const r=await env.DB.prepare(`select ${cs} from ${e.t} where ${w}`).bind(...p).all();
+    if(keys.length){const sub=parseSel(e.sel);let cs=await colList(env,e.t,sub.cols);if(cs!=='*'&&!cs.split(',').includes(fk))cs+=','+fk;
+      const [w,p]=await where(env,u,e.t,[[fk,'inj',keys]]);const r=await env.DB.prepare(`select ${cs} from ${e.t} where ${w}`).bind(...p).all();
       for(const x of r.results){decode(e.t,x);const k=x[fk];if(!by.has(k))by.set(k,[]);by.get(k).push(x)}}
-    for(const r of rows){const l=by.get(r[pk])||[];r[e.t]=one?(l[0]||null):l}}
+    for(const r of rows){const l=by.get(r[pk])||[];r[e.t]=one?(l[0]||null):l}}));
   return rows}
 
 export async function runSelect(env,u,q){const t=q.t;await cols(env,t);const sel=parseSel(q.sel);
