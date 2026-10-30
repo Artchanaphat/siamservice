@@ -2867,6 +2867,7 @@ input.dl-in{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3
 </style>
 <script id="boot-chk">if(/github\.io$/.test(location.hostname))location.replace('https://siamservice.pages.dev/');try{if(localStorage.getItem('siam-auth')||sessionStorage.getItem('siam-auth')||localStorage.getItem('siam-auth-cf')||sessionStorage.getItem('siam-auth-cf'))document.documentElement.classList.add('booting')}catch(e){}</script>
 <div class="boot" id="boot"><span class="boot-sp"></span>กำลังโหลดข้อมูล...</div>
+<script>setTimeout(()=>{const h=document.documentElement;if(h.classList.contains('booting')){h.classList.remove('booting');console.warn('boot timeout')}},20000)</script>
 <section class="login" id="login">
   <div class="brand"><span class="lg login-logo" role="img" aria-label="โลโก้ ตรอ."></span>
     <h1>ตรอ.สยาม<em>เซอร์วิส</em></h1>
@@ -6339,8 +6340,8 @@ const DB=(()=>{
     else w.innerHTML=`<span class="tb-btn static">${pin}<b>${esc(branch.name)}</b></span>`;
     host.appendChild(w)}
   async function resume(){ // ยังล็อกอินค้างไว้ (ติ๊ก "ให้ฉันอยู่ในระบบต่อไป")
-    if(!authIn(window.localStorage)&&!authIn(window.sessionStorage))return;
-    try{const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
+    // เช็กอยู่ใน try เพื่อให้ finally เอาหน้าโหลดออกทุกกรณี (เครื่องที่เคยล็อกอินระบบเดิมมีแต่กุญแจเก่า ต้องไม่ค้างที่หน้าโหลด)
+    try{if(!authIn(window.localStorage)&&!authIn(window.sessionStorage))return;const c=await client();const {data}=await c.auth.getSession();if(!data.session)return;
       const u=await profile(data.session.user.id);await load();enterApp(u,true)}catch(err){console.warn(err)}
     finally{document.documentElement.classList.remove('booting')}} // ระหว่างกู้ session ซ่อนหน้าล็อกอิน ไม่ให้โผล่แวบตอนรีเฟรช
   async function logout(){try{if(sb)await sb.auth.signOut()}catch(e){}}
