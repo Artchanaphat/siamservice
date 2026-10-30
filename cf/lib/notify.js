@@ -11,7 +11,7 @@ const addDays=(d,n)=>{const x=new Date(d+'T00:00:00Z');x.setUTCDate(x.getUTCDate
 export async function lineSend(env,to,text,reply){const tok=await getS(env,'line_token');if(!tok)fail('ยังไม่ได้ใส่ Channel access token ในหน้าตั้งค่า');
   const r=await fetch('https://api.line.me/v2/bot/message/'+(reply?'reply':'push'),{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+tok},
     body:JSON.stringify({...(reply?{replyToken:reply}:{to}),messages:[{type:'text',text:String(text).slice(0,4900)}]})});
-  if(!r.ok)console.warn('line',r.status,await r.text())}
+  if(!r.ok){const t=await r.text();console.warn('line',r.status,t);return t||('HTTP '+r.status)}return null}
 
 export async function dailyText(env,day){const d=day||bkkDate(),[t0,t1]=dayRange(d),a400=new Date(Date.now()-400*864e5).toISOString();
   const st=JSON.parse((await one(env,`select value from app_settings where key='main'`)||{}).value||'{}');
@@ -64,7 +64,9 @@ export async function dailyText(env,day){const d=day||bkkDate(),[t0,t1]=dayRange
   return txt+`\n\n📅 อีก 7 วันข้างหน้า: ภาษีหมด ${n7.tax} คัน · พ.ร.บ.หมด ${n7.prb} คัน`}
 
 export async function sendDaily(env,day){const tos=(await getS(env,'line_to')).split(/\s*,\s*/).filter(Boolean);if(!(await getS(env,'line_token'))||!tos.length)fail('ยังไม่ได้ใส่ Channel access token หรือ User ID ในหน้าตั้งค่า');
-  const msg=(await dailyText(env,day)).slice(0,4900);for(const u of tos)await lineSend(env,u,msg);return tos.length}
+  const msg=(await dailyText(env,day)).slice(0,4900);const errs=[];for(const u of tos){const e=await lineSend(env,u,msg);if(e)errs.push(u.slice(0,6)+'…: '+e)}
+  // ส่งไม่ผ่าน: แจ้งเหตุผลจาก LINE ให้เห็นในหน้าตั้งค่า (เช่น token ผิด / ยังไม่ได้แอดเพื่อน)
+  if(errs.length)fail('LINE ไม่รับข้อความ: '+errs.join(' · ').replace(/"/g,'').slice(0,300));return tos.length}
 
 export async function sendReminders(env,day){const d=day||bkkDate();const st=JSON.parse((await one(env,`select value from app_settings where key='main'`)||{}).value||'{}');
   const dd=(Array.isArray(st.line_days)&&st.line_days.length?st.line_days:[30,7]).map(Number);let n=0;
