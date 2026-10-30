@@ -7719,7 +7719,8 @@ R.owner=async()=>{if(!user||user.role!=='owner'){$('#view').innerHTML='<div clas
   const nTodo=b=>b?T.filter(t=>t.b===b).length:T.length;
   // ---------- การ์ด ----------
   const order=[...(B.length>1?[null]:[]),...B];
-  const lastTxt=b=>{if(!b)return'';const l=b.today.last;if(l)return `<span class="ov-last">ข้อมูลล่าสุด ${hm(new Date(l))} น.</span>`;return isToday&&new Date().getHours()>=10?'<span class="ov-last warn">⚠️ ยังไม่มีข้อมูลเข้าวันนี้</span>':'<span class="ov-last">ไม่มีรายการ</span>'};
+  // การ์ดรวมก็มีบรรทัดใต้หัวเหมือนการ์ดสาขา ตัวเลขจะได้อยู่ระดับเดียวกันทุกการ์ด
+  const lastTxt=b=>{if(!b)return `<span class="ov-last">รวม ${B.length} สาขา</span>`;const l=b.today.last;if(l)return `<span class="ov-last">ข้อมูลล่าสุด ${hm(new Date(l))} น.</span>`;return isToday&&new Date().getHours()>=10?'<span class="ov-last warn">⚠️ ยังไม่มีข้อมูลเข้าวันนี้</span>':'<span class="ov-last">ไม่มีรายการ</span>'};
   const card=(b,body)=>{const all=!b,nT=nTodo(b);return `<div class="ov-bc${all?' ov-bc-all':''}"><div class="ov-bc-h"><b>${all?'รวมทุกสาขา':esc(b.name)}</b>${nT?`<span class="ui-pill warn">ต้องจัดการ ${nT}</span>`:'<span class="ui-pill ok">✓ ปกติ</span>'}</div>${lastTxt(b)}${body}</div>`};
   const F=(b,f)=>b?n(f(b)):sumB(f);
   const todayCard=b=>{const qa=F(b,x=>x.today.q_all),useQ=B.some(x=>n(x.today.q_all)),inC=useQ?qa:F(b,x=>n(x.today.car)+n(x.today.moto));
