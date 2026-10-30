@@ -15,6 +15,11 @@ export async function drawerOut(env,b,d,staff){const q=(t,dc,m,mv)=>env.DB.prepa
 
 export async function beforeWrite(env,u,t,op,old,o){
   if(op!=='delete'&&TOUCH.includes(t)&&op==='update')o.updated_at=now();
+  // ตรวจสภาพไม่ผ่าน: ยื่นงานขนส่งไม่ได้จนกว่าจะตรวจซ้ำผ่าน (ผลจากคิวมาก่อนผลในบิล เหมือนหน้าเว็บ)
+  if(t==='dlt_jobs'&&op!=='delete'){const r={...(old||{}),...o};
+    if(['submitted','plate','done'].includes(r.status)&&(!old||old.status!==r.status)&&!(old&&['plate','done'].includes(old.status))){
+      const [q,b]=await Promise.all([env.DB.prepare('select status from insp_queue where bill_id=? order by id desc limit 1').bind(r.bill_id).first(),env.DB.prepare('select insp_result from bills where id=?').bind(r.bill_id).first()]);
+      if(q?q.status==='fail':b&&b.insp_result==='fail')fail('รถตรวจสภาพไม่ผ่าน ยื่นงานขนส่งไม่ได้จนกว่าจะตรวจซ้ำผ่าน')}}
   if(t==='staff'&&op==='update'&&old.user_id===u.uid&&(('active' in o&&!!o.active!==!!old.active)||('role' in o&&o.role!==old.role)))fail('แก้ตำแหน่งหรือปิดบัญชีของตัวเองไม่ได้');
   if(t==='cash_closes'&&op!=='delete'){const r={...(old||{}),...o},[t0,t1]=dayRange(r.close_date);
     if(u.role!=='owner'&&u.role!=='head'){
