@@ -55,6 +55,9 @@ export const MISC={
   async set_line_schedule(env,u,{p_daily,p_remind}){owner(u);const ok=x=>/^([01]\d|2[0-3]):[0-5]\d$/.test(x);
     if(p_daily&&String(p_daily).trim()){if(!ok(p_daily.trim()))fail('รูปแบบเวลาไม่ถูกต้อง');await putSecret(env,'sched_daily',p_daily.trim())}
     if(p_remind&&String(p_remind).trim()){if(!ok(p_remind.trim()))fail('รูปแบบเวลาไม่ถูกต้อง');await putSecret(env,'sched_remind',p_remind.trim())}return MISC.line_schedule(env,u)},
+  // รหัสสำหรับตัวตั้งเวลา (Worker เรียก /api/cron ทุก 10 นาที) สร้างครั้งแรกที่เปิดดู
+  async cron_key(env,u,{p_new}){owner(u);let k=await getSecret(env,'cron_key');
+    if(!k||p_new){k=[...crypto.getRandomValues(new Uint8Array(24))].map(x=>x.toString(16).padStart(2,'0')).join('');await putSecret(env,'cron_key',k)}return k},
   async sms_secret_status(env,u){owner(u);return{key:mask(await getSecret(env,'sms_api_key')),secret:mask(await getSecret(env,'sms_api_secret'))}},
   async set_sms_secrets(env,u,{p_key,p_secret}){owner(u);const k=String(p_key||'').trim(),s=String(p_secret||'').trim();
     if(k){if(k.length<8)fail('API Key สั้นเกินไป ตรวจว่าคัดลอกมาครบ');await putSecret(env,'sms_api_key',k)}

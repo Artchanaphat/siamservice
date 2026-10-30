@@ -6,6 +6,7 @@ import {RPC} from './lib/rpc.js';
 import {files} from './lib/files.js';
 import {decode,now} from './lib/meta.js';
 import {migrate} from './lib/schema.js';
+import {lineWebhook,cron} from './lib/notify.js';
 
 const SB_URL='https://plilxmgripxmebvjafmj.supabase.co',SB_KEY='sb_publishable_38gR_gKTmCYqC3RYMcFpmQ_arM3dFxw';
 async function fromSupabase(env,un,pw){try{
@@ -24,6 +25,8 @@ const J=(d,s=200)=>new Response(JSON.stringify(d),{status:s,headers:{'content-ty
 const need=u=>{if(!u)fail('กรุณาเข้าสู่ระบบใหม่',401);return u};
 
 async function route(req,env,path){const m=req.method;
+  if(path==='line-webhook'&&m==='POST')return lineWebhook(env,req);
+  if(path==='cron')return cron(env,req);
   if(path==='auth/login'&&m==='POST'){const {username,password,remember}=await req.json();
     const un=String(username||'').trim().toLowerCase().replace(/@siam\.app$/,'');if(!un||!password)fail('กรุณากรอกชื่อผู้ใช้และรหัสผ่าน');
     let st=await env.DB.prepare('select * from staff where lower(username)=?').bind(un).first();
