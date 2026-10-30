@@ -107,7 +107,9 @@ export async function cron(env,req){const key=await getS(env,'cron_key');if(!key
   const nowB=new Date(Date.now()+7*36e5),hm=nowB.toISOString().slice(11,16),today=nowB.toISOString().slice(0,10),done=[];
   const due=async(name,at)=>{if(hm<at)return false;const last=await getS(env,'last_'+name);if(last===today)return false;
     await env.DB.prepare(`insert into secrets (name,value) values (?,?) on conflict(name) do update set value=excluded.value`).bind('last_'+name,today).run();return true};
-  if(await due('backup','02:00')){const {makeBackup}=await import('./rpc_misc.js');await makeBackup(env,'auto');done.push('backup')}
+  // สำรองไม่สำเร็จ: ล้างเครื่องหมายว่าทำแล้ว ให้รอบถัดไป (10 นาที) ลองใหม่
+  if(await due('backup','02:00')){try{const {makeBackup}=await import('./rpc_misc.js');await makeBackup(env,'auto');done.push('backup')}
+    catch(e){await env.DB.prepare(`delete from secrets where name='last_backup'`).run();done.push('backup:'+e.message)}}
   const dAt=(await getS(env,'sched_daily'))||'20:00';if(await due('daily',dAt)){try{await sendDaily(env,dAt<'12:00'?addDays(today,-1):today);done.push('daily')}catch(e){done.push('daily:'+e.message)}}
   const rAt=(await getS(env,'sched_remind'))||'09:00';if(await due('remind',rAt)){try{done.push('remind:'+await sendReminders(env,today))}catch(e){done.push('remind:'+e.message)}}
   return new Response(JSON.stringify({ok:true,at:hm,done}),{headers:{'content-type':'application/json'}})}
